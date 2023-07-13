@@ -7,7 +7,6 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const { accessSql, profileData, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
-//  ma bite
 
 module.exports = {
     data: new SlashCommandBuilder()

@@ -46,6 +46,9 @@ jspm_packages/
 # JSON TEST
 zzzz.json
 
+# Database
+data/
+
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 

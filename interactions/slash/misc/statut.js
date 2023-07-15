@@ -81,7 +81,7 @@ module.exports = {
                         const setwalletEmbed = new EmbedBuilder().setColor("#060A8F")
                             .setTitle(`Statut`)
                             .setAuthor({ name: authorName, iconURL: userAvatar })
-                            .setDescription(`>>> Display the actual statut of the different part of the bot`)
+                            .setDescription(`>>> Display the current statut of the different part of the bot`)
                             .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
                             .addFields(
                                 { name: 'Global Statut', value: "`Active`🟢", inline: true },

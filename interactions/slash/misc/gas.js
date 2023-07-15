@@ -258,7 +258,7 @@ module.exports = {
 
                             const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle("Gas Tracker")
-                                .setDescription(">>> Display the actual Ethereum gas metrics")
+                                .setDescription(">>> Display the current Ethereum gas metrics")
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                 .setTimestamp()
                                 .addFields(
@@ -308,7 +308,7 @@ module.exports = {
 
                             const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle("Gas Tracker")
-                                .setDescription(">>> Display the actual Bitcoin gas metrics")
+                                .setDescription(">>> Display the current Bitcoin gas metrics")
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                 .setTimestamp()
                                 .addFields(

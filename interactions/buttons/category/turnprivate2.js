@@ -67,7 +67,7 @@ module.exports = {
 
                 const turnPrivateModeEmbed = new EmbedBuilder().setColor("#060A8F")
                     .setTitle(authorName + "'s privacy")
-                    .setDescription(">>> Display the actual privacy settings of " + authorName)
+                    .setDescription(">>> Display the current privacy settings of " + authorName)
                     .setAuthor({ name: authorName, iconURL: userAvatar })
                     .setTimestamp()
                     .addFields(

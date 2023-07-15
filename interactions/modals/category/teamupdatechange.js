@@ -112,7 +112,7 @@ module.exports = {
                         { name: "Curren Update Channel", value: "<#" + communityUpdate + ">", inline: true },
                         { name: "Curren Update Channel", value: "`" + communityUpdate + "`", inline: true },
                         { name: " ", value: " ", inline: false },
-                        { name: " ", value: "*❌ The channels you entered are the actual update one, try again.*", inline: false },
+                        { name: " ", value: "*❌ The channels you entered are the current update one, try again.*", inline: false },
 
 
 

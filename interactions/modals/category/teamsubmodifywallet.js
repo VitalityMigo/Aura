@@ -173,7 +173,7 @@ module.exports = {
                             { name: " ", value: " ", inline: false },
                             { name: " ", value: "The payment can be done at this address : `0x862284B87b774bbEC86c4f13bA6c283C4552AfAB (rollschasers.eth)`.", inline: false },
                             { name: " ", value: " ", inline: false },
-                            { name: " ", value: "*❌ The wallet you entered is the actual team's one, try again.*", inline: false },
+                            { name: " ", value: "*❌ The wallet you entered is the current team's one, try again.*", inline: false },
 
 
 
@@ -255,7 +255,7 @@ module.exports = {
                             { name: " ", value: " ", inline: false },
                             { name: " ", value: "*Your community's access to the bot has been suspended because your monthly payment havn't been made. ⚠️*", inline: false },
                             { name: " ", value: " ", inline: false },
-                            { name: " ", value: "*❌ The wallet you entered is the actual team's one, try again.*", inline: false },
+                            { name: " ", value: "*❌ The wallet you entered is the current team's one, try again.*", inline: false },
 
 
 

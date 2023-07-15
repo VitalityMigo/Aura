@@ -68,7 +68,7 @@ module.exports = {
                     { name: " ", value: " ", inline: false },
                     { name: "Password Mecanism", value: "The password is what allows you to access the admin dashboard and manage the bot in your community. You can chanhe it by using the button below.", inline: true },
                     { name: " ", value: " ", inline: false },
-                    { name: "Actual Password", value: "`" + actualPassword + "`", inline: false },
+                    { name: "current Password", value: "`" + actualPassword + "`", inline: false },
                     { name: " ", value: " ", inline: false },
 
 

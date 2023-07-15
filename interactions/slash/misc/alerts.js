@@ -707,7 +707,7 @@ module.exports = {
 										}
 										else if (fp == data.collections[0].floorAsk.price.amount.decimal || fp2 == data.collections[0].floorAsk.price.amount.decimal) {
 											setfpEmbed.setTitle(`${collectionName}`)
-												.setDescription("You can't set this alert since the price is the same as the actual floor price of on `" + collectionName + "`. Try to set an alert for another price.")
+												.setDescription("You can't set this alert since the price is the same as the current floor price of on `" + collectionName + "`. Try to set an alert for another price.")
 												.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
 												.setAuthor({ name: authorName, iconURL: userAvatar })
 												.setTimestamp()

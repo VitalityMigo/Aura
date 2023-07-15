@@ -133,7 +133,7 @@ module.exports = {
 
                 const privateMode = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("User Dashboard")
-                    .setDescription(">>> Display the actual privacy settings of " + authorName)
+                    .setDescription(">>> Display the current privacy settings of " + authorName)
                     .setAuthor({ name: authorName, iconURL: userAvatar })
                     .setTimestamp()
                     .setImage(image)

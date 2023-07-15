@@ -45,7 +45,7 @@ module.exports = {
 
             ////// ALERTS //////
 
-            //setInterval(() => intervalalerts(client), 7000)
+            //setInterval(() => intervalalerts(client), 60000)
 
 
 

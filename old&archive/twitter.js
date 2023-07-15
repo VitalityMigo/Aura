@@ -91,7 +91,6 @@ module.exports = {
                         await interaction.editReply({ embeds: [availableInTheNearFuture] });
 
 
-
                         // const getTokenEmbed = new EmbedBuilder().setColor("#060A8F")
                         //     .setTitle(`${authorName}'s derisk price on ${collectionName}`)
                         //     .setDescription(">>> Display the key metrics of `" + tokenName + "`")

@@ -139,6 +139,7 @@ module.exports = {
         let botPowerStatut = communityRolePerms.dataValues.actualPower
         let communityStatut = communityRolePerms.dataValues.statut
 
+       //Récupère régagle de privé/ou pas de l'utilisateur
         const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
 
         if (authorProfile === null) { await interaction.deferReply(); } else {
@@ -454,7 +455,7 @@ module.exports = {
                             let BRC20Overview = ""
 
                             for (const coin of top5tokens) {
-                                console.log(coin)
+
                                 let name = (coin.ticker).charAt(0).toUpperCase() + (coin.ticker).slice(1);
                                 let symbol = (coin.ticker).toUpperCase()
                                 let balance = parseFloat(coin.overall_balance).toFixed(0)

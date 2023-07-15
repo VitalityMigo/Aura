@@ -15,8 +15,8 @@ const fs = require('fs');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("statut")
-        .setDescription("Display the bot statut"),
+        .setName("status")
+        .setDescription("Display the bot status"),
 
 
 

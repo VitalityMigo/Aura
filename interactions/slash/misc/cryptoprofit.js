@@ -156,6 +156,8 @@ module.exports = {
                         const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
                         const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
 
+            
+
 
 
                         let buySpent = 0
@@ -197,6 +199,7 @@ module.exports = {
                         let testWETH = ""
                         let testUSDT = ""
 
+                     
 
 
 

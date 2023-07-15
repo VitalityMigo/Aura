@@ -125,63 +125,8 @@ module.exports = {
 
 
                     let watchlistBaseTable = [];
-
-
-                    for (const obj of authorWatchlist) {
-
-                        let selectedCollection = obj.dataValues.selectedCollection
-
-                       
-
-                                const url = "https://api-mainnet.magiceden.dev/v2/ord/btc/collections/" + selectedCollection
-                                const response = await axios.get(url, { headers });
-                                const collectionData = await response.data;
-
-                                const url2 = "https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=" + selectedCollection
-                                const response2 = await axios.get(url2, { headers });
-                                const collectionData2 = await response2.data;
-
-
-                                let collectionName = collectionData.name
-                                let collectionTwitter = collectionData.twitterLink
-                                let collectionWebsite = collectionData.websiteLink
-                                let collectionDiscord = collectionData.discordLink
-                                let collectionSupply = collectionData.supply
-
-                                let collectionFloor = (collectionData2.floorPrice) / (10 ** 8)
-                                let collectionOwners = collectionData2.owners
-                                let totalVolume1D = (collectionData2.totalVolume) / (10 ** 8)
-                                let collectionTotalListings = collectionData2.totalListed
-                                let collectionListingRatio = parseFloat((collectionTotalListings * 100) / collectionSupply).toFixed(2)
-
-
-
-
-
-                               
-                                //On push dans le tableau pour trier
-                                let unity = {}
-
-                                unity.selectedCollection = selectedCollection
-                                unity.collectionName = collectionName
-                                unity.collectionTwitter = collectionTwitter
-                                unity.collectionWebsite = collectionWebsite
-                                unity.collectionFloor = collectionFloor
-                                unity.totalVolume1D = totalVolume1D
-                                unity.collectionOwners = collectionOwners
-                                unity.collectionListingRatio = collectionListingRatio
-                                unity.collectionDiscord = collectionDiscord
-
-
-                                watchlistBaseTable.push(unity)
-
-
-                    }
-
-
-
-
-console.log(watchlistBaseTable)
+                    const hey = await interactionData.findOne({ where: { authorId: authorId, commandName: "getwatchlist-btc", serverId: serverId } })
+                    watchlistBaseTable = JSON.parse(hey.dataValues.embed1)
 
 
                     watchlistBaseTable.sort((a, b) => b.collectionFloor - a.collectionFloor);
@@ -205,27 +150,27 @@ console.log(watchlistBaseTable)
                             setWatchlist.addFields(
                                 { name: collectionName + " (" + selectedCollection + ") ", value: "`Floor: " + collectionFloor.toFixed(3) + "₿ ∙ 1D Vol: " + totalVolume1D.toFixed(2) + "₿ ∙ Owners: " + Intl.NumberFormat('en-US').format(parseFloat(collectionOwners).toFixed(0)) + " ∙ Listed: " + collectionListingRatio + "%`\n[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + collectionTwitter + ") ∙ " + "[discord](" + collectionDiscord + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
                             )
-    
+
                         } else if (estLienHTTPS(collectionDiscord) && !estLienHTTPS(collectionWebsite)) {
-    
-    
+
+
                             setWatchlist.addFields(
                                 { name: collectionName + " (" + selectedCollection + ") ", value: "`Floor: " + collectionFloor.toFixed(3) + "₿ ∙ 1D Vol: " + totalVolume1D.toFixed(2) + "₿ ∙ Owners: " + Intl.NumberFormat('en-US').format(parseFloat(collectionOwners).toFixed(0)) + " ∙ Listed: " + collectionListingRatio + "%`\n[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + collectionTwitter + ") ∙ " + "[discord](" + collectionDiscord + ")", inline: false },
                             )
-    
+
                         } else if (!estLienHTTPS(collectionDiscord) && estLienHTTPS(collectionWebsite)) {
-    
+
                             setWatchlist.addFields(
-                                { name: collectionName + " (" + selectedCollection + ") ", value: "`Floor: " + collectionFloor.toFixed(3) + "₿ ∙ 1D Vol: " + totalVolume1D.toFixed(2) + "₿ ∙ Owners: " + Intl.NumberFormat('en-US').format(parseFloat(collectionOwners).toFixed(0)) + " ∙ Listed: " + collectionListingRatio + "%`\n[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + collectionTwitter + ") ∙ "  + '[website](' + collectionWebsite + ")", inline: false },
+                                { name: collectionName + " (" + selectedCollection + ") ", value: "`Floor: " + collectionFloor.toFixed(3) + "₿ ∙ 1D Vol: " + totalVolume1D.toFixed(2) + "₿ ∙ Owners: " + Intl.NumberFormat('en-US').format(parseFloat(collectionOwners).toFixed(0)) + " ∙ Listed: " + collectionListingRatio + "%`\n[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
                             )
-    
-    
+
+
                         } else {
-    
+
                             setWatchlist.addFields(
                                 { name: collectionName + " (" + selectedCollection + ") ", value: "`Floor: " + collectionFloor.toFixed(3) + "₿ ∙ 1D Vol: " + totalVolume1D.toFixed(2) + "₿ ∙ Owners: " + Intl.NumberFormat('en-US').format(parseFloat(collectionOwners).toFixed(0)) + " ∙ Listed: " + collectionListingRatio + "%`\n[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + collectionTwitter + ")", inline: false },
                             )
-    
+
                         }
 
 
@@ -390,7 +335,7 @@ console.log(watchlistBaseTable)
             await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
 
 
-        } 
+        }
 
     },
 };

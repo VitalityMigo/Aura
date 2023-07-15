@@ -62,6 +62,7 @@ module.exports = {
                 console.log("// Step 2 : Authorization - Executed ✅")
 
 
+                 //Récupère régagle de privé/ou pas de l'utilisateur
                 const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
 
                 if (authorProfile === null) { await interaction.deferReply(); } else {

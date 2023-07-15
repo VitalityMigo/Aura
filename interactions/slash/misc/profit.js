@@ -153,6 +153,7 @@ module.exports = {
         let botPowerStatut = communityRolePerms.dataValues.actualPower
         let communityStatut = communityRolePerms.dataValues.statut
 
+       //Récupère régagle de privé/ou pas de l'utilisateur
         const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
 
         if (authorProfile === null) { await interaction.deferReply(); } else {

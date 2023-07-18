@@ -226,9 +226,9 @@ module.exports = {
                                 coinDecimal = coinInfos.decimals
 
                                 //On load l'image
-                                chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
+                                 chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
 
-
+console.log(chartImageLink)
 
 
                                 const response = await Moralis.EvmApi.token.getTokenPrice({

@@ -47,7 +47,7 @@ jspm_packages/
 zzzz.json
 
 # Database
-data/
+data/rcadatabase.sqlite
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/

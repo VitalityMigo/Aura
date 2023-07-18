@@ -180,15 +180,15 @@ module.exports = {
 
 
 
-                    //Official Links
-                    const walletManager = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("Links")
-                        .setDescription(">>> Below are all our official links. Please be aware that any other link is a potential scam.\n\n<:RCtwitter:1096014822837080174> [Twitter](https://twitter.com/AuraAnalytics)\n<:RCdiscord:1096014711407001651> [Discord](https://discord.gg/nMKzzfR6gx)\n:earth_africa: [Website](https://discord.gg/nMKzzfR6gx)\n<:RCGitbook:1122490833611014264> [Gitbook](https://rolls-chasers.gitbook.io/aura)")
-                        .setImage("https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png")
-                        .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                    // //Official Links
+                    // const walletManager = new EmbedBuilder().setColor("#060A8F")
+                    //     .setTitle("Links")
+                    //     .setDescription(">>> Below are all our official links. Please be aware that any other link is a potential scam.\n\n<:RCtwitter:1096014822837080174> [Twitter](https://twitter.com/AuraAnalytics)\n<:RCdiscord:1096014711407001651> [Discord](https://discord.gg/nMKzzfR6gx)\n:earth_africa: [Website](https://cdn.discordapp.com/attachments/1108757872315219968/1122318373078958130/image.png)\n<:RCGitbook:1122490833611014264> [Gitbook](https://rolls-chasers.gitbook.io/aura)")
+                    //     .setImage("https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png")
+                    //     .setTimestamp()
+                    //     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                    await channelFetch.send({ embeds: [walletManager]});
+                    // await channelFetch.send({ embeds: [walletManager]});
 
 
 
@@ -213,7 +213,7 @@ module.exports = {
                     // await channelFetch.send({ embeds: [walletManager], components: [buttons1Row] });
 
 
-                    //Guide 
+                    // //Guide 
                     // const guideAllEmbed = new EmbedBuilder().setColor("#060A8F")
                     //     .setTitle("Guide")
                     //     .setDescription(">>> All the commands of Aura")
@@ -234,26 +234,26 @@ module.exports = {
 
 
 
-                    // const guideAllEmbed = new EmbedBuilder().setColor("#060A8F")
-                    //     .setTitle("Frequently Asked Questions")
-                    //     .setDescription(">>> A look at some frequently asked questions.")
-                    //     .setTimestamp()
-                    //     .addFields(
-                    //         { name: ' ', value: " ", inline: false },
-                    //         { name: 'What is Aura ?', value: "Aura is a tool designed to improve and facilitate the work of web3 traders and investors.", inline: false },
-                    //         { name: ' ', value: " ", inline: false },
-                    //         { name: 'How can I get access to Aura ?', value: "There are several ways to use Aura, both for communities and individual users. For individual users, go here : <#1108757700885622784>. For communities, you can send a message directly to our team or open a ticket. For more information, go [here](https://rolls-chasers.gitbook.io/aura).", inline: false },
-                    //         { name: ' ', value: " ", inline: false },
-                    //         { name: 'What do I get by taking the monthly subscription ?', value: "Aura monthly subscription gives you access to the tool on the Aura server. In addition, you gain access to a community of active web3 traders and investors. We'll be adding more benefits as we go along. You can go here <#1108757530076774512> to get a quick overview of Aura or [here](https://app.gitbook.com/o/j7C1DeeFIe87I5WriMNd/s/ZDuK6mLS9VHF7MYtbAzX/commands/access) for the full presentation.", inline: false },
-                    //         { name: ' ', value: " ", inline: false },
-                    //         { name: "What is the future of Aura ?", value: "Our team is constantly working to improve Aura's functionality and operation. Our aim is to be highly responsive so that we can always adapt to market conditions. You can find the theoretical roadmap [here](https://rolls-chasers.gitbook.io/aura/the-tool/roadmap).", inline: false },
-                    //         { name: ' ', value: " ", inline: false },
-                    //         { name: "I'd like some help to use the bot, where can I ask ?", value: "If you need any help, you can ask to our team in the chat or by opening a ticket.", inline: false },
+                    const guideAllEmbed = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Frequently Asked Questions")
+                        .setDescription(">>> A look at some frequently asked questions.")
+                        .setTimestamp()
+                        .addFields(
+                            { name: ' ', value: " ", inline: false },
+                            { name: 'What is Aura ?', value: "Aura is a tool designed to improve and facilitate the work of web3 traders and investors.", inline: false },
+                            { name: ' ', value: " ", inline: false },
+                            { name: 'How can I get access to Aura ?', value: "There are several ways to use Aura, both for communities and individual users. For individual users, go here : <#1108757700885622784>. For communities, you can send a message directly to our team or open a ticket. For more information, go [here](https://rolls-chasers.gitbook.io/aura).", inline: false },
+                            { name: ' ', value: " ", inline: false },
+                            { name: 'What do I get by taking the monthly subscription ?', value: "Aura monthly subscription gives you access to the tool on the Aura server. In addition, you gain access to a community of active web3 traders and investors. We'll be adding more benefits as we go along. You can go here <#1108757530076774512> to get a quick overview of Aura or [here](https://rolls-chasers.gitbook.io/aura/commands/commands/) for the full presentation.", inline: false },
+                            { name: ' ', value: " ", inline: false },
+                            { name: "What is the future of Aura ?", value: "Our team is constantly working to improve Aura's functionality and operation. Our aim is to be highly responsive so that we can always adapt to market conditions. You can find the theoretical roadmap [here](https://rolls-chasers.gitbook.io/aura/the-tool/roadmap).", inline: false },
+                            { name: ' ', value: " ", inline: false },
+                            { name: "I'd like some help to use the bot, where can I ask ?", value: "If you need any help, you can ask to our team in the chat or by opening a ticket.", inline: false },
 
-                    //     )
-                    //     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                        )
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                    // await channelFetch.send({ embeds: [guideAllEmbed] });
+                    await channelFetch.send({ embeds: [guideAllEmbed] });
 
 
 

@@ -349,7 +349,7 @@ if (!selectedTimestamp) { timeRange4 = '1 day'}
                                                 if (salesRatio > 0) { globalEvolution += 1 } else if (salesRatio < 0) { globalEvolution -= 1 }
                                                 if (traderRatio > 0) { globalEvolution += 1 } else if (traderRatio < 0) { globalEvolution -= 1 }
 
-                                                if (globalEvolution > 0) { globalEvolutionFormatted = "Bullish" } else if (globalEvolution < 0) { globalEvolutionFormatted = "Bearish" }
+                                                if (globalEvolution > 0) { globalEvolutionFormatted = "Positive" } else if (globalEvolution < 0) { globalEvolutionFormatted = "Negative" }
 
 
 

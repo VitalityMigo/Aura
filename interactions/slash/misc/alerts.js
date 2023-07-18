@@ -271,7 +271,7 @@ module.exports = {
 
 															)
 															.setTimestamp()
-															.setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+															.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 														await interaction.editReply({
 															embeds: [setfpEmbed],
 															ephemeral: true
@@ -298,7 +298,7 @@ module.exports = {
 
 															)
 															.setTimestamp()
-															.setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+															.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 														await interaction.editReply({
 															embeds: [setfpEmbed],
 															ephemeral: true
@@ -329,7 +329,7 @@ module.exports = {
 															{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 														)
 														.setTimestamp()
-														.setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+														.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 													await interaction.editReply({
 														embeds: [setfpEmbed],
 														ephemeral: true
@@ -361,7 +361,7 @@ module.exports = {
 														{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 													)
 													.setTimestamp()
-													.setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+													.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 												await interaction.editReply({
 													embeds: [setfpEmbed],
 													ephemeral: true
@@ -397,7 +397,7 @@ module.exports = {
 														{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 													)
 													.setTimestamp()
-													.setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+													.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 												await interaction.editReply({
 													embeds: [setfpEmbed],
 													ephemeral: true
@@ -432,7 +432,7 @@ module.exports = {
 														{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 													)
 													.setTimestamp()
-													.setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+													.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 												await interaction.editReply({
 													embeds: [setfpEmbed],
 													ephemeral: true
@@ -508,7 +508,7 @@ module.exports = {
 													{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 												)
 												.setTimestamp()
-												.setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+												.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 											await interaction.editReply({
 												embeds: [setfpEmbed],
 												ephemeral: true
@@ -586,7 +586,7 @@ module.exports = {
 													{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 												)
 												.setTimestamp()
-												.setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+												.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 											await interaction.editReply({
 												embeds: [setfpEmbed],
 												ephemeral: true
@@ -640,7 +640,7 @@ module.exports = {
 													{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 												)
 												.setTimestamp()
-												.setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+												.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 											await interaction.editReply({
 												embeds: [setfpEmbed],
 												ephemeral: true
@@ -696,7 +696,7 @@ module.exports = {
 
 												)
 												.setTimestamp()
-												.setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+												.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 											await interaction.editReply({
 												embeds: [setfpEmbed],
 												ephemeral: true
@@ -711,7 +711,7 @@ module.exports = {
 												.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
 												.setAuthor({ name: authorName, iconURL: userAvatar })
 												.setTimestamp()
-												.setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+												.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 											await interaction.editReply({
 												embeds: [setfpEmbed],
 												ephemeral: true
@@ -878,7 +878,7 @@ module.exports = {
 											.setAuthor({ name: authorName, iconURL: userAvatar })
 
 											.setTimestamp()
-											.setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+											.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 									} else {
 
 

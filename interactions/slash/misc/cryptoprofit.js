@@ -87,15 +87,15 @@ module.exports = {
         if (interaction.guildId != null) {
 
 
-        //Récupérer informations de l'utilisateur de la commande
-        let authorId = interaction.user.id;
-        let authorName = interaction.user.username;
-        let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png`;
-        let serverId = interaction.member.guild.id
-        let member = interaction.member;
+            //Récupérer informations de l'utilisateur de la commande
+            let authorId = interaction.user.id;
+            let authorName = interaction.user.username;
+            let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png`;
+            let serverId = interaction.member.guild.id
+            let member = interaction.member;
 
 
-        try {
+            // try {
 
 
 
@@ -146,17 +146,16 @@ module.exports = {
 
                         //Variable pour l'autocomplete de wallet et collection
 
-                        const allWalletsAuthor = await wallets.findAll({ where: { authorId: authorId } })
+                        const allWalletsAuthor = await wallets.findAll({ where: { authorId: authorId, walletCategory: "eth" } })
                         let allWalletsAuthorTable = allWalletsAuthor.map(wallet => wallet.walletAddress);
 
-                        console.log(allWalletsAuthorTable)
 
 
                         // Prix de l'ETH
                         const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
                         const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
 
-            
+
 
 
 
@@ -199,7 +198,7 @@ module.exports = {
                         let testWETH = ""
                         let testUSDT = ""
 
-                     
+
 
 
 
@@ -208,11 +207,14 @@ module.exports = {
 
                             if (walletAddress.toLowerCase() !== 'all') {
 
+                                const walletAddressName = await wallets.findOne({ where: { authorId: authorId, walletAddress: walletAddress } });
+                                let walletName1 = walletAddress
+                                let walletName = "`" + walletAddress.substring(0, 5) + "..." + walletAddress.substring(walletAddress.length - 4, walletAddress.length) + "`"
+                                if (walletAddressName !== null) {
+                                     walletName1 = walletAddressName.walletName
+                                    walletName = "`" + walletName1 + " (" + walletAddress.substring(0, 5) + "..." + walletAddress.substring(walletAddress.length - 4, walletAddress.length) + ")`"
 
-
-                                const walletChoices = await wallets.findOne({ where: { walletAddress: walletAddress } })
-                                const walletName = walletChoices.dataValues.walletName
-
+                                }
 
 
 
@@ -331,7 +333,6 @@ module.exports = {
                                         buyGasSpent += gasSpent
                                         buySpent += (bisTokenInPriceEth) * ((tokenLookup[0].value) / (10 ** tokenInPrice.raw.tokenDecimals))
 
-
                                     } else if (normalLookup.length > 0) {
 
                                         if (normalLookup[0].value <= 0) {
@@ -349,9 +350,10 @@ module.exports = {
 
 
                                             tradeInCount++
-                                            buySpent += normalLookup[0].value
+                                            buySpent += parseFloat(normalLookup[0].value / (10**18))
                                             buyGasSpent += gasSpent
                                             tokenBoughtCount += value
+
 
 
                                         }
@@ -569,8 +571,6 @@ module.exports = {
 
 
 
-
-
                                 //Embed getRCprofitPrecisedAll
                                 const cryptoProfitOneWallet = new EmbedBuilder().setColor("#060A8F")
                                     .setTitle(coinName + " (" + coinSymbol.toUpperCase() + ")")
@@ -591,7 +591,7 @@ module.exports = {
                                         { name: "Trades in", value: "`" + tradeInCount + "`", inline: true },
                                         { name: "Trades out", value: "`" + tradeOutCount + "`", inline: true },
                                         { name: "Airdrop/Claim", value: "`" + airdropCount + "`", inline: true },
-                                        { name: "AVG Bought", value: "`" + parseFloat(avgBought).toFixed(3) + "Ξ (" + parseFloat(avgBought * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                        { name: "AVG Bought", value: "`" + parseFloat(avgBuy).toFixed(3) + "Ξ (" + parseFloat(avgBuy * ethUsdPrice).toFixed(0) + "$)`", inline: true },
                                         { name: "AVG Sold", value: "`" + parseFloat(avgSold).toFixed(3) + "Ξ (" + parseFloat(avgSold * ethUsdPrice).toFixed(0) + "$)`", inline: true },
                                         { name: "AVG Held", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + parseFloat(avgHeld * ethUsdPrice).toFixed(0) + "$)`", inline: true },
                                         { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + parseFloat(realisedProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
@@ -799,7 +799,7 @@ module.exports = {
 
 
                                                     tradeInCount++
-                                                    buySpent += normalLookup[0].value
+                                                    buySpent += parseFloat(normalLookup[0].value / (10**18))
                                                     buyGasSpent += gasSpent
                                                     tokenBoughtCount += value
 
@@ -1024,9 +1024,6 @@ module.exports = {
 
 
 
-
-
-
                                     //Embed getRCprofitPrecisedAll
                                     const cryptoProfitOneWallet = new EmbedBuilder().setColor("#060A8F")
                                         .setTitle(coinName + " (" + coinSymbol.toUpperCase() + ")")
@@ -1047,7 +1044,7 @@ module.exports = {
                                             { name: "Trades in", value: "`" + tradeInCount + "`", inline: true },
                                             { name: "Trades out", value: "`" + tradeOutCount + "`", inline: true },
                                             { name: "Airdrop/Claim", value: "`" + airdropCount + "`", inline: true },
-                                            { name: "AVG Bought", value: "`" + parseFloat(avgBought).toFixed(3) + "Ξ (" + parseFloat(avgBought * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                            { name: "AVG Bought", value: "`" + parseFloat(avgBuy).toFixed(3) + "Ξ (" + parseFloat(avgBuy * ethUsdPrice).toFixed(0) + "$)`", inline: true },
                                             { name: "AVG Sold", value: "`" + parseFloat(avgSold).toFixed(3) + "Ξ (" + parseFloat(avgSold * ethUsdPrice).toFixed(0) + "$)`", inline: true },
                                             { name: "AVG Held", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + parseFloat(avgHeld * ethUsdPrice).toFixed(0) + "$)`", inline: true },
                                             { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + parseFloat(realisedProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
@@ -1185,100 +1182,100 @@ module.exports = {
 
             }
 
-            } catch (error) {
+            // } catch (error) {
 
 
-                console.log("// Error - sent in report ❌")
+            //     console.log("// Error - sent in report ❌")
 
-                //On envoi une notif
-                let botId = interaction.applicationId
-                const botAdmins = await adminsql.findOne({ where: { botId: botId } })
-                const mainServerId = botAdmins.dataValues.mainServerId
-                const logChannelId = botAdmins.dataValues.logChannelId
-                const guild = interaction.client.guilds.cache.get(mainServerId);
-                const channel = guild.channels.cache.get(logChannelId);
-
-
-                const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
-                let adminRoleId = adminAccessInfos.dataValues.adminRoleId
-                let serverName = adminAccessInfos.dataValues.serverName
-                const userRoleList = interaction.member._roles
-                let userHighestRole = "Member"
-                if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-                let reportCommand = "/cryptoprofit"
+            //     //On envoi une notif
+            //     let botId = interaction.applicationId
+            //     const botAdmins = await adminsql.findOne({ where: { botId: botId } })
+            //     const mainServerId = botAdmins.dataValues.mainServerId
+            //     const logChannelId = botAdmins.dataValues.logChannelId
+            //     const guild = interaction.client.guilds.cache.get(mainServerId);
+            //     const channel = guild.channels.cache.get(logChannelId);
 
 
-                const timeStamp = Date.now();
-                const date = new Date(timeStamp);
-                const dateLisible = date.toLocaleString();
-                const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
-                const formattedDate = date1.format('Do [of] MMMM YYYY');
+            //     const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
+            //     let adminRoleId = adminAccessInfos.dataValues.adminRoleId
+            //     let serverName = adminAccessInfos.dataValues.serverName
+            //     const userRoleList = interaction.member._roles
+            //     let userHighestRole = "Member"
+            //     if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
+            //     let reportCommand = "/cryptoprofit"
 
 
-
-                //On enregistre le call
-                await reportsql.create({
-                    botId: botId,
-                    authorId: "Bot",
-                    serverName: serverName,
-                    authorRole: userHighestRole,
-                    serverId: serverId,
-                    date: formattedDate,
-                    reportType: "Bug",
-                    reportCommand: reportCommand,
-                    reportDescription: "```" + error.stack + "```",
-                    reportPriority: "5",
-                    reportState: "Not treated",
-                })
+            //     const timeStamp = Date.now();
+            //     const date = new Date(timeStamp);
+            //     const dateLisible = date.toLocaleString();
+            //     const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
+            //     const formattedDate = date1.format('Do [of] MMMM YYYY');
 
 
 
-                const updateEmbed = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("New Report")
-                    .setDescription(">>> A new report has just been sent.")
-                    .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-                    .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg" })
-                    .setTimestamp()
-                    .addFields(
-                        { name: " ", value: " ", inline: false },
-                        { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
-
-                    )
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-
-                await channel.send({ embeds: [updateEmbed] });
-
+            //     //On enregistre le call
+            //     await reportsql.create({
+            //         botId: botId,
+            //         authorId: "Bot",
+            //         serverName: serverName,
+            //         authorRole: userHighestRole,
+            //         serverId: serverId,
+            //         date: formattedDate,
+            //         reportType: "Bug",
+            //         reportCommand: reportCommand,
+            //         reportDescription: "```" + error.stack + "```",
+            //         reportPriority: "5",
+            //         reportState: "Not treated",
+            //     })
 
 
-                const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("An error occured")
-                    .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
-                    .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-                    .setTimestamp()
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+            //     const updateEmbed = new EmbedBuilder().setColor("#060A8F")
+            //         .setTitle("New Report")
+            //         .setDescription(">>> A new report has just been sent.")
+            //         .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+            //         .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg" })
+            //         .setTimestamp()
+            //         .addFields(
+            //             { name: " ", value: " ", inline: false },
+            //             { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
+
+            //         )
+            //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-                await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
+            //     await channel.send({ embeds: [updateEmbed] });
 
-            }
+
+
+            //     const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
+            //         .setTitle("An error occured")
+            //         .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
+            //         .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+            //         .setTimestamp()
+            //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+            //     await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
+
+            // }
 
         } else if (interaction.guildId == null) {
 
             const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-            .setTitle("Aura")
-            .setDescription(`Hey ${interaction.user.username}, we hope you're doing well !\n\nAlthough this may be possible in the future, Aura cannot be used in DM at the moment. If you want to have access to the bot, go here: <#1108757700885622784>.\n\nIf you have any questions, don't hesitate to contact one of our team member, or directly on Discord here : <#1121110417368956958>.\n\nHave a nice day 👑`)
-            .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-            .setTimestamp()
-            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-    
-    
-        await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
-    
-    
-    
+                .setTitle("Aura")
+                .setDescription(`Hey ${interaction.user.username}, we hope you're doing well !\n\nAlthough this may be possible in the future, Aura cannot be used in DM at the moment. If you want to have access to the bot, go here: <#1108757700885622784>.\n\nIf you have any questions, don't hesitate to contact one of our team member, or directly on Discord here : <#1121110417368956958>.\n\nHave a nice day 👑`)
+                .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+                .setTimestamp()
+                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+            await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
+
+
+
         }
-    
-        }
-        }
+
+    }
+}
 

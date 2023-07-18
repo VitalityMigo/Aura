@@ -109,7 +109,7 @@ async function intervalalerts(client) {
 
 
                                     ).setTimestamp()
-                                    .setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
                                 alertsUp.update({ fp: null }, { where: { alertupId: elem.alertupId } });
                                 await channel.send({
                                     content: "<@" + elem.authorId + ">",
@@ -167,7 +167,7 @@ async function intervalalerts(client) {
                                         { name: "Links", value: '[alphashark](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 
                                     ).setTimestamp()
-                                    .setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
                                 alertsUp.update({ fp2: null }, { where: { alertupId: elem.alertupId } });
                                 await channel.send({
@@ -315,7 +315,7 @@ async function intervalalerts(client) {
                                         { name: "Links", value: '[alphashark](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 
                                     ).setTimestamp()
-                                    .setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
                                 alertsDown.update({ fp: null }, { where: { alertdownId: elem.alertdownId } });
                                 await channel.send({
                                     content: "<@" + elem.authorId + ">",

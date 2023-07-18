@@ -180,7 +180,7 @@ module.exports = {
                     //Checkpoint
                     console.log("// Step 2 : Authorization - Executed ✅")
 
-
+                    
 
                     //On enregistre le user si il est pas encore dans la database
                     const timeStamp1 = Date.now();

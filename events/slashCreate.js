@@ -41,7 +41,7 @@ module.exports = {
 				// .setAuthor({ name: "RC-Bot", iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg', url: 'https://twitter.com/jayzhvj_eth' })
 				.setDescription("Error with the command !")
 				.setTimestamp()
-				.setFooter({ text: 'Rolls Chasers Bot', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+				.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 			await interaction.reply({
 				embeds: [setfpEmbed],
 			});

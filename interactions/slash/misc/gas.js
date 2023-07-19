@@ -214,7 +214,7 @@ module.exports = {
                                         )
                                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                    await interaction.editReply({ embeds: [gasTrackerEmbed], components: [buttonsRow] });
+                                    await interaction.editReply({ embeds: [gasTrackerEmbed]});
 
                                 } else {
 

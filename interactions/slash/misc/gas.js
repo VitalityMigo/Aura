@@ -30,7 +30,7 @@ module.exports = {
                 .addStringOption(option =>
                     option
                         .setName("price")
-                        .setDescription("The price of the collection")
+                        .setDescription("The collection's mint price")
                         .setRequired(true)
 
                 )
@@ -44,7 +44,7 @@ module.exports = {
                 )
                 .addStringOption(option =>
                     option
-                        .setName("gas")
+                        .setName("gas-limit")
                         .setDescription("The amount of gas units you want to use")
                         .setRequired(true)
 
@@ -52,7 +52,7 @@ module.exports = {
                 )
                 .addStringOption(option =>
                     option
-                        .setName("max")
+                        .setName("max-gas-fees")
                         .setDescription("The max amount of gas fees you want to pay")
                         .setRequired(true)
 
@@ -60,12 +60,13 @@ module.exports = {
                 )
                 .addStringOption(option =>
                     option
-                        .setName("priority")
+                        .setName("max-priority")
                         .setDescription("The max amount of gas fees you want to pay")
                         .setRequired(true)
 
 
                 ),
+
 
         )
         .addSubcommand(subcommand =>
@@ -155,94 +156,83 @@ module.exports = {
                             if (interaction.options.getSubcommand() === 'calculator') {
 
 
-                                const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
-                                    .setTitle(`${authorName}'s profit`)
-                                    .setDescription("The command you try to use is currently being built and will be available in the near future. You can still use all the other commands in the meantime.")
-                                    .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-                                    .setTimestamp()
-                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                await interaction.editReply({ embeds: [availableInTheNearFuture] });
-
-
-
-                                // const mintPrice = interaction.options.getString("price");
-                                // const gasUnits = interaction.options.getString("gas");
-                                // const maxGas = interaction.options.getString("max");
-                                // const quantityTokens = interaction.options.getString("quantity");
-                                // const priorityFees = interaction.options.getString("priority");
-
-                                // const gasOracle = await axios.get('https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=' + etherscanApiKey)
-                                // const suggestedBaseFee = (gasOracle.data.result.suggestBaseFee - 0.000001).toFixed(2)
-
-
-
-                                // let totalCost = ""
-                                // let avgCost = ""
-                                // let gasFees = ""
-                                // let gasFeesTable = []
-
-
-                                // if (maxGas >= 7.5) {
-
-                                //     for (let i = 7.5; i <= Math.min(maxGas, 1000); i += 7.5) {
-                                //         gasFees += i.toFixed(1) + "\n";
-                                //         totalCost += ((i * (gasUnits * 0.000019)) + (priorityFees * 0.000019) + (mintPrice * quantityTokens)).toFixed(3) + "\n"
-                                //         avgCost += (((i * (gasUnits * 0.000019)) + (priorityFees * 0.000019) + (mintPrice * quantityTokens)) / quantityTokens).toFixed(4) + "\n"
-
-
-                                //     }
-
-                                // } else if (maxGas < 7.5) {
-
-                                //     for (let i = 0.5; i <= Math.min(maxGas, 7.5); i += 0.5) {
-                                //         gasFees += i.toFixed(1) + "\n";
-                                //         totalCost += ((i * (gasUnits * 0.000019)) + (priorityFees * 0.000019) + (mintPrice * quantityTokens)).toFixed(3) + "\n"
-                                //         avgCost += (((i * (gasUnits * 0.000019)) + (priorityFees * 0.000019) + (mintPrice * quantityTokens)) / quantityTokens).toFixed(4) + "\n"
-
-
-                                //     }
-                                // }
+                                // const buttonsRow = new ActionRowBuilder()
+                                // .addComponents(
+                                //     new ButtonBuilder()
+                                //         .setCustomId('gascalculatorCopy-button')
+                                //         .setLabel('copy to clipboard')
+                                //         .setStyle(2),
+                                // );
 
 
 
 
-                                // const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
-                                //     .setTitle("Gas tracker")
-                                //     .setDescription(">>> Display the transaction's gas fees simulation based on the data")
-                                //     .setAuthor({ name: authorName, iconURL: userAvatar })
-                                //     .setTimestamp()
-                                //     .addFields(
-                                //         { name: "Price", value: "`" + mintPrice + " Ξ`", inline: true },
-                                //         { name: "Quantity", value: "`" + quantityTokens + " tokens`", inline: true },
-                                //         { name: "Gas units", value: "`" + gasUnits + " gwei`", inline: true },
-                                //         { name: "Max gas", value: "`" + maxGas + " gwei`", inline: true },
-                                //         { name: "Priority", value: "`" + priorityFees + " gwei`", inline: true },
-                                //         { name: "Suggested", value: "`" + suggestedBaseFee + " gwei`", inline: true },
-                                //         { name: " ", value: " ", inline: true },
-                                //         { name: " ", value: " ", inline: true },
-                                //         { name: " ", value: " ", inline: true },
-                                //         { name: " ", value: " ", inline: true },
-                                //         { name: " ", value: " ", inline: true },
-                                //         { name: " ", value: " ", inline: true },
-                                //         { name: "Gas Fees", value: gasFees, inline: true },
-                                //         { name: "Total cost", value: totalCost, inline: true },
-                                //         { name: "Avg. Cost", value: avgCost, inline: true },
-                                //     )
-                                //     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                const mintPrice = interaction.options.getString("price");
+                                const quantity = interaction.options.getString("quantity");
+                                const gasLimit = interaction.options.getString("gas-limit");
+                                const maxGas = interaction.options.getString("max-gas-fees");
+                                const maxPriority = interaction.options.getString("max-priority");
 
-                                // await interaction.editReply({ embeds: [gasTrackerEmbed] });
+                                
+
+                                if (maxGas >= maxPriority) {
+
+
+                                    const min = (mintPrice * quantity) + (maxPriority * (gasLimit / 1000000000))
+                                    const max = (mintPrice * quantity) + (maxGas * (gasLimit / 1000000000))
 
 
 
-                                // //On enregistre le call API dans la database
-                                // const timeStamp = Date.now();
-                                // await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/gascalculator", apiCallName: "gasOracle", apiProvider: "etherscan", timestamp: timeStamp.toString() })
+                                    console.log("min :" + min)
+                                    console.log("max :" + max)
+
+                                    let gasFormatted = "An error occured when calculating the gas metrics"
+
+                                    if (min && max) {
+
+                                        gasFormatted = "Minimum total: " + parseFloat(min).toFixed(3) + "Ξ\nMaximum total: " + parseFloat(max).toFixed(3) + "Ξ\n\nMinimum average: " + parseFloat(min / quantity).toFixed(3) + "Ξ\nMaximum average: " + parseFloat(max / quantity).toFixed(3) + "Ξ\n\nAverage derisk: " + parseFloat(((max / quantity) + (min / quantity)) / 2).toFixed(3) + "Ξ"
+
+                                    }
+
+
+
+                                    const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle("Gas tracker")
+                                        .setDescription(">>> Display the transaction's gas fees simulation based on the data")
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setTimestamp()
+                                        .addFields(
+                                            { name: "Price", value: "`" + parseFloat(mintPrice).toFixed(3) + "Ξ`", inline: true },
+                                            { name: "Quantity", value: "`" + quantity + " tokens`", inline: true },
+                                            { name: " ", value: " ", inline: true },
+                                            { name: "Gas Limit", value: "`" + gasLimit + " gwei`", inline: true },
+                                            { name: "Max Gas Fees", value: "`" + maxGas + " gwei`", inline: true },
+                                            { name: "Max Priority", value: "`" + maxPriority + " gwei`", inline: true },
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Gas Metrics:", value: "```" + gasFormatted + "```", inline: false },
+
+                                        )
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                    await interaction.editReply({ embeds: [gasTrackerEmbed], components: [buttonsRow] });
+
+                                } else {
+
+
+                                    const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle("Gas tracker")
+                                        .setDescription("The gas metrics can't be calculated. The value of `max-priority` can't be higher than the value of `max-gas-fees`. Try again using the apporpriate values.")
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                    await interaction.editReply({ embeds: [gasTrackerEmbed] });
 
 
 
 
+
+                                }
 
                             } else if (interaction.options.getSubcommand() === 'tracker') {
 

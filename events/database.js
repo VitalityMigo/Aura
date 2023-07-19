@@ -3,7 +3,7 @@ const { Sequelize, Op } = require('@sequelize/core');
 //initialisation de la db
 const sequelize = new Sequelize('rcadatabase', 'rollschasersanalytics', 'Elvprs1997!', {
     dialect: 'sqlite',
-    storage: './data/rcadatabase.sqlite'
+    storage: './../data/rcadatabase.sqlite'
 });
 
 

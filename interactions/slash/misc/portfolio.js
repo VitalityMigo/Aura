@@ -194,6 +194,9 @@ module.exports = {
                         //Si wallet ETH
                         if (isValidEthereumAddress(selectedWallet)) {
 
+                            const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                            const ethUsdPriceFormatted = await ethUsdPrice.data.result.ethusd
+
 
                             // On récupère le nom du wallet séléctionné
                             const precisedWalletFind = await wallets.findOne({ where: { authorId: authorId, walletAddress: selectedWallet } });
@@ -227,8 +230,7 @@ module.exports = {
 
                             // On récupère le prix USD des différentes cryptos
                             const cryptoUsdtPrice = await axios.get('https://api-testnet.bybit.com/v5/market/tickers?category=linear')
-                            const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-                            const ethUsdPriceFormatted = await ethUsdPrice.data.result.ethusd
+                           
                             //const usdcUsdTPrice = cryptoUsdtPrice.data.result.list.find(obj => obj.symbol === "USDCUSDT").lastPrice;
                             const usdcUsdTPrice = 1
                             const blurUsdTPrice = cryptoUsdtPrice.data.result.list.find(obj => obj.symbol === "BLURUSDT").lastPrice;

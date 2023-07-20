@@ -228,6 +228,7 @@ module.exports = {
                             // On récupère le prix USD des différentes cryptos
                             const cryptoUsdtPrice = await axios.get('https://api-testnet.bybit.com/v5/market/tickers?category=linear')
                             const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                            const ethUsdPriceFormatted = await ethUsdPrice.data.result.ethusd
                             //const usdcUsdTPrice = cryptoUsdtPrice.data.result.list.find(obj => obj.symbol === "USDCUSDT").lastPrice;
                             const usdcUsdTPrice = 1
                             const blurUsdTPrice = cryptoUsdtPrice.data.result.list.find(obj => obj.symbol === "BLURUSDT").lastPrice;
@@ -235,7 +236,7 @@ module.exports = {
 
                             //On récupère les variables pour formatter 
                             let erc20lignsize = 42
-                            let wethSpaceSize = erc20lignsize - 27 - (wethBalanceFormatted.toFixed(3)).length - ((ethUsdPrice.data.result.ethusd * wethBalanceFormatted).toFixed(0)).length
+                            let wethSpaceSize = erc20lignsize - 27 - (wethBalanceFormatted.toFixed(3)).length - ((ethUsdPriceFormatted * wethBalanceFormatted).toFixed(0)).length
                             let usdcSpaceSize = erc20lignsize - 24 - (usdcBalanceFormatted.toFixed(3)).length - ((usdcUsdTPrice * usdcBalanceFormatted).toFixed(0)).length
                             let blurSpaceSize = erc20lignsize - 20 - (blurBalanceFormatted.toFixed(3)).length - ((blurUsdTPrice * blurBalanceFormatted).toFixed(0)).length
                             let apeSpaceSize = erc20lignsize - 23 - (apeBalanceFormatted.toFixed(3)).length - ((apeUsdTPrice * apeBalanceFormatted).toFixed(0)).length
@@ -289,7 +290,7 @@ module.exports = {
                                                 if (collection.collection.floorAskPrice) {
                                                     floorAskPrice = (collection.collection.floorAskPrice).toFixed(3)
                                                     totalPrice = (tokenCount * floorAskPrice).toFixed(3)
-                                                    totalPriceUs = (totalPrice * ethUsdPrice.data.result.ethusd).toFixed(0)
+                                                    totalPriceUs = (totalPrice * ethUsdPriceFormatted).toFixed(0)
                                                     totalPriceUsd = new Intl.NumberFormat('en-US').format(totalPriceUs)
 
                                                 } else if (!collection.collection.floorAskPrice) {
@@ -323,11 +324,10 @@ module.exports = {
 
 
                                             //Rajouter le if + le prix des autres tokens + Blur Pool
-                                            walletValue = nftsValueEth + ethBalanceFormatted + blurPoolBalanceFormatted + wethBalanceFormatted + (usdcBalanceFormatted / ethUsdPrice.data.result.ethusd) + (blurUsdTPrice * blurBalanceFormatted / ethUsdPrice.data.result.ethusd) + (apeUsdTPrice * apeBalanceFormatted / ethUsdPrice.data.result.ethusd)
+                                            walletValue = nftsValueEth + ethBalanceFormatted + blurPoolBalanceFormatted + wethBalanceFormatted + (usdcBalanceFormatted / ethUsdPriceFormatted) + (blurUsdTPrice * blurBalanceFormatted / ethUsdPriceFormatted) + (apeUsdTPrice * apeBalanceFormatted /ethUsdPriceFormatted)
 
 
                                             if (nftsOverview == "") { nftsOverview = "`No Ethereum NFTs owned                                             `  \n" }
-
 
 
                                             const getPortfolioOneWallet = new EmbedBuilder().setColor("#060A8F")
@@ -337,10 +337,10 @@ module.exports = {
                                                 //.setImage([image])
                                                 .addFields(
                                                     { name: "Wallet", value: "`" + precisedWalletNameofAuthor + " (" + selectedWallet.substring(0, 5) + "..." + selectedWallet.substring(selectedWallet.length - 4, selectedWallet.length) + ")`", inline: false },
-                                                    { name: "Wallet Value", value: "`" + walletValue.toFixed(3) + "Ξ (" + (ethUsdPrice.data.result.ethusd * walletValue).toFixed(0) + "$)`", inline: true },
-                                                    { name: "ETH Value", value: "`" + ethBalanceFormatted.toFixed(3) + "Ξ (" + (ethUsdPrice.data.result.ethusd * ethBalanceFormatted).toFixed(0) + "$)`", inline: true },
+                                                    { name: "Wallet Value", value: "`" + walletValue.toFixed(3) + "Ξ (" + (ethUsdPriceFormatted * walletValue).toFixed(0) + "$)`", inline: true },
+                                                    { name: "ETH Value", value: "`" + ethBalanceFormatted.toFixed(3) + "Ξ (" + (ethUsdPriceFormatted * ethBalanceFormatted).toFixed(0) + "$)`", inline: true },
                                                     { name: "NFTs Value", value: "`" + nftsValueEth.toFixed(3) + "Ξ (" + nftsValueUsd.toFixed(0) + "$)`", inline: true },
-                                                    { name: "ERC 20 Tokens", value: "`Wrapped ETH (wETH): " + wethSpaceLenght + wethBalanceFormatted.toFixed(3) + " (" + (ethUsdPrice.data.result.ethusd * wethBalanceFormatted).toFixed(0) + "$)`\n`USD Coin (USDC): " + usdcSpaceLenght + usdcBalanceFormatted.toFixed(3) + " (" + (usdcUsdTPrice * usdcBalanceFormatted).toFixed(0) + "$)`\n`Blur (BLUR): " + blurSpaceLenght + blurBalanceFormatted.toFixed(3) + " (" + (blurUsdTPrice * blurBalanceFormatted).toFixed(0) + "$)`\n`Ape Coin (APE): " + apeSpaceLenght + apeBalanceFormatted.toFixed(3) + " (" + (apeUsdTPrice * apeBalanceFormatted).toFixed(0) + "$)`", inline: false },
+                                                    { name: "ERC 20 Tokens", value: "`Wrapped ETH (wETH): " + wethSpaceLenght + wethBalanceFormatted.toFixed(3) + " (" + (ethUsdPriceFormatted * wethBalanceFormatted).toFixed(0) + "$)`\n`USD Coin (USDC): " + usdcSpaceLenght + usdcBalanceFormatted.toFixed(3) + " (" + (usdcUsdTPrice * usdcBalanceFormatted).toFixed(0) + "$)`\n`Blur (BLUR): " + blurSpaceLenght + blurBalanceFormatted.toFixed(3) + " (" + (blurUsdTPrice * blurBalanceFormatted).toFixed(0) + "$)`\n`Ape Coin (APE): " + apeSpaceLenght + apeBalanceFormatted.toFixed(3) + " (" + (apeUsdTPrice * apeBalanceFormatted).toFixed(0) + "$)`", inline: false },
                                                     { name: "NFTs Overview", value: nftsOverview, inline: false },
                                                     // { name: "Wallet ETH Chart", value: "`XXX`", inline: false },
 

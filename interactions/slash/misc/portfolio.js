@@ -638,6 +638,10 @@ module.exports = {
                             if (walletCount > 0) {
 
 
+                                const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+
+
+
                                 //On initialise le tableau de call api pour mesurer
                                 let apiObj = {}
                                 apiObj.ethBalance = 0
@@ -674,7 +678,6 @@ module.exports = {
 
                                 // On récupère le prix USD des différentes cryptos
                                 const cryptoUsdtPrice = await axios.get('https://api-testnet.bybit.com/v5/market/tickers?category=linear')
-                                const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
                                 let usdcUsdTPrice = "1"
                                 //usdcUsdTPrice = cryptoUsdtPrice.data.result.list.find(obj => obj.symbol === "USDCUSDT").lastPrice 
                                 const blurUsdTPrice = cryptoUsdtPrice.data.result.list.find(obj => obj.symbol === "BLURUSDT").lastPrice;

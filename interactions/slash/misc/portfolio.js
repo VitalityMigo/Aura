@@ -329,6 +329,9 @@ module.exports = {
 
                                             if (nftsOverview == "") { nftsOverview = "`No Ethereum NFTs owned                                             `  \n" }
 
+                                            console.log(ethUsdPrice.data.result)
+                                            console.log(ethUsdPriceFormatted)
+
 
                                             const getPortfolioOneWallet = new EmbedBuilder().setColor("#060A8F")
                                                 .setTitle(`${authorName}'s portfolio`)

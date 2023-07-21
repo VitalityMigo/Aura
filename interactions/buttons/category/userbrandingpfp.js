@@ -127,7 +127,6 @@ module.exports = {
                     const buffer2 = canvasFormatted.toBuffer('image/png');
 
                     await interaction.editReply({ files: [buffer2] })
-                    console.log("hey3")
 
 
 

@@ -120,9 +120,10 @@ module.exports = {
 
 
 
-        if (serverId === "949291624389816331" || serverId === "1071576735298113667") {
+        if (serverId === "949291624389816331") {
 
 
+          registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
           if (visualSelect === "2" || privacyBigDataAuthor === null) {
@@ -257,7 +258,6 @@ module.exports = {
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
             //NOM COLLECTION
@@ -367,7 +367,6 @@ module.exports = {
             ctxFormatted.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
 
 
-            registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
             ctxFormatted.font = "bold 58px SFTransrobotic";
@@ -571,7 +570,6 @@ module.exports = {
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
             //NOM COLLECTION
             const MAX_WIDTH = 515;
@@ -634,15 +632,14 @@ module.exports = {
           }
 
         } else if (serverId === "944918328135286804") {
-          
 
-         
+
+          registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
+
 
 
           const templateOneCollection = await loadImage("./visual/embassy/permanent/profittemplate1.png");
 
-
-          registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
 
           const canvasFormatted = createCanvas(1000, 1000);
           const ctxFormatted = canvasFormatted.getContext('2d');
@@ -654,7 +651,7 @@ module.exports = {
           ctxFormatted.font = "33px EmbassyGothic";
           ctxFormatted.textBaseline = "alphabetic";
           const MAX_WIDTH = 850;
-          let fontSize =33;
+          let fontSize = 33;
 
 
           ctxFormatted.fillStyle = "#ffffff";
@@ -668,18 +665,18 @@ module.exports = {
 
           ctxFormatted.font = `${fontSize}px EmbassyGothic`;
           ctxFormatted.textBaseline = "middle";
-          ctxFormatted.fillText(collectionName, 500 - collectionNameTextSize/2, 455);
+          ctxFormatted.fillText(collectionName, 500 - collectionNameTextSize / 2, 455);
           ctxFormatted.textBaseline = "alphabetic";
 
 
-       
+
           //BUY COUNT
           ctxFormatted.font = "bold 38px Courrier New";
           ctxFormatted.fillStyle = "#ffffff";
           const buyCountTextSize = ctxFormatted.measureText(buyCount.toString()).width;
-          ctxFormatted.fillText(buyCount.toString(), 222 - buyCountTextSize /2 , 590);
+          ctxFormatted.fillText(buyCount.toString(), 222 - buyCountTextSize / 2, 590);
 
-         
+
 
           //SOLD COUNT
           ctxFormatted.font = "bold 38px Courrier New";
@@ -694,17 +691,17 @@ module.exports = {
           ctxFormatted.fillText(remaining.toString(), 803 - remainingTextSize / 2, 590);
 
 
-         //AVG SPENT VALUE
-         ctxFormatted.font = "bold 38px Courrier New";
-         ctxFormatted.fillStyle = "#ffffff";
-         const avgSpentTextSize = ctxFormatted.measureText(avgBuy.toString() + "Ξ").width;
-         ctxFormatted.fillText(avgBuy.toString() + "Ξ", 222 - avgSpentTextSize /2, 740);
+          //AVG SPENT VALUE
+          ctxFormatted.font = "bold 38px Courrier New";
+          ctxFormatted.fillStyle = "#ffffff";
+          const avgSpentTextSize = ctxFormatted.measureText(avgBuy.toString() + "Ξ").width;
+          ctxFormatted.fillText(avgBuy.toString() + "Ξ", 222 - avgSpentTextSize / 2, 740);
 
-         //AVG SALE VALUE
-         ctxFormatted.font = "bold 38px Courrier New";
-         ctxFormatted.fillStyle = "#ffffff";
-         const avgSaleTextSize = ctxFormatted.measureText(avgSold.toString() + "Ξ").width;
-         ctxFormatted.fillText(avgSold.toString() + "Ξ", 504 - avgSaleTextSize / 2, 740);
+          //AVG SALE VALUE
+          ctxFormatted.font = "bold 38px Courrier New";
+          ctxFormatted.fillStyle = "#ffffff";
+          const avgSaleTextSize = ctxFormatted.measureText(avgSold.toString() + "Ξ").width;
+          ctxFormatted.fillText(avgSold.toString() + "Ξ", 504 - avgSaleTextSize / 2, 740);
 
 
           //Realized PROFIT (ETH)
@@ -713,8 +710,8 @@ module.exports = {
           const realizedProfitTextSize = ctxFormatted.measureText(realisedProfit.toString() + "Ξ").width;
           ctxFormatted.fillText(realisedProfit.toString() + "Ξ", 803 - realizedProfitTextSize / 2, 740);
 
-        
-        
+
+
           //POTENTIAL PROFIT (ETH)
           ctxFormatted.font = "bold 45px EmbassyGothic";
           if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
@@ -745,9 +742,6 @@ module.exports = {
           ctxFormatted.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
 
 
-
-          const randomString = generateRandomString(10);
-
           // Dessiner l'image de profil sur le canvas
           const buffer2 = canvasFormatted.toBuffer('image/png');
 
@@ -773,15 +767,7 @@ module.exports = {
 
 
 
-          const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-            .setTitle("Bot access")
-            .setDescription("You don't have access to this functionnality in this server. If you usually have access to it, try in the server you use to have access to it. If you encounter any other issue, please contact an admin of the community")
-            .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-            .setTimestamp()
-            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-
-          await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
+          console.log("coming soon")
 
 
 
@@ -793,7 +779,15 @@ module.exports = {
 
       } else {
 
-      console.log("coming soon")
+        const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
+        .setTitle("Bot Access")
+        .setAuthor({ name: authorName, iconURL: userAvatar })
+        .setDescription("This button is not for you. You can only click on buttons generated by your commands. Please try again with your personal data.")
+        .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+        .setTimestamp()
+        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+    await interaction.reply({ embeds: [setfpEmbedNotForYou], ephemeral: true });
 
 
 

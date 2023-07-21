@@ -86,9 +86,8 @@ module.exports = {
             if (serverId === "949291624389816331") {
 
 
-                //  || "1071576735298113667"
 
-                // ON COMMENCE LE CANVAS
+                registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
                 const canvasFormatted = createCanvas(1000, 585.38);
                 const ctxFormatted = canvasFormatted.getContext('2d');
@@ -96,7 +95,6 @@ module.exports = {
                 const templateIdentityCard = await loadImage("./visual/rollschasers/permanent/identitycard.png");
                 ctxFormatted.drawImage(templateIdentityCard, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
 
-                registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
 
@@ -146,6 +144,7 @@ module.exports = {
 
             } else {
 
+                registerFont("./visual/aura/font/firacode.ttf", { family: "FiraCode" })
 
 
                 const canvasFormatted = createCanvas(1000, 585.38);
@@ -154,7 +153,6 @@ module.exports = {
                 const templateIdentityCard = await loadImage("./visual/aura/permanent/identitycard.png");
                 ctxFormatted.drawImage(templateIdentityCard, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
 
-                registerFont("./visual/aura/font/firacode.ttf", { family: "FiraCode" })
 
 
 

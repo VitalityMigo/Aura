@@ -76,7 +76,9 @@ module.exports = {
             const potentialProfit = parseFloat((projectsAth - mintPrice) * whitelists).toFixed(3)
 
 
-            if (serverId === "949291624389816331" || "1071576735298113667") {
+            if (serverId === "949291624389816331") {
+
+                registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
                 const templateOneCollection = await loadImage("./visual/rollschasers/permanent/giveawayprofit.png");
@@ -107,7 +109,6 @@ module.exports = {
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-                registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
                 //Potential PROFIT
@@ -180,8 +181,10 @@ module.exports = {
             } else if (serverId === "944918328135286804") {
 
 
+                registerFont("./visual/embassy/font/akira.ttf", { family: "akira" })
+
+
                     const templateOneCollection = await loadImage("./visual/embassy/permanent/giveawayprofit.png");
-                    registerFont("./visual/embassy/font/akira.ttf", { family: "akira" })
 
                     const canvasFormatted = createCanvas(1000, 1000);
                     const ctxFormatted = canvasFormatted.getContext('2d');

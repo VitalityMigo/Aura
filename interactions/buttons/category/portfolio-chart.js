@@ -88,7 +88,7 @@ module.exports = {
                 let roundCount = 0
 
 
-                if (serverId === "949291624389816331" || serverId === "1071576735298113667" || serverId === "1108754348818845729") {
+                if (serverId === "949291624389816331") {
 
                     registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
@@ -536,17 +536,7 @@ module.exports = {
 
 
 
-                    const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("Bot access")
-                        .setDescription("You don't have access to this functionnality in this server. If you usually have access to it, try in the server you use to have access to it. If you encounter any other issue, please contact an admin of the community")
-                        .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-                        .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-
-                    await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
-
-
+                    console.log("coming soon")
 
 
 

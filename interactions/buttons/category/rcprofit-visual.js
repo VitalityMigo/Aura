@@ -116,7 +116,10 @@ module.exports = {
         }
 
 
-        if (serverId === "949291624389816331" || serverId === "1071576735298113667") {
+        if (serverId === "949291624389816331") {
+
+          registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
+
 
 
           if (visualSelect === "2" || privacyBigDataAuthor === null) {
@@ -251,7 +254,6 @@ module.exports = {
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
             //NOM COLLECTION
@@ -369,7 +371,6 @@ module.exports = {
             ctxFormatted.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
 
 
-            registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
             ctxFormatted.font = "bold 58px SFTransrobotic";
@@ -513,6 +514,8 @@ module.exports = {
 
           } else if (visualSelect === "1") {
 
+
+
             const templateOneCollection = await loadImage("./visual/rollschasers/permanent/rcprofittemplate1.png");
 
             const canvasFormatted = createCanvas(1000, 1000);
@@ -580,7 +583,6 @@ module.exports = {
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
             //NOM COLLECTION
             const MAX_WIDTH = 515;
@@ -634,7 +636,6 @@ module.exports = {
 
 
 
-            const randomString = generateRandomString(10);
 
             // Dessiner l'image de profil sur le canvas
             const buffer2 = canvasFormatted.toBuffer('image/png');
@@ -643,18 +644,6 @@ module.exports = {
 
 
           }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -73,7 +73,10 @@ module.exports = {
 
 
 
-            if (serverId === "949291624389816331" || "1071576735298113667") {
+            if (serverId === "949291624389816331") {
+
+
+                registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
                 const userIdentityId = "0x" + idPartTwo + idPartOne
@@ -102,7 +105,6 @@ module.exports = {
                 const templateIdentityCard = await loadImage("./visual/rollschasers/permanent/identitybanner.png");
                 ctxFormatted.drawImage(templateIdentityCard, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
 
-                registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
 

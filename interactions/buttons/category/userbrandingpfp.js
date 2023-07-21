@@ -60,7 +60,10 @@ module.exports = {
                 console.log("// Step 2 : Authorization - Executed ✅")
 
 
-                if (serverId === "949291624389816331" || "1071576735298113667") {
+                if (serverId === "949291624389816331") {
+
+
+                    //  || "1071576735298113667"
 
                     // Récupérer l'image du profil de l'utilisateur
 
@@ -69,6 +72,41 @@ module.exports = {
 
                     const avatar = await loadImage(`https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`);
                     const pfpLayer = await loadImage("./visual/rollschasers/permanent/identitypfp.png");
+
+
+
+                    const centerX = canvasFormatted.width / 2;
+                    const centerY = canvasFormatted.height / 2;
+                    const radius = 2048;
+                    ctxFormatted.beginPath();
+                    ctxFormatted.arc(centerX, centerY, radius, 0, Math.PI * 2, true);
+                    ctxFormatted.closePath();
+                    ctxFormatted.clip();
+
+
+                    ctxFormatted.drawImage(avatar, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+                    ctxFormatted.drawImage(pfpLayer, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+                    // Découpe du cercle et centrage
+
+
+                    // Dessiner l'image de profil sur le canvas
+                    const buffer2 = canvasFormatted.toBuffer('image/png');
+
+                    await interaction.editReply({ files: [buffer2] })
+
+
+
+
+                } else {
+
+
+
+                    const canvasFormatted = createCanvas(4096, 4096);
+                    const ctxFormatted = canvasFormatted.getContext('2d');
+
+                    const avatar = await loadImage(`https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`);
+                    const pfpLayer = await loadImage("./visual/aura/permanent/identitypfp.png");
+
 
 
                     const centerX = canvasFormatted.width / 2;
@@ -90,23 +128,6 @@ module.exports = {
 
                     await interaction.editReply({ files: [buffer2] })
                     console.log("hey3")
-
-
-
-
-                } else {
-
-
-
-                    const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("Bot access")
-                        .setDescription("You don't have access to this functionnality in this server. If you usually have access to it, try in the server you use to have access to it. If you encounter any other issue, please contact an admin of the community")
-                        .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-                        .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-
-                    await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
 
 
 

@@ -76,7 +76,7 @@ module.exports = {
                     { name: "Admin Role ID", value: "`" + givenAdminRole + "`", inline: true },
                     { name: "Member Role ID", value: "`" + givenMemberRole + "`", inline: true },
                     { name: " ", value: " ", inline: false },
-                    { name: " ", value: "*✅ The community roles have been succesfully updated.*", inline: false },
+                    { name: " ", value: "*✅ The community roles have been successfully updated.*", inline: false },
 
 
 

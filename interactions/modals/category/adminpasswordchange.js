@@ -85,7 +85,7 @@ module.exports = {
                                     { name: " ", value: " ", inline: false },
                                     { name: "Identifier", value: "`" + botIdentifier + "`", inline: true },
                                     { name: "Current Password", value: "`" + newPassword + "`", inline: true }, { name: " ", value: " ", inline: false },
-                                    { name: " ", value: "*✅ The community password has been succesfully updated.*", inline: false },
+                                    { name: " ", value: "*✅ The community password has been successfully updated.*", inline: false },
 
 
 

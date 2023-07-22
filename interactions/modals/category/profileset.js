@@ -140,7 +140,7 @@ module.exports = {
 			const setProfileRender = new EmbedBuilder().setColor("#060A8F")
 				.setTitle(authorName + "'s Dashboard")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
-				.setDescription(`>>> Your profile have been succesfuly set and is now public to all the community members`)
+				.setDescription(`>>> Your profile have been successfully set and is now public to all the community members`)
 				.setThumbnail(userAvatar)
 				.addFields(
 					{ name: 'Name', value: "`" + authorName + "`", inline: true },

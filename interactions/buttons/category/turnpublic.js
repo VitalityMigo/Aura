@@ -73,7 +73,7 @@ module.exports = {
                         { name: " ", value: " ", inline: false },
                         { name: "Statut", value: "Your are now in `public mode 🔓`", inline: false },
                         { name: " ", value: " ", inline: false },
-                        { name: " ", value: "***Privacy settings succesfuly updated***", inline: false },
+                        { name: " ", value: "***Privacy settings successfully updated***", inline: false },
 
 
                     )

@@ -88,7 +88,7 @@ module.exports = {
                     { name: " ", value: " ", inline: false },
                     { name: "Public Profile Mecanism", value: "The Rolls Chasers Analytics bot allows the user to set a public profile, which can be consult by any member of the communities he's part of. You can use the button below to set it.", inline: true },
                     { name: " ", value: " ", inline: false },
-                    { name: "Statut", value: "Your profile has been `reset` succesfully.", inline: false },
+                    { name: "Statut", value: "Your profile has been `reset` successfully.", inline: false },
 
                 )
             await interaction.update({ embeds: [resetProfile], components: [buttonsRowResetProfile] });

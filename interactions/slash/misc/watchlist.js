@@ -667,7 +667,7 @@ const authorWatchlist = await watchlistSql.findAll({ where: { authorId: authorId
  
                              const removeWatchlist = new EmbedBuilder().setColor("#060A8F")
                                  .setTitle(authorName + "'s watchlist")
-                                 .setDescription(`All the collections have been succesfully removed from ${authorName}'s watchlist`)
+                                 .setDescription(`All the collections have been successfully removed from ${authorName}'s watchlist`)
                                  // .setImage(collectionBanner)
                                  .setThumbnail(userAvatar)
                                  .setAuthor({ name: authorName, iconURL: userAvatar })
@@ -691,7 +691,7 @@ const authorWatchlist = await watchlistSql.findAll({ where: { authorId: authorId
  
                              const removeWatchlist = new EmbedBuilder().setColor("#060A8F")
                                  .setTitle(authorName + "'s watchlist")
-                                 .setDescription("The colllection `" + collectionName + "` has been succesfully removed from " + authorName + "'s watchlist")
+                                 .setDescription("The colllection `" + collectionName + "` has been successfully removed from " + authorName + "'s watchlist")
                                  // .setImage(collectionBanner)
                                  .setThumbnail(userAvatar)
                                  .setAuthor({ name: authorName, iconURL: userAvatar })

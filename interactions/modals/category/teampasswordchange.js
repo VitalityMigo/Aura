@@ -87,7 +87,7 @@ module.exports = {
                                 { name: " ", value: " ", inline: false },
                                 { name: "current Password", value: "`" + newPassword + "`", inline: false },
                                 { name: " ", value: " ", inline: false },
-                                { name: " ", value: "*✅ The community password has been succesfully updated.*", inline: false },
+                                { name: " ", value: "*✅ The community password has been successfully updated.*", inline: false },
 
 
 

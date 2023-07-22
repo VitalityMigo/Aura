@@ -258,7 +258,108 @@ module.exports = {
 
 
 
-               console.log("coming soon")
+                registerFont("./visual/aura/font/firacode.ttf", { family: "FiraCode" })
+                registerFont("./visual/aura/font/OPT.ttf", { family: "OPT" })
+
+
+                const templateOneCollection = await loadImage("./visual/aura/permanent/giveawayprofit.png");
+
+                const canvasFormatted = createCanvas(1000, 1000);
+                const ctxFormatted = canvasFormatted.getContext('2d');
+
+                ctxFormatted.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+
+
+
+                //WL COUNT
+                ctxFormatted.font = "600 42px 'Fira Code'";
+                ctxFormatted.fillStyle = "#ffffff";
+                const wlSize = ctxFormatted.measureText(whitelists.toString()).width
+                ctxFormatted.fillText(whitelists.toString(), 195 - wlSize / 2, 472);
+
+                //WL COUNT
+                ctxFormatted.font = "600 42px 'Fira Code'";
+                ctxFormatted.fillStyle = "#ffffff";
+                const mintSize = ctxFormatted.measureText(parseFloat(mintPrice).toFixed(3) + "Ξ").width
+                ctxFormatted.fillText(parseFloat(mintPrice).toFixed(3) + "Ξ", 500 - mintSize / 2, 472);
+
+                //WL COUNT
+                ctxFormatted.font = "600 42px 'Fira Code'";
+                ctxFormatted.fillStyle = "#ffffff";
+                const athSize = ctxFormatted.measureText(parseFloat(projectsAth).toFixed(3) + "Ξ").width
+                ctxFormatted.fillText(parseFloat(projectsAth).toFixed(3) + "Ξ", 805 - athSize / 2, 472);
+
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+                //Potential PROFIT
+                ctxFormatted.font = "60px OPT";
+                if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+                const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ").width
+                ctxFormatted.fillText(potentialProfit.toString() + "Ξ", 500 - potentialProfitText / 2, 810);
+
+
+                //NOM COLLECTION
+                const MAX_WIDTH = 515;
+                let fontSize = 33;
+                const targetHeight = 400;
+
+
+                ctxFormatted.fillStyle = "rgba(255, 255, 255, 0.93)";
+                ctxFormatted.font = `800 ${fontSize}px 'Fira Code'`;
+                let collectionNameTextSize = ctxFormatted.measureText(project.toUpperCase()).width;
+
+                while (collectionNameTextSize > MAX_WIDTH) {
+                    fontSize -= 1;
+                    ctxFormatted.font = `800 ${fontSize}px 'Fira Code'`;
+                    collectionNameTextSize = ctxFormatted.measureText(project.toUpperCase()).width;
+                }
+
+                ctxFormatted.font = `800 ${fontSize}px 'Fira Code'`;
+                ctxFormatted.textBaseline = "middle";
+                ctxFormatted.fillText(project.toUpperCase(), 500 - collectionNameTextSize / 2, 314);
+
+
+
+
+
+                //NOM USER
+                ctxFormatted.textBaseline = "alphabetic";
+                ctxFormatted.font = "600 25px 'Fira Code'";
+                ctxFormatted.fillStyle = "#ffffff";
+                const userNameSize = ctxFormatted.measureText("Group Profits").width;
+                ctxFormatted.fillText("Group Profits", 779.5, 982);
+
+
+                // Dessin du cercle de découpe
+                const imagesize = 33;
+                const imagex = 737.5
+                const imagey = 957;
+                const profileImage = await loadImage("https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg");
+                ctxFormatted.beginPath();
+                ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
+                ctxFormatted.lineWidth = 2.15;
+                ctxFormatted.strokeStyle = "#ffffff";
+                ctxFormatted.stroke();
+                ctxFormatted.closePath();
+                ctxFormatted.clip();
+                ctxFormatted.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
+                ctxFormatted.beginPath();
+                ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2 + 0.25, 0, Math.PI * 2, true);
+
+
+
+
+                // Dessiner l'image de profil sur le canvas
+                const buffer2 = canvasFormatted.toBuffer('image/png');
+
+                await interaction.editReply({ files: [buffer2] })
+
+
+
 
 
 

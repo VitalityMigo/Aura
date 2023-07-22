@@ -221,7 +221,7 @@ module.exports = {
 
                                     setwalletEmbed.setTitle(`${authorName}'s portfolio`)
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
-                                        .setDescription(`>>> The wallet has been succesfully added to ` + authorName + `'s portfolio`)
+                                        .setDescription(`>>> The wallet has been successfully added to ` + authorName + `'s portfolio`)
                                         .setThumbnail(userAvatar)
                                         .addFields(
                                             { name: 'Name', value: walletName, inline: true },
@@ -298,7 +298,7 @@ module.exports = {
 
                                             setwalletEmbed.setTitle(`${authorName}'s portfolio`)
                                                 .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                .setDescription(`>>> The wallet has been succesfully added to ` + authorName + `'s portfolio`)
+                                                .setDescription(`>>> The wallet has been successfully added to ` + authorName + `'s portfolio`)
                                                 .setThumbnail(userAvatar)
                                                 .addFields(
                                                     { name: 'Name', value: walletName, inline: true },
@@ -369,7 +369,7 @@ module.exports = {
 
                                     setwalletEmbed.setTitle(`${authorName}'s portfolio`)
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
-                                        .setDescription(`>>> The wallet has been succesfully added to ` + authorName + `'s portfolio`)
+                                        .setDescription(`>>> The wallet has been successfully added to ` + authorName + `'s portfolio`)
                                         .setThumbnail(userAvatar)
                                         .addFields(
                                             { name: 'Name', value: walletName, inline: true },
@@ -431,7 +431,7 @@ module.exports = {
 
                                             setwalletEmbed.setTitle(`${authorName}'s portfolio`)
                                                 .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                .setDescription(`>>> The wallet has been succesfully added to ` + authorName + `'s portfolio`)
+                                                .setDescription(`>>> The wallet has been successfully added to ` + authorName + `'s portfolio`)
                                                 .setThumbnail(userAvatar)
                                                 .addFields(
                                                     { name: 'Name', value: walletName, inline: true },
@@ -851,7 +851,7 @@ module.exports = {
 
                                     const walletGenerator = new EmbedBuilder().setColor("#060A8F")
                                         .setTitle("Wallet Generator")
-                                        .setDescription(">>> `" + walletNumber + "` wallets out of `" + walletLength + "` have been succesfuly set in your portfolio.")
+                                        .setDescription(">>> `" + walletNumber + "` wallets out of `" + walletLength + "` have been successfully set in your portfolio.")
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                         .setTimestamp()
                                         .addFields(
@@ -1152,7 +1152,7 @@ module.exports = {
 
                                     const walletGenerator = new EmbedBuilder().setColor("#060A8F")
                                         .setTitle("Wallet Generator")
-                                        .setDescription(">>> `" + walletNumber + "` wallets out of `" + walletLength + "` have been succesfuly set in your portfolio.")
+                                        .setDescription(">>> `" + walletNumber + "` wallets out of `" + walletLength + "` have been successfully set in your portfolio.")
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                         .setTimestamp()
                                         .addFields(

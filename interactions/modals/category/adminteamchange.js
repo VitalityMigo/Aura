@@ -78,7 +78,7 @@ module.exports = {
                     { name: "Role Name", value: "<#" + newChannelId + ">", inline: true },
                     { name: " ", value: " ", inline: false },
 
-                    { name: " ", value: "*✅ The bot's team have been succesfully updated.*", inline: false },
+                    { name: " ", value: "*✅ The bot's team have been successfully updated.*", inline: false },
 
 
 

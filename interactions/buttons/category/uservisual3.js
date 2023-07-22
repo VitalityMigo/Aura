@@ -144,7 +144,7 @@ module.exports = {
                     { name: " ", value: " ", inline: false },
                     { name: "Statut", value: "Your are currently using the `visual 3`.", inline: false },
                     { name: " ", value: " ", inline: false },
-                    { name: " ", value: "*✅ The profit visual selection has been succesfully updated.*", inline: false },
+                    { name: " ", value: "*✅ The profit visual selection has been successfully updated.*", inline: false },
 
                 )
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })

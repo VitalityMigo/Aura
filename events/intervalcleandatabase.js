@@ -29,7 +29,7 @@ async function intervalcleandatabase(client) {
 
         const apiMonthlyReport = new EmbedBuilder().setColor("#060A8F")
             .setTitle("Daily Database Cleaning")
-            .setDescription("The temporary database tables have been succesfully cleaned. You can consult them in the Database Reader.")
+            .setDescription("The temporary database tables have been successfully cleaned. You can consult them in the Database Reader.")
             .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
             .setTimestamp()
             

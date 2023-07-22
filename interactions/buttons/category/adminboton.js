@@ -78,7 +78,7 @@ module.exports = {
                             { name: " ", value: " ", inline: false },
                             { name: "Statut", value: "The bot is now in `available mode 🟢`", inline: false },
                             { name: " ", value: " ", inline: false },
-                            { name: " ", value: "*✅ The power state of the bot has been succesfully updated.*", inline: false },
+                            { name: " ", value: "*✅ The power state of the bot has been successfully updated.*", inline: false },
 
 
 

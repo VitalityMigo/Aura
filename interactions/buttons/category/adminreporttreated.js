@@ -110,7 +110,7 @@ module.exports = {
             const adminDashboardMainEmbed = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("Report")
                 .setAuthor({ name: authorName, iconURL: userAvatar })
-                .setDescription(">>> Your report has been succesfully sent")
+                .setDescription(">>> Your report has been successfully sent")
                 .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
                 .addFields(
                     { name: 'Date', value: "`" + reportdate + "`", inline: false },

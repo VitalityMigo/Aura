@@ -83,7 +83,7 @@ module.exports = {
                         { name: "New Community Update Channel", value: "<#" + givenChannel + ">", inline: true },
                         { name: "New Community Update Channel ID", value: "`" + givenChannel + "`", inline: true },
                         { name: " ", value: " ", inline: false },
-                        { name: " ", value: "*✅ The update channels have been succesfully updated.*", inline: false },
+                        { name: " ", value: "*✅ The update channels have been successfully updated.*", inline: false },
 
 
 

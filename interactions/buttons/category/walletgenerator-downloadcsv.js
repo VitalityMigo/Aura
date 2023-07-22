@@ -179,7 +179,7 @@ module.exports = {
 
     const walletGenerator = new EmbedBuilder().setColor("#060A8F")
       .setTitle("Wallet Generator")
-      .setDescription(">>> `" + walletsTable.length + "` wallets have been succesfuly generated")
+      .setDescription(">>> `" + walletsTable.length + "` wallets have been successfully generated")
       .setAuthor({ name: authorName, iconURL: userAvatar })
       .setTimestamp()
       .addFields(

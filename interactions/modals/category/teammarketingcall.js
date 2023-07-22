@@ -15,6 +15,8 @@ const moment = require('moment');
 
 const { registerFont, createCanvas, loadImage } = require('canvas');
 
+const capFirstLetter = require("../../../functions/capfirstletter")
+
 
 const buttonRowAdminDashboard = new ActionRowBuilder()
     .addComponents(
@@ -79,7 +81,7 @@ module.exports = {
 
             let profit = projectsAth - callFp
             let profitSign = "+"
-            if (profit < 0) { "-" }
+            if (profit < 0) { profitSign = "" }
 
 
             if (serverId === "949291624389816331") {
@@ -278,7 +280,127 @@ module.exports = {
 
 
 
-               console.log("coming soon")
+
+
+                registerFont("./visual/aura/font/OPT.ttf", { family: "OPT" })
+
+
+                const templateOneCollection = await loadImage("./visual/aura/permanent/callprofit.png");
+
+                const canvasFormatted = createCanvas(1000, 1000);
+                const ctxFormatted = canvasFormatted.getContext('2d');
+
+                ctxFormatted.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+
+
+
+                //WL COUNT
+                ctxFormatted.font = "600 42px 'Fira Code'";
+                ctxFormatted.fillStyle = "#ffffff";
+                const callFpSize = ctxFormatted.measureText(parseFloat(callFp).toFixed(3) + "Ξ").width
+                ctxFormatted.fillText(parseFloat(callFp).toFixed(3) + "Ξ", 270 - callFpSize / 2, 472);
+
+                //WL COUNT
+                ctxFormatted.font = "600 42px 'Fira Code'";
+                ctxFormatted.fillStyle = "#ffffff";
+                const athSize = ctxFormatted.measureText(parseFloat(projectsAth).toFixed(3) + "Ξ").width
+                ctxFormatted.fillText(parseFloat(projectsAth).toFixed(3) + "Ξ", 730 - athSize / 2, 472);
+
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+                 //WL COUNT
+                 ctxFormatted.font = "60px OPT";
+                 if (profit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (profit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+                 const profitText = ctxFormatted.measureText(profitSign + parseFloat(profit).toFixed(3) + "Ξ").width
+                 ctxFormatted.fillText(profitSign + parseFloat(profit).toFixed(3) + "Ξ", 500 - (profitText / 2), 800);
+ 
+ 
+
+                //NOM COLLECTION
+                const MAX_WIDTH = 515;
+                let fontSize = 33;
+                const targetHeight = 400;
+
+
+                ctxFormatted.fillStyle = "rgba(255, 255, 255, 0.93)";
+                ctxFormatted.font = `800 ${fontSize}px 'Fira Code'`;
+                let collectionNameTextSize = ctxFormatted.measureText(project.toUpperCase()).width;
+
+                while (collectionNameTextSize > MAX_WIDTH) {
+                    fontSize -= 1;
+                    ctxFormatted.font = `800 ${fontSize}px 'Fira Code'`;
+                    collectionNameTextSize = ctxFormatted.measureText(project.toUpperCase()).width;
+                }
+
+                ctxFormatted.font = `800 ${fontSize}px 'Fira Code'`;
+                ctxFormatted.textBaseline = "middle";
+                ctxFormatted.fillText(project.toUpperCase(), 500 - collectionNameTextSize / 2, 314);
+
+
+
+
+                  //NOM COLLECTION
+                  const MAX_WIDTH2 = 335;
+                  let fontSize2 = 40;
+  
+  
+                  ctxFormatted.fillStyle = "rgba(255, 255, 255, 0.93)";
+                  ctxFormatted.font = `700 ${fontSize2}px 'Fira Code'`;
+                  let collectionNameTextSize2 = ctxFormatted.measureText(capFirstLetter(callerUsername)).width;
+  
+                  while (collectionNameTextSize2 > MAX_WIDTH2) {
+                    fontSize2 -= 1;
+                      ctxFormatted.font = `700 ${fontSize2}px 'Fira Code'`;
+                      collectionNameTextSize2 = ctxFormatted.measureText(capFirstLetter(callerUsername)).width;
+                  }
+  
+                  ctxFormatted.font = `700 ${fontSize2}px 'Fira Code'`;
+                  ctxFormatted.fillText(capFirstLetter(callerUsername), 600, 919.5);
+  
+  
+
+
+              
+
+                //NOM USER
+                // ctxFormatted.textBaseline = "alphabetic";
+                // ctxFormatted.font = "700 40px 'Fira Code'";
+                // ctxFormatted.fillStyle = "#ffffff";
+                // const userNameSize = ctxFormatted.measureText(capFirstLetter(callerUsername)).width;
+                // ctxFormatted.fillText(capFirstLetter(callerUsername), 600, 938);
+
+
+                // Dessin du cercle de découpe
+                const imagesize = 70;
+                const imagex = 510
+                const imagey = 884.5;
+                const profileImage = await loadImage(callerAvatar);
+                ctxFormatted.beginPath();
+                ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
+                ctxFormatted.lineWidth = 2.15;
+                ctxFormatted.strokeStyle = "#ffffff";
+                ctxFormatted.stroke();
+                ctxFormatted.closePath();
+                ctxFormatted.clip();
+                ctxFormatted.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
+                ctxFormatted.beginPath();
+                ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2 + 0.25, 0, Math.PI * 2, true);
+
+
+
+
+
+                // Dessiner l'image de profil sur le canvas
+                const buffer2 = canvasFormatted.toBuffer('image/png');
+
+                await interaction.editReply({ files: [buffer2] })
+
+
+
+
+
 
 
             }

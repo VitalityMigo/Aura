@@ -258,7 +258,7 @@ module.exports = {
 
 
 
-                registerFont("./visual/aura/font/firacode.ttf", { family: "FiraCode" })
+             registerFont("./visual/aura/font/firacode.ttf", { family: "FiraCode" })
                 registerFont("./visual/aura/font/OPT.ttf", { family: "OPT" })
 
 

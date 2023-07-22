@@ -92,7 +92,7 @@ module.exports = {
                 let botPowerStatut = communityRolePerms.dataValues.actualPower
                 let communityStatut = communityRolePerms.dataValues.statut
 
-                 //Récupère régagle de privé/ou pas de l'utilisateur
+                //Récupère régagle de privé/ou pas de l'utilisateur
                 const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
 
                 if (authorProfile === null) { await interaction.deferReply(); } else {
@@ -152,147 +152,170 @@ module.exports = {
                                 const symbolLookup = await axios.get(" https://api.coinranking.com/v2/coins?search=" + coinTicker + "&referenceCurrencyUuid=razxDUgYGNAdQ")
 
 
-                                let coinId = symbolLookup.data.data.coins[0].uuid
-                                let coinSymbol = symbolLookup.data.data.coins[0].symbol
-                                let coinName = symbolLookup.data.data.coins[0].name
-                                let coinIcon = symbolLookup.data.data.coins[0].iconUrl
-                                let coinMarketcap = symbolLookup.data.data.coins[0].marketCap
-                                let coinPriceEth = symbolLookup.data.data.coins[0].price
-                                let coinPriceBtc = symbolLookup.data.data.coins[0].btcPrice
-                                let coinPriceUsd = (ethPriceUsd * coinPriceEth).toFixed(5)
-                                let coinVolume24h = symbolLookup.data.data.coins[0]['24hVolume']
 
-
-                                const coinStats = await axios.get("https://api.coinranking.com/v2/coin/" + coinId)
-
-                                let actualSupply = coinStats.data.data.coin.supply.total
-                                let circulatingSupply = Intl.NumberFormat('en-US').format(parseFloat(coinStats.data.data.coin.supply.circulating).toFixed(0))
-                                let maxSupply = Intl.NumberFormat('en-US').format(parseFloat(coinStats.data.data.coin.supply.max).toFixed(0))
-                                let coinath = coinStats.data.data.coin.allTimeHigh.price
-                                let description = coinStats.data.data.coin.description
-                                let change = coinStats.data.data.coin.supply.change
-                                let exchange = coinStats.data.data.coin.numberOfExchanges
-                                let pairs = coinStats.data.data.coin.numberOfMarkets
-                                let coinRankingLink = coinStats.data.data.coin.coinrankingUrl
-                                let inscriptionId = "not available"
+                                if (symbolLookup.data.data.coins.length > 0) {
 
 
 
+                                    let coinId = symbolLookup.data.data.coins[0].uuid
+                                    let coinSymbol = symbolLookup.data.data.coins[0].symbol
+                                    let coinName = symbolLookup.data.data.coins[0].name
+                                    let coinIcon = symbolLookup.data.data.coins[0].iconUrl
+                                    let coinMarketcap = symbolLookup.data.data.coins[0].marketCap
+                                    let coinPriceEth = symbolLookup.data.data.coins[0].price
+                                    let coinPriceBtc = symbolLookup.data.data.coins[0].btcPrice
+                                    let coinPriceUsd = (ethPriceUsd * coinPriceEth).toFixed(5)
+                                    let coinVolume24h = symbolLookup.data.data.coins[0]['24hVolume']
 
-                                //On calcule le prix historique pour 1d, 3d et 7d
-                                const coinPriceHistory = await axios.get("https://api.coinranking.com/v2/coin/" + coinId + "/history?timePeriod=3m")
 
-                                let price1d = 0
-                                let price3d = 0
-                                let price7d = 0
-                                let differenceMin = Infinity;
-                                let differenceMin2 = Infinity;
-                                let differenceMin3 = Infinity;
+                                    const coinStats = await axios.get("https://api.coinranking.com/v2/coin/" + coinId)
+
+                                    let actualSupply = coinStats.data.data.coin.supply.total
+                                    let circulatingSupply = Intl.NumberFormat('en-US').format(parseFloat(coinStats.data.data.coin.supply.circulating).toFixed(0))
+                                    let maxSupply = Intl.NumberFormat('en-US').format(parseFloat(coinStats.data.data.coin.supply.max).toFixed(0))
+                                    let coinath = coinStats.data.data.coin.allTimeHigh.price
+                                    let description = coinStats.data.data.coin.description
+                                    let change = coinStats.data.data.coin.supply.change
+                                    let exchange = coinStats.data.data.coin.numberOfExchanges
+                                    let pairs = coinStats.data.data.coin.numberOfMarkets
+                                    let coinRankingLink = coinStats.data.data.coin.coinrankingUrl
+                                    let inscriptionId = "not available"
 
 
-                                //Price 1d
-                                coinPriceHistory.data.data.history.forEach(item => {
-                                    const difference = Math.abs(item.timestamp - timestamp1d);
-                                    if (difference < differenceMin) {
-                                        differenceMin = difference;
-                                        price1d = item.price;
+
+
+                                    //On calcule le prix historique pour 1d, 3d et 7d
+                                    const coinPriceHistory = await axios.get("https://api.coinranking.com/v2/coin/" + coinId + "/history?timePeriod=3m")
+
+                                    let price1d = 0
+                                    let price3d = 0
+                                    let price7d = 0
+                                    let differenceMin = Infinity;
+                                    let differenceMin2 = Infinity;
+                                    let differenceMin3 = Infinity;
+
+
+                                    //Price 1d
+                                    coinPriceHistory.data.data.history.forEach(item => {
+                                        const difference = Math.abs(item.timestamp - timestamp1d);
+                                        if (difference < differenceMin) {
+                                            differenceMin = difference;
+                                            price1d = item.price;
+                                        }
+                                    });
+                                    let evolution1d = parseFloat(((coinPriceUsd - price1d) / price1d) * 100).toFixed(2)
+                                    if (evolution1d > 0) { evolution1d = "+" + evolution1d }
+
+
+                                    //Price 3d
+                                    coinPriceHistory.data.data.history.forEach(item => {
+                                        const difference = Math.abs(item.timestamp - timestamp3d);
+                                        if (difference < differenceMin2) {
+                                            differenceMin2 = difference;
+                                            price3d = item.price;
+                                        }
+                                    });
+                                    let evolution3d = parseFloat(((coinPriceUsd - price3d) / price3d) * 100).toFixed(2)
+                                    if (evolution3d > 0) { evolution3d = "+" + evolution3d }
+
+
+                                    //Price 7d
+                                    coinPriceHistory.data.data.history.forEach(item => {
+                                        const difference = Math.abs(item.timestamp - timestamp7d);
+                                        if (difference < differenceMin3) {
+                                            differenceMin3 = difference;
+                                            price7d = item.price;
+                                        }
+                                    });
+                                    let evolution7d = parseFloat(((coinPriceUsd - price7d) / price7d) * 100).toFixed(2)
+                                    if (evolution7d > 0) { evolution7d = "+" + evolution7d }
+
+
+
+
+
+
+
+                                    if (description == null) { description = ">>> Displaying key data of " + "`$" + coinSymbol.toUpperCase() + "`" }
+                                    if (maxSupply == "NaN") { maxSupply = "No limit." }
+                                    if (circulatingSupply == "NaN") { circulatingSupply = Intl.NumberFormat('en-US').format(parseFloat(coinStats.data.data.coin.supply.total).toFixed(0)) }
+
+
+                                    //On met en forme les liens
+                                    let linksFormatted = ""
+                                    for (const links of coinStats.data.data.coin.links) {
+
+                                        let name = links.name
+                                        let url = links.url
+                                        let type = links.type
+
+                                        if (name.includes("ordiscan")) {
+
+                                            type = "ordiscan"
+
+                                            let inscriptionLink = url.split("/")
+                                            inscriptionId = inscriptionLink[inscriptionLink.length - 1]
+                                        }
+
+                                        linksFormatted += '[' + type + '](' + url + ") ∙ "
+
+
+
                                     }
-                                });
-                                let evolution1d = parseFloat(((coinPriceUsd - price1d) / price1d) * 100).toFixed(2)
-                                if (evolution1d > 0) { evolution1d = "+" + evolution1d }
+
+                                    linksFormatted += '[coinranking](' + coinRankingLink + ") ∙ " + '[twitter search](https://twitter.com/search?q=' + coinSymbol + "&src=typed_query)"
 
 
-                                //Price 3d
-                                coinPriceHistory.data.data.history.forEach(item => {
-                                    const difference = Math.abs(item.timestamp - timestamp3d);
-                                    if (difference < differenceMin2) {
-                                        differenceMin2 = difference;
-                                        price3d = item.price;
-                                    }
-                                });
-                                let evolution3d = parseFloat(((coinPriceUsd - price3d) / price3d) * 100).toFixed(2)
-                                if (evolution3d > 0) { evolution3d = "+" + evolution3d }
+                                    const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle(coinName + " (" + coinSymbol.toUpperCase() + ")")
+                                        .setDescription(description)
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setThumbnail(coinIcon)
+                                        .addFields(
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Inscription", value: "`" + inscriptionId + "`", inline: false },
+                                            { name: "BTC Price", value: "`" + parseFloat(coinPriceBtc).toFixed(5) + "₿`", inline: true },
+                                            { name: "ETH Price", value: "`" + parseFloat(coinPriceEth).toFixed(5) + "Ξ`", inline: true },
+                                            { name: "USD Price", value: "`" + new Intl.NumberFormat('en-US').format((ethPriceUsd * coinPriceEth).toFixed(5)) + "$`", inline: true },
+                                            { name: "Supply", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(actualSupply).toFixed(0)) + "`", inline: true },
+                                            { name: "Circulating Supply", value: "`" + circulatingSupply + "`", inline: true },
+                                            { name: "Max Supply", value: "`" + maxSupply + "`", inline: true },
+                                            { name: "1D Volume", value: "`" + parseFloat(coinVolume24h).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format((ethPriceUsd * coinVolume24h).toFixed(0)) + "$)`", inline: true },
+                                            { name: "Market Cap", value: "`" + parseFloat(coinMarketcap).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format((ethPriceUsd * coinMarketcap).toFixed(0)) + "$)`", inline: true },
+                                            { name: "ATH", value: "`" + parseFloat(coinath / ethPriceUsd).toFixed(5) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(coinath).toFixed(0)) + "$)`", inline: true },
+                                            { name: "1D Price", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(price1d).toFixed(5)) + "$`", inline: true },
+                                            { name: "1D Evolution", value: "`" + evolution1d + "%`", inline: true },
+                                            { name: " ", value: " ", inline: true },
+                                            { name: "3D Price", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(price3d).toFixed(5)) + "$`", inline: true },
+                                            { name: "3D Evolution", value: "`" + evolution3d + "%`", inline: true },
+                                            { name: " ", value: " ", inline: true },
+                                            { name: "7D Price", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(price7d).toFixed(5)) + "$`", inline: true },
+                                            { name: "7D Evolution", value: "`" + evolution7d + "%`", inline: true },
+                                            { name: " ", value: " ", inline: true },
+                                            { name: "Exchanges", value: "`" + exchange + "`", inline: true },
+                                            { name: "Pairs", value: "`" + pairs + "`", inline: true },
+                                            { name: "Links", value: linksFormatted, inline: false },
 
 
-                                //Price 7d
-                                coinPriceHistory.data.data.history.forEach(item => {
-                                    const difference = Math.abs(item.timestamp - timestamp7d);
-                                    if (difference < differenceMin3) {
-                                        differenceMin3 = difference;
-                                        price7d = item.price;
-                                    }
-                                });
-                                let evolution7d = parseFloat(((coinPriceUsd - price7d) / price7d) * 100).toFixed(2)
-                                if (evolution7d > 0) { evolution7d = "+" + evolution7d }
+                                        )
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-
-
-
-
-
-
-                                if (description == null) { description = ">>> Displaying key data of " + "`$" + coinSymbol.toUpperCase() + "`" }
-                                if (maxSupply == "NaN") { maxSupply = "No limit." }
-                                if (circulatingSupply == "NaN") { circulatingSupply = Intl.NumberFormat('en-US').format(parseFloat(coinStats.data.data.coin.supply.total).toFixed(0)) }
-
-
-                                //On met en forme les liens
-                                let linksFormatted = ""
-                                for (const links of coinStats.data.data.coin.links) {
-
-                                    let name = links.name
-                                    let url = links.url
-                                    let type = links.type
-
-                                    if (name.includes("ordiscan")) {
-
-                                        type = "ordiscan"
-
-                                        let inscriptionLink = url.split("/")
-                                        inscriptionId = inscriptionLink[inscriptionLink.length - 1]
-                                    }
-
-                                    linksFormatted += '[' + type + '](' + url + ") ∙ "
+                                    await interaction.editReply({ embeds: [getDataCollectionAddress] });
 
 
 
-                                }
 
-                                linksFormatted += '[coinranking](' + coinRankingLink + ") ∙ " + '[twitter search](https://twitter.com/search?q=' + coinSymbol + "&src=typed_query)"
+                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinInfo", apiProvider: "coinranking", timestamp: timeStamp.toString() })
+                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinStats", apiProvider: "coinranking", timestamp: timeStamp.toString() })
+                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinPriceHistory", apiProvider: "coinranking", timestamp: timeStamp.toString() })
 
+                                } else {
 
-                                const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
-                                    .setTitle(coinName + " (" + coinSymbol.toUpperCase() + ")")
-                                    .setDescription(description)
+                                    const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
+                                    .setTitle("Coin")
+                                    .setDescription("The token symbol you entered `" + coinTicker + "` isn't a valid BRC20 token symbol. If the token you'd like to analyze is an ERC20 token, please enter the Ethereum token address instead. If it's a BRC20 token, please enter a valid token symbol.")
                                     .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    .setThumbnail(coinIcon)
-                                    .addFields(
-                                        { name: " ", value: " ", inline: false },
-                                        { name: "Inscription", value: "`" + inscriptionId + "`", inline: false },
-                                        { name: "BTC Price", value: "`" + parseFloat(coinPriceBtc).toFixed(5) + "₿`", inline: true },
-                                        { name: "ETH Price", value: "`" + parseFloat(coinPriceEth).toFixed(5) + "Ξ`", inline: true },
-                                        { name: "USD Price", value: "`" + new Intl.NumberFormat('en-US').format((ethPriceUsd * coinPriceEth).toFixed(5)) + "$`", inline: true },
-                                        { name: "Supply", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(actualSupply).toFixed(0)) + "`", inline: true },
-                                        { name: "Circulating Supply", value: "`" + circulatingSupply + "`", inline: true },
-                                        { name: "Max Supply", value: "`" + maxSupply + "`", inline: true },
-                                        { name: "1D Volume", value: "`" + parseFloat(coinVolume24h).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format((ethPriceUsd * coinVolume24h).toFixed(0)) + "$)`", inline: true },
-                                        { name: "Market Cap", value: "`" + parseFloat(coinMarketcap).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format((ethPriceUsd * coinMarketcap).toFixed(0)) + "$)`", inline: true },
-                                        { name: "ATH", value: "`" + parseFloat(coinath / ethPriceUsd).toFixed(5) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(coinath).toFixed(0)) + "$)`", inline: true },
-                                        { name: "1D Price", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(price1d).toFixed(5)) + "$`", inline: true },
-                                        { name: "1D Evolution", value: "`" + evolution1d + "%`", inline: true },
-                                        { name: " ", value: " ", inline: true },
-                                        { name: "3D Price", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(price3d).toFixed(5)) + "$`", inline: true },
-                                        { name: "3D Evolution", value: "`" + evolution3d + "%`", inline: true },
-                                        { name: " ", value: " ", inline: true },
-                                        { name: "7D Price", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(price7d).toFixed(5)) + "$`", inline: true },
-                                        { name: "7D Evolution", value: "`" + evolution7d + "%`", inline: true },
-                                        { name: " ", value: " ", inline: true },
-                                        { name: "Exchanges", value: "`" + exchange + "`", inline: true },
-                                        { name: "Pairs", value: "`" + pairs + "`", inline: true },
-                                        { name: "Links", value: linksFormatted, inline: false },
-
-
-                                    )
                                     .setTimestamp()
                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
@@ -300,13 +323,9 @@ module.exports = {
 
 
 
+                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinInfo", apiProvider: "coinranking", timestamp: timeStamp.toString() })
 
-                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinInfo", apiProvider: "coinranking", timestamp: timeStamp.toString() })
-                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinStats", apiProvider: "coinranking", timestamp: timeStamp.toString() })
-                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinPriceHistory", apiProvider: "coinranking", timestamp: timeStamp.toString() })
-
-
-
+                                }
 
                             } else {
 
@@ -343,7 +362,7 @@ module.exports = {
 
 
 
-                        
+
 
                                     const response = await Moralis.EvmApi.token.getTokenPrice({
                                         "chain": "0x1",

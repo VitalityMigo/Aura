@@ -25,6 +25,9 @@ const axios = require('axios')
 const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
 sdk.auth(reservoirApiKey);
 
+const sdk3 = require('api')('@reservoirprotocol/v3.0#9eilkbbprl8');
+sdk3.auth(reservoirApiKey);
+
 
 //Block Span API
 const bsp = require('api')('@blockspan/v1.0#9zxl2sledru983');
@@ -85,7 +88,7 @@ module.exports = {
                 let botPowerStatut = communityRolePerms.dataValues.actualPower
                 let communityStatut = communityRolePerms.dataValues.statut
 
-                 //Récupère régagle de privé/ou pas de l'utilisateur
+                //Récupère régagle de privé/ou pas de l'utilisateur
                 const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
 
                 if (authorProfile === null) { await interaction.deferReply(); } else {
@@ -291,88 +294,120 @@ module.exports = {
 
 
 
+                                        let bidSupportFormatted = "No bids"
+                                        let listingWallFormatted = "No Listings"
+                                        let moveRange = 0
 
-                                        gallop.getEthLiveListings({ collection_address: '0x64Ad353BC90A04361c4810Ae7b3701f3bEb48D7e' })
-                                            .then(async ({ data: collectionListings }) => {
-
-                                                //On définit le nombre de listings avant chaque wall
-                                                let toWall1Count = 0;
-                                                let toWall2Count = 0
-                                                let toWall3Count = 0
+                                        let elementWithMaxPrice = {}
+                                        let elementWithMaxWall = {}
 
 
-                                                for (let i = 0; i < collectionListings.response.listings.length; i++) {
-                                                    const ethValue = collectionListings.response.listings[i].eth_value;
-                                                    if (ethValue < wall1) {
-                                                        toWall1Count++;
-                                                    } if (ethValue < wall2) {
-                                                        toWall2Count++;
-                                                    } if (ethValue < wall3) {
-                                                        toWall3Count++;
-                                                    }
+                                        sdk3.getOrdersDepthV1({ side: 'buy', collection: selectedCollection, accept: '*/*' })
+                                            .then(async ({ data: bidsList }) => {
+
+                                                if (bidsList.depth.length > 0) {
+
+                                                    // Trouver l'élément avec le prix le plus grand
+                                                    elementWithMaxPrice = bidsList.depth.reduce((acc, curr) => {
+                                                        return curr.quantity > acc.quantity ? curr : acc;
+                                                    });
+
+
+                                                    bidSupportFormatted = elementWithMaxPrice.quantity + " @ " + parseFloat(elementWithMaxPrice.price).toFixed(3) + "Ξ"
+
+
+
                                                 }
 
 
-                                                const date = new Date(collectionDate);
-                                                //const dateLisible = date.toLocaleString();
-
-                                                const dateLisible = date.toLocaleDateString("fr-FR", {
-                                                    day: "numeric",
-                                                    month: "numeric",
-                                                    year: "numeric",
-                                                });
+                                                sdk3.getOrdersDepthV1({ side: 'sell', collection: selectedCollection, accept: '*/*' })
+                                                    .then(async ({ data: listingList }) => {
 
 
-                                                const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle(collectionName)
-                                                    .setDescription(collectionDescription)
-                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                    .setImage(collectionBanner)
-                                                    .addFields(
-                                                        { name: "Floor Price", value: "`" + collectionFloor.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * collectionFloor).toFixed(0)) + "$)`", inline: true },
-                                                        { name: "Total Owners", value: "`" + collectionOwners + "`", inline: true },
-                                                        { name: "Total Listing", value: "`" + collectionTotalListings + "`", inline: true },
-                                                        { name: "Unique Owners", value: "`" + collectionUniqueOwners + "`", inline: true },
-                                                        { name: "Total Supply", value: "`" + collectionSupply + "`", inline: true },
-                                                        { name: "Listing Ratio", value: "`" + collectionListingRatio + "%`", inline: true },
-                                                        { name: "Top Bid", value: "`" + collectionTopBid.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * collectionTopBid).toFixed(0)) + "$)`", inline: true },
-                                                        { name: "Total Volume", value: "`" + totalVolume.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume).toFixed(0)) + "$)`", inline: true },
-                                                        { name: "Total Sales", value: "`" + totalSales + "`", inline: true },
-                                                        { name: "1D Volume", value: "`" + totalVolume1D.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume1D).toFixed(0)) + "$)`", inline: true },
-                                                        { name: "1D Floor Change", value: floorChange1DFormatted, inline: true },
-                                                        { name: "1D Sales", value: "`" + totalSales1D + "`", inline: true },
-                                                        { name: "7D Volume", value: "`" + totalVolume7D.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume7D).toFixed(0)) + "$)`", inline: true },
-                                                        { name: "7D Floor Change", value: floorChange7DFormatted, inline: true },
-                                                        { name: "7D Sales", value: "`" + totalSales7D + "`", inline: true },
-                                                        { name: "30D Volume", value: "`" + totalVolume30D.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume7D).toFixed(0)) + "$)`", inline: true },
-                                                        { name: "30D Floor Change", value: floorChange30DFormatted, inline: true },
-                                                        { name: "30D Sales", value: "`" + totalSales30D + "`", inline: true },
-                                                        { name: "1st Wall (" + wall1 + "Ξ)", value: "`" + toWall1Count + "`", inline: true },
-                                                        { name: "2nd Wall (" + wall2 + "Ξ)", value: "`" + toWall2Count + "`", inline: true },
-                                                        { name: "3rd Wall (" + wall3 + "Ξ)", value: "`" + toWall3Count + "`", inline: true },
-                                                        { name: "Market Cap", value: "`" + collectionMarketCap.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * collectionMarketCap).toFixed(0)) + "$)`", inline: true },
-                                                        { name: "Creation Date", value: "`" + dateLisible + "`", inline: true },
-                                                        { name: "Royalties", value: "`" + collectionRoyaltiesFormatted + "`", inline: true },
-                                                        { name: "Links", value: '[alphashark](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
+                                                        if (listingList.depth.length > 0) {
+
+                                                            // Trouver l'élément avec le prix le plus grand
+                                                             elementWithMaxWall = listingList.depth.reduce((acc, curr) => {
+                                                                return curr.quantity > acc.quantity ? curr : acc;
+                                                            });
 
 
-                                                    )
-                                                    .setTimestamp()
-                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                                await interaction.editReply({ embeds: [getDataCollectionAddress] });
+                                                            listingWallFormatted = elementWithMaxWall.quantity + " @ " + parseFloat(elementWithMaxWall.price).toFixed(3) + "Ξ"
 
 
 
+                                                        }
 
 
-                                                //On enregistre le call API dans la database
-                                                const timeStamp = Date.now();
-                                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "getCollectionsV5", apiProvider: "reservoir", timestamp: timeStamp.toString() })
-                                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "getEthLiveListings", apiProvider: "gallop", timestamp: timeStamp.toString() })
-                                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "ethUsdPrice", apiProvider: "etherscan", timestamp: timeStamp.toString() })
+                                                        if (elementWithMaxWall.price > 0) {
+
+                                                            moveRange = parseFloat(elementWithMaxWall.price - elementWithMaxPrice.price).toFixed(3)
 
 
+                                                        }
+
+
+                                                        const date = new Date(collectionDate);
+                                                        //const dateLisible = date.toLocaleString();
+
+                                                        const dateLisible = date.toLocaleDateString("fr-FR", {
+                                                            day: "numeric",
+                                                            month: "numeric",
+                                                            year: "numeric",
+                                                        });
+
+
+                                                        const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
+                                                            .setTitle(collectionName)
+                                                            .setDescription(collectionDescription)
+                                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                            .setImage(collectionBanner)
+                                                            .addFields(
+                                                                { name: "Floor Price", value: "`" + collectionFloor.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * collectionFloor).toFixed(0)) + "$)`", inline: true },
+                                                                { name: "Total Owners", value: "`" + collectionOwners + "`", inline: true },
+                                                                { name: "Total Listing", value: "`" + collectionTotalListings + "`", inline: true },
+                                                                { name: "Unique Owners", value: "`" + collectionUniqueOwners + "`", inline: true },
+                                                                { name: "Total Supply", value: "`" + collectionSupply + "`", inline: true },
+                                                                { name: "Listing Ratio", value: "`" + collectionListingRatio + "%`", inline: true },
+                                                                { name: "Top Bid", value: "`" + collectionTopBid.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * collectionTopBid).toFixed(0)) + "$)`", inline: true },
+                                                                { name: "Total Volume", value: "`" + totalVolume.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume).toFixed(0)) + "$)`", inline: true },
+                                                                { name: "Total Sales", value: "`" + totalSales + "`", inline: true },
+                                                                { name: "1D Volume", value: "`" + totalVolume1D.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume1D).toFixed(0)) + "$)`", inline: true },
+                                                                { name: "1D Floor Change", value: floorChange1DFormatted, inline: true },
+                                                                { name: "1D Sales", value: "`" + totalSales1D + "`", inline: true },
+                                                                { name: "7D Volume", value: "`" + totalVolume7D.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume7D).toFixed(0)) + "$)`", inline: true },
+                                                                { name: "7D Floor Change", value: floorChange7DFormatted, inline: true },
+                                                                { name: "7D Sales", value: "`" + totalSales7D + "`", inline: true },
+                                                                { name: "30D Volume", value: "`" + totalVolume30D.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume7D).toFixed(0)) + "$)`", inline: true },
+                                                                { name: "30D Floor Change", value: floorChange30DFormatted, inline: true },
+                                                                { name: "30D Sales", value: "`" + totalSales30D + "`", inline: true },
+                                                                { name: "Listing Wall", value: "`" + listingWallFormatted + "`", inline: true },
+                                                                { name: "Bid Support", value: "`" + bidSupportFormatted + "`", inline: true },
+                                                                { name: "Volatility Range", value: "`" + moveRange + "Ξ`", inline: true },
+                                                                { name: "Market Cap", value: "`" + collectionMarketCap.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * collectionMarketCap).toFixed(0)) + "$)`", inline: true },
+                                                                { name: "Creation Date", value: "`" + dateLisible + "`", inline: true },
+                                                                { name: "Royalties", value: "`" + collectionRoyaltiesFormatted + "`", inline: true },
+                                                                { name: "Links", value: '[alphashark](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
+
+
+                                                            )
+                                                            .setTimestamp()
+                                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                                        await interaction.editReply({ embeds: [getDataCollectionAddress] });
+
+
+
+
+
+                                                        //On enregistre le call API dans la database
+                                                        const timeStamp = Date.now();
+                                                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "getCollectionsV5", apiProvider: "reservoir", timestamp: timeStamp.toString() })
+                                                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "getListings", apiProvider: "reservoir", timestamp: timeStamp.toString() })
+                                                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "getBids", apiProvider: "reservoir", timestamp: timeStamp.toString() })
+                                                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "ethUsdPrice", apiProvider: "etherscan", timestamp: timeStamp.toString() })
+
+                                                    })
                                             })
                                     })
 

@@ -54,7 +54,7 @@ module.exports = {
 			const web3 = interaction.fields.getTextInputValue('web3');
 			const web2 = interaction.fields.getTextInputValue('web2');
 			const jobs = interaction.fields.getTextInputValue('jobs');
-			const nature = interaction.fields.getTextInputValue('nature');
+			const nature = interaction.fields.getTextInputValue('speciality');
 
 			const privacyBigDataAuthor = await profileData.findOne({ where: { authorId: authorId } })
 

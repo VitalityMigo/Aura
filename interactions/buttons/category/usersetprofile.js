@@ -81,7 +81,7 @@ module.exports = {
 				.setMaxLength(150);
 
 			const nature = new TextInputBuilder()
-				.setCustomId('nature')
+				.setCustomId('speciality')
 				.setLabel("Which type of web3 person are you ?")
 				.setPlaceholder('e.g. Builder')
 				.setStyle(TextInputStyle.Short)

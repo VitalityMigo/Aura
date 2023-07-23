@@ -15,6 +15,7 @@ const { ButtonInteraction } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
 const { accessSql, profileData, adminsql, reportsql, sequelize } = require('../../../events/database');
 const moment = require('moment');
+const { sl } = require('date-fns/locale');
 
 
 
@@ -252,6 +253,8 @@ module.exports = {
                         }
 
                     }
+
+                    console.log(buttonSelected)
 
 
                 } else if (privacyBigDataAuthor === null) {

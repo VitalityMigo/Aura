@@ -194,6 +194,7 @@ module.exports = {
                             image = "https://media.discordapp.net/attachments/941040609970491523/1101624764507881554/rcprofittemplate1.png?width=1108&height=1108"
 
                             buttonSelected = buttonsUserVisual1
+
                         } else if (serverId == "944918328135286804") {
 
 
@@ -216,12 +217,13 @@ module.exports = {
 
                         if (serverId === "949291624389816331" || "1071576735298113667") {
 
-                            if (visualSelect = "1") {
+                            if (visualSelect == "1") {
 
                                 image = "https://media.discordapp.net/attachments/941040609970491523/1101624764507881554/rcprofittemplate1.png?width=1108&height=1108"
 
                                 buttonSelected = buttonsUserVisual1
-                            } else if (visualSelect = "2") {
+
+                            } else if (visualSelect == "2") {
 
                                 image = "https://media.discordapp.net/attachments/941040609970491523/1101624759671849021/rcprofittemplate2.png?width=1108&height=1108"
 
@@ -234,6 +236,7 @@ module.exports = {
                                 buttonSelected = buttonsUserVisual3
 
                             }
+
                         } else if (serverId == "944918328135286804") {
 
 

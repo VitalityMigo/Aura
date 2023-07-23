@@ -39,7 +39,7 @@ module.exports = {
 
 
 
-    try {
+   // try {
 
       const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
 
@@ -74,6 +74,7 @@ module.exports = {
         const lastInteractionRcprofit = await interactionData.findOne({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
 
         let userName = lastInteractionRcprofit.dataValues.authorName
+        let chain = lastInteractionRcprofit.dataValues.walletCategory
         let userLogo = lastInteractionRcprofit.dataValues.userAvatar
         let selectedTimestamp = lastInteractionRcprofit.dataValues.selecedTimestamp
         let collectionName = lastInteractionRcprofit.dataValues.collectionName
@@ -116,8 +117,10 @@ module.exports = {
         }
 
 
+        let sign = "Ξ"
+        if (chain.toLowerCase() == "btc") { sign = "B" }
 
-
+//₿
 
 
         if (serverId === "949291624389816331") {
@@ -150,7 +153,7 @@ module.exports = {
             //AVG BUY
             ctxFormatted.font = "bold 22px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ", 337, 316.5);
+            ctxFormatted.fillText((parseFloat(avgBuy).toFixed(3)).toString() + sign, 337, 316.5);
 
 
             //SOLD COUNT
@@ -166,19 +169,19 @@ module.exports = {
             //AVG SOLD
             ctxFormatted.font = "bold 22px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ", 337, 477.5);
+            ctxFormatted.fillText((parseFloat(avgSold).toFixed(3)).toString() + sign, 337, 477.5);
 
 
             //HELD VALUE
             ctxFormatted.font = "bold 22px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText((parseFloat((remaining * floorPrice).toFixed(3))).toString() + "Ξ", 337, 548.5);
+            ctxFormatted.fillText((parseFloat((remaining * floorPrice).toFixed(3))).toString() + sign, 337, 548.5);
 
 
             //REALIZED PROFIT
             ctxFormatted.font = "bold 22px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(realisedProfit.toString() + "Ξ", 337, 594);
+            ctxFormatted.fillText(realisedProfit.toString() + sign, 337, 594);
 
             //Potential ROI
             ctxFormatted.font = "bold 22px Futura";
@@ -192,12 +195,12 @@ module.exports = {
             // POTENTIAL PROFIT
             ctxFormatted.font = "bold 68px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            const text = potentialProfit.toString() + "Ξ" // (" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
+            const text = potentialProfit.toString() + sign // (" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
             ctxFormatted.font = "bold 35px Futura";
             const text2 = "(" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
-            const textPart1 = potentialProfit.toString() + "Ξ"
+            const textPart1 = potentialProfit.toString() + sign
             const textPart2 = + "(" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
-            const text3 = potentialProfit.toString() + "Ξ" // (" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
+            const text3 = potentialProfit.toString() + sign // (" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
 
 
             const bigTextSize2 = ctxFormatted.measureText(text2).width;
@@ -409,12 +412,12 @@ module.exports = {
             //AVG SPENT VALUE
             ctxFormatted.font = "bold 28px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(avgBuy.toString() + "Ξ", 343, 823);
+            ctxFormatted.fillText(avgBuy.toString() + sign, 343, 823);
 
             //AVG SALE VALUE
             ctxFormatted.font = "bold 28px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(avgSold.toString() + "Ξ", 343, 872);
+            ctxFormatted.fillText(avgSold.toString() + sign, 343, 872);
 
 
             //SOLD COUNT
@@ -431,12 +434,12 @@ module.exports = {
             //TOTAL HELD VALUE
             ctxFormatted.font = "bold 28px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText((parseFloat(remaining * floorPrice).toFixed(3)).toString() + "Ξ", 840, 823);
+            ctxFormatted.fillText((parseFloat(remaining * floorPrice).toFixed(3)).toString() + sign, 840, 823);
 
             //REALIZED PROFIT
             ctxFormatted.font = "bold 28px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(realisedProfit.toString() + "Ξ", 840, 872);
+            ctxFormatted.fillText(realisedProfit.toString() + sign, 840, 872);
 
             //REALIZED ROI
             ctxFormatted.font = "bold 35px SFTransrobotic";
@@ -451,7 +454,7 @@ module.exports = {
             //POTENTIAL PROFIT (ETH)
             ctxFormatted.font = "bold 80px SFTransrobotic";
             if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-            ctxFormatted.fillText(potentialProfit.toString() + "Ξ", 547, 653);
+            ctxFormatted.fillText(potentialProfit.toString() + sign, 547, 653);
 
 
 
@@ -527,8 +530,8 @@ module.exports = {
             //AVG BUY
             ctxFormatted.font = "bold 31px Futura";
             ctxFormatted.fillStyle = "#E5EAFF";
-            const avgBuyCountText = ctxFormatted.measureText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ").width
-            ctxFormatted.fillText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ", 795 - avgBuyCountText / 2, 420);
+            const avgBuyCountText = ctxFormatted.measureText((parseFloat(avgBuy).toFixed(3)).toString() + sign).width
+            ctxFormatted.fillText((parseFloat(avgBuy).toFixed(3)).toString() + sign, 795 - avgBuyCountText / 2, 420);
 
             //SOLD COUNT
             ctxFormatted.font = "bold 31px Futura";
@@ -545,21 +548,21 @@ module.exports = {
             //AVG SOLD
             ctxFormatted.font = "bold 31px Futura";
             ctxFormatted.fillStyle = "#E5EAFF";
-            const avgSoldText = ctxFormatted.measureText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ").width
-            ctxFormatted.fillText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ", 795 - avgSoldText / 2, 585);
+            const avgSoldText = ctxFormatted.measureText((parseFloat(avgSold).toFixed(3)).toString() + sign).width
+            ctxFormatted.fillText((parseFloat(avgSold).toFixed(3)).toString() + sign, 795 - avgSoldText / 2, 585);
 
 
             //REALIZED PROFIT
             ctxFormatted.font = "bold 31px Futura";
             if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-            const realisedProfitText = ctxFormatted.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ").width
-            ctxFormatted.fillText(realisedProfit.toString() + "Ξ", 201 - realisedProfitText / 2, 749);
+            const realisedProfitText = ctxFormatted.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + sign).width
+            ctxFormatted.fillText(realisedProfit.toString() + sign, 201 - realisedProfitText / 2, 749);
 
             //Potential PROFIT
             ctxFormatted.font = "bold 31px Futura";
             if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-            const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ").width
-            ctxFormatted.fillText(potentialProfit.toString() + "Ξ", 498 - potentialProfitText / 2, 749);
+            const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + sign).width
+            ctxFormatted.fillText(potentialProfit.toString() + sign, 498 - potentialProfitText / 2, 749);
 
             //Potential ROI
             ctxFormatted.font = "bold 31px Futura";
@@ -694,29 +697,29 @@ module.exports = {
           //AVG SPENT VALUE
           ctxFormatted.font = "bold 38px Courrier New";
           ctxFormatted.fillStyle = "#ffffff";
-          const avgSpentTextSize = ctxFormatted.measureText(avgBuy.toString() + "Ξ").width;
-          ctxFormatted.fillText(avgBuy.toString() + "Ξ", 222 - avgSpentTextSize / 2, 740);
+          const avgSpentTextSize = ctxFormatted.measureText(avgBuy.toString() + sign).width;
+          ctxFormatted.fillText(avgBuy.toString() + sign, 222 - avgSpentTextSize / 2, 740);
 
           //AVG SALE VALUE
           ctxFormatted.font = "bold 38px Courrier New";
           ctxFormatted.fillStyle = "#ffffff";
-          const avgSaleTextSize = ctxFormatted.measureText(avgSold.toString() + "Ξ").width;
-          ctxFormatted.fillText(avgSold.toString() + "Ξ", 504 - avgSaleTextSize / 2, 740);
+          const avgSaleTextSize = ctxFormatted.measureText(avgSold.toString() + sign).width;
+          ctxFormatted.fillText(avgSold.toString() + sign, 504 - avgSaleTextSize / 2, 740);
 
 
           //Realized PROFIT (ETH)
           ctxFormatted.font = "bold 38px Courrier New";
           //if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (realisedProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-          const realizedProfitTextSize = ctxFormatted.measureText(realisedProfit.toString() + "Ξ").width;
-          ctxFormatted.fillText(realisedProfit.toString() + "Ξ", 803 - realizedProfitTextSize / 2, 740);
+          const realizedProfitTextSize = ctxFormatted.measureText(realisedProfit.toString() + sign).width;
+          ctxFormatted.fillText(realisedProfit.toString() + sign, 803 - realizedProfitTextSize / 2, 740);
 
 
 
           //POTENTIAL PROFIT (ETH)
           ctxFormatted.font = "bold 45px EmbassyGothic";
           if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-          const potentialProfitTextSize = ctxFormatted.measureText(potentialProfit.toString() + "Ξ (" + potentialRoiFormatted + "%)").width;
-          ctxFormatted.fillText(potentialProfit.toString() + "Ξ (" + potentialRoiFormatted + "%)", 500 - potentialProfitTextSize / 2, 876);
+          const potentialProfitTextSize = ctxFormatted.measureText(potentialProfit.toString() + sign + " (" + potentialRoiFormatted + "%)").width;
+          ctxFormatted.fillText(potentialProfit.toString() + sign + " (" + potentialRoiFormatted + "%)", 500 - potentialProfitTextSize / 2, 876);
 
 
 
@@ -794,8 +797,8 @@ module.exports = {
           //AVG BUY
           ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
-          const avgBuyCountText = ctxFormatted.measureText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ").width
-          ctxFormatted.fillText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ", 812 - avgBuyCountText / 2, 420);
+          const avgBuyCountText = ctxFormatted.measureText((parseFloat(avgBuy).toFixed(3)).toString() + sign).width
+          ctxFormatted.fillText((parseFloat(avgBuy).toFixed(3)).toString() + sign, 812 - avgBuyCountText / 2, 420);
 
           //SOLD COUNT
           ctxFormatted.font = "700 35px 'Fira Code'";
@@ -812,21 +815,21 @@ module.exports = {
           //AVG SOLD
           ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
-          const avgSoldText = ctxFormatted.measureText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ").width
-          ctxFormatted.fillText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ", 812 - avgSoldText / 2, 585);
+          const avgSoldText = ctxFormatted.measureText((parseFloat(avgSold).toFixed(3)).toString() + sign).width
+          ctxFormatted.fillText((parseFloat(avgSold).toFixed(3)).toString() + sign, 812 - avgSoldText / 2, 585);
 
 
           //REALIZED PROFIT
           ctxFormatted.font = "700 35px 'Fira Code'";
           if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-          const realisedProfitText = ctxFormatted.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ").width
-          ctxFormatted.fillText(realisedProfit.toString() + "Ξ", 190 - realisedProfitText / 2, 749);
+          const realisedProfitText = ctxFormatted.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + sign).width
+          ctxFormatted.fillText(realisedProfit.toString() + sign, 190 - realisedProfitText / 2, 749);
 
           //Potential PROFIT
           ctxFormatted.font = "700 35px 'Fira Code'";
           if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-          const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ").width
-          ctxFormatted.fillText(potentialProfit.toString() + "Ξ", 500 - potentialProfitText / 2, 749);
+          const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + sign).width
+          ctxFormatted.fillText(potentialProfit.toString() + sign, 500 - potentialProfitText / 2, 749);
 
           //Potential ROI
           ctxFormatted.font = "700 35px 'Fira Code'";
@@ -884,19 +887,19 @@ module.exports = {
          
         
 
-          const imagesize = 45
-          const startImageAndName = 800
+          const imagesize = 50
+          const startImageAndName = 792
          
 
           let pfpAndNameSize = ctxFormatted.measureText(imagesize + 8 + authorName.toUpperCase()).width;
 
           ctxFormatted.font = `${fontSize2}px OPT`;
           ctxFormatted.textBaseline = "middle";
-          ctxFormatted.fillText(authorName.toUpperCase(), startImageAndName + imagesize + 8 - (pfpAndNameSize / 2), 969);
+          ctxFormatted.fillText(authorName.toUpperCase(), startImageAndName + imagesize + 12 - (pfpAndNameSize / 2), 969);
 
 
           const imagex =  startImageAndName - (pfpAndNameSize / 2)
-          const imagey = 947;
+          const imagey = 944;
 
 
           // Dessin du cercle de découpe
@@ -937,83 +940,83 @@ module.exports = {
       }
 
 
-    } catch (error) {
+    // } catch (error) {
 
 
-      console.log("// Error - sent in report ❌")
+    //   console.log("// Error - sent in report ❌")
 
-      //On envoi une notif
-      let botId = interaction.applicationId
-      const botAdmins = await adminsql.findOne({ where: { botId: botId } })
-      const mainServerId = botAdmins.dataValues.mainServerId
-      const logChannelId = botAdmins.dataValues.logChannelId
-      const guild = interaction.client.guilds.cache.get(mainServerId);
-      const channel = guild.channels.cache.get(logChannelId);
-
-
-      const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
-      let adminRoleId = adminAccessInfos.dataValues.adminRoleId
-      let serverName = adminAccessInfos.dataValues.serverName
-      const userRoleList = interaction.member._roles
-      let userHighestRole = "Member"
-      if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-      let reportCommand = "/profit-visual"
-
-      const timeStamp = Date.now();
-      const date = new Date(timeStamp);
-      const dateLisible = date.toLocaleString();
-      const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
-      const formattedDate = date1.format('Do [of] MMMM YYYY');
+    //   //On envoi une notif
+    //   let botId = interaction.applicationId
+    //   const botAdmins = await adminsql.findOne({ where: { botId: botId } })
+    //   const mainServerId = botAdmins.dataValues.mainServerId
+    //   const logChannelId = botAdmins.dataValues.logChannelId
+    //   const guild = interaction.client.guilds.cache.get(mainServerId);
+    //   const channel = guild.channels.cache.get(logChannelId);
 
 
+    //   const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
+    //   let adminRoleId = adminAccessInfos.dataValues.adminRoleId
+    //   let serverName = adminAccessInfos.dataValues.serverName
+    //   const userRoleList = interaction.member._roles
+    //   let userHighestRole = "Member"
+    //   if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
+    //   let reportCommand = "/profit-visual"
 
-      //On enregistre le call
-      await reportsql.create({
-        botId: botId,
-        authorId: "Bot",
-        serverName: serverName,
-        authorRole: userHighestRole,
-        serverId: serverId,
-        date: formattedDate,
-        reportType: "Bug",
-        reportCommand: reportCommand,
-        reportDescription: "```" + error.stack + "```",
-        reportPriority: "5",
-        reportState: "Not treated",
-      })
+    //   const timeStamp = Date.now();
+    //   const date = new Date(timeStamp);
+    //   const dateLisible = date.toLocaleString();
+    //   const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
+    //   const formattedDate = date1.format('Do [of] MMMM YYYY');
 
 
 
-      const updateEmbed = new EmbedBuilder().setColor("#060A8F")
-        .setTitle("New Report")
-        .setDescription(">>> A new report has just been sent.")
-        .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-        .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg" })
-        .setTimestamp()
-        .addFields(
-          { name: " ", value: " ", inline: false },
-          { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
-
-        )
-        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-
-      await channel.send({ embeds: [updateEmbed] });
-
+    //   //On enregistre le call
+    //   await reportsql.create({
+    //     botId: botId,
+    //     authorId: "Bot",
+    //     serverName: serverName,
+    //     authorRole: userHighestRole,
+    //     serverId: serverId,
+    //     date: formattedDate,
+    //     reportType: "Bug",
+    //     reportCommand: reportCommand,
+    //     reportDescription: "```" + error.stack + "```",
+    //     reportPriority: "5",
+    //     reportState: "Not treated",
+    //   })
 
 
-      const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-        .setTitle("An error occured")
-        .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
-        .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-        .setTimestamp()
-        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+    //   const updateEmbed = new EmbedBuilder().setColor("#060A8F")
+    //     .setTitle("New Report")
+    //     .setDescription(">>> A new report has just been sent.")
+    //     .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+    //     .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg" })
+    //     .setTimestamp()
+    //     .addFields(
+    //       { name: " ", value: " ", inline: false },
+    //       { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
+
+    //     )
+    //     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-      await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
+    //   await channel.send({ embeds: [updateEmbed] });
 
 
-    }
+
+    //   const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
+    //     .setTitle("An error occured")
+    //     .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
+    //     .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+    //     .setTimestamp()
+    //     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+    //   await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
+
+
+    // }
   },
 };
 

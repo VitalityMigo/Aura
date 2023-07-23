@@ -40,6 +40,72 @@ const buttonsUserVisual1 = new ActionRowBuilder()
 
 
 
+const buttonsUserVisual1Disable = new ActionRowBuilder()
+    .addComponents(
+        new ButtonBuilder()
+            .setCustomId('userFirstVisual-button')
+            .setLabel('1')
+            .setStyle(1),
+        new ButtonBuilder()
+            .setCustomId('userSecondVisual-button')
+            .setLabel('2')
+            .setStyle(2)
+            .setDisabled(true),
+        new ButtonBuilder()
+            .setCustomId('userThirdVisual-button')
+            .setLabel('3')
+            .setStyle(2)
+            .setDisabled(true),
+        new ButtonBuilder()
+            .setCustomId('userMenu-button')
+            .setLabel('menu')
+            .setStyle(2),
+    );
+
+const buttonsUserVisual2Disable = new ActionRowBuilder()
+    .addComponents(
+        new ButtonBuilder()
+            .setCustomId('userFirstVisual-button')
+            .setLabel('1')
+            .setStyle(1),
+        new ButtonBuilder()
+            .setCustomId('userSecondVisual-button')
+            .setLabel('2')
+            .setStyle(2),
+        new ButtonBuilder()
+            .setCustomId('userThirdVisual-button')
+            .setLabel('3')
+            .setStyle(2)
+            .setDisabled(true),
+        new ButtonBuilder()
+            .setCustomId('userMenu-button')
+            .setLabel('menu')
+            .setStyle(2),
+    );
+
+
+const buttonsUserVisual3Disable = new ActionRowBuilder()
+    .addComponents(
+        new ButtonBuilder()
+            .setCustomId('userFirstVisual-button')
+            .setLabel('1')
+            .setStyle(2),
+        new ButtonBuilder()
+            .setCustomId('userSecondVisual-button')
+            .setLabel('2')
+            .setStyle(1),
+        new ButtonBuilder()
+            .setCustomId('userThirdVisual-button')
+            .setLabel('3')
+            .setStyle(2)
+            .setDisabled(true),
+        new ButtonBuilder()
+            .setCustomId('userMenu-button')
+            .setLabel('menu')
+            .setStyle(2),
+    );
+
+
 
 
 
@@ -71,19 +137,14 @@ module.exports = {
 
                 let visualSelect = ""
                 let image = ""
+                let buttonSelected = ""
 
-                if (serverId === "949291624389816331" || "1071576735298113667") {
-                    image = "https://media.discordapp.net/attachments/941040609970491523/1101624764507881554/rcprofittemplate1.png?width=1108&height=1108"
-                } else if (serverId == "944918328135286804") {
-                    image = "https://cdn.discordapp.com/attachments/1117449908803338280/1128017207675342978/embassy_template.png"
-                } else  {
-                    image = "https://media.discordapp.net/attachments/941040609970491523/1101624764507881554/rcprofittemplate1.png?width=1108&height=1108"
-                }
+
+
 
 
 
                 const privacyBigDataAuthor = await profileData.findOne({ where: { authorId: authorId } })
-
 
 
                 if (privacyBigDataAuthor !== null) {
@@ -93,12 +154,66 @@ module.exports = {
                         await profileData.update({ visualSelect: "1", }, { where: { authorId: authorId } })
                         visualSelect = "1"
 
+                        if (serverId === "949291624389816331") {
+
+                            //  || "1071576735298113667"
+
+                            image = "https://media.discordapp.net/attachments/941040609970491523/1101624764507881554/rcprofittemplate1.png?width=1108&height=1108"
+
+                            buttonSelected = ""
+                            buttonSelected = buttonsUserVisual1
+
+                        } else if (serverId == "944918328135286804") {
+
+
+                            image = "https://cdn.discordapp.com/attachments/1117449908803338280/1128017207675342978/embassy_template.png"
+
+                            buttonSelected = ""
+                            buttonSelected = buttonsUserVisual1Disable
+
+                        } else {
+
+
+                            image = "https://media.discordapp.net/attachments/941040609970491523/1101624764507881554/rcprofittemplate1.png?width=1108&height=1108"
+
+                            buttonSelected = ""
+                            buttonSelected = buttonsUserVisual1Disable
+
+                        }
 
                     } else if (privacyBigDataAuthor.dataValues.visualSelect === "1" || privacyBigDataAuthor.dataValues.visualSelect === "2" || privacyBigDataAuthor.dataValues.visualSelect === "3") {
 
 
                         visualSelect = "1"
                         await profileData.update({ visualSelect: "1", }, { where: { authorId: authorId } })
+
+                        if (serverId === "949291624389816331") {
+
+                            //|| "1071576735298113667"
+
+                            image = "https://media.discordapp.net/attachments/941040609970491523/1101624764507881554/rcprofittemplate1.png?width=1108&height=1108"
+
+                            buttonSelected = ""
+                            buttonSelected = buttonsUserVisual1
+
+
+                        } else if (serverId == "944918328135286804") {
+
+
+                            image = "https://cdn.discordapp.com/attachments/1117449908803338280/1128017207675342978/embassy_template.png"
+
+                            buttonSelected = ""
+                            buttonSelected = buttonsUserVisual1Disable
+
+                        } else {
+
+
+                            image = "https://media.discordapp.net/attachments/941040609970491523/1101624764507881554/rcprofittemplate1.png?width=1108&height=1108"
+
+                            buttonSelected = ""
+                            buttonSelected = buttonsUserVisual1Disable
+
+                        }
 
                     }
 
@@ -148,7 +263,7 @@ module.exports = {
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-                await interaction.update({ embeds: [privateMode], components: [buttonsUserVisual1] });
+                await interaction.update({ embeds: [privateMode], components: [buttonSelected] });
 
 
 

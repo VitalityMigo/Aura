@@ -33,7 +33,7 @@ module.exports = {
 
         let authorId = interaction.user.id;
         let authorName = interaction.user.username;
-        let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png`;
+        let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
 
 
         try {

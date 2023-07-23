@@ -34,7 +34,7 @@ module.exports = {
         //Récupérer informations de l'utilisateur de la commande
         let authorId = interaction.user.id;
         let authorName = interaction.user.username;
-        let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png`;
+        let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
         let serverId = interaction.member.guild.id
         let botId = interaction.applicationId
 

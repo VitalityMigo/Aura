@@ -42,7 +42,7 @@ module.exports = {
         //Récupérer informations de l'utilisateur de la commande
         let authorId = interaction.user.id;
         let authorName = interaction.user.username;
-        let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png`;
+        let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
         let serverId = interaction.member.guild.id
         let member = interaction.member;
 
@@ -89,14 +89,12 @@ module.exports = {
 
                         
                         let clear = interaction.options.getString("clear");
-                        if (!clear) {
-                            clear = "No"
-                        }
+                        if (!clear) { clear = "No" }
 
                         const allEntries = await vouchData.findAll({ where: { serverId: serverId } });
 
 
-                        if (allEntries.length === 0) {
+                        if (allEntries.length == 0) {
 
 
                             const vouchLeaderboardInvalid = new EmbedBuilder().setColor("#060A8F")

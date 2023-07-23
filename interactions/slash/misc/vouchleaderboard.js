@@ -20,7 +20,7 @@ module.exports = {
             option
                 .setName("clear")
                 .setDescription("Choose to clear the vouch database or not")
-                .setRequired(true)
+                .setRequired(false)
                 .setChoices(
                     {
                         name: 'Yes',
@@ -88,8 +88,10 @@ module.exports = {
                         if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp1 }) }
 
                         
-
                         let clear = interaction.options.getString("clear");
+                        if (!clear) {
+                            clear = "No"
+                        }
 
                         const allEntries = await vouchData.findAll({ where: { serverId: serverId } });
 

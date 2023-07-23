@@ -80,7 +80,7 @@ module.exports = {
                 
                 if (serverId === "949291624389816331" || "1071576735298113667") {
                     image = "https://media.discordapp.net/attachments/941040609970491523/1101624759671849021/rcprofittemplate2.png?width=1108&height=1108"
-                } else if (serverId == "") {
+                } else if (serverId == "944918328135286804") {
                     image = "https://cdn.discordapp.com/attachments/1117449908803338280/1128017207675342978/embassy_template.png"
                 } else {
                     image = "https://media.discordapp.net/attachments/941040609970491523/1101624759671849021/rcprofittemplate2.png?width=1108&height=1108"

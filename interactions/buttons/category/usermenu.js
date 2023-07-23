@@ -48,7 +48,6 @@ module.exports = {
     async execute(interaction) {
         if (!(interaction instanceof ButtonInteraction)) return;
 
-        console.log(interaction)
 
         let authorId = interaction.user.id;
         let authorName = interaction.user.username;

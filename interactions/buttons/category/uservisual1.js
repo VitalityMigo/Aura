@@ -50,7 +50,6 @@ module.exports = {
     async execute(interaction) {
         if (!(interaction instanceof ButtonInteraction)) return;
 
-        console.log("1")
 
         let authorId = interaction.user.id;
         let authorName = interaction.user.username;
@@ -75,7 +74,7 @@ module.exports = {
 
                 if (serverId === "949291624389816331" || "1071576735298113667") {
                     image = "https://media.discordapp.net/attachments/941040609970491523/1101624764507881554/rcprofittemplate1.png?width=1108&height=1108"
-                } else if (serverId == "") {
+                } else if (serverId == "944918328135286804") {
                     image = "https://cdn.discordapp.com/attachments/1117449908803338280/1128017207675342978/embassy_template.png"
                 } else  {
                     image = "https://media.discordapp.net/attachments/941040609970491523/1101624764507881554/rcprofittemplate1.png?width=1108&height=1108"

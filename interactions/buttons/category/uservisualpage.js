@@ -194,6 +194,7 @@ module.exports = {
 
                             image = "https://media.discordapp.net/attachments/941040609970491523/1101624764507881554/rcprofittemplate1.png?width=1108&height=1108"
 
+                            buttonSelected = ""
                             buttonSelected = buttonsUserVisual1
 
                         } else if (serverId == "944918328135286804") {
@@ -201,6 +202,7 @@ module.exports = {
 
                             image = "https://cdn.discordapp.com/attachments/1117449908803338280/1128017207675342978/embassy_template.png"
 
+                            buttonSelected = ""
                             buttonSelected = buttonsUserVisual1Disable
 
                         } else {
@@ -208,6 +210,7 @@ module.exports = {
 
                             image = "https://media.discordapp.net/attachments/941040609970491523/1101624764507881554/rcprofittemplate1.png?width=1108&height=1108"
 
+                            buttonSelected = ""
                             buttonSelected = buttonsUserVisual1Disable
 
                         }
@@ -222,18 +225,21 @@ module.exports = {
 
                                 image = "https://media.discordapp.net/attachments/941040609970491523/1101624764507881554/rcprofittemplate1.png?width=1108&height=1108"
 
+                                buttonSelected = ""
                                 buttonSelected = buttonsUserVisual1
 
                             } else if (visualSelect == "2") {
 
                                 image = "https://media.discordapp.net/attachments/941040609970491523/1101624759671849021/rcprofittemplate2.png?width=1108&height=1108"
 
+                                buttonSelected = ""
                                 buttonSelected = buttonsUserVisual2
 
                             } else {
 
                                 image = "https://media.discordapp.net/attachments/941040609970491523/1101624760070324286/rcprofittemplate3.png?width=1108&height=1108"
 
+                                buttonSelected = ""
                                 buttonSelected = buttonsUserVisual3
 
                             }
@@ -243,11 +249,15 @@ module.exports = {
 
                             image = "https://cdn.discordapp.com/attachments/1117449908803338280/1128017207675342978/embassy_template.png"
 
+                            buttonSelected = ""
                             buttonSelected = buttonsUserVisual1Disable
+
                         } else {
 
 
                             image = "https://media.discordapp.net/attachments/941040609970491523/1101624764507881554/rcprofittemplate1.png?width=1108&height=1108"
+                          
+                            buttonSelected = ""
                             buttonSelected = buttonsUserVisual1Disable
 
                         }

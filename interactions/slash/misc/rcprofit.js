@@ -179,7 +179,7 @@ module.exports = {
                             const selectedTime = interaction.options.getString("timelapse");
 
                             //Récupérer tous les wallets de RC dans la base SQL
-                            const allWallets = await wallets.findAll();
+                            const allWallets = await wallets.findAll({ where: { walletCategory: "eth"} });
                             let rcWalletsTable = allWallets.map(wallet => wallet.walletAddress);
 
 

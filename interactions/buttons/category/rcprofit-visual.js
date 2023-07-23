@@ -116,9 +116,16 @@ module.exports = {
         }
 
 
+        let profileImage = await loadImage("https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png")
+
+
+
+
         if (serverId === "949291624389816331") {
 
           registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
+
+          profileImage = await loadImage("https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png")
 
 
 
@@ -322,7 +329,6 @@ module.exports = {
             const imagesize = 33;
             const imagex = 737.5
             const imagey = 957;
-            const profileImage = await loadImage("https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg");
             ctxFormatted.beginPath();
             ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
             ctxFormatted.lineWidth = 2.15;
@@ -472,7 +478,6 @@ module.exports = {
             const imagesize = 33;
             const imagex = 737.5
             const imagey = 957;
-            const profileImage = await loadImage("https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg");
             ctxFormatted.beginPath();
             ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
             ctxFormatted.lineWidth = 2.15;
@@ -619,7 +624,6 @@ module.exports = {
             const imagesize = 33;
             const imagex = 737.5
             const imagey = 957;
-            const profileImage = await loadImage("https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg");
             ctxFormatted.beginPath();
             ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
             ctxFormatted.lineWidth = 2.15;
@@ -650,8 +654,142 @@ module.exports = {
         } else {
 
 
+          registerFont("./visual/aura/font/OPT.ttf", { family: "OPT" })
 
-         console.log("coming soon")
+
+          const templateOneCollection = await loadImage("./visual/aura/permanent/rcprofittemplate1.png");
+
+          profileImage = await loadImage("https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png")
+
+
+
+          const canvasFormatted = createCanvas(1000, 1000);
+          const ctxFormatted = canvasFormatted.getContext('2d');
+
+          ctxFormatted.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+
+
+
+          //MINT COUNT
+          ctxFormatted.font = "700 35px 'Fira Code'";
+          ctxFormatted.fillStyle = "#E5EAFF";
+          const mintCountText = ctxFormatted.measureText(mintCount.toString()).width
+          ctxFormatted.fillText(mintCount.toString(), 190 - mintCountText / 2, 420);
+
+          //BUY COUNT
+          ctxFormatted.font = "700 35px 'Fira Code'";
+          ctxFormatted.fillStyle = "#E5EAFF";
+          const buyCountText = ctxFormatted.measureText(buyCount.toString()).width
+          ctxFormatted.fillText(buyCount.toString(), 498 - buyCountText / 2, 420);
+
+          //AVG BUY
+          ctxFormatted.font = "700 35px 'Fira Code'";
+          ctxFormatted.fillStyle = "#E5EAFF";
+          const avgBuyCountText = ctxFormatted.measureText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ").width
+          ctxFormatted.fillText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ", 812 - avgBuyCountText / 2, 420);
+
+          //SOLD COUNT
+          ctxFormatted.font = "700 35px 'Fira Code'";
+          ctxFormatted.fillStyle = "#E5EAFF";
+          const soldCountText = ctxFormatted.measureText(soldCount.toString()).width
+          ctxFormatted.fillText(soldCount.toString(), 190 - soldCountText / 2, 585);
+
+          //REMAINING
+          ctxFormatted.font = "700 35px 'Fira Code'";
+          ctxFormatted.fillStyle = "#E5EAFF";
+          const remainingText = ctxFormatted.measureText(remaining.toString()).width
+          ctxFormatted.fillText(remaining.toString(), 500 - remainingText / 2, 585);
+
+          //AVG SOLD
+          ctxFormatted.font = "700 35px 'Fira Code'";
+          ctxFormatted.fillStyle = "#E5EAFF";
+          const avgSoldText = ctxFormatted.measureText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ").width
+          ctxFormatted.fillText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ", 812 - avgSoldText / 2, 585);
+
+
+          //REALIZED PROFIT
+          ctxFormatted.font = "700 35px 'Fira Code'";
+          if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+          const realisedProfitText = ctxFormatted.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ").width
+          ctxFormatted.fillText(realisedProfit.toString() + "Ξ", 190 - realisedProfitText / 2, 749);
+
+          //Potential PROFIT
+          ctxFormatted.font = "700 35px 'Fira Code'";
+          if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+          const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ").width
+          ctxFormatted.fillText(potentialProfit.toString() + "Ξ", 500 - potentialProfitText / 2, 749);
+
+          //Potential ROI
+          ctxFormatted.font = "700 35px 'Fira Code'";
+          if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+          if (potentialRoiFormatted.toLowerCase() !== "infinity") {
+            const potentialRoiText = ctxFormatted.measureText(potentialRoiFormatted.toString() + "%").width
+            ctxFormatted.fillText(potentialRoiFormatted.toString() + "%", 812 - potentialRoiText / 2, 749);
+          } else {
+            const potentialRoiText = ctxFormatted.measureText(potentialRoiFormatted.toString()).width
+            ctxFormatted.fillText(potentialRoiFormatted.toString(), 812 - potentialRoiText / 2, 749);
+          }
+
+          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+          //NOM COLLECTION
+          const MAX_WIDTH = 515;
+          let fontSize = 33;
+          const targetHeight = 400;
+
+
+          ctxFormatted.fillStyle = "rgba(255, 255, 255, 0.93)";
+          let collectionNameTextSize = ctxFormatted.measureText(collectionName.toUpperCase()).width;
+
+          while (collectionNameTextSize > MAX_WIDTH) {
+            fontSize -= 1;
+            ctxFormatted.font = `700 ${fontSize}px 'Fira Code'`;
+            collectionNameTextSize = ctxFormatted.measureText(collectionName.toUpperCase()).width;
+          }
+
+          ctxFormatted.font = `700 ${fontSize}px 'Fira Code'`;
+          ctxFormatted.textBaseline = "middle";
+          ctxFormatted.fillText(collectionName.toUpperCase(), 500 - collectionNameTextSize / 2, 304);
+
+
+
+
+
+          //NOM USER
+          ctxFormatted.textBaseline = "alphabetic";
+          ctxFormatted.font = "23px OPT";
+          ctxFormatted.fillStyle = "#ffffff";
+          const userNameSize = ctxFormatted.measureText("Group Profits").width;
+          ctxFormatted.fillText("Group Profits", 718, 978);
+
+
+          // Dessin du cercle de découpe
+          const imagesize = 45;
+          const imagex = 657
+          const imagey = 947;
+          ctxFormatted.beginPath();
+          ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
+          ctxFormatted.lineWidth = 2.5;
+          ctxFormatted.strokeStyle = "#ffffff";
+          ctxFormatted.stroke();
+          ctxFormatted.closePath();
+          ctxFormatted.clip();
+          ctxFormatted.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
+          ctxFormatted.beginPath();
+          ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2 + 0.25, 0, Math.PI * 2, true);
+
+
+
+          ctxFormatted.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
+
+
+
+          // Dessiner l'image de profil sur le canvas
+          const buffer2 = canvasFormatted.toBuffer('image/png');
+          //  fs.writeFileSync("./visual/rollschasers/temporary/" + randomString + "-" + authorId + "profitvisual.png", buffer2);
+
+          await interaction.editReply({ files: [buffer2] })
 
 
 

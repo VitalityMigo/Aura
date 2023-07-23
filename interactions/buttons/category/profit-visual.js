@@ -780,60 +780,64 @@ module.exports = {
 
 
           //MINT COUNT
-          ctxFormatted.font = "700 34px 'Fira Code'";
+          ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
           const mintCountText = ctxFormatted.measureText(mintCount.toString()).width
           ctxFormatted.fillText(mintCount.toString(), 190 - mintCountText / 2, 420);
 
           //BUY COUNT
-          ctxFormatted.font = "700 34px 'Fira Code'";
+          ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
           const buyCountText = ctxFormatted.measureText(buyCount.toString()).width
           ctxFormatted.fillText(buyCount.toString(), 498 - buyCountText / 2, 420);
 
           //AVG BUY
-          ctxFormatted.font = "700 34px 'Fira Code'";
+          ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
           const avgBuyCountText = ctxFormatted.measureText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ").width
-          ctxFormatted.fillText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ", 809 - avgBuyCountText / 2, 420);
+          ctxFormatted.fillText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ", 812 - avgBuyCountText / 2, 420);
 
           //SOLD COUNT
-          ctxFormatted.font = "700 34px 'Fira Code'";
+          ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
           const soldCountText = ctxFormatted.measureText(soldCount.toString()).width
           ctxFormatted.fillText(soldCount.toString(), 190 - soldCountText / 2, 585);
 
           //REMAINING
-          ctxFormatted.font = "700 34px 'Fira Code'";
+          ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
           const remainingText = ctxFormatted.measureText(remaining.toString()).width
           ctxFormatted.fillText(remaining.toString(), 500 - remainingText / 2, 585);
 
           //AVG SOLD
-          ctxFormatted.font = "700 34px 'Fira Code'";
+          ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
           const avgSoldText = ctxFormatted.measureText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ").width
-          ctxFormatted.fillText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ", 809 - avgSoldText / 2, 585);
+          ctxFormatted.fillText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ", 812 - avgSoldText / 2, 585);
 
 
           //REALIZED PROFIT
-          ctxFormatted.font = "700 34px 'Fira Code'";
+          ctxFormatted.font = "700 35px 'Fira Code'";
           if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
           const realisedProfitText = ctxFormatted.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ").width
           ctxFormatted.fillText(realisedProfit.toString() + "Ξ", 190 - realisedProfitText / 2, 749);
 
           //Potential PROFIT
-          ctxFormatted.font = "700 34px 'Fira Code'";
+          ctxFormatted.font = "700 35px 'Fira Code'";
           if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
           const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ").width
           ctxFormatted.fillText(potentialProfit.toString() + "Ξ", 500 - potentialProfitText / 2, 749);
 
           //Potential ROI
-          ctxFormatted.font = "700 34px 'Fira Code'";
+          ctxFormatted.font = "700 35px 'Fira Code'";
           if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+          if (potentialRoiFormatted.toLowerCase() !== "infinity") {
           const potentialRoiText = ctxFormatted.measureText(potentialRoiFormatted.toString() + "%").width
-          ctxFormatted.fillText(potentialRoiFormatted.toString() + "%", 809 - potentialRoiText / 2, 749);
-
+          ctxFormatted.fillText(potentialRoiFormatted.toString() + "%", 812 - potentialRoiText / 2, 749);
+        } else {
+          const potentialRoiText = ctxFormatted.measureText(potentialRoiFormatted.toString()).width
+          ctxFormatted.fillText(potentialRoiFormatted.toString(), 812 - potentialRoiText / 2, 749);
+        }
 
           ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -849,11 +853,11 @@ module.exports = {
 
           while (collectionNameTextSize > MAX_WIDTH) {
             fontSize -= 1;
-            ctxFormatted.font = `bold ${fontSize}px 'Fira Code'`;
+            ctxFormatted.font = `700 ${fontSize}px 'Fira Code'`;
             collectionNameTextSize = ctxFormatted.measureText(collectionName.toUpperCase()).width;
           }
 
-          ctxFormatted.font = `bold ${fontSize}px 'Fira Code'`;
+          ctxFormatted.font = `700 ${fontSize}px 'Fira Code'`;
           ctxFormatted.textBaseline = "middle";
           ctxFormatted.fillText(collectionName.toUpperCase(), 500 - collectionNameTextSize / 2, 304);
 
@@ -869,23 +873,29 @@ module.exports = {
 
 
           ctxFormatted.fillStyle = "#ffffff";
-          const userNameSize = ctxFormatted.measureText(authorName.toString()).width;
+          const userNameSize = ctxFormatted.measureText(authorName.toUpperCase()).width;
 
           while (userNameSize > MAX_WIDTH2) {
             fontSize2 -= 1;
-            ctxFormatted.font = `bold ${fontSize2}px OPT`;
+            ctxFormatted.font = `${fontSize2}px OPT`;
             userNameSize = ctxFormatted.measureText(authorName.toUpperCase()).width;
           }
 
-          ctxFormatted.font = `bold ${fontSize2}px OPT`;
-          ctxFormatted.textBaseline = "middle";
-          ctxFormatted.fillText(authorName.toUpperCase(), 689, 969);
-
-
+         
         
 
           const imagesize = 45
-          const imagex = 636
+          const startImageAndName = 800
+         
+
+          let pfpAndNameSize = ctxFormatted.measureText(imagesize + 8 + authorName.toUpperCase()).width;
+
+          ctxFormatted.font = `${fontSize2}px OPT`;
+          ctxFormatted.textBaseline = "middle";
+          ctxFormatted.fillText(authorName.toUpperCase(), startImageAndName + imagesize + 8 - (pfpAndNameSize / 2), 969);
+
+
+          const imagex =  startImageAndName - (pfpAndNameSize / 2)
           const imagey = 947;
 
 

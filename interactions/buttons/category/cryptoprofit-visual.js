@@ -122,7 +122,7 @@ module.exports = {
 
       //if (serverId === "949291624389816331" || serverId === "1071576735298113667") {
 
-      if (serverId === "949291624389816331" || serverId === "1071576735298113667" || serverId === "1108754348818845729") {
+      if (serverId === "949291624389816331") {
 
 
 
@@ -765,15 +765,154 @@ module.exports = {
 
 
 
-        const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-          .setTitle("Bot access")
-          .setDescription("You don't have access to this functionnality in this server. If you usually have access to it, try in the server you use to have access to it. If you encounter any other issue, please contact an admin of the community")
-          .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-          .setTimestamp()
-          .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+       
+        const templateOneCollection = await loadImage("./visual/aura/permanent/cryptoprofittemplate1.png");
+
+        registerFont("./visual/aura/font/OPT.ttf", { family: "OPT" })
 
 
-        await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
+        const canvasFormatted = createCanvas(1000, 1000);
+        const ctxFormatted = canvasFormatted.getContext('2d');
+
+        ctxFormatted.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+
+
+
+        //MINT COUNT
+        ctxFormatted.font = "700 35px 'Fira Code'";
+        ctxFormatted.fillStyle = "#E5EAFF";
+        const mintCountText = ctxFormatted.measureText(parseFloat(buyCount).toFixed(1)).width
+        ctxFormatted.fillText(parseFloat(buyCount).toFixed(1), 190 - mintCountText / 2, 420);
+
+        //BUY COUNT
+        ctxFormatted.font = "700 35px 'Fira Code'";
+        ctxFormatted.fillStyle = "#E5EAFF";
+        const buyCountText = ctxFormatted.measureText(airdropCount.toString()).width
+        ctxFormatted.fillText(airdropCount.toString(), 498 - buyCountText / 2, 420);
+
+        //AVG BUY
+        ctxFormatted.font = "700 35px 'Fira Code'";
+        ctxFormatted.fillStyle = "#E5EAFF";
+        const avgBuyCountText = ctxFormatted.measureText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ").width
+        ctxFormatted.fillText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ", 812 - avgBuyCountText / 2, 420);
+
+        //SOLD COUNT
+        ctxFormatted.font = "700 35px 'Fira Code'";
+        ctxFormatted.fillStyle = "#E5EAFF";
+        const soldCountText = ctxFormatted.measureText(parseFloat(soldCount).toFixed(1)).width
+        ctxFormatted.fillText(parseFloat(soldCount).toFixed(1), 190 - soldCountText / 2, 585);
+
+        //REMAINING
+        ctxFormatted.font = "700 35px 'Fira Code'";
+        ctxFormatted.fillStyle = "#E5EAFF";
+        const remainingText = ctxFormatted.measureText(remaining.toString()).width
+        ctxFormatted.fillText(remaining.toString(), 500 - remainingText / 2, 585);
+
+        //AVG SOLD
+        ctxFormatted.font = "700 35px 'Fira Code'";
+        ctxFormatted.fillStyle = "#E5EAFF";
+        const avgSoldText = ctxFormatted.measureText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ").width
+        ctxFormatted.fillText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ", 812 - avgSoldText / 2, 585);
+
+
+        //REALIZED PROFIT
+        ctxFormatted.font = "700 35px 'Fira Code'";
+        if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+        const realisedProfitText = ctxFormatted.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ").width
+        ctxFormatted.fillText(realisedProfit.toString() + "Ξ", 190 - realisedProfitText / 2, 749);
+
+        //Potential PROFIT
+        ctxFormatted.font = "700 35px 'Fira Code'";
+        if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+        const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ").width
+        ctxFormatted.fillText(potentialProfit.toString() + "Ξ", 500 - potentialProfitText / 2, 749);
+
+        //Potential ROI
+        ctxFormatted.font = "700 35px 'Fira Code'";
+        if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+        if (potentialRoiFormatted.toLowerCase() !== "infinity") {
+        const potentialRoiText = ctxFormatted.measureText(potentialRoiFormatted.toString() + "%").width
+        ctxFormatted.fillText(potentialRoiFormatted.toString() + "%", 812 - potentialRoiText / 2, 749);
+      } else {
+        const potentialRoiText = ctxFormatted.measureText(potentialRoiFormatted.toString()).width
+        ctxFormatted.fillText(potentialRoiFormatted.toString(), 812 - potentialRoiText / 2, 749);
+      }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        //NOM COLLECTION
+        const MAX_WIDTH = 515;
+        let fontSize = 33;
+        const targetHeight = 400;
+
+
+        ctxFormatted.fillStyle = "rgba(255, 255, 255, 0.93)";
+        let collectionNameTextSize = ctxFormatted.measureText(collectionName.toUpperCase()).width;
+
+        while (collectionNameTextSize > MAX_WIDTH) {
+          fontSize -= 1;
+          ctxFormatted.font = `700 ${fontSize}px 'Fira Code'`;
+          collectionNameTextSize = ctxFormatted.measureText(collectionName.toUpperCase()).width;
+        }
+
+        ctxFormatted.font = `700 ${fontSize}px 'Fira Code'`;
+        ctxFormatted.textBaseline = "middle";
+        ctxFormatted.fillText(collectionName.toUpperCase(), 500 - collectionNameTextSize / 2, 304);
+
+
+
+
+        const profileImage = await loadImage(userLogo);
+
+
+        //NOM USER
+        const MAX_WIDTH2 = 290;
+        let fontSize2 = 21;
+
+
+        ctxFormatted.fillStyle = "#ffffff";
+        const userNameSize = ctxFormatted.measureText(authorName.toUpperCase()).width;
+
+        while (userNameSize > MAX_WIDTH2) {
+          fontSize2 -= 1;
+          ctxFormatted.font = `${fontSize2}px OPT`;
+          userNameSize = ctxFormatted.measureText(authorName.toUpperCase()).width;
+        }
+
+       
+      
+
+        const imagesize = 45
+        const startImageAndName = 800
+       
+
+        let pfpAndNameSize = ctxFormatted.measureText(imagesize + 8 + authorName.toUpperCase()).width;
+
+        ctxFormatted.font = `${fontSize2}px OPT`;
+        ctxFormatted.textBaseline = "middle";
+        ctxFormatted.fillText(authorName.toUpperCase(), startImageAndName + imagesize + 8 - (pfpAndNameSize / 2), 969);
+
+
+        const imagex =  startImageAndName - (pfpAndNameSize / 2)
+        const imagey = 947;
+
+
+        // Dessin du cercle de découpe
+        ctxFormatted.beginPath();
+        ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
+        ctxFormatted.closePath();
+        ctxFormatted.clip();
+
+        ctxFormatted.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
+
+
+
+        // Dessiner l'image de profil sur le canvas
+        const buffer2 = canvasFormatted.toBuffer('image/png');
+        //  fs.writeFileSync("./visual/rollschasers/temporary/" + randomString + "-" + authorId + "profitvisual.png", buffer2);
+
+        await interaction.editReply({ files: [buffer2] })
 
 
 

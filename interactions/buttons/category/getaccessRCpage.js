@@ -44,46 +44,48 @@ module.exports = {
             const rcRoleId = "954217614081658900"
 
             const guild = interaction.client.guilds.cache.get(rcServerId);
-            const member = await guild.members.fetch(authorId);
+
+
+            await guild.members.fetch(authorId)
+                .then(async (member) => {
+                    
+                    if (member.roles.cache.has(rcRoleId)) {
+
+
+                        const roleId1 = '1108761632928182424'; // Remplacez par l'ID de votre rôle
+                        const role1 = interaction.guild.roles.cache.get(roleId1);
+                        interaction.member.roles.add(role1)
+
+                        const roleId2 = '1121520920222253086'; // Remplacez par l'ID de votre rôle
+                        const role2 = interaction.guild.roles.cache.get(roleId2);
+                        interaction.member.roles.add(role2)
 
 
 
-            if (member.roles.cache.has(rcRoleId)) {
+
+                        const walletManager = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Get Access")
+                            .setDescription("Welcome to Aura and to the Rolls Chasers council " + authorName + " !\n\nWe'd like to thank you for your trust and hope you'll profit from Aura. Feel free to ask any question to our team if you need.\n\nYour member and Rolls Chasers role has been granted 👑.")
+                            .setTimestamp()
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                        await interaction.reply({ embeds: [walletManager], ephemeral: true });
 
 
-                const roleId1 = '1108761632928182424'; // Remplacez par l'ID de votre rôle
-                const role1 = interaction.guild.roles.cache.get(roleId1);
-                interaction.member.roles.add(role1)
-
-                const roleId2 = '1121520920222253086'; // Remplacez par l'ID de votre rôle
-                const role2 = interaction.guild.roles.cache.get(roleId2);
-                interaction.member.roles.add(role2)
+                        // Le membre a le rôle spécifié
+                    } else {
 
 
+                        const walletManager = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Get Access")
+                            .setDescription("Our verification system didn't find the appropriate role for your account in the Rolls Chasers Discord. Please try again or contact an administrator.")
+                            .setTimestamp()
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                        await interaction.reply({ embeds: [walletManager], ephemeral: true });
+                    }
+                })
 
-                const walletManager = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Get Access")
-                    .setDescription("Welcome to Aura and to the Rolls Chasers council " + authorName + " !\n\nWe'd like to thank you for your trust and hope you'll profit from Aura. Feel free to ask any question to our team if you need.\n\nYour member and Rolls Chasers role has been granted 👑.")
-                    .setTimestamp()
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                await interaction.reply({ embeds: [walletManager], ephemeral: true });
-
-
-            } else {
-
-
-                const walletManager = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Get Access")
-                    .setDescription("Our verification system didn't find the appropriate role for your account in the Rolls Chasers Discord. Please try again or contact an administrator.")
-                    .setTimestamp()
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                await interaction.reply({ embeds: [walletManager], ephemeral: true });
-
-
-            }
 
 
 

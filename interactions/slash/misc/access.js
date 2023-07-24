@@ -65,100 +65,111 @@ module.exports = {
                             console.log("// Step 2 : Authorization - Executed ✅")
 
 
-                            //On enregistre le user si il est pas encore dans la database
-                            const timeStamp = Date.now();
-                            const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
-                            const isUser = await usersql.findOne({ where: { userId: authorId, serverId: serverId } })
-                            if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp }) }
+                            const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
+                                .setTitle(`${authorName}'s profit`)
+                                .setDescription("The command you try to use is currently in maintenance, and will be available again ASAP. You can still use all the other commands in the meantime.")
+                                .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+                                .setTimestamp()
+                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                            await interaction.editReply({ embeds: [availableInTheNearFuture] });
+
+
+                            // //On enregistre le user si il est pas encore dans la database
+                            // const timeStamp = Date.now();
+                            // const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
+                            // const isUser = await usersql.findOne({ where: { userId: authorId, serverId: serverId } })
+                            // if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp }) }
 
 
 
-                            let serverName = interaction.member.guild.name
-                            let serverLogo = interaction.member.guild.icon
+                            // let serverName = interaction.member.guild.name
+                            // let serverLogo = interaction.member.guild.icon
 
 
-                            //On récupère les infos sur l'accès de la commu au bot
-                            const communityInfos = await accessSql.findOne({ where: { serverId: serverId } })
+                            // //On récupère les infos sur l'accès de la commu au bot
+                            // const communityInfos = await accessSql.findOne({ where: { serverId: serverId } })
 
-                            if (communityInfos !== null) {
+                            // if (communityInfos !== null) {
 
-                                let serverTier = communityInfos.dataValues.accessTier
-                                let serverAccessTime = communityInfos.dataValues.accessSince
-                                let serverAccessTimeFormatted = serverAccessTime * 1000
+                            //     let serverTier = communityInfos.dataValues.accessTier
+                            //     let serverAccessTime = communityInfos.dataValues.accessSince
+                            //     let serverAccessTimeFormatted = serverAccessTime * 1000
 
-                                const date = new Date(serverAccessTimeFormatted);
-                                const dateLisible = date.toLocaleString();
+                            //     const date = new Date(serverAccessTimeFormatted);
+                            //     const dateLisible = date.toLocaleString();
 
-                                const date1 = moment(dateLisible, 'M/D/YYYY');
-                                const formattedDate = date1.format('Do [of] MMMM YYYY');
-
-
-                                //on définit le message renvoyé
-                                let availableCommands = ""
-
-                                if (serverTier.toLowerCase() === "s-tier") {
-                                    availableCommands = "`/access` ∙ `/blur` ∙ `/data` ∙ `/derisk` ∙ `/ens` ∙ `/gascalculator` ∙ `/gastracker` ∙ `/getalerts` ∙ `/getprofile` ∙ `/getwallets` ∙ `/getwatchlist` ∙ `/guide` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/removealert` ∙ `/removewallet` ∙ `/removewatchlist` ∙ `/report` ∙ `/setalert` ∙ `/setwallet` ∙ `/setwatchlist` ∙ `/statut` ∙ `/twitter` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/walletgenerator`"
-                                }
-
-                                if (serverTier.toLowerCase() === "a-tier") {
-                                    availableCommands = "`/access` ∙ `/data` ∙ `/derisk` ∙ `/ens` ∙ `/gastracker` ∙ `/gascalculator` ∙ `/getprofile` ∙ `/getwallets` ∙ `/getwatchlist` ∙ `/guide` ∙ `/privacy` ∙ `/profit` ∙ `/removewallet` ∙ `/removewatchlist` ∙ `/report` ∙ `/setwallet` ∙ `/setwatchlist` ∙ `/statut ∙ `/walletgenerator` ∙ `/vouch` ∙ `/vouchleaderboard`"
-                                }
-
-                                if (serverTier.toLowerCase() === "b-tier") {
-                                    availableCommands = "`/access` ∙ `/getwallets` ∙ `/getprofile` ∙ `/guide` ∙ `/privacy` ∙ `/profit` ∙ `/report` ∙ `/removewallet` ∙ `/setwallet` ∙ `/statut ∙ `/vouch` ∙ `/vouchleaderboard`"
-                                }
+                            //     const date1 = moment(dateLisible, 'M/D/YYYY');
+                            //     const formattedDate = date1.format('Do [of] MMMM YYYY');
 
 
-                                console.log("// Step 3 : Analyze - Executed ✅")
+                            //     //on définit le message renvoyé
+                            //     let availableCommands = ""
+
+                            //     if (serverTier.toLowerCase() === "s-tier") {
+                            //         availableCommands = "`/access` ∙ `/blur` ∙ `/data` ∙ `/derisk` ∙ `/ens` ∙ `/gascalculator` ∙ `/gastracker` ∙ `/getalerts` ∙ `/getprofile` ∙ `/getwallets` ∙ `/getwatchlist` ∙ `/guide` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/removealert` ∙ `/removewallet` ∙ `/removewatchlist` ∙ `/report` ∙ `/setalert` ∙ `/setwallet` ∙ `/setwatchlist` ∙ `/statut` ∙ `/twitter` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/walletgenerator`"
+                            //     }
+
+                            //     if (serverTier.toLowerCase() === "a-tier") {
+                            //         availableCommands = "`/access` ∙ `/data` ∙ `/derisk` ∙ `/ens` ∙ `/gastracker` ∙ `/gascalculator` ∙ `/getprofile` ∙ `/getwallets` ∙ `/getwatchlist` ∙ `/guide` ∙ `/privacy` ∙ `/profit` ∙ `/removewallet` ∙ `/removewatchlist` ∙ `/report` ∙ `/setwallet` ∙ `/setwatchlist` ∙ `/statut ∙ `/walletgenerator` ∙ `/vouch` ∙ `/vouchleaderboard`"
+                            //     }
+
+                            //     if (serverTier.toLowerCase() === "b-tier") {
+                            //         availableCommands = "`/access` ∙ `/getwallets` ∙ `/getprofile` ∙ `/guide` ∙ `/privacy` ∙ `/profit` ∙ `/report` ∙ `/removewallet` ∙ `/setwallet` ∙ `/statut ∙ `/vouch` ∙ `/vouchleaderboard`"
+                            //     }
+
+
+                            //     console.log("// Step 3 : Analyze - Executed ✅")
 
 
 
-                                const accessEmbed = new EmbedBuilder().setColor("#060A8F")
-                                    .setTitle(serverName + "'s access")
-                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    .setDescription(`>>> Display the level of access of ` + serverName + " to the bot ")
-                                    .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-                                    .addFields(
-                                        { name: 'Community', value: "`" + serverName + "`", inline: true },
-                                        { name: 'Access Tier', value: "`" + serverTier.toUpperCase() + "`", inline: true },
-                                        { name: 'Access Date', value: "`" + formattedDate + "`", inline: true },
-                                        { name: 'Available Commands:', value: availableCommands, inline: true },)
-                                    .setTimestamp()
-                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                            //     const accessEmbed = new EmbedBuilder().setColor("#060A8F")
+                            //         .setTitle(serverName + "'s access")
+                            //         .setAuthor({ name: authorName, iconURL: userAvatar })
+                            //         .setDescription(`>>> Display the level of access of ` + serverName + " to the bot ")
+                            //         .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+                            //         .addFields(
+                            //             { name: 'Community', value: "`" + serverName + "`", inline: true },
+                            //             { name: 'Access Tier', value: "`" + serverTier.toUpperCase() + "`", inline: true },
+                            //             { name: 'Access Date', value: "`" + formattedDate + "`", inline: true },
+                            //             { name: 'Available Commands:', value: availableCommands, inline: true },)
+                            //         .setTimestamp()
+                            //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                await interaction.editReply({ embeds: [accessEmbed] });
+                            //     await interaction.editReply({ embeds: [accessEmbed] });
 
-                                console.log("// Step 4 : Answer - Executed ✅")
-
-
-                            } else if (communityInfos === null) {
-
-                                //Dans le cas où la communauté n'a pas accès
-                                let availableCommands = ""
-
-                                availableCommands = "```No access for " + serverName + " to Rolls Chasers Analytics. Please use the bot in a community that has access or contact an administrator to get help.```"
+                            //     console.log("// Step 4 : Answer - Executed ✅")
 
 
-                                const accessEmbed = new EmbedBuilder().setColor("#060A8F")
-                                    .setTitle(serverName + "'s access")
-                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    .setDescription(`>>> Display the level of access of ` + serverName + " to the bot ")
-                                    .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-                                    .addFields(
-                                        { name: 'Community', value: "`" + serverName + "`", inline: true },
-                                        { name: 'Access Tier', value: "`No access`", inline: true },
-                                        { name: 'Access Date', value: "`No access`", inline: true },
-                                        { name: 'Available Commands:', value: availableCommands, inline: true },
-                                    )
-                                    .setTimestamp()
-                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                            // } else if (communityInfos === null) {
+
+                            //     //Dans le cas où la communauté n'a pas accès
+                            //     let availableCommands = ""
+
+                            //     availableCommands = "```No access for " + serverName + " to Rolls Chasers Analytics. Please use the bot in a community that has access or contact an administrator to get help.```"
 
 
-                                await interaction.editReply({ embeds: [accessEmbed] });
+                            //     const accessEmbed = new EmbedBuilder().setColor("#060A8F")
+                            //         .setTitle(serverName + "'s access")
+                            //         .setAuthor({ name: authorName, iconURL: userAvatar })
+                            //         .setDescription(`>>> Display the level of access of ` + serverName + " to the bot ")
+                            //         .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+                            //         .addFields(
+                            //             { name: 'Community', value: "`" + serverName + "`", inline: true },
+                            //             { name: 'Access Tier', value: "`No access`", inline: true },
+                            //             { name: 'Access Date', value: "`No access`", inline: true },
+                            //             { name: 'Available Commands:', value: availableCommands, inline: true },
+                            //         )
+                            //         .setTimestamp()
+                            //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                console.log("// Step 3 : Answer - Executed ✅")
 
-                            }
+                            //     await interaction.editReply({ embeds: [accessEmbed] });
+
+                            //     console.log("// Step 3 : Answer - Executed ✅")
+
+                            // }
 
                         } else if (!member.roles.cache.has(communityMemberRoleId)) {
 

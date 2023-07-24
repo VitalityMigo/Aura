@@ -43,9 +43,8 @@ module.exports = {
             const rcServerId = "949291624389816331"
             const rcRoleId = "954217614081658900"
 
-            const guild = interaction.client.guilds.cache.get("949291624389816331");
+            const guild = interaction.client.guilds.cache.get(rcServerId);
             const member = await guild.members.fetch(authorId);
-
 
 
 

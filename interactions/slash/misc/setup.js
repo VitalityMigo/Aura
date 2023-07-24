@@ -234,26 +234,26 @@ module.exports = {
 
 
 
-                    const guideAllEmbed = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("Frequently Asked Questions")
-                        .setDescription(">>> A look at some frequently asked questions.")
-                        .setTimestamp()
-                        .addFields(
-                            { name: ' ', value: " ", inline: false },
-                            { name: 'What is Aura ?', value: "Aura is a tool designed to improve and facilitate the work of web3 traders and investors.", inline: false },
-                            { name: ' ', value: " ", inline: false },
-                            { name: 'How can I get access to Aura ?', value: "There are several ways to use Aura, both for communities and individual users. For individual users, go here : <#1108757700885622784>. For communities, you can send a message directly to our team or open a ticket. For more information, go [here](https://rolls-chasers.gitbook.io/aura).", inline: false },
-                            { name: ' ', value: " ", inline: false },
-                            { name: 'What do I get by taking the monthly subscription ?', value: "Aura monthly subscription gives you access to the tool on the Aura server. In addition, you gain access to a community of active web3 traders and investors. We'll be adding more benefits as we go along. You can go here <#1108757530076774512> to get a quick overview of Aura or [here](https://rolls-chasers.gitbook.io/aura/commands/commands/) for the full presentation.", inline: false },
-                            { name: ' ', value: " ", inline: false },
-                            { name: "What is the future of Aura ?", value: "Our team is constantly working to improve Aura's functionality and operation. Our aim is to be highly responsive so that we can always adapt to market conditions. You can find the theoretical roadmap [here](https://rolls-chasers.gitbook.io/aura/the-tool/roadmap).", inline: false },
-                            { name: ' ', value: " ", inline: false },
-                            { name: "I'd like some help to use the bot, where can I ask ?", value: "If you need any help, you can ask to our team in the chat or by opening a ticket.", inline: false },
+                    // const guideAllEmbed = new EmbedBuilder().setColor("#060A8F")
+                    //     .setTitle("Frequently Asked Questions")
+                    //     .setDescription(">>> A look at some frequently asked questions.")
+                    //     .setTimestamp()
+                    //     .addFields(
+                    //         { name: ' ', value: " ", inline: false },
+                    //         { name: 'What is Aura ?', value: "Aura is a tool designed to improve and facilitate the work of web3 traders and investors.", inline: false },
+                    //         { name: ' ', value: " ", inline: false },
+                    //         { name: 'How can I get access to Aura ?', value: "There are several ways to use Aura, both for communities and individual users. For individual users, go here : <#1108757700885622784>. For communities, you can send a message directly to our team or open a ticket. For more information, go [here](https://rolls-chasers.gitbook.io/aura).", inline: false },
+                    //         { name: ' ', value: " ", inline: false },
+                    //         { name: 'What do I get by taking the monthly subscription ?', value: "Aura monthly subscription gives you access to the tool on the Aura server. In addition, you gain access to a community of active web3 traders and investors. We'll be adding more benefits as we go along. You can go here <#1108757530076774512> to get a quick overview of Aura or [here](https://rolls-chasers.gitbook.io/aura/commands/commands/) for the full presentation.", inline: false },
+                    //         { name: ' ', value: " ", inline: false },
+                    //         { name: "What is the future of Aura ?", value: "Our team is constantly working to improve Aura's functionality and operation. Our aim is to be highly responsive so that we can always adapt to market conditions. You can find the theoretical roadmap [here](https://rolls-chasers.gitbook.io/aura/the-tool/roadmap).", inline: false },
+                    //         { name: ' ', value: " ", inline: false },
+                    //         { name: "I'd like some help to use the bot, where can I ask ?", value: "If you need any help, you can ask to our team in the chat or by opening a ticket.", inline: false },
 
-                        )
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                    //     )
+                    //     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                    await channelFetch.send({ embeds: [guideAllEmbed] });
+                    // await channelFetch.send({ embeds: [guideAllEmbed] });
 
 
 

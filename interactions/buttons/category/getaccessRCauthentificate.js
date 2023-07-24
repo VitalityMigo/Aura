@@ -69,6 +69,8 @@ module.exports = {
         const response = await axios.get(url, { headers });
         const data = await response.data;
 
+        console.log(data)
+
         const username = data.username
 
         const rcContract = '0x222ED30d0855de29Dc6F40aFf448C11E11468B24'
@@ -135,7 +137,7 @@ module.exports = {
 
             const walletManager = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("Get Access")
-                .setDescription("Our verification system didn't find the key we provided you in your username. It could take few minutes to update, please try again in a bit.")
+                .setDescription("Our verification system didn't find the key we provided you in your username. It could take few minutes to update, please try again in a bit.\n\nCurrent Opensea username : `" + username + "`")
                 .setTimestamp()
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 

@@ -3,7 +3,7 @@
  * @author Vitality Migø
  */
 
-
+// Bouh
 
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const { accessSql, profileData, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');

@@ -69,7 +69,6 @@ module.exports = {
         const response = await axios.get(url, { headers });
         const data = await response.data;
 
-        console.log(data)
 
         const username = data.username
 

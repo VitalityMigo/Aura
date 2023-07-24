@@ -72,7 +72,7 @@ module.exports = {
             let reportScaleFormatted = "Minor"
 
 
-            if (!isNumber(reportScale)) { reportScale = 5 }
+            if (isNumber(reportScale) == false) { reportScale = 5 }
 
             if (reportScale > 2 && reportScale <= 4) { reportScaleFormatted = "Decent" } else if (reportScale > 4 && reportScale <= 6) { reportScaleFormatted = "Average" } else if (reportScale > 6 && reportScale <= 8) { reportScaleFormatted = "Important" } else if (reportScale > 8) { reportScaleFormatted = "Major" }
 

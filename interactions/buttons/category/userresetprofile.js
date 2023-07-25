@@ -50,7 +50,7 @@ module.exports = {
         console.log("// Step 1 : Initialization - Executed ✅")
 
 
-        if (interaction.message.interaction.user.id === authorId || interaction.message.interaction.author.id === authorId) {
+        if (interaction.message.interaction.user.id === authorId) {
 
 
             //Checkpoint

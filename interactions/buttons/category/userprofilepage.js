@@ -66,7 +66,7 @@ module.exports = {
 
 
 
-        if (interaction.message.interaction.user.id === authorId || interaction.message.interaction.author.id === authorId) {
+        if (interaction.message.interaction.user.id === authorId) {
 
             //Checkpoint
             console.log("// Step 2 : Authorization - Executed ✅")

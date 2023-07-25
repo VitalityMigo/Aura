@@ -29,7 +29,13 @@ const Moralis = require("moralis").default;
 
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
+}
 
+
+function isBRC20BitcoinWallet(wallet) {
+    const regex = /^bc1[a-zA-Z0-9]{39,59}$/;
+
+    return regex.test(wallet);
 }
 
 //Reservoir API
@@ -211,148 +217,155 @@ module.exports = {
                                 let walletName1 = walletAddress
                                 let walletName = "`" + walletAddress.substring(0, 5) + "..." + walletAddress.substring(walletAddress.length - 4, walletAddress.length) + "`"
                                 if (walletAddressName !== null) {
-                                     walletName1 = walletAddressName.walletName
+                                    walletName1 = walletAddressName.walletName
                                     walletName = "`" + walletName1 + " (" + walletAddress.substring(0, 5) + "..." + walletAddress.substring(walletAddress.length - 4, walletAddress.length) + ")`"
 
                                 }
 
 
-
-                                //On récupère les infos du coin
-                                const coinInfos = await alchemy.core.getTokenMetadata(coinAddress)
-
-                                coinName = coinInfos.name
-                                coinSymbol = coinInfos.symbol
-                                coinDecimal = coinInfos.decimals
-
-                                //On load l'image
-                                 chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
-
-
-
-                                const response = await Moralis.EvmApi.token.getTokenPrice({
-                                    "chain": "0x1",
-                                    "address": coinAddress,
-
-                                });
-
-
-
-                                coinActualPriceUsd = response.raw.usdPrice
-                                coinActualPriceEth = 1 / (ethUsdPrice / coinActualPriceUsd)
-
-
-                                const walletBalance = await axios.get('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=' + coinAddress + '&address=' + walletAddress + '&tag=latest&apikey=' + etherscanApiKey)
-                                tokenHeldCount = (walletBalance.data.result) / (10 ** coinDecimal)
-
-                                const tokenTxnWalletContractCall = await axios.get("https://api.etherscan.io/api?module=account&action=tokentx&address=" + walletAddress + "&page=1&offset=10000&startblock=0&sort=desc&apikey=" + etherscanApiKey)
-                                const internalTxnWalletCall = await axios.get("https://api.etherscan.io/api?module=account&action=txlistinternal&address=" + walletAddress + "&startblock=0&page=1&offset=10000&sort=asc&apikey=" + etherscanApiKey)
-                                const normalTxnWalletCall = await axios.get("https://api.etherscan.io/api?module=account&action=txlist&address=" + walletAddress + "&startblock=0&page=1&offset=10000&sort=asc&apikey=" + etherscanApiKey)
-
-
-                                let tokenTxnWalletContractTable = tokenTxnWalletContractCall.data.result
-                                let tokenTxnWalletContractTableFiltered = tokenTxnWalletContractTable.filter(obj => obj.contractAddress == coinAddress.toLowerCase());
-                                let internalTxnWalletTable = internalTxnWalletCall.data.result
-                                let normalTxnWalletTable = normalTxnWalletCall.data.result
+                                if (isValidEthereumAddress(selectedWallet)) {
 
 
 
 
-                                //On sépare en deux parties (trades in et trades out)
-                                let tradeInTxn = []
-                                let tradeOutTxn = []
+                                    //On récupère les infos du coin
+                                    const coinInfos = await alchemy.core.getTokenMetadata(coinAddress)
 
-                                for (const transaction of tokenTxnWalletContractTableFiltered) {
+                                    coinName = coinInfos.name
+                                    coinSymbol = coinInfos.symbol
+                                    coinDecimal = coinInfos.decimals
 
-                                    if (transaction.to == walletAddress.toLowerCase()) { tradeInTxn.push(transaction) }
-                                    if (transaction.from == walletAddress.toLowerCase()) { tradeOutTxn.push(transaction) }
-
-                                }
-
-
-                                console.log("// Début des deux blocs de transactions : ")
-                                console.log(tradeInTxn)
-                                console.log(tradeOutTxn)
-                                console.log("Fin des deux blocs de transactions // ")
-
-                                //On commence par les trade in
-                                for (const transaction of tradeInTxn) {
+                                    //On load l'image
+                                    chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
 
 
-                                    let hash = transaction.hash
-                                    let contractAddress = transaction.contractAddress
-                                    let value = (transaction.value) / (10 ** coinDecimal)
-                                    let gasSpent = parseFloat(web3.utils.fromWei(((transaction.gasPrice) * (transaction.gasUsed)).toString(), 'ether'))
-                                    let from = transaction.from
-                                    let to = transaction.to
 
-                                    let tokenLookup = await tokenTxnWalletContractTable.filter(obj => obj.hash == hash.toLowerCase() && obj !== transaction);
-                                    let internalLookup = await internalTxnWalletTable.filter(obj => obj.hash == hash.toLowerCase());
-                                    let normalLookup = await normalTxnWalletTable.filter(obj => obj.hash == hash.toLowerCase());
+                                    const response = await Moralis.EvmApi.token.getTokenPrice({
+                                        "chain": "0x1",
+                                        "address": coinAddress,
 
-                                    allHashTable.push(hash)
+                                    });
 
 
-                                    //Transfert in/Airdrop/Claim
-                                    if (normalLookup.length <= 0 && tokenLookup.length <= 0 && internalLookup.length <= 0) {
+
+                                    coinActualPriceUsd = response.raw.usdPrice
+                                    coinActualPriceEth = 1 / (ethUsdPrice / coinActualPriceUsd)
 
 
-                                        if (allWalletsAuthorTable.includes(from)) {
+                                    const walletBalance = await axios.get('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=' + coinAddress + '&address=' + walletAddress + '&tag=latest&apikey=' + etherscanApiKey)
+                                    tokenHeldCount = (walletBalance.data.result) / (10 ** coinDecimal)
 
-                                            console.log("C'est un Wallet -> Wallet ")
-
-
-                                            buyGasSpent += gasSpent
-                                            tokenBoughtCount += value
-
-                                        } else {
-
-                                            console.log("C'est un Airdrop ")
-
-                                            airdropCount++
-                                            tokenBoughtCount += value
-
-                                        }
+                                    const tokenTxnWalletContractCall = await axios.get("https://api.etherscan.io/api?module=account&action=tokentx&address=" + walletAddress + "&page=1&offset=10000&startblock=0&sort=desc&apikey=" + etherscanApiKey)
+                                    const internalTxnWalletCall = await axios.get("https://api.etherscan.io/api?module=account&action=txlistinternal&address=" + walletAddress + "&startblock=0&page=1&offset=10000&sort=asc&apikey=" + etherscanApiKey)
+                                    const normalTxnWalletCall = await axios.get("https://api.etherscan.io/api?module=account&action=txlist&address=" + walletAddress + "&startblock=0&page=1&offset=10000&sort=asc&apikey=" + etherscanApiKey)
 
 
-                                    } else if (tokenLookup.length > 0) {
-
-                                        console.log("C'est un token -> token")
-
-                                        let tokenInPrice = await Moralis.EvmApi.token.getTokenPrice({
-                                            "chain": "0x1",
-                                            "address": tokenLookup[0].contractAddress,
-                                            "toBlock": tokenLookup[0].blockNumber,
-                                        });
-
-                                        bisTokenInPriceEth = parseFloat(web3.utils.fromWei((tokenInPrice.raw.nativePrice.value).toString(), 'ether'))
-
-                                        tradeInCount++
-                                        tokenBoughtCount += value
-                                        buyGasSpent += gasSpent
-                                        buySpent += (bisTokenInPriceEth) * ((tokenLookup[0].value) / (10 ** tokenInPrice.raw.tokenDecimals))
-
-                                    } else if (normalLookup.length > 0) {
-
-                                        if (normalLookup[0].value <= 0) {
-
-                                            console.log("c'est un claim")
-
-                                            airdropCount++
-                                            buyGasSpent += gasSpent
-                                            tokenBoughtCount += value
+                                    let tokenTxnWalletContractTable = tokenTxnWalletContractCall.data.result
+                                    let tokenTxnWalletContractTableFiltered = tokenTxnWalletContractTable.filter(obj => obj.contractAddress == coinAddress.toLowerCase());
+                                    let internalTxnWalletTable = internalTxnWalletCall.data.result
+                                    let normalTxnWalletTable = normalTxnWalletCall.data.result
 
 
-                                        } else if (normalLookup[0].value > 0) {
 
-                                            console.log("c'est un ETH -> token")
 
+                                    //On sépare en deux parties (trades in et trades out)
+                                    let tradeInTxn = []
+                                    let tradeOutTxn = []
+
+                                    for (const transaction of tokenTxnWalletContractTableFiltered) {
+
+                                        if (transaction.to == walletAddress.toLowerCase()) { tradeInTxn.push(transaction) }
+                                        if (transaction.from == walletAddress.toLowerCase()) { tradeOutTxn.push(transaction) }
+
+                                    }
+
+
+                                    console.log("// Début des deux blocs de transactions : ")
+                                    console.log(tradeInTxn)
+                                    console.log(tradeOutTxn)
+                                    console.log("Fin des deux blocs de transactions // ")
+
+                                    //On commence par les trade in
+                                    for (const transaction of tradeInTxn) {
+
+
+                                        let hash = transaction.hash
+                                        let contractAddress = transaction.contractAddress
+                                        let value = (transaction.value) / (10 ** coinDecimal)
+                                        let gasSpent = parseFloat(web3.utils.fromWei(((transaction.gasPrice) * (transaction.gasUsed)).toString(), 'ether'))
+                                        let from = transaction.from
+                                        let to = transaction.to
+
+                                        let tokenLookup = await tokenTxnWalletContractTable.filter(obj => obj.hash == hash.toLowerCase() && obj !== transaction);
+                                        let internalLookup = await internalTxnWalletTable.filter(obj => obj.hash == hash.toLowerCase());
+                                        let normalLookup = await normalTxnWalletTable.filter(obj => obj.hash == hash.toLowerCase());
+
+                                        allHashTable.push(hash)
+
+
+                                        //Transfert in/Airdrop/Claim
+                                        if (normalLookup.length <= 0 && tokenLookup.length <= 0 && internalLookup.length <= 0) {
+
+
+                                            if (allWalletsAuthorTable.includes(from)) {
+
+                                                console.log("C'est un Wallet -> Wallet ")
+
+
+                                                buyGasSpent += gasSpent
+                                                tokenBoughtCount += value
+
+                                            } else {
+
+                                                console.log("C'est un Airdrop ")
+
+                                                airdropCount++
+                                                tokenBoughtCount += value
+
+                                            }
+
+
+                                        } else if (tokenLookup.length > 0) {
+
+                                            console.log("C'est un token -> token")
+
+                                            let tokenInPrice = await Moralis.EvmApi.token.getTokenPrice({
+                                                "chain": "0x1",
+                                                "address": tokenLookup[0].contractAddress,
+                                                "toBlock": tokenLookup[0].blockNumber,
+                                            });
+
+                                            bisTokenInPriceEth = parseFloat(web3.utils.fromWei((tokenInPrice.raw.nativePrice.value).toString(), 'ether'))
 
                                             tradeInCount++
-                                            buySpent += parseFloat(normalLookup[0].value / (10**18))
-                                            buyGasSpent += gasSpent
                                             tokenBoughtCount += value
+                                            buyGasSpent += gasSpent
+                                            buySpent += (bisTokenInPriceEth) * ((tokenLookup[0].value) / (10 ** tokenInPrice.raw.tokenDecimals))
 
+                                        } else if (normalLookup.length > 0) {
+
+                                            if (normalLookup[0].value <= 0) {
+
+                                                console.log("c'est un claim")
+
+                                                airdropCount++
+                                                buyGasSpent += gasSpent
+                                                tokenBoughtCount += value
+
+
+                                            } else if (normalLookup[0].value > 0) {
+
+                                                console.log("c'est un ETH -> token")
+
+
+                                                tradeInCount++
+                                                buySpent += parseFloat(normalLookup[0].value / (10 ** 18))
+                                                buyGasSpent += gasSpent
+                                                tokenBoughtCount += value
+
+
+
+                                            }
 
 
                                         }
@@ -361,264 +374,291 @@ module.exports = {
                                     }
 
 
-                                }
+
+                                    //Ensuite on fait les trade out
+                                    for (const transaction of tradeOutTxn) {
 
 
 
-                                //Ensuite on fait les trade out
-                                for (const transaction of tradeOutTxn) {
+                                        let hash = transaction.hash
+                                        let contractAddress = transaction.contractAddress
+                                        let value = (transaction.value) / (10 ** coinDecimal)
+                                        let gasSpent = parseFloat(web3.utils.fromWei(((transaction.gasPrice) * (transaction.gasUsed)).toString(), 'ether'))
+                                        let from = transaction.from
+                                        let to = transaction.to
+
+                                        let tokenLookup = tokenTxnWalletContractTable.filter(obj => obj.hash == hash.toLowerCase() && obj !== transaction);
+                                        let internalLookup = internalTxnWalletTable.filter(obj => obj.hash == hash.toLowerCase());
+                                        let normalLookup = normalTxnWalletTable.filter(obj => obj.hash == hash.toLowerCase());
+
+                                        allHashTable.push(hash)
 
 
+                                        //Transfert in/Airdrop/Claim
+                                        if (normalLookup.length <= 0 && tokenLookup.length <= 0 && internalLookup.length <= 0) {
 
-                                    let hash = transaction.hash
-                                    let contractAddress = transaction.contractAddress
-                                    let value = (transaction.value) / (10 ** coinDecimal)
-                                    let gasSpent = parseFloat(web3.utils.fromWei(((transaction.gasPrice) * (transaction.gasUsed)).toString(), 'ether'))
-                                    let from = transaction.from
-                                    let to = transaction.to
+                                            console.log("C'est un transfert")
 
-                                    let tokenLookup = tokenTxnWalletContractTable.filter(obj => obj.hash == hash.toLowerCase() && obj !== transaction);
-                                    let internalLookup = internalTxnWalletTable.filter(obj => obj.hash == hash.toLowerCase());
-                                    let normalLookup = normalTxnWalletTable.filter(obj => obj.hash == hash.toLowerCase());
+                                            if (!allWalletsAuthorTable.includes(to)) {
 
-                                    allHashTable.push(hash)
+                                                console.log("C'est un Wallet -> Wallet ")
 
+                                                tokenSoldCount += value
 
-                                    //Transfert in/Airdrop/Claim
-                                    if (normalLookup.length <= 0 && tokenLookup.length <= 0 && internalLookup.length <= 0) {
+                                            }
 
-                                        console.log("C'est un transfert")
-
-                                        if (!allWalletsAuthorTable.includes(to)) {
-
-                                            console.log("C'est un Wallet -> Wallet ")
-
-                                            tokenSoldCount += value
-
-                                        }
-
-
-                                        soldGasValue += gasSpent
-
-
-                                    } else if (tokenLookup.length > 0) {
-
-                                        console.log("C'est un token -> token")
-
-                                        let tokenInPrice = await Moralis.EvmApi.token.getTokenPrice({
-                                            "chain": "0x1",
-                                            "address": tokenLookup[0].contractAddress,
-                                            "toBlock": tokenLookup[0].blockNumber,
-                                        });
-
-                                        bisTokenOutPriceEth = parseFloat(web3.utils.fromWei((tokenInPrice.raw.nativePrice.value).toString(), 'ether'))
-
-                                        tradeOutCount++
-                                        tokenSoldCount += value
-                                        soldGasValue += gasSpent
-                                        soldValue += (bisTokenOutPriceEth) * ((tokenLookup[0].value) / (10 ** tokenInPrice.raw.tokenDecimals))
-
-
-
-
-                                    } else if (internalLookup.length > 0) {
-
-                                        console.log("C'est un token -> ETH")
-
-
-                                        tradeOutCount++
-                                        soldValue += parseFloat(web3.utils.fromWei((internalLookup[0].value).toString(), 'ether'))
-                                        soldGasValue += gasSpent
-                                        tokenSoldCount += value
-                                    }
-
-
-
-                                }
-
-
-
-
-                                //FAIRE LES APPROVE DANS NORMAL TXN
-                                const approvalCall = await Moralis.EvmApi.token.getErc20Approvals({
-                                    "chain": "0x1",
-                                    "contractAddresses": [coinAddress],
-                                    "walletAddresses": [walletAddress]
-                                });
-
-                                for (const appovalTxn of approvalCall.raw.result) {
-
-                                    if (!allHashTable.includes(appovalTxn.transaction_hash)) {
-
-                                        let normalLookup = await normalTxnWalletTable.filter(obj => obj.hash == (appovalTxn.transaction_hash).toLowerCase());
-
-                                        if ((normalLookup[0].functionName).includes("approve") || (normalLookup[0].functionName).includes("approveAndCall")) {
-
-
-                                            let gasSpent = parseFloat(web3.utils.fromWei(((normalLookup[0].gasPrice) * (normalLookup[0].gasUsed)).toString(), 'ether'))
 
                                             soldGasValue += gasSpent
 
 
+                                        } else if (tokenLookup.length > 0) {
+
+                                            console.log("C'est un token -> token")
+
+                                            let tokenInPrice = await Moralis.EvmApi.token.getTokenPrice({
+                                                "chain": "0x1",
+                                                "address": tokenLookup[0].contractAddress,
+                                                "toBlock": tokenLookup[0].blockNumber,
+                                            });
+
+                                            bisTokenOutPriceEth = parseFloat(web3.utils.fromWei((tokenInPrice.raw.nativePrice.value).toString(), 'ether'))
+
+                                            tradeOutCount++
+                                            tokenSoldCount += value
+                                            soldGasValue += gasSpent
+                                            soldValue += (bisTokenOutPriceEth) * ((tokenLookup[0].value) / (10 ** tokenInPrice.raw.tokenDecimals))
+
+
+
+
+                                        } else if (internalLookup.length > 0) {
+
+                                            console.log("C'est un token -> ETH")
+
+
+                                            tradeOutCount++
+                                            soldValue += parseFloat(web3.utils.fromWei((internalLookup[0].value).toString(), 'ether'))
+                                            soldGasValue += gasSpent
+                                            tokenSoldCount += value
+                                        }
+
+
+
+                                    }
+
+
+
+
+                                    //FAIRE LES APPROVE DANS NORMAL TXN
+                                    const approvalCall = await Moralis.EvmApi.token.getErc20Approvals({
+                                        "chain": "0x1",
+                                        "contractAddresses": [coinAddress],
+                                        "walletAddresses": [walletAddress]
+                                    });
+
+                                    for (const appovalTxn of approvalCall.raw.result) {
+
+                                        if (!allHashTable.includes(appovalTxn.transaction_hash)) {
+
+                                            let normalLookup = await normalTxnWalletTable.filter(obj => obj.hash == (appovalTxn.transaction_hash).toLowerCase());
+
+                                            if ((normalLookup[0].functionName).includes("approve") || (normalLookup[0].functionName).includes("approveAndCall")) {
+
+
+                                                let gasSpent = parseFloat(web3.utils.fromWei(((normalLookup[0].gasPrice) * (normalLookup[0].gasUsed)).toString(), 'ether'))
+
+                                                soldGasValue += gasSpent
+
+
+                                            }
                                         }
                                     }
-                                }
 
 
 
 
 
-                                //Calcul des valeurs à partir de celle récupérés
-                                totalBuySpent = buySpent + buyGasSpent
-                                totalSoldValue = soldValue - soldGasValue
+                                    //Calcul des valeurs à partir de celle récupérés
+                                    totalBuySpent = buySpent + buyGasSpent
+                                    totalSoldValue = soldValue - soldGasValue
 
-                                realisedProfit = totalSoldValue - totalBuySpent
-                                potentialProfit = realisedProfit + (coinActualPriceEth * tokenHeldCount)
+                                    realisedProfit = totalSoldValue - totalBuySpent
+                                    potentialProfit = realisedProfit + (coinActualPriceEth * tokenHeldCount)
 
-                                heldValue = (coinActualPriceEth * tokenHeldCount) / tokenHeldCount
-                                avgBuy = totalBuySpent / tokenBoughtCount
-                                avgSell = totalSoldValue / tokenSoldCount
-
-
-                                //ROI Variable
-                                if (!coinActualPriceEth || !coinActualPriceUsd) {
-                                    roi = "N/A"
-                                } else {
-                                    roi = (((((coinActualPriceEth * tokenHeldCount) + totalSoldValue) - totalBuySpent) / totalBuySpent) * 100).toFixed(2)
-                                }
+                                    heldValue = (coinActualPriceEth * tokenHeldCount) / tokenHeldCount
+                                    avgBuy = totalBuySpent / tokenBoughtCount
+                                    avgSell = totalSoldValue / tokenSoldCount
 
 
-                                if (roi !== 0 && totalBuySpent !== 0) {
-
-                                    if (roi > 0) {
-                                        roiPrefix = "+";
-                                        roiSuffix = " :chart_with_upwards_trend:";
-                                    } else if (roi < 0) {
-                                        roiSuffix = " :chart_with_downwards_trend:";
+                                    //ROI Variable
+                                    if (!coinActualPriceEth || !coinActualPriceUsd) {
+                                        roi = "N/A"
+                                    } else {
+                                        roi = (((((coinActualPriceEth * tokenHeldCount) + totalSoldValue) - totalBuySpent) / totalBuySpent) * 100).toFixed(2)
                                     }
-                                    roiFormatted = "`" + roiPrefix + parseFloat(roi).toFixed(2) + "%" + "`" + roiSuffix;
 
-                                } else if (roi === 0 || roi === "NaN") {
 
-                                    roiFormatted = "`0.00%`"
+                                    if (roi !== 0 && totalBuySpent !== 0) {
 
-                                } else if (!coinActualPriceEth || !coinActualPriceUsd) {
+                                        if (roi > 0) {
+                                            roiPrefix = "+";
+                                            roiSuffix = " :chart_with_upwards_trend:";
+                                        } else if (roi < 0) {
+                                            roiSuffix = " :chart_with_downwards_trend:";
+                                        }
+                                        roiFormatted = "`" + roiPrefix + parseFloat(roi).toFixed(2) + "%" + "`" + roiSuffix;
 
-                                    roiFormatted = "`0.00%`"
+                                    } else if (roi === 0 || roi === "NaN") {
 
-                                } else if (totalBuySpent == 0 && (totalSoldValue + tokenHeldCount > 0)) {
+                                        roiFormatted = "`0.00%`"
 
-                                    roiFormatted = "`INFINITY`<a:RCRich:1044762000837840926>"
+                                    } else if (!coinActualPriceEth || !coinActualPriceUsd) {
+
+                                        roiFormatted = "`0.00%`"
+
+                                    } else if (totalBuySpent == 0 && (totalSoldValue + tokenHeldCount > 0)) {
+
+                                        roiFormatted = "`INFINITY`<a:RCRich:1044762000837840926>"
+
+                                    }
+
+
+
+
+
+
+
+
+                                    //On stock les data d'interaction pour le visuel
+                                    await interactionData.destroy({ where: { authorId: authorId, commandName: "cryptoprofit", serverId: serverId } })
+
+                                    await interactionData.create({
+
+                                        authorId: authorId,
+                                        authorName: authorName,
+                                        serverId: serverId,
+                                        walletAddress: walletAddress,
+                                        commandName: "cryptoprofit",
+                                        interactionId: interaction.id,
+                                        walletName: "N/A",
+                                        selecedTimestamp: actualTimestamp,
+                                        embed1: "N/A",
+                                        embed2: "N/A",
+                                        embed3: "N/A",
+                                        pageIndex: "N/A",
+                                        actualPage: "N/A",
+                                        walletCategory: "N/A",
+                                        selectedCollection: coinAddress,
+                                        collectionSlug: "N/A",
+                                        collectionBanner: "N/A",
+                                        avgDeriskPrice: "N/A",
+                                        floorPrice: coinActualPriceEth.toString(),
+                                        lowerMarketlace: "N/A",
+                                        collectionName: coinName + " (" + coinSymbol.toUpperCase() + ")",
+                                        walletCategory: "N/A",
+                                        collectionTwitter: "N/A",
+                                        collectionWebsite: "N/A",
+                                        mintCount: airdropCount.toString(),
+                                        buyCount: tokenBoughtCount.toString(),
+                                        soldCount: tokenSoldCount.toString(),
+                                        remaining: tokenHeldCount.toString(),
+                                        avgBuy: parseFloat(avgBought).toFixed(3),
+                                        avgSold: parseFloat(avgSold).toFixed(3),
+                                        realisedProfit: parseFloat(realisedProfit).toFixed(3),
+                                        potentialProfit: parseFloat(potentialProfit).toFixed(3),
+                                        roi: roi.toString(),
+                                        visualTitle: "N/A",
+                                        userAvatar: userAvatar,
+                                        nbMembersInvolved: "N/A",
+                                        totalTradeCount: "N/A",
+
+                                    })
+
+
+
+
+
+
+
+                                    //Embed getRCprofitPrecisedAll
+                                    const cryptoProfitOneWallet = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle(coinName + " (" + coinSymbol.toUpperCase() + ")")
+                                        .setDescription(">>> Displaying the profits made by the wallet `" + walletName + "` on `" + coinName + "`.")
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setImage(chartImageLink) // INSERER TRADING VIEW
+                                        .addFields(
+                                            { name: "Contract", value: "`" + coinAddress.toLowerCase() + "`", inline: false },
+                                            { name: "Buy Spent", value: "`" + parseFloat(buySpent).toFixed(3) + "Ξ (" + parseFloat(buySpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                            { name: "Buy Gas Spent", value: "`" + parseFloat(buyGasSpent).toFixed(3) + "Ξ (" + parseFloat(buyGasSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                            { name: "Total Spent", value: "`" + parseFloat(totalBuySpent).toFixed(3) + "Ξ (" + parseFloat(totalBuySpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                            { name: "Sold Value", value: "`" + parseFloat(soldValue).toFixed(3) + "Ξ (" + parseFloat(soldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                            { name: "Sold Gas Value", value: "`" + parseFloat(soldGasValue).toFixed(3) + "Ξ (" + parseFloat(soldGasValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                            { name: "Total Sold Value", value: "`" + parseFloat(totalSoldValue).toFixed(3) + "Ξ (" + parseFloat(totalSoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                            { name: "Token Bought", value: "`" + tokenBoughtCount.toFixed(2) + "`", inline: true },
+                                            { name: "Token Sold", value: "`" + tokenSoldCount.toFixed(2) + "`", inline: true },
+                                            { name: "Token Held", value: "`" + tokenHeldCount.toFixed(2) + "`", inline: true },
+                                            { name: "Trades in", value: "`" + tradeInCount + "`", inline: true },
+                                            { name: "Trades out", value: "`" + tradeOutCount + "`", inline: true },
+                                            { name: "Airdrop/Claim", value: "`" + airdropCount + "`", inline: true },
+                                            { name: "AVG Bought", value: "`" + parseFloat(avgBuy).toFixed(3) + "Ξ (" + parseFloat(avgBuy * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                            { name: "AVG Sold", value: "`" + parseFloat(avgSold).toFixed(3) + "Ξ (" + parseFloat(avgSold * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                            { name: "AVG Held", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + parseFloat(avgHeld * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                            { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + parseFloat(realisedProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                            { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + parseFloat(potentialProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                            { name: "Potential ROI", value: roiFormatted, inline: true },
+                                            { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinAddress + ") ∙ " + '[DexTools](https://www.dextools.io/app/en/ether/pair-explorer/' + coinAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinAddress + ") ∙ " + '[DappRadar](https://dappradar.com/hub/token/eth/' + coinAddress + ")", inline: false },
+                                        )
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                    await interaction.editReply({ embeds: [cryptoProfitOneWallet], components: [buttonsRow] });
+
+
+                                    //On enregistre le call API dans la database
+                                    let computeUnits = 10
+                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getTokenMetadata", apiProvider: "alchemy", timestamp: timeStamp.toString() })
+                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getChart", apiProvider: "chart", timestamp: timeStamp.toString() })
+                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getNormalTxn", apiProvider: "etherscan", timestamp: timeStamp.toString() })
+                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getInternalTxn", apiProvider: "etherscan", timestamp: timeStamp.toString() })
+                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getErc20Txn", apiProvider: "etherscan", timestamp: timeStamp.toString() })
+                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "walletBalance", apiProvider: "etherscan", timestamp: timeStamp.toString() })
+                                    for (let i = 0; i < computeUnits; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getTokenPrice", apiProvider: "moralis", timestamp: timeStamp.toString() }) }
+                                    for (let i = 0; i < computeUnits; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getErc20Approvals", apiProvider: "moralis", timestamp: timeStamp.toString() }) }
+
+
+
+
+                                } else if (isBRC20BitcoinWallet(selectedWallet)) {
+
+
+                                    const notMember = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle(`Crypto Profit`)
+                                        .setDescription("Aura can't analyze your wallet's data because the wallet you provided isn't an Ethereum wallet but a Bitcoin wallet. This command is only valid on Ethereum for the moment. Please use try again using the appropriate form.")
+                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                    await interaction.editReply({ embeds: [notMember] });
+
+
+
+
+                                } else {
+
+                                    const notMember = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle(`Crypto Profit`)
+                                        .setDescription("Aura can't analyze your wallet's data because the wallet you provided isn't valid. Please use try again using the appropriate form.")
+                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                    await interaction.editReply({ embeds: [notMember] });
+
+
 
                                 }
-
-
-
-
-
-
-
-
-                                //On stock les data d'interaction pour le visuel
-                                await interactionData.destroy({ where: { authorId: authorId, commandName: "cryptoprofit", serverId: serverId } })
-
-                                await interactionData.create({
-
-                                    authorId: authorId,
-                                    authorName: authorName,
-                                    serverId: serverId,
-                                    walletAddress: walletAddress,
-                                    commandName: "cryptoprofit",
-                                    interactionId: interaction.id,
-                                    walletName: "N/A",
-                                    selecedTimestamp: actualTimestamp,
-                                    embed1: "N/A",
-                                    embed2: "N/A",
-                                    embed3: "N/A",
-                                    pageIndex: "N/A",
-                                    actualPage: "N/A",
-                                    walletCategory: "N/A",
-                                    selectedCollection: coinAddress,
-                                    collectionSlug: "N/A",
-                                    collectionBanner: "N/A",
-                                    avgDeriskPrice: "N/A",
-                                    floorPrice: coinActualPriceEth.toString(),
-                                    lowerMarketlace: "N/A",
-                                    collectionName: coinName + " (" + coinSymbol.toUpperCase() + ")",
-                                    walletCategory: "N/A",
-                                    collectionTwitter: "N/A",
-                                    collectionWebsite: "N/A",
-                                    mintCount: airdropCount.toString(),
-                                    buyCount: tokenBoughtCount.toString(),
-                                    soldCount: tokenSoldCount.toString(),
-                                    remaining: tokenHeldCount.toString(),
-                                    avgBuy: parseFloat(avgBought).toFixed(3),
-                                    avgSold: parseFloat(avgSold).toFixed(3),
-                                    realisedProfit: parseFloat(realisedProfit).toFixed(3),
-                                    potentialProfit: parseFloat(potentialProfit).toFixed(3),
-                                    roi: roi.toString(),
-                                    visualTitle: "N/A",
-                                    userAvatar: userAvatar,
-                                    nbMembersInvolved: "N/A",
-                                    totalTradeCount: "N/A",
-
-                                })
-
-
-
-
-
-
-
-                                //Embed getRCprofitPrecisedAll
-                                const cryptoProfitOneWallet = new EmbedBuilder().setColor("#060A8F")
-                                    .setTitle(coinName + " (" + coinSymbol.toUpperCase() + ")")
-                                    .setDescription(">>> Displaying the profits made by the wallet `" + walletName + "` on `" + coinName + "`.")
-                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    .setImage(chartImageLink) // INSERER TRADING VIEW
-                                    .addFields(
-                                        { name: "Contract", value: "`" + coinAddress.toLowerCase() + "`", inline: false },
-                                        { name: "Buy Spent", value: "`" + parseFloat(buySpent).toFixed(3) + "Ξ (" + parseFloat(buySpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                        { name: "Buy Gas Spent", value: "`" + parseFloat(buyGasSpent).toFixed(3) + "Ξ (" + parseFloat(buyGasSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                        { name: "Total Spent", value: "`" + parseFloat(totalBuySpent).toFixed(3) + "Ξ (" + parseFloat(totalBuySpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                        { name: "Sold Value", value: "`" + parseFloat(soldValue).toFixed(3) + "Ξ (" + parseFloat(soldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                        { name: "Sold Gas Value", value: "`" + parseFloat(soldGasValue).toFixed(3) + "Ξ (" + parseFloat(soldGasValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                        { name: "Total Sold Value", value: "`" + parseFloat(totalSoldValue).toFixed(3) + "Ξ (" + parseFloat(totalSoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                        { name: "Token Bought", value: "`" + tokenBoughtCount.toFixed(2) + "`", inline: true },
-                                        { name: "Token Sold", value: "`" + tokenSoldCount.toFixed(2) + "`", inline: true },
-                                        { name: "Token Held", value: "`" + tokenHeldCount.toFixed(2) + "`", inline: true },
-                                        { name: "Trades in", value: "`" + tradeInCount + "`", inline: true },
-                                        { name: "Trades out", value: "`" + tradeOutCount + "`", inline: true },
-                                        { name: "Airdrop/Claim", value: "`" + airdropCount + "`", inline: true },
-                                        { name: "AVG Bought", value: "`" + parseFloat(avgBuy).toFixed(3) + "Ξ (" + parseFloat(avgBuy * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                        { name: "AVG Sold", value: "`" + parseFloat(avgSold).toFixed(3) + "Ξ (" + parseFloat(avgSold * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                        { name: "AVG Held", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + parseFloat(avgHeld * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                        { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + parseFloat(realisedProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                        { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + parseFloat(potentialProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                        { name: "Potential ROI", value: roiFormatted, inline: true },
-                                        { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinAddress + ") ∙ " + '[DexTools](https://www.dextools.io/app/en/ether/pair-explorer/' + coinAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinAddress + ") ∙ " + '[DappRadar](https://dappradar.com/hub/token/eth/' + coinAddress + ")", inline: false },
-                                    )
-                                    .setTimestamp()
-                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                await interaction.editReply({ embeds: [cryptoProfitOneWallet], components: [buttonsRow] });
-
-
-                                //On enregistre le call API dans la database
-                                let computeUnits = 10
-                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getTokenMetadata", apiProvider: "alchemy", timestamp: timeStamp.toString() })
-                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getChart", apiProvider: "chart", timestamp: timeStamp.toString() })
-                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getNormalTxn", apiProvider: "etherscan", timestamp: timeStamp.toString() })
-                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getInternalTxn", apiProvider: "etherscan", timestamp: timeStamp.toString() })
-                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getErc20Txn", apiProvider: "etherscan", timestamp: timeStamp.toString() })
-                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "walletBalance", apiProvider: "etherscan", timestamp: timeStamp.toString() })
-                                for (let i = 0; i < computeUnits; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getTokenPrice", apiProvider: "moralis", timestamp: timeStamp.toString() }) }
-                                for (let i = 0; i < computeUnits; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getErc20Approvals", apiProvider: "moralis", timestamp: timeStamp.toString() }) }
-
-
-
-
-
 
 
 
@@ -798,7 +838,7 @@ module.exports = {
 
 
                                                     tradeInCount++
-                                                    buySpent += parseFloat(normalLookup[0].value / (10**18))
+                                                    buySpent += parseFloat(normalLookup[0].value / (10 ** 18))
                                                     buyGasSpent += gasSpent
                                                     tokenBoughtCount += value
 

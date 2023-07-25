@@ -135,7 +135,7 @@ module.exports = {
             let member = interaction.member;
 
 
-            try {
+            //try {
 
 
                 const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
@@ -145,7 +145,7 @@ module.exports = {
                 let communityStatut = communityRolePerms.dataValues.statut
 
 
-                 //Récupère régagle de privé/ou pas de l'utilisateur
+                //Récupère régagle de privé/ou pas de l'utilisateur
                 const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
 
                 if (authorProfile === null) { await interaction.deferReply(); } else {
@@ -201,10 +201,8 @@ module.exports = {
                                 //Variable pour les options
                                 const selectedCollection = interaction.options.getString("collection");
                                 const selectedWallet = interaction.options.getString("wallet");
-                                const walletAddressName = await wallets.findOne({ where: { authorId: authorId, walletAddress: selectedWallet.toLowerCase() } });
 
 
-                                console.log(walletAddressName)
 
 
 
@@ -491,7 +489,7 @@ module.exports = {
 
                                                         const getderiskAllWallet = new EmbedBuilder().setColor("#060A8F")
                                                             .setTitle(`${authorName}'s derisk price on ${collectionName}`)
-                                                            .setDescription(">>> Derisk datas for all the wallets `(" + walletCount + ")` of <@" + authorId + "> on " + collectionName + ".")
+                                                            .setDescription(">>> Derisk data for all your wallets `(" + walletCount + ")` on " + collectionName + ".")
                                                             .setAuthor({ name: authorName, iconURL: userAvatar })
                                                             .setImage(collectionBanner)
                                                             .addFields(
@@ -534,7 +532,7 @@ module.exports = {
 
                                                         const getderiskzeroAllWallet = new EmbedBuilder().setColor("#060A8F")
                                                             .setTitle(`${authorName}'s derisk price on ${collectionName}`)
-                                                            .setDescription(">>> Derisk datas for all the wallets (`" + walletCount + "`) of <@" + authorId + "> on " + collectionName + ".")
+                                                            .setDescription(">>> Derisk data for all the wallets (`" + walletCount + "`) of <@" + authorId + "> on " + collectionName + ".")
                                                             .setImage(collectionBanner)
                                                             .addFields(
                                                                 { name: "Buy Spent", value: "`" + parseFloat(buySpentEth).toFixed(3) + "Ξ`", inline: true },
@@ -839,7 +837,7 @@ module.exports = {
                                             console.log(collectionLogo)
                                             const getderiskSelectedWallet = new EmbedBuilder().setColor("#060A8F")
                                                 .setTitle(`${authorName}'s derisk price on ${collectionName}`)
-                                                .setDescription(">>> Derisk datas for all the wallets `(" + walletCount + ")` of <@" + authorId + "> on " + collectionName + ".")
+                                                .setDescription(">>> Derisk data for all your wallets `(" + walletCount + ")` on " + collectionName + ".")
                                                 .setThumbnail(collectionLogo)
                                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                                 .addFields(
@@ -912,6 +910,9 @@ module.exports = {
 
 
 
+
+
+
                                     //On initialise le tableau de call api pour mesurer
                                     let apiObj = {}
                                     apiObj.getCollectionsV5 = 0
@@ -946,6 +947,16 @@ module.exports = {
 
 
                                         if (isValidEthereumAddress(selectedWallet)) {
+
+
+                                            const walletAddressName = await wallets.findOne({ where: { authorId: authorId, walletAddress: selectedWallet } });
+                                            let walletName1 = selectedWallet
+                                            let walletName = "`" + selectedWallet.substring(0, 5) + "..." + selectedWallet.substring(selectedWallet.length - 4, selectedWallet.length) + "`"
+                                            if (walletAddressName !== null) {
+                                                walletName1 = walletAddressName.walletName
+                                                walletName = "`" + walletName1 + " (" + selectedWallet.substring(0, 5) + "..." + selectedWallet.substring(selectedWallet.length - 4, selectedWallet.length) + ")`"
+
+                                            }
 
 
 
@@ -1175,7 +1186,7 @@ module.exports = {
 
                                                                         const getderiskSelectedWallet = new EmbedBuilder().setColor("#060A8F")
                                                                             .setTitle(`${authorName}'s derisk price on ${collectionName}`)
-                                                                            .setDescription(">>> Derisk datas for the `" + walletAddressName.walletName + "` wallet of <@" + authorId + "> on " + collectionName + ".")
+                                                                            .setDescription(">>> Derisk data for your wallet `" + walletName + "` on " + collectionName + ".")
                                                                             .setImage(collectionBanner)
                                                                             .setAuthor({ name: authorName, iconURL: userAvatar })
                                                                             .addFields(
@@ -1223,7 +1234,7 @@ module.exports = {
                                                                 const getderiskZeroSelectedWallet = new EmbedBuilder().setColor("#060A8F")
                                                                     .setTitle(`${authorName}'s derisk price on ${collectionName}`)
                                                                     .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                                    .setDescription(">>> Derisk datas for the `" + walletAddressName.walletName + "` wallet of <@" + authorId + "> on " + collectionName + ".")
+                                                                    .setDescription(">>> Derisk data your wallet `" + walletName + "` on " + collectionName + ".")
                                                                     .setImage(collectionBanner)
                                                                     .addFields(
                                                                         { name: "Buy Spent", value: "`" + parseFloat(buySpentEth).toFixed(3) + "Ξ`", inline: true },
@@ -1232,7 +1243,7 @@ module.exports = {
                                                                         { name: "AVG Buy", value: "`" + `${avgBuy}` + "`", inline: true },
                                                                         { name: "AVG Gas", value: "`" + `${avgGas}` + "`", inline: true },
                                                                         { name: "AVG Total", value: "`" + `${avgTotal}` + "`", inline: true },
-                                                                        { name: "Floor Price", value: "`" + `${collectionFp}` + "Ξ`", inline: true },
+                                                                        { name: "Floor Price", value: "`" + `${collectionFp}` + "`", inline: true },
                                                                         { name: "Royalties", value: "`" + `${collectionRoyal}` + "`", inline: true },
                                                                         { name: "NFTs Hold", value: "`" + `${holdCount}` + "`", inline: true },
                                                                         { name: "Total Derisk", value: "`" + `${totalDerisk}` + "`", inline: true },
@@ -1285,7 +1296,7 @@ module.exports = {
                                     } else if (isValidInput) {
 
 
-                                      
+
                                         if (isBRC20BitcoinWallet(selectedWallet)) {
 
 
@@ -1323,7 +1334,7 @@ module.exports = {
 
 
 
-                                           
+
 
                                             const url = `https://api-mainnet.magiceden.dev/v2/ord/btc/collections/` + selectedCollection;
                                             const response = await axios.get(url, { headers });
@@ -1493,7 +1504,7 @@ module.exports = {
                                             console.log(collectionLogo)
                                             const getderiskSelectedWallet = new EmbedBuilder().setColor("#060A8F")
                                                 .setTitle(collectionName)
-                                                .setDescription(">>> Derisk datas for the `" + walletFormatted + "` wallet of " + authorName + " on " + collectionName + ".")
+                                                .setDescription(">>> Derisk data for your wallet `" + walletFormatted + "` on " + collectionName + ".")
                                                 .setThumbnail(collectionLogo)
                                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                                 .addFields(
@@ -1518,7 +1529,7 @@ module.exports = {
                                             await interaction.editReply({ embeds: [getderiskSelectedWallet] });
 
 
-                                       
+
 
 
 
@@ -1829,82 +1840,82 @@ module.exports = {
 
 
 
-            } catch (error) {
+          //  } catch (error) {
 
-                console.log("// Error - sent in report ❌")
+            //     console.log("// Error - sent in report ❌")
 
-                //On envoi une notif
-                let botId = interaction.applicationId
-                const botAdmins = await adminsql.findOne({ where: { botId: botId } })
-                const mainServerId = botAdmins.dataValues.mainServerId
-                const logChannelId = botAdmins.dataValues.logChannelId
-                const guild = interaction.client.guilds.cache.get(mainServerId);
-                const channel = guild.channels.cache.get(logChannelId);
-
-
-                const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
-                let adminRoleId = adminAccessInfos.dataValues.adminRoleId
-                let serverName = adminAccessInfos.dataValues.serverName
-                const userRoleList = interaction.member._roles
-                let userHighestRole = "Member"
-                if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-                let reportCommand = "/derisk"
-
-                const timeStamp = Date.now();
-                const date = new Date(timeStamp);
-                const dateLisible = date.toLocaleString();
-                const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
-                const formattedDate = date1.format('Do [of] MMMM YYYY');
+            //     //On envoi une notif
+            //     let botId = interaction.applicationId
+            //     const botAdmins = await adminsql.findOne({ where: { botId: botId } })
+            //     const mainServerId = botAdmins.dataValues.mainServerId
+            //     const logChannelId = botAdmins.dataValues.logChannelId
+            //     const guild = interaction.client.guilds.cache.get(mainServerId);
+            //     const channel = guild.channels.cache.get(logChannelId);
 
 
+            //     const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
+            //     let adminRoleId = adminAccessInfos.dataValues.adminRoleId
+            //     let serverName = adminAccessInfos.dataValues.serverName
+            //     const userRoleList = interaction.member._roles
+            //     let userHighestRole = "Member"
+            //     if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
+            //     let reportCommand = "/derisk"
 
-                //On enregistre le call
-                await reportsql.create({
-                    botId: botId,
-                    authorId: "Bot",
-                    serverName: serverName,
-                    authorRole: userHighestRole,
-                    serverId: serverId,
-                    date: formattedDate,
-                    reportType: "Bug",
-                    reportCommand: reportCommand,
-                    reportDescription: "```" + error.stack + "```",
-                    reportPriority: "5",
-                    reportState: "Not treated",
-                })
+            //     const timeStamp = Date.now();
+            //     const date = new Date(timeStamp);
+            //     const dateLisible = date.toLocaleString();
+            //     const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
+            //     const formattedDate = date1.format('Do [of] MMMM YYYY');
 
 
 
-                const updateEmbed = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("New Report")
-                    .setDescription(">>> A new report has just been sent.")
-                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                    .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
-                    .setTimestamp()
-                    .addFields(
-                        { name: " ", value: " ", inline: false },
-                        { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
-
-                    )
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-
-                await channel.send({ embeds: [updateEmbed] });
-
+            //     //On enregistre le call
+            //     await reportsql.create({
+            //         botId: botId,
+            //         authorId: "Bot",
+            //         serverName: serverName,
+            //         authorRole: userHighestRole,
+            //         serverId: serverId,
+            //         date: formattedDate,
+            //         reportType: "Bug",
+            //         reportCommand: reportCommand,
+            //         reportDescription: "```" + error.stack + "```",
+            //         reportPriority: "5",
+            //         reportState: "Not treated",
+            //     })
 
 
-                const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("An error occured")
-                    .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
-                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                    .setTimestamp()
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+            //     const updateEmbed = new EmbedBuilder().setColor("#060A8F")
+            //         .setTitle("New Report")
+            //         .setDescription(">>> A new report has just been sent.")
+            //         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+            //         .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+            //         .setTimestamp()
+            //         .addFields(
+            //             { name: " ", value: " ", inline: false },
+            //             { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
+
+            //         )
+            //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-                await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
+            //     await channel.send({ embeds: [updateEmbed] });
 
 
-            }
+
+            //     const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
+            //         .setTitle("An error occured")
+            //         .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
+            //         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+            //         .setTimestamp()
+            //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+            //     await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
+
+
+            // }
 
         } else if (interaction.guildId == null) {
 

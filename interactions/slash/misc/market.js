@@ -230,7 +230,7 @@ if (!selectedTimestamp) { timeRange4 = '1 day'}
                         const ethCallPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
                         ethusdtPrice = ethCallPrice.data.result.ethusd
 
-                        //Call API sur les datas générales
+                        //Call API sur les data générales
                         nftgo.get_metrics_eth_v1_market_metrics_get()
                             .then(async ({ data: marketdata }) => {
 
@@ -530,7 +530,7 @@ if (!selectedTimestamp) { timeRange4 = '1 day'}
 
                         
 
-                        //Call API sur les datas générales
+                        //Call API sur les data générales
                         nftgo.get_metrics_eth_v1_market_metrics_get()
                             .then(async ({ data: marketdata }) => {
 

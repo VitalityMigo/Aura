@@ -19,7 +19,7 @@ function isSATS(str) {
 }
 
 function isBRC20BitcoinWallet(wallet) {
-    const regex = /^bc1[a-zA-Z0-9]{59}$/;
+    const regex = /^bc1[a-zA-Z0-9]{39,59}$/;
 
     return regex.test(wallet);
 }

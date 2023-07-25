@@ -107,9 +107,12 @@ module.exports = {
 
                     if (selectedWallet.toLowerCase() !== "all") {
 
-                        // On récupère le nom du wallet séléctionné
-                        const precisedWalletFind = await wallets.findOne({ where: { authorId: authorId, walletAddress: selectedWallet } });
-                        let precisedWalletNameofAuthor = precisedWalletFind.dataValues.walletName
+                      
+                        const WalletofAuthor = await wallets.findOne({ where: { authorId: authorId, walletAddress: selectedWallet } });
+                       let precisedWalletNameofAuthor = ""
+                        if (WalletofAuthor !== null) {
+                            precisedWalletNameofAuthor = WalletofAuthor.dataValues.walletName
+                        } else { precisedWalletNameofAuthor = selectedWallet.substring(0, 5) + "..." + selectedWallet.substring(selectedWallet.length - 4, selectedWallet.length) }
 
 
                         //On récupère la balance de token

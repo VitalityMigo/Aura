@@ -228,7 +228,6 @@ module.exports = {
                                 //On load l'image
                                  chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
 
-console.log(chartImageLink)
 
 
                                 const response = await Moralis.EvmApi.token.getTokenPrice({
@@ -520,7 +519,7 @@ console.log(chartImageLink)
 
 
 
-                                //On stock les datas d'interaction pour le visuel
+                                //On stock les data d'interaction pour le visuel
                                 await interactionData.destroy({ where: { authorId: authorId, commandName: "cryptoprofit", serverId: serverId } })
 
                                 await interactionData.create({
@@ -973,7 +972,7 @@ console.log(chartImageLink)
 
 
 
-                                    //On stock les datas d'interaction pour le visuel
+                                    //On stock les data d'interaction pour le visuel
                                     await interactionData.destroy({ where: { authorId: authorId, commandName: "cryptoprofit", serverId: serverId } })
 
                                     await interactionData.create({

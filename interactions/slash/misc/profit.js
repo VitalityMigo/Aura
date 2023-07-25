@@ -1411,6 +1411,7 @@ module.exports = {
                                 precisedWalletNameofAuthor = WalletofAuthor.dataValues.walletName
                             } else { precisedWalletNameofAuthor = walletAddress.substring(0, 5) + "..." + walletAddress.substring(walletAddress.length - 4, walletAddress.length) }
 
+                            
                             //Ajustement du Timestamp
                             if (selectedTime === "1 Day") { selectedTimestamp = actualTimestamp - 86400 }
                             if (selectedTime === "3 Days") { selectedTimestamp = actualTimestamp - 259200 }

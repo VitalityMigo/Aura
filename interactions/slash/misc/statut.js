@@ -82,7 +82,7 @@ module.exports = {
                             .setTitle(`Statut`)
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .setDescription(`>>> Display the current statut of the different part of the bot`)
-                            .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .addFields(
                                 { name: 'Global Statut', value: "`Active`🟢", inline: true },
                                 { name: 'Commands', value: "`Available`", inline: true },
@@ -105,7 +105,7 @@ module.exports = {
                         const notMember = new EmbedBuilder().setColor("#060A8F")
                             .setTitle(`Bot Access`)
                             .setDescription(">>> Showing access data")
-                            .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .addFields(
                                 { name: " ", value: " ", inline: false },
@@ -127,7 +127,7 @@ module.exports = {
                     const botOff = new EmbedBuilder().setColor("#060A8F")
                         .setTitle(`Bot statut`)
                         .setDescription(">>> Showing the bot statut")
-                        .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                         .setAuthor({ name: authorName, iconURL: userAvatar })
                         .addFields(
                             { name: 'Global Statut', value: "`Inactive 🔴`", inline: true },
@@ -149,7 +149,7 @@ module.exports = {
                 const botOff = new EmbedBuilder().setColor("#060A8F")
                     .setTitle(`Bot Access`)
                     .setDescription(">>> Showing the community's bot access")
-                    .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                     .setAuthor({ name: authorName, iconURL: userAvatar })
                     .addFields(
                         { name: 'Access Statut', value: "`Denied 🔴`", inline: true },
@@ -214,8 +214,8 @@ module.exports = {
             const updateEmbed = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("New Report")
                 .setDescription(">>> A new report has just been sent.")
-                .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-                .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg" })
+                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
                 .setTimestamp()
                 .addFields(
                     { name: " ", value: " ", inline: false },
@@ -232,7 +232,7 @@ module.exports = {
             const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("An error occured")
                 .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
-                .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                 .setTimestamp()
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
@@ -246,7 +246,7 @@ module.exports = {
         const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
         .setTitle("Aura")
         .setDescription(`Hey ${interaction.user.username}, we hope you're doing well !\n\nAlthough this may be possible in the future, Aura cannot be used in DM at the moment. If you want to have access to the bot, go here: <#1108757700885622784>.\n\nIf you have any questions, don't hesitate to contact one of our team member, or directly on Discord here : <#1121110417368956958>.\n\nHave a nice day 👑`)
-        .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
         .setTimestamp()
         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 

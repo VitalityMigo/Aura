@@ -30,7 +30,7 @@ async function intervalcleandatabase(client) {
         const apiMonthlyReport = new EmbedBuilder().setColor("#060A8F")
             .setTitle("Daily Database Cleaning")
             .setDescription("The temporary database tables have been successfully cleaned. You can consult them in the Database Reader.")
-            .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
             .setTimestamp()
             
             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -84,8 +84,8 @@ async function intervalcleandatabase(client) {
         const updateEmbed = new EmbedBuilder().setColor("#060A8F")
             .setTitle("New Report")
             .setDescription(">>> A new report has just been sent.")
-            .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-            .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg" })
+            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+            .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
             .setTimestamp()
             .addFields(
                 { name: " ", value: " ", inline: false },

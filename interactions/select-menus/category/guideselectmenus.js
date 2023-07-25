@@ -66,7 +66,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/access` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/access` command allows you to know which type of access you have to the bot on this particular server. You can also see all the individual commands you can use.", inline: false },
@@ -91,7 +91,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the various alerts command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The alerts commands are composed of `/setalerts`, to set a new floor price alerts, of /getalerts, to display your current alerts, and of /removealerts, to remove one of your alerts. Alerts are triggered when the floor price of the selected collection reaches the alert's price", inline: false },
@@ -117,7 +117,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/blur` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/blur` command allows the user to display key Blur metrics of his wallet(s. The user can choose between displaying the metrics on one of his registered wallet or across all his registered wallets.", inline: false },
@@ -141,7 +141,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/coin` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/coin` command allows the user to display key metrics on a ERC20 (Ethereum) or BRC20 (Bitcoin) coin.", inline: false },
@@ -165,7 +165,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/cryptoprofit` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/cryptoprofit` command allows the user to display his profit and loss metrics on any ERC20 coin, accross one or few of his registered wallet(s).", inline: false },
@@ -189,7 +189,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/data` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/data` command allows the user to display key metrics about a specific Ethereum or Bitcoin collection such as the floor price, the listed token ration, the volume, the market cap and more.", inline: false },
@@ -213,7 +213,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/derisk` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/derisk` command allows the user to display his derisk metrics on a specific Ethereum or Bitcoin collection such as the amount spent, the floor price of the collection, the average derisk price per token and more. The user can choose between analyzing one of his registered wallet or accross all his registered wallet.", inline: false },
@@ -236,7 +236,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/ens` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/ens` command allows the user to display infos about an ENS such as its owner, ENS related to this one or various links related to it.", inline: false },
@@ -259,7 +259,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/gascalculator` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/gascalculator` command allows the user to calculate the estimated price of gas fees he will pay for a transaction. The command allows the user to display the result on a large range of gas fees to take in account the potential ETH network congestion.", inline: false },
@@ -286,7 +286,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/gastracker` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/gastracker` command allows the user to display the current Ethereum main gas fees metrics, such as the gas price, the current block number or the average confirmation time for a transaction using the recommended amount of gas.", inline: false },
@@ -311,7 +311,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/getprofile` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/getprofile` command allows the user to consult the public profile of a community member. The profile is composed of various information such as discord and twitter links, projects the member is working on and more. The profile can be set with the command `/profile`.", inline: false },
@@ -336,7 +336,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/market` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/market` command allows the user to display the main metrics of the current Ethereum NFT market, including the global volume, number of wallets and whales, and more. The user can choose to adapt the metrics to a certain timespan.", inline: false },
@@ -361,7 +361,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/portfolio` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/portfolio` command allows the user to display the main metrics of one of his registered Ethereum wallets or accross all his registered wallets. The analyze retrieve various metrics such as the wallet balance, the main ERC20/ERC721 tokens amount held and more.", inline: false },
@@ -388,7 +388,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/privacy` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/privacy` command allows the user to switch between private and public mode in a simple click. In public mode, the result of the commands the user is executing could be seen by everyone, while the user is the only who can see them in private mode.", inline: false },
@@ -414,7 +414,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/profile` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/profile` command allows the user to access is personal dashboard. This dashboards is the place where a user can change their profile, settings, and more.", inline: false },
@@ -440,7 +440,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/profit` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/profit` command allows the user to display his profit and loss metrics on a specific Ethereum or Bitcoin collection. The analyze retrieves metrics such as the amount spent/sold, the amount of token bought/sold/held, the realized and potential profit and loss and more. The user can choose between analyzing one of his registered wallet or accross all his registered wallet.", inline: false },
@@ -464,7 +464,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/rcprofit` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/rcprofit` command allows the admins of a community to display the profit and loss metrics of the group on a specific collection. The analyze retrieves metrics such as the amount spent/sold, the realized profit and loss, the number of community members involved and more. The admin can choose between analyzing one collection or all the trade activity no matter the collection.", inline: false },
@@ -487,7 +487,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/report` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/report` command allows the user to submit a bug, an error, a suggestion or an idea to the team. Reports are being constantly treated by our team.", inline: false },
@@ -510,7 +510,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/team` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/team` command allows the admins of the server to modify the settings of the bot, such as the admin and member role, or the community's admin password. It has been built to let the team navigate through a quick, secured and efficient dashboard.", inline: false },
@@ -535,7 +535,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/vouch` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/vouch` command allows the user to vouch for a member of the community that helped him with anything. The amount of vouch for each user is then stored in the database.", inline: false },
@@ -562,7 +562,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/vouchleaderboard` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/vouchleaderboard` command allows the user to display the vouch leaderboard, which means the members that have the most vouch, that helped the most since the last reset of the leaderboard. The admins of the community have the possibility to reset the leaderboard to zero.", inline: false },
@@ -589,7 +589,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the various wallets commands")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The wallets commands are composed of `/setwallet`, to set a new Ethereum or Bitcoin wallet in your portfolio, of `/getwallet`, to display all your registered wallets, and of `/removewallet`, to remove a wallet from your portfolio.", inline: false },
@@ -617,7 +617,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the `/walletgenerator` command")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/walletgenerator` command allows the user to generate thousands of wallets in few seconds. When the wallets are generated, they're ready to use and return to the user with the public address and private key, in a ready to download csv file.", inline: false },
@@ -643,7 +643,7 @@ module.exports = {
 				.setTitle("Guide")
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.setDescription(">>> Guide of the various watchlist commands")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The watchlist commands are composed of `/setwatchlist`, to set a new Ethereum or Bitcoin collection in your watchlist, of `/getwatchlist`, to display all the collections in your watchlist, and of `/removewatchlist`, to remove a collection from your watchlist.", inline: false },

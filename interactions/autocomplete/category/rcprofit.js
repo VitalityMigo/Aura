@@ -155,15 +155,15 @@ module.exports = {
 			const updateEmbed = new EmbedBuilder().setColor("#060A8F")
 				.setTitle("New Report")
 				.setDescription(">>> A new report has just been sent.")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-				.setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg" })
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+				.setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
 				.setTimestamp()
 				.addFields(
 					{ name: " ", value: " ", inline: false },
 					{ name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
 
 				)
-				.setFooter({ text: 'Rolls Chasers Analytics', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+				.setFooter({ text: 'Rolls Chasers Analytics', iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png' })
 
 
 			await channel.send({ embeds: [updateEmbed] });
@@ -173,9 +173,9 @@ module.exports = {
 			const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
 				.setTitle("An error occured")
 				.setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
-				.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.setTimestamp()
-				.setFooter({ text: 'Rolls Chasers Analytics', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+				.setFooter({ text: 'Rolls Chasers Analytics', iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png' })
 
 
 			await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });

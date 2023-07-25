@@ -315,6 +315,7 @@ module.exports = {
                                     const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
                                     .setTitle("Coin")
                                     .setDescription("The token symbol you entered `" + coinTicker + "` isn't a valid BRC20 token symbol. If the token you'd like to analyze is an ERC20 token, please enter the Ethereum token address instead. If it's a BRC20 token, please enter a valid token symbol.")
+                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                     .setAuthor({ name: authorName, iconURL: userAvatar })
                                     .setTimestamp()
                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -472,7 +473,7 @@ module.exports = {
                                     const notMember = new EmbedBuilder().setColor("#060A8F")
                                         .setTitle(`Token Data`)
                                         .setDescription("The coin address or ticker you entered can't be retreive. This can happen for few reasons :\n\n• The token address (ERC20) or symbol (BRC20) doesn't exist\n• The coin isn't available anymore or is suspicious\n• You entered a symbol for a ERC20 and not a token address, double check.\n\nIf you think the problem is on our end, please use `/report` or contact an admin.")
-                                        .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                         .setTimestamp()
                                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
@@ -495,7 +496,7 @@ module.exports = {
                             const notMember = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle(`Bot Access`)
                                 .setDescription(">>> Showing access data")
-                                .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                 .addFields(
                                     { name: " ", value: " ", inline: false },
@@ -516,7 +517,7 @@ module.exports = {
                         const botOff = new EmbedBuilder().setColor("#060A8F")
                             .setTitle(`Bot statut`)
                             .setDescription(">>> Showing the bot statut")
-                            .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .addFields(
                                 { name: 'Global Statut', value: "`Inactive 🔴`", inline: true },
@@ -538,7 +539,7 @@ module.exports = {
                     const botOff = new EmbedBuilder().setColor("#060A8F")
                         .setTitle(`Bot Access`)
                         .setDescription(">>> Showing the community's bot access")
-                        .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                         .setAuthor({ name: authorName, iconURL: userAvatar })
                         .addFields(
                             { name: 'Access Statut', value: "`Denied 🔴`", inline: true },
@@ -605,8 +606,8 @@ module.exports = {
                 const updateEmbed = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("New Report")
                     .setDescription(">>> A new report has just been sent.")
-                    .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-                    .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg" })
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
                     .setTimestamp()
                     .addFields(
                         { name: " ", value: " ", inline: false },
@@ -623,7 +624,7 @@ module.exports = {
                 const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("An error occured")
                     .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
-                    .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                     .setTimestamp()
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
@@ -638,7 +639,7 @@ module.exports = {
             const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("Aura")
                 .setDescription(`Hey ${interaction.user.username}, we hope you're doing well !\n\nAlthough this may be possible in the future, Aura cannot be used in DM at the moment. If you want to have access to the bot, go here: <#1108757700885622784>.\n\nIf you have any questions, don't hesitate to contact one of our team member, or directly on Discord here : <#1121110417368956958>.\n\nHave a nice day 👑`)
-                .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                 .setTimestamp()
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 

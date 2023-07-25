@@ -169,7 +169,7 @@ async function userMonthlyChecker(client) {
         const apiMonthlyReport = new EmbedBuilder().setColor("#060A8F")
             .setTitle("Monthly User Report")
             .setDescription(">>> Showing the bot's monthly user report.")
-            .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
             .setTimestamp()
             .addFields(
                 { name: " ", value: " ", inline: false },
@@ -330,8 +330,8 @@ async function userMonthlyChecker(client) {
         const updateEmbed = new EmbedBuilder().setColor("#060A8F")
             .setTitle("New Report")
             .setDescription(">>> A new report has just been sent.")
-            .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-            .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg" })
+            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+            .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
             .setTimestamp()
             .addFields(
                 { name: " ", value: " ", inline: false },

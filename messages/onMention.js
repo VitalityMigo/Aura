@@ -26,9 +26,9 @@ module.exports = {
 			.setTitle("Rolls Chasers Analytics")
 			.setAuthor({ name: authorName, iconURL: userAvatar })
 			.setDescription("Welcome to Aura\n\nTo start using analytics, use the `/` and select one of the command available. If you need any help, just type `/guide` or contact one of our team member.")
-			.setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
+			.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 			.setTimestamp()
-			.setFooter({ text: 'Rolls Chasers Analytics', iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg' })
+			.setFooter({ text: 'Rolls Chasers Analytics', iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png' })
 
          await message.reply({ embeds: [pingEmbed] });
 

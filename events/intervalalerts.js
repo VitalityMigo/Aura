@@ -98,7 +98,7 @@ async function intervalalerts(client) {
                                 }
 
                                 getfpEmbedUp.setTitle(`${elem.collectionName}`)
-                                    .setAuthor({ name: "RC-Bot", iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg', url: 'https://twitter.com/jayzhvj_eth' })
+                                    .setAuthor({ name: "RC-Bot", iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png', url: 'https://twitter.com/jayzhvj_eth' })
                                     .setDescription("The upward alert for **" + elem.collectionName + "** has been triggered <a:ol_gifsc_PepeMoneyRain87:1039923196163526676>")
                                     .setImage(collectionBanner)
                                     .addFields(
@@ -157,7 +157,7 @@ async function intervalalerts(client) {
 
                                 getfp2EmbedUp.setTitle(`${elem.collectionName}`)
                                     .setURL('https://magically.gg/collection/' + elem.collection)
-                                    .setAuthor({ name: "RC-Bot", iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg', url: 'https://twitter.com/jayzhvj_eth' })
+                                    .setAuthor({ name: "RC-Bot", iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png', url: 'https://twitter.com/jayzhvj_eth' })
                                     .setDescription("The upward alert for **" + elem.collectionName + "** has been triggered <a:ol_gifsc_PepeMoneyRain87:1039923196163526676>")
                                     .setImage(collectionBanner)
                                     .addFields(
@@ -227,8 +227,8 @@ async function intervalalerts(client) {
             const updateEmbed = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("New Report")
                 .setDescription(">>> A new report has just been sent.")
-                .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-                .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg" })
+                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
                 .setTimestamp()
                 .addFields(
                     { name: " ", value: " ", inline: false },
@@ -304,7 +304,7 @@ async function intervalalerts(client) {
                                 }
 
                                 getfpEmbedDown.setTitle(`${elem.collectionName}`)
-                                    .setAuthor({ name: "RC-Bot", iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg', url: 'https://twitter.com/jayzhvj_eth' })
+                                    .setAuthor({ name: "RC-Bot", iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png', url: 'https://twitter.com/jayzhvj_eth' })
                                     .setURL('https://magically.gg/collection/' + elem.collection)
                                     .setDescription("The downward alert for **" + elem.collectionName + "** has been triggered <a:ol_gifsc_PepeMoneyRain87:1039923196163526676>")
                                     .setImage(collectionBanner)
@@ -356,7 +356,7 @@ async function intervalalerts(client) {
                                 }
 
                                 getfp2EmbedDown.setTitle(`${elem.collectionName}`)
-                                    .setAuthor({ name: "RC-Bot", iconURL: 'https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg', url: 'https://twitter.com/jayzhvj_eth' })
+                                    .setAuthor({ name: "RC-Bot", iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png', url: 'https://twitter.com/jayzhvj_eth' })
                                     .setURL('https://magically.gg/collection/' + elem.collection)
                                     .setDescription("The alert downward alert for **" + elem.collectionName + "** has been triggered <a:ol_gifsc_PepeMoneyRain87:1039923196163526676>")
                                     .setImage(collectionBanner)
@@ -434,8 +434,8 @@ async function intervalalerts(client) {
             const updateEmbed = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("New Report")
                 .setDescription(">>> A new report has just been sent.")
-                .setThumbnail('https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg')
-                .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://media.discordapp.net/attachments/949300412874362983/1040242440696758282/Logo_Rolls_V2_5.3_auto_x2.jpg" })
+                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
                 .setTimestamp()
                 .addFields(
                     { name: " ", value: " ", inline: false },

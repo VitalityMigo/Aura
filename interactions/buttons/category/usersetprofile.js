@@ -27,6 +27,7 @@ module.exports = {
 
 		let authorId = interaction.user.id;
 		let authorName = interaction.user.username;
+        let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
 
         try {
 
@@ -179,11 +180,11 @@ module.exports = {
 				{ name: " ", value: " ", inline: false },
 				{ name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
 
-			)
-			.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+	 		)
+	 		.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-		await channel.send({ embeds: [updateEmbed] });
+	 	await channel.send({ embeds: [updateEmbed] });
 
 
 
@@ -195,10 +196,10 @@ module.exports = {
 			.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-		await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
+	 	await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
 
 
-	}
+	 }
 	},
 };
 

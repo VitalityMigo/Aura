@@ -40,83 +40,83 @@ module.exports = {
 
 
 
-            const rcServerId = "949291624389816331"
-            const rcRoleId = "954217614081658900"
+           // const rcServerId = "949291624389816331"
+           // const rcRoleId = "954217614081658900"
 
-            const guild = interaction.client.guilds.cache.get(rcServerId);
+            // const guild = interaction.client.guilds.cache.get(rcServerId);
 
 
-            await guild.members.fetch(authorId)
-                .then(async (member) => {
+            // await guild.members.fetch(authorId)
+            //     .then(async (member) => {
                     
-                    if (member.roles.cache.has(rcRoleId)) {
+            //         if (member.roles.cache.has(rcRoleId)) {
 
 
-                        const roleId1 = '1108761632928182424'; // Remplacez par l'ID de votre rôle
-                        const role1 = interaction.guild.roles.cache.get(roleId1);
-                        interaction.member.roles.add(role1)
+            //             const roleId1 = '1108761632928182424'; // Remplacez par l'ID de votre rôle
+            //             const role1 = interaction.guild.roles.cache.get(roleId1);
+            //             interaction.member.roles.add(role1)
 
-                        const roleId2 = '1121520920222253086'; // Remplacez par l'ID de votre rôle
-                        const role2 = interaction.guild.roles.cache.get(roleId2);
-                        interaction.member.roles.add(role2)
-
-
-
-
-                        const walletManager = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle("Get Access")
-                            .setDescription("Welcome to Aura and to the Rolls Chasers council " + authorName + " !\n\nWe'd like to thank you for your trust and hope you'll profit from Aura. Feel free to ask any question to our team if you need.\n\nYour member and Rolls Chasers role has been granted 👑.")
-                            .setTimestamp()
-                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                        await interaction.reply({ embeds: [walletManager], ephemeral: true });
-
-
-                        // Le membre a le rôle spécifié
-                    } else {
-
-
-                        const walletManager = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle("Get Access")
-                            .setDescription("Our verification system didn't find the appropriate role for your account in the Rolls Chasers Discord. Please try again or contact an administrator.")
-                            .setTimestamp()
-                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                        await interaction.reply({ embeds: [walletManager], ephemeral: true });
-                    }
-                })
+            //             const roleId2 = '1121520920222253086'; // Remplacez par l'ID de votre rôle
+            //             const role2 = interaction.guild.roles.cache.get(roleId2);
+            //             interaction.member.roles.add(role2)
 
 
 
 
+            //             const walletManager = new EmbedBuilder().setColor("#060A8F")
+            //                 .setTitle("Get Access")
+            //                 .setDescription("Welcome to Aura and to the Rolls Chasers council " + authorName + " !\n\nWe'd like to thank you for your trust and hope you'll profit from Aura. Feel free to ask any question to our team if you need.\n\nYour member and Rolls Chasers role has been granted 👑.")
+            //                 .setTimestamp()
+            //                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-            // const walletAddress = new ModalBuilder()
-            //     .setCustomId('getaccessRCwalletaddress')
-            //     .setTitle('Wallet Authentification');
-
-            // // Add components to modal
-
-            // // Create the text input components
-            // const txnHash = new TextInputBuilder()
-            //     .setCustomId('getaccessRCwalletaddressR1')
-            //     .setLabel("Your wallet address that holds a RC token")
-            //     .setPlaceholder("0x.........")
-            //     .setStyle(TextInputStyle.Short)
-            //     .setMinLength(40)
-            //     .setMaxLength(100);
+            //             await interaction.reply({ embeds: [walletManager], ephemeral: true });
 
 
+            //             // Le membre a le rôle spécifié
+            //         } else {
 
 
-            // // An action row only holds one text input,
-            // // so you need one action row per text input.
-            // const zeroActionRowSetProfile = new ActionRowBuilder().addComponents(txnHash);
+            //             const walletManager = new EmbedBuilder().setColor("#060A8F")
+            //                 .setTitle("Get Access")
+            //                 .setDescription("Our verification system didn't find the appropriate role for your account in the Rolls Chasers Discord. Please try again or contact an administrator.")
+            //                 .setTimestamp()
+            //                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-            // // Add inputs to the modal
-            // walletAddress.addComponents(zeroActionRowSetProfile)
+            //             await interaction.reply({ embeds: [walletManager], ephemeral: true });
+            //         }
+            //     })
 
-            // // Show the modal to the user
-            // await interaction.showModal(walletAddress);
+
+
+
+
+            const walletAddress = new ModalBuilder()
+                .setCustomId('getaccessRCwalletaddress')
+                .setTitle('Wallet Authentification');
+
+            // Add components to modal
+
+            // Create the text input components
+            const txnHash = new TextInputBuilder()
+                .setCustomId('getaccessRCwalletaddressR1')
+                .setLabel("Your wallet address that holds a RC token")
+                .setPlaceholder("0x.........")
+                .setStyle(TextInputStyle.Short)
+                .setMinLength(40)
+                .setMaxLength(100);
+
+
+
+
+            // An action row only holds one text input,
+            // so you need one action row per text input.
+            const zeroActionRowSetProfile = new ActionRowBuilder().addComponents(txnHash);
+
+            // Add inputs to the modal
+            walletAddress.addComponents(zeroActionRowSetProfile)
+
+            // Show the modal to the user
+            await interaction.showModal(walletAddress);
 
 
 

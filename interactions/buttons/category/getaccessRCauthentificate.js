@@ -74,7 +74,9 @@ module.exports = {
 
         const rcContract = '0x222ED30d0855de29Dc6F40aFf448C11E11468B24'
 
-        
+        console.log("key : " + randomKey)
+        console.log(data)
+
 
         if (username.includes(randomKey)) {
 

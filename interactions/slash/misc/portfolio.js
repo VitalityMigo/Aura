@@ -8,6 +8,8 @@
 const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { profileData, accessSql, interactionData, wallets, apimonitorsql, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
+const reduceText = require("../../../functions/reducetext")
+
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -308,7 +310,7 @@ module.exports = {
                                                         }
 
                                                         let lignMaxSize = 70
-                                                        let leftPartNfts = "`" + name + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "Ξ"
+                                                        let leftPartNfts = "`" + reduceText(name, 30) + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "Ξ"
                                                         let rightPartNfts = totalPrice + "Ξ (" + totalPriceUsd + "$)`\n"
                                                         let leftPartNFTsLenght = leftPartNfts.length
                                                         let rightPartNftsLenght = rightPartNfts.length
@@ -317,7 +319,7 @@ module.exports = {
                                                         for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
 
 
-                                                        nftsOverview += "`" + name + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "Ξ" + spaceLenght + totalPrice + "Ξ (" + totalPriceUsd + "$)`\n";
+                                                        nftsOverview += "`" + reduceText(name, 30) + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "Ξ" + spaceLenght + totalPrice + "Ξ (" + totalPriceUsd + "$)`\n";
 
 
                                                     });
@@ -560,7 +562,7 @@ module.exports = {
 
 
                                         let lignMaxSize = 70
-                                        let leftPartNfts = "`" + name + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "₿"
+                                        let leftPartNfts = "`" + reduceText(name, 30) + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "₿"
                                         let rightPartNfts = totalPrice + "₿ (" + totalPriceUsd + "$)`\n"
                                         let leftPartNFTsLenght = leftPartNfts.length
                                         let rightPartNftsLenght = rightPartNfts.length
@@ -569,7 +571,7 @@ module.exports = {
                                         for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
 
 
-                                        nftsOverview += "`" + name + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "₿" + spaceLenght + totalPrice + "₿ (" + totalPriceUsd + "$)`\n";
+                                        nftsOverview += "`" + reduceText(name, 30) + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "₿" + spaceLenght + totalPrice + "₿ (" + totalPriceUsd + "$)`\n";
 
 
                                     };
@@ -804,7 +806,7 @@ module.exports = {
                                             }
 
                                             let lignMaxSize = 70
-                                            let leftPartNfts = "`" + name + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "Ξ"
+                                            let leftPartNfts = "`" + reduceText(name, 30) + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "Ξ"
                                             let rightPartNfts = totalPrice + "Ξ (" + totalPriceUsd + "$)`\n"
                                             let leftPartNFTsLenght = leftPartNfts.length
                                             let rightPartNftsLenght = rightPartNfts.length
@@ -814,7 +816,7 @@ module.exports = {
 
 
 
-                                            nftsOverview += "`" + name + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "Ξ" + spaceLenght + totalPrice + "Ξ (" + totalPriceUsd + "$)`\n";
+                                            nftsOverview += "`" + reduceText(name, 30) + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "Ξ" + spaceLenght + totalPrice + "Ξ (" + totalPriceUsd + "$)`\n";
 
 
                                         });

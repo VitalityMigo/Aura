@@ -15,6 +15,7 @@ const { ButtonInteraction } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
 const { accessSql, profileData, interactionData, adminsql, wallets, reportsql, sequelize } = require('../../../events/database');
 const moment = require('moment');
+const reduceText = require("../../../functions/reducetext")
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -244,7 +245,7 @@ module.exports = {
 
 
                         let lignMaxSize = 70
-                        let leftPartNfts = "`" + name + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "₿"
+                        let leftPartNfts = "`" + reduceText(name, 30) + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "₿"
                         let rightPartNfts = totalPrice + "₿ (" + totalPriceUsd + "$)`\n"
                         let leftPartNFTsLenght = leftPartNfts.length
                         let rightPartNftsLenght = rightPartNfts.length
@@ -253,7 +254,7 @@ module.exports = {
                         for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
 
 
-                        nftsOverview += "`" + name + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "₿" + spaceLenght + totalPrice + "₿ (" + totalPriceUsd + "$)`\n";
+                        nftsOverview += "`" + reduceText(name, 30) + " ∙ " + tokenCount + " Owned ∙ " + floorAskPrice + "₿" + spaceLenght + totalPrice + "₿ (" + totalPriceUsd + "$)`\n";
 
 
                     };

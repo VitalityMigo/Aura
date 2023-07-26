@@ -36,7 +36,7 @@ module.exports = {
                 //Récupère info varibale sur le bot et le serveur
                 const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
                 let communityMemberRoleId = communityRolePerms.dataValues.memberRoleId
-                let communityAdminRoleId = communityRolePerms.dataValues.admiRoleId
+                let communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
                 let botPowerStatut = communityRolePerms.dataValues.actualPower
                 let communityStatut = communityRolePerms.dataValues.statut
 
@@ -75,7 +75,7 @@ module.exports = {
 
 
 
-                            let serverName = interaction.member.guild.name
+                            let serverName = interaction.member.gild.name
                             let serverLogo = interaction.member.guild.icon
 
 

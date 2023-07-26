@@ -223,7 +223,7 @@ module.exports = {
                                 }
 
 
-                                if (isValidEthereumAddress(selectedWallet)) {
+                                if (isValidEthereumAddress(walletAddress)) {
 
 
 

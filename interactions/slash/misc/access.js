@@ -163,7 +163,7 @@ module.exports = {
                             }
 
 
-                            
+
 
                         } else if (!member.roles.cache.has(communityMemberRoleId)) {
 
@@ -289,9 +289,11 @@ module.exports = {
                 })
 
 
-                console.log("//////////\n\nDetails de l'erreur :\n\n" + error + "\n\n//////////")
+                console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
                 const reduceText = require("../../../functions/reducetext")
+                const roleTag = "1121510423687090186"
+
 
                 const updateEmbed = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("New Report")
@@ -304,10 +306,11 @@ module.exports = {
                         { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
                         { name: " ", value: " ", inline: false },
                         { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
-
                     )
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+
+                await channel.send("<@&" + roleTag + ">");
 
                 await channel.send({ embeds: [updateEmbed] });
 

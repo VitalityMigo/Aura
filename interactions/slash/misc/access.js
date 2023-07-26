@@ -75,7 +75,7 @@ module.exports = {
 
 
 
-                            let serverName = interaction.member.gild.name
+                            let serverName = interaction.member.guild.name
                             let serverLogo = interaction.member.guild.icon
 
 

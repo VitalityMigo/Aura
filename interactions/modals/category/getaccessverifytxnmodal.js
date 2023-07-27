@@ -58,6 +58,7 @@ module.exports = {
             const txnHash = interaction.fields.getTextInputValue('getaccessverifytxnmodalR1');
 
             const rcwallet = "0xba1fcA2B6e1c84e649D11d3f506b9eA43573b027"
+            const price = 0.02
 
 
             const txnCall = await web3.eth.getTransaction(txnHash)
@@ -75,7 +76,7 @@ module.exports = {
             const randomKey = generateRandomString(15)
 
 
-            if (to.toLowerCase() == rcwallet.toLowerCase() && value >= 0.02 && txnHistoryCall == null) {
+            if (to.toLowerCase() == rcwallet.toLowerCase() && value >= price && txnHistoryCall == null) {
 
                 const isAlreadyVerified = await paymentHistory.findOne({ where: { authorId: authorId, from: from } })
 
@@ -161,12 +162,12 @@ module.exports = {
 
 
 
-            } else if (value < 0.02) {
+            } else if (value < price) {
 
 
                 const walletManager = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("Get Access")
-                    .setDescription("The transaction you provided isn't valid because the amount sent is `" + (0.02 - value) + "Ξ` below the selected plan's price (0.02Ξ). \n\nIf you need any help, feel free to open a ticket.")
+                    .setDescription("The transaction you provided isn't valid because the amount sent is `" + (price - value) + "Ξ` below the selected plan's price (0.02Ξ). \n\nIf you need any help, feel free to open a ticket.")
                     .setTimestamp()
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 

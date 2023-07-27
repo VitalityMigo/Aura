@@ -84,7 +84,7 @@ module.exports = {
 
         const walletManager = new EmbedBuilder().setColor("#060A8F")
             .setTitle("Get Access")
-            .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum. This page will be updated when it's done, don't close it.\n\nIn the meantime, you can consult our documentation [here](https://rolls-chasers.gitbook.io/aura), or start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
+            .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum.\n\nThis page will be updated when it's done, don't close it.\n\nIn the meantime, you can start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
             .addFields(
                 { name: " ", value: " ", inline: false },
                 { name: "Loading <a:AuraLoading:1134068847616458792>", value: "```__________________________________________________ [0%]```", inline: false },
@@ -120,6 +120,24 @@ module.exports = {
             if (username.includes(randomKey)) {
 
                 isSameUsername = true
+
+
+                const walletManager = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Get Access")
+                    .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum. This page will be updated when it's done, don't close it.\n\nIn the meantime, you can consult our documentation [here](https://rolls-chasers.gitbook.io/aura), or start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
+                    .addFields(
+                        { name: " ", value: " ", inline: false },
+                        { name: "Loading Completed <a:AuraCheck:1134071763588878398>" , value: "```##################################################[100%]```", inline: false },
+
+                    )
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                await interaction.editReply({ embeds: [walletManager], ephemeral: true });
+
+
+                await addTimeout(3);
+
 
 
 
@@ -210,9 +228,25 @@ module.exports = {
 
         if (isSameUsername == false && tryCount == 10 && isAlreadyAnswer == false) {
 
+            const completeLoading = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Get Access")
+                    .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum. This page will be updated when it's done, don't close it.\n\nIn the meantime, you can consult our documentation [here](https://rolls-chasers.gitbook.io/aura), or start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
+                    .addFields(
+                        { name: " ", value: " ", inline: false },
+                        { name: "Loading Completed <a:AuraCheck:1134071763588878398>" , value: "```##################################################[100%]```", inline: false },
+
+                    )
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                await interaction.editReply({ embeds: [completeLoading], ephemeral: true });
+
+
+                await addTimeout(3);
+
             const walletManager = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("Get Access")
-                .setDescription("Our verification system didn't find the key we provided you in your username. It could take few minutes to update, please try again in a bit.\n\nCurrent Opensea username : `" + username + "`")
+                .setDescription("Our verification system didn't find the key we provided you in your username. Please make sure the provided string is in your **username**, then click on the authentificate button above again.\n\n Current Opensea username : `" + username + "`")
                 .setTimestamp()
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 

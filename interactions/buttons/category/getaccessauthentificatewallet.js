@@ -27,6 +27,19 @@ const headers = {
     'X-Api-Key': openseaApiKey
 };
 
+const addTimeout = require("../../../functions/addtimeout")
+
+function generateProgressBar(tryCount) {
+    // Limiter tryCount entre 0 et 10 pour s'assurer que la barre de progression ne dépasse pas 100%
+    const progress = Math.min(Math.max(tryCount, 0), 10);
+
+    const progressBar = '#####'.repeat(progress) + '_____'.repeat(10 - progress);
+    const percentage = progress * 10;
+
+    return `${progressBar} (${percentage}%)`;
+}
+
+
 
 module.exports = {
     id: 'getaccessauthentificatewallet-button',
@@ -42,48 +55,32 @@ module.exports = {
 
         try {
 
-        //Checkpoint
-        console.log("// Step 1 : Initialization - Executed ✅")
+            //Checkpoint
+            console.log("// Step 1 : Initialization - Executed ✅")
 
 
 
-        //On trouve la transaction qui vient d'être faite
-        const txnHistoryCall = await paymentHistory.findAll({ where: { authorId: authorId } })
+            //On trouve la transaction qui vient d'être faite
+            const txnHistoryCall = await paymentHistory.findAll({ where: { authorId: authorId } })
 
-        const maxTimestampObj = txnHistoryCall[0]; // Accéder à l'objet payment
+            const maxTimestampObj = txnHistoryCall[0]; // Accéder à l'objet payment
 
-        for (let i = 1; i < txnHistoryCall.length; i++) {
-            const currentObj = txnHistoryCall[i];
-            if (currentObj.dataValues.timestamp > maxTimestampObj.dataValues.timestamp) {
-                maxTimestampObj = currentObj;
+            for (let i = 1; i < txnHistoryCall.length; i++) {
+                const currentObj = txnHistoryCall[i];
+                if (currentObj.dataValues.timestamp > maxTimestampObj.dataValues.timestamp) {
+                    maxTimestampObj = currentObj;
+                }
             }
-        }
-
-
-        const randomKey = maxTimestampObj.dataValues.randomKey
-        const walletAddress = maxTimestampObj.dataValues.from
-
-
-
-        const url = 'https://api.opensea.io/user/' + walletAddress + '?format=json'
-        const response = await axios.get(url, { headers });
-        const data = await response.data;
-
-        const username = data.username
-        console.log(username)
-
-
-        if (username.includes(randomKey)) {
-
-            const roleId = '1108761632928182424'; // Remplacez par l'ID de votre rôle
-            const role = interaction.guild.roles.cache.get(roleId);
-
-            interaction.member.roles.add(role)
 
 
             const walletManager = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("Get Access")
-                .setDescription("Your subscription has been confirmed !\n\nYou can now remove the key from your Opensea username.\n\nWe'd like to thank you for your trust and hope you'll profit from Aura. Feel free to ask any question to our team if you need.\n\nYour member role has been granted 👑.")
+                .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum.\n\nThis page will be updated when it's done, don't close it.\n\nIn the meantime, you can start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
+                .addFields(
+                    { name: " ", value: " ", inline: false },
+                    { name: "Loading <a:AuraLoading:1134068847616458792>", value: "```__________________________________________________ [0%]```", inline: false },
+
+                )
                 .setTimestamp()
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
@@ -91,21 +88,126 @@ module.exports = {
 
 
 
-        } else  {
+            const randomKey = maxTimestampObj.dataValues.randomKey
+            const walletAddress = maxTimestampObj.dataValues.from
+
+            let tryCount = 0
+            let isSameUsername = false
+            let username = "not available"
 
 
 
-            const walletManager = new EmbedBuilder().setColor("#060A8F")
-                .setTitle("Get Access")
-                .setDescription("Our verification system didn't find the key we provided you in your username. It could take few minutes to update, please try again in a bit.")
-                .setTimestamp()
-                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-            await interaction.reply({ embeds: [walletManager], ephemeral: true });
 
 
-        }
+            while (isSameUsername == false && tryCount <= 9) {
 
+
+                const url = 'https://api.opensea.io/user/' + walletAddress + '?format=json'
+                const response = await axios.get(url, { headers });
+                const data = await response.data;
+
+                username = data.username
+
+                console.log(username + " / " + randomKey)
+
+
+                if (username.includes(randomKey)) {
+
+                    isSameUsername = true
+
+
+                    
+
+                    const completeLoading = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Get Access")
+                        .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum. This page will be updated when it's done, don't close it.\n\nIn the meantime, you can consult our documentation [here](https://rolls-chasers.gitbook.io/aura), or start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
+                        .addFields(
+                            { name: " ", value: " ", inline: false },
+                            { name: "Loading Completed <a:AuraCheck:1134071763588878398>", value: "```##################################################[100%]```", inline: false },
+
+                        )
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                    await interaction.editReply({ embeds: [completeLoading], ephemeral: true });
+
+
+                    await addTimeout(3);
+
+
+
+                    const walletManager = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Get Access")
+                        .setDescription("Your subscription has been confirmed !\n\nYou can now remove the key from your Opensea username.\n\nWe'd like to thank you for your trust and hope you'll profit from Aura. Feel free to ask any question to our team if you need.\n\nYour member role has been granted 👑.")
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                    await interaction.editReply({ embeds: [walletManager], ephemeral: true });
+
+                    const roleId = '1108761632928182424'; // Remplacez par l'ID de votre rôle
+                    const role = interaction.guild.roles.cache.get(roleId);
+
+                    interaction.member.roles.add(role)
+
+
+
+                } else {
+
+
+                    await addTimeout(12);
+
+
+                    const walletManager = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Get Access")
+                        .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum.\n\nThis page will be updated when it's done, don't close it.\n\nIn the meantime, you can start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
+                        .addFields(
+                            { name: " ", value: " ", inline: false },
+                            { name: "Loading <a:AuraLoading:1134068847616458792>", value: "```" + generateProgressBar(tryCount + 1) + "```", inline: false },
+
+                        )
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                    await interaction.editReply({ embeds: [walletManager], ephemeral: true });
+
+
+
+                }
+
+                tryCount++
+
+
+            }
+
+
+            if (isSameUsername == false && tryCount == 10) {
+
+                const completeLoading = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Get Access")
+                    .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum. This page will be updated when it's done, don't close it.\n\nIn the meantime, you can consult our documentation [here](https://rolls-chasers.gitbook.io/aura), or start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
+                    .addFields(
+                        { name: " ", value: " ", inline: false },
+                        { name: "Loading Completed <a:AuraCheck:1134071763588878398>", value: "```##################################################[100%]```", inline: false },
+
+                    )
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                await interaction.editReply({ embeds: [completeLoading], ephemeral: true });
+
+
+                await addTimeout(3);
+
+                const walletManager = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Get Access")
+                    .setDescription("Our verification system didn't find the key we provided you in your username. Please make sure the provided string is in your **username**, then click on the authentificate button above again.\n\n Current Opensea username : `" + username + "`")
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                await interaction.editReply({ embeds: [walletManager], ephemeral: true });
+
+
+            }
 
 
 

@@ -60,180 +60,188 @@ module.exports = {
         let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
         let serverId = interaction.member.guild.id
 
-        // try {
+        try {
 
-        //Checkpoint
-        console.log("// Step 1 : Initialization - Executed ✅")
+            //Checkpoint
+            console.log("// Step 1 : Initialization - Executed ✅")
 
-        //Checkpoint
-        console.log("// Step 2 : Authorization - Executed ✅")
+            //Checkpoint
+            console.log("// Step 2 : Authorization - Executed ✅")
 
 
 
-        //On trouve la transaction qui vient d'être faite
-        const lastInteraction = await interactionData.findOne({ where: { authorId: authorId, commandName: "getAccessRCAuthentificate-button", serverId: serverId } })
-        const wallet = lastInteraction.walletAddress
-        const randomKey = lastInteraction.walletCategory
+            //On trouve la transaction qui vient d'être faite
+            const lastInteraction = await interactionData.findOne({ where: { authorId: authorId, commandName: "getAccessRCAuthentificate-button", serverId: serverId } })
+           
+           
+            if (lastInteraction !== null) {
+           
+           
+            const wallet = lastInteraction.walletAddress
+            const randomKey = lastInteraction.walletCategory
 
 
 
 
 
-        const rcContract = '0x222ED30d0855de29Dc6F40aFf448C11E11468B24'
 
 
-        const walletManager = new EmbedBuilder().setColor("#060A8F")
-            .setTitle("Get Access")
-            .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum.\n\nThis page will be updated when it's done, don't close it.\n\nIn the meantime, you can start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
-            .addFields(
-                { name: " ", value: " ", inline: false },
-                { name: "Loading <a:AuraLoading:1134068847616458792>", value: "```__________________________________________________ [0%]```", inline: false },
 
-            )
-            .setTimestamp()
-            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+            const rcContract = '0x222ED30d0855de29Dc6F40aFf448C11E11468B24'
 
-        await interaction.reply({ embeds: [walletManager], ephemeral: true });
 
+            const walletManager = new EmbedBuilder().setColor("#060A8F")
+                .setTitle("Get Access")
+                .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum.\n\nThis page will be updated when it's done, don't close it.\n\nIn the meantime, you can start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
+                .addFields(
+                    { name: " ", value: " ", inline: false },
+                    { name: "Loading <a:AuraLoading:1134068847616458792>", value: "```__________________________________________________ [0%]```", inline: false },
 
-        let tryCount = 0
-        let isSameUsername = false
-        let isAlreadyAnswer = false
-        let username = "not available"
+                )
+                .setTimestamp()
+                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+            await interaction.reply({ embeds: [walletManager], ephemeral: true });
 
 
-        while (isSameUsername == false && tryCount <= 9 && isAlreadyAnswer == false) {
+            let tryCount = 0
+            let isSameUsername = false
+            let isAlreadyAnswer = false
+            let username = "not available"
 
 
 
+            while (isSameUsername == false && tryCount <= 9 && isAlreadyAnswer == false) {
 
-            const url = 'https://api.opensea.io/user/' + wallet + '?format=json'
-            const response = await axios.get(url, { headers });
-            const data = await response.data;
 
-            username = await data.username
 
-            console.log(username + " / " + randomKey)
 
+                const url = 'https://api.opensea.io/user/' + wallet + '?format=json'
+                const response = await axios.get(url, { headers });
+                const data = await response.data;
 
-            if (username.includes(randomKey)) {
+                username = await data.username
 
-                isSameUsername = true
+                console.log(username + " / " + randomKey)
 
 
-                const walletManager = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Get Access")
-                    .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum. This page will be updated when it's done, don't close it.\n\nIn the meantime, you can consult our documentation [here](https://rolls-chasers.gitbook.io/aura), or start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
-                    .addFields(
-                        { name: " ", value: " ", inline: false },
-                        { name: "Loading Completed <a:AuraCheck:1134071763588878398>" , value: "```##################################################[100%]```", inline: false },
+                if (username.includes(randomKey)) {
 
-                    )
-                    .setTimestamp()
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                    isSameUsername = true
 
-                await interaction.editReply({ embeds: [walletManager], ephemeral: true });
 
+                    const walletManager = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Get Access")
+                        .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum. This page will be updated when it's done, don't close it.\n\nIn the meantime, you can consult our documentation [here](https://rolls-chasers.gitbook.io/aura), or start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
+                        .addFields(
+                            { name: " ", value: " ", inline: false },
+                            { name: "Loading Completed <a:AuraCheck:1134071763588878398>", value: "```##################################################[100%]```", inline: false },
 
-                await addTimeout(3);
+                        )
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                    await interaction.editReply({ embeds: [walletManager], ephemeral: true });
 
 
+                    await addTimeout(3);
 
-                sdk.getUsersUserTokensV7({ collection: rcContract, user: wallet, accept: '*/*' })
-                    .then(async ({ data }) => {
 
 
 
-                        if ((data.tokens).length <= 0) {
+                    sdk.getUsersUserTokensV7({ collection: rcContract, user: wallet, accept: '*/*' })
+                        .then(async ({ data }) => {
 
 
-                            const walletManager = new EmbedBuilder().setColor("#060A8F")
-                                .setTitle("Get Access")
-                                .setDescription("Our verification system didn't find any Rolls Chasers token in the wallet you provided. Please try again using the wallet that owns the collection. If you need any help, feel free to open a ticket")
-                                .setTimestamp()
-                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                            await interaction.editReply({ embeds: [walletManager], ephemeral: true });
+                            if ((data.tokens).length <= 0) {
 
-                            isAlreadyAnswer = true
 
+                                const walletManager = new EmbedBuilder().setColor("#060A8F")
+                                    .setTitle("Get Access")
+                                    .setDescription("Our verification system didn't find any Rolls Chasers token in the wallet you provided. Please try again using the wallet that owns the collection. If you need any help, feel free to open a ticket")
+                                    .setTimestamp()
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                                await interaction.editReply({ embeds: [walletManager], ephemeral: true });
 
+                                isAlreadyAnswer = true
 
-                        } else {
 
 
-                            const roleId1 = '1108761632928182424'; // Remplacez par l'ID de votre rôle
-                            const role1 = interaction.guild.roles.cache.get(roleId1);
-                            interaction.member.roles.add(role1)
 
-                            const roleId2 = '1121520920222253086'; // Remplacez par l'ID de votre rôle
-                            const role2 = interaction.guild.roles.cache.get(roleId2);
-                            interaction.member.roles.add(role2)
+                            } else {
 
 
+                                const roleId1 = '1108761632928182424'; // Remplacez par l'ID de votre rôle
+                                const role1 = interaction.guild.roles.cache.get(roleId1);
+                                interaction.member.roles.add(role1)
 
+                                const roleId2 = '1121520920222253086'; // Remplacez par l'ID de votre rôle
+                                const role2 = interaction.guild.roles.cache.get(roleId2);
+                                interaction.member.roles.add(role2)
 
-                            const walletManager = new EmbedBuilder().setColor("#060A8F")
-                                .setTitle("Get Access")
-                                .setDescription("Welcome to Aura and to the Rolls Chasers Council " + authorName + " !\n\nWe'd like to thank you for your trust and hope you'll profit from Aura. Feel free to ask any question to our team if you need.\n\nYour member and Rolls Chasers role has been granted 👑.")
-                                .setTimestamp()
-                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                            await interaction.editReply({ embeds: [walletManager], ephemeral: true });
 
 
+                                const walletManager = new EmbedBuilder().setColor("#060A8F")
+                                    .setTitle("Get Access")
+                                    .setDescription("Welcome to Aura and to the Rolls Chasers Council " + authorName + " !\n\nWe'd like to thank you for your trust and hope you'll profit from Aura. Feel free to ask any question to our team if you need.\n\nYour member and Rolls Chasers role has been granted 👑.")
+                                    .setTimestamp()
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                            await interactionData.destroy({ where: { authorId: authorId, commandName: "getAccessRCAuthentificate-button", serverId: serverId } })
+                                await interaction.editReply({ embeds: [walletManager], ephemeral: true });
 
 
-                        }
 
+                                await interactionData.destroy({ where: { authorId: authorId, commandName: "getAccessRCAuthentificate-button", serverId: serverId } })
 
 
+                            }
 
 
-                    })
 
-            } else {
 
-                await addTimeout(12);
 
+                        })
 
+                } else {
 
-                const walletManager = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Get Access")
-                    .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum.\n\nThis page will be updated when it's done, don't close it.\n\nIn the meantime, you can start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
-                    .addFields(
-                        { name: " ", value: " ", inline: false },
-                        { name: "Loading <a:AuraLoading:1134068847616458792>", value: "```" + generateProgressBar(tryCount + 1) + "```", inline: false },
+                    await addTimeout(12);
 
-                    )
-                    .setTimestamp()
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                await interaction.editReply({ embeds: [walletManager], ephemeral: true });
 
+                    const walletManager = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Get Access")
+                        .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum.\n\nThis page will be updated when it's done, don't close it.\n\nIn the meantime, you can start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
+                        .addFields(
+                            { name: " ", value: " ", inline: false },
+                            { name: "Loading <a:AuraLoading:1134068847616458792>", value: "```" + generateProgressBar(tryCount + 1) + "```", inline: false },
 
+                        )
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                    await interaction.editReply({ embeds: [walletManager], ephemeral: true });
+
+
+
+                }
+
+                tryCount++
 
             }
 
-            tryCount++
-
-        }
 
 
+            if (isSameUsername == false && tryCount == 10 && isAlreadyAnswer == false) {
 
-        if (isSameUsername == false && tryCount == 10 && isAlreadyAnswer == false) {
-
-            const completeLoading = new EmbedBuilder().setColor("#060A8F")
+                const completeLoading = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("Get Access")
                     .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum. This page will be updated when it's done, don't close it.\n\nIn the meantime, you can consult our documentation [here](https://rolls-chasers.gitbook.io/aura), or start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
                     .addFields(
                         { name: " ", value: " ", inline: false },
-                        { name: "Loading Completed <a:AuraCheck:1134071763588878398>" , value: "```##################################################[100%]```", inline: false },
+                        { name: "Loading Completed <a:AuraCheck:1134071763588878398>", value: "```##################################################[100%]```", inline: false },
 
                     )
                     .setTimestamp()
@@ -244,106 +252,139 @@ module.exports = {
 
                 await addTimeout(3);
 
-            const walletManager = new EmbedBuilder().setColor("#060A8F")
+                const walletManager = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Get Access")
+                    .setDescription("Our verification system didn't find the key we provided you in your username. Please make sure the provided string is in your **username**, then click on the authentificate button above again.\n\n Current Opensea username : `" + username + "`")
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                await interaction.editReply({ embeds: [walletManager], ephemeral: true });
+
+
+            }
+
+        } else {
+
+            let roleIdToCheck1 = "1108761632928182424"
+            let roleIdToCheck2 = "1121520920222253086"
+
+            if (interaction.memberroles.cache.has(roleIdToCheck1) && interaction.memberroles.cache.has(roleIdToCheck2)) {
+
+                
+                const walletManager = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("Get Access")
-                .setDescription("Our verification system didn't find the key we provided you in your username. Please make sure the provided string is in your **username**, then click on the authentificate button above again.\n\n Current Opensea username : `" + username + "`")
+                .setDescription("You don't need to authentificate again since you already have the <@&" + roleIdToCheck1 + "> and <@&" + roleIdToCheck2 + "> roles.\n\nIt means that you have a lifetime access to the bot.\n\nIf you need any help, feel free to contact our team.")
                 .setTimestamp()
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
             await interaction.editReply({ embeds: [walletManager], ephemeral: true });
 
 
+        } else {
+
+            
+
+            const walletManager = new EmbedBuilder().setColor("#060A8F")
+            .setTitle("Get Access")
+            .setDescription("An error occured while trying to authentificate your wallet. Please try again by clicking the **RC Member** button above.\n\nIf the issue persists, feel free to contact our team.")
+            .setTimestamp()
+            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+        await interaction.editReply({ embeds: [walletManager], ephemeral: true });
+
+
+
+        }
+
         }
 
 
+        } catch (error) {
 
 
-        // } catch (error) {
+            console.log("// Error - sent in report ❌")
+
+            //On envoi une notif
+            let botId = interaction.applicationId
+            const botAdmins = await adminsql.findOne({ where: { botId: botId } })
+            const mainServerId = botAdmins.dataValues.mainServerId
+            const logChannelId = botAdmins.dataValues.logChannelId
+            const guild = interaction.client.guilds.cache.get(mainServerId);
+            const channel = guild.channels.cache.get(logChannelId);
 
 
-        //     console.log("// Error - sent in report ❌")
+            const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
+            let adminRoleId = adminAccessInfos.dataValues.adminRoleId
+            let serverName = adminAccessInfos.dataValues.serverName
+            const userRoleList = interaction.member._roles
+            let userHighestRole = "Member"
+            if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
+            let reportCommand = "getaccess-RCAuthentificate"
 
-        //     //On envoi une notif
-        //     let botId = interaction.applicationId
-        //     const botAdmins = await adminsql.findOne({ where: { botId: botId } })
-        //     const mainServerId = botAdmins.dataValues.mainServerId
-        //     const logChannelId = botAdmins.dataValues.logChannelId
-        //     const guild = interaction.client.guilds.cache.get(mainServerId);
-        //     const channel = guild.channels.cache.get(logChannelId);
-
-
-        //     const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
-        //     let adminRoleId = adminAccessInfos.dataValues.adminRoleId
-        //     let serverName = adminAccessInfos.dataValues.serverName
-        //     const userRoleList = interaction.member._roles
-        //     let userHighestRole = "Member"
-        //     if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-        //     let reportCommand = "getaccess-RCAuthentificate"
-
-        //     const timeStamp = Date.now();
-        //     const date = new Date(timeStamp);
-        //     const dateLisible = date.toLocaleString();
-        //     const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
-        //     const formattedDate = date1.format('Do [of] MMMM YYYY');
-
-
-
-        //     //On enregistre le call
-        //     await reportsql.create({
-        //         botId: botId,
-        //         authorId: "Bot",
-        //         serverName: serverName,
-        //         authorRole: userHighestRole,
-        //         serverId: serverId,
-        //         date: formattedDate,
-        //         reportType: "Bug",
-        //         reportCommand: reportCommand,
-        //         reportDescription: "```" + error.stack + "```",
-        //         reportPriority: "5",
-        //         reportState: "Not treated",
-        //     })
+            const timeStamp = Date.now();
+            const date = new Date(timeStamp);
+            const dateLisible = date.toLocaleString();
+            const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
+            const formattedDate = date1.format('Do [of] MMMM YYYY');
 
 
 
-        //     console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
-
-        //     const reduceText = require("../../../functions/reducetext")
-        //     const roleTag = "1121510423687090186"
-
-
-        //     const updateEmbed = new EmbedBuilder().setColor("#060A8F")
-        //         .setTitle("New Report")
-        //         .setDescription(">>> A new report has just been sent.")
-        //         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-        //         .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
-        //         .setTimestamp()
-        //         .addFields(
-        //             { name: " ", value: " ", inline: false },
-        //             { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
-        //             { name: " ", value: " ", inline: false },
-        //             { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
-        //         )
-        //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-
-        //     await channel.send("<@&" + roleTag + ">");
-
-        //     await channel.send({ embeds: [updateEmbed] });
+            //On enregistre le call
+            await reportsql.create({
+                botId: botId,
+                authorId: "Bot",
+                serverName: serverName,
+                authorRole: userHighestRole,
+                serverId: serverId,
+                date: formattedDate,
+                reportType: "Bug",
+                reportCommand: reportCommand,
+                reportDescription: "```" + error.stack + "```",
+                reportPriority: "5",
+                reportState: "Not treated",
+            })
 
 
 
-        //     const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-        //         .setTitle("An error occured")
-        //         .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
-        //         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-        //         .setTimestamp()
-        //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+            console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
+
+            const reduceText = require("../../../functions/reducetext")
+            const roleTag = "1121510423687090186"
 
 
-        //     await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
+            const updateEmbed = new EmbedBuilder().setColor("#060A8F")
+                .setTitle("New Report")
+                .setDescription(">>> A new report has just been sent.")
+                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+                .setTimestamp()
+                .addFields(
+                    { name: " ", value: " ", inline: false },
+                    { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
+                    { name: " ", value: " ", inline: false },
+                    { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
+                )
+                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-        // }
+            await channel.send("<@&" + roleTag + ">");
+
+            await channel.send({ embeds: [updateEmbed] });
+
+
+
+            const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
+                .setTitle("An error occured")
+                .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
+                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                .setTimestamp()
+                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+            await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
+
+
+        }
 
     },
 };

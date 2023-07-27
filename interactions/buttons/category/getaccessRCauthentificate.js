@@ -87,7 +87,7 @@ module.exports = {
             .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum. This page will be updated when it's done, don't close it.\n\nIn the meantime, you can consult our documentation [here](https://rolls-chasers.gitbook.io/aura), or start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
             .addFields(
                 { name: " ", value: " ", inline: false },
-                { name: "Status", value: "```__________________________________________________ [0%]```", inline: false },
+                { name: "Loading <a:AuraLoading:1134068847616458792>", value: "```__________________________________________________ [0%]```", inline: false },
 
             )
             .setTimestamp()
@@ -190,7 +190,7 @@ module.exports = {
                     .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum.\n\nThis page will be updated when it's done, don't close it.\n\nIn the meantime, you can start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
                     .addFields(
                         { name: " ", value: " ", inline: false },
-                        { name: "Status", value: "```" + generateProgressBar(tryCount + 1) + "```", inline: false },
+                        { name: "Loading <a:AuraLoading:1134068847616458792>", value: "```" + generateProgressBar(tryCount + 1) + "```", inline: false },
 
                     )
                     .setTimestamp()

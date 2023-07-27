@@ -163,7 +163,7 @@ module.exports = {
                             { name: ' ', value: " ", inline: false },
                             { name: ' ', value: "If you encounter any issue, please open a ticket : <#1121110417368956958>", inline: false },
                             { name: ' ', value: " ", inline: false },
-                            { name: ' ', value: "⚠️ *Please note that for the moment, we're only accepting ETH. Stay tuned for new payement options soon.*", inline: false },
+                            { name: ' ', value: "⚠️ *Please note that for the moment, we're only accepting ETH. Stay tuned for new payement options soon. You can also pay on our Whop page [here](https://whop.com/aura-analytics/)*", inline: false },
 
                         )
                         .setTimestamp()
@@ -180,15 +180,15 @@ module.exports = {
 
 
 
-                    // //Official Links
-                    // const walletManager = new EmbedBuilder().setColor("#060A8F")
-                    //     .setTitle("Links")
-                    //     .setDescription(">>> Below are all our official links. Please be aware that any other link is a potential scam.\n\n<:RCtwitter:1096014822837080174> [Twitter](https://twitter.com/AuraAnalytics)\n<:RCdiscord:1096014711407001651> [Discord](https://discord.gg/nMKzzfR6gx)\n:earth_africa: [Website](https://cdn.discordapp.com/attachments/1108757872315219968/1122318373078958130/image.png)\n<:RCGitbook:1122490833611014264> [Gitbook](https://rolls-chasers.gitbook.io/aura)")
-                    //     .setImage("https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png")
-                    //     .setTimestamp()
-                    //     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                    //Official Links
+                    const walletManager = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Links")
+                        .setDescription(">>> Below are all our official links. Please be aware that any other link is a potential scam.\n\n<:RCtwitter:1096014822837080174> [Twitter](https://twitter.com/AuraAnalytics)\n<:RCdiscord:1096014711407001651> [Discord](https://discord.gg/nMKzzfR6gx)\n:earth_africa: [Website](https://cdn.discordapp.com/attachments/1108757872315219968/1122318373078958130/image.png)\n<:RCGitbook:1122490833611014264> [Gitbook](https://rolls-chasers.gitbook.io/aura)\n <:AuraWhop:1134096472359583795> [Whop](https://whop.com/aura-analytics/)")
+                        .setImage("https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png")
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                    // await channelFetch.send({ embeds: [walletManager]});
+                    await channelFetch.send({ embeds: [walletManager]});
 
 
 

@@ -57,7 +57,7 @@ module.exports = {
             //Récupère le password donné par l'utilisateur
             const txnHash = interaction.fields.getTextInputValue('getaccessverifytxnmodalR1');
 
-            const rcwallet = "0xba1fcA2B6e1c84e649D11d3f506b9eA43573b027"
+            const rcwallet = "0x862284B87b774bbEC86c4f13bA6c283C4552AfAB"
             const price = 0.02
 
 
@@ -113,11 +113,8 @@ module.exports = {
                 } else {
 
 
-                    const roleId = '1108761632928182424'; // Remplacez par l'ID de votre rôle
-                    const role = interaction.guild.roles.cache.get(roleId);
-
-                    interaction.member.roles.add(role)
-
+                   
+                    
 
                     const walletManager = new EmbedBuilder().setColor("#060A8F")
                         .setTitle("Get Access")

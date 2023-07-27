@@ -116,7 +116,11 @@ module.exports = {
                     isSameUsername = true
 
 
-                    
+                    const roleId = '1108761632928182424'; // Remplacez par l'ID de votre rôle
+                    const role = interaction.guild.roles.cache.get(roleId);
+
+                    interaction.member.roles.add(role)
+
 
                     const completeLoading = new EmbedBuilder().setColor("#060A8F")
                         .setTitle("Get Access")
@@ -144,11 +148,7 @@ module.exports = {
 
                     await interaction.editReply({ embeds: [walletManager], ephemeral: true });
 
-                    const roleId = '1108761632928182424'; // Remplacez par l'ID de votre rôle
-                    const role = interaction.guild.roles.cache.get(roleId);
-
-                    interaction.member.roles.add(role)
-
+                    
 
 
                 } else {

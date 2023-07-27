@@ -163,7 +163,7 @@ module.exports = {
                             { name: ' ', value: " ", inline: false },
                             { name: ' ', value: "If you encounter any issue, please open a ticket : <#1121110417368956958>", inline: false },
                             { name: ' ', value: " ", inline: false },
-                            { name: ' ', value: "⚠️ *Please note that for the moment, we're only accepting ETH. Stay tuned for new payement options soon. You can also pay on our Whop page [here](https://whop.com/aura-analytics/)*", inline: false },
+                            { name: ' ', value: "⚠️ *Please note that for the moment, we're only accepting ETH. You can also pay on our Whop page [here](https://whop.com/aura-analytics/).*", inline: false },
 
                         )
                         .setTimestamp()

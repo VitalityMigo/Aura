@@ -30,13 +30,14 @@ const headers = {
 const addTimeout = require("../../../functions/addtimeout")
 
 function generateProgressBar(tryCount) {
-    // Limiter tryCount entre 0 et 10 pour s'assurer que la barre de progression ne dépasse pas 100%
-    const progress = Math.min(Math.max(tryCount, 0), 10);
+    // Limiter tryCount entre 0 et 20 pour s'assurer que la barre de progression ne dépasse pas 100%
+    const progress = Math.floor(tryCount / 2)
 
-    const progressBar = '#####'.repeat(progress) + '_____'.repeat(10 - progress);
-    const percentage = progress * 10;
+    // Calculer le nombre de caractères à ajouter pour la barre de progression
+    const progressBar = '❚'.repeat(progress) + '_'.repeat(50 - progress);
+    const percentage = tryCount;
 
-    return `${progressBar} (${percentage}%)`;
+    return `${progressBar} [${percentage}%]`;
 }
 
 
@@ -99,17 +100,22 @@ module.exports = {
 
 
 
-            while (isSameUsername == false && tryCount <= 9) {
+            while (isSameUsername == false && tryCount <= 99 && isAlreadyAnswer == false) {
 
 
-                const url = 'https://api.opensea.io/user/' + walletAddress + '?format=json'
-                const response = await axios.get(url, { headers });
-                const data = await response.data;
+                if (tryCount === 10 || tryCount % 10 === 0) {
 
-                username = data.username
+                    const url = 'https://api.opensea.io/user/' + wallet + '?format=json'
+                    const response = await axios.get(url, { headers });
+                    const data = await response.data;
 
-                console.log(username + " / " + randomKey)
+                    username = await data.username
 
+
+
+                    console.log(username + " / " + randomKey)
+
+                }
 
                 if (username.includes(randomKey)) {
 
@@ -124,10 +130,10 @@ module.exports = {
 
                     const completeLoading = new EmbedBuilder().setColor("#060A8F")
                         .setTitle("Get Access")
-                        .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum. This page will be updated when it's done, don't close it.\n\nIn the meantime, you can consult our documentation [here](https://rolls-chasers.gitbook.io/aura), or start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
+                        .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum.\n\nThis page will be updated when it's done, don't close it.\n\nIn the meantime, you can start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
                         .addFields(
                             { name: " ", value: " ", inline: false },
-                            { name: "Loading Completed <a:AuraCheck:1134071763588878398>", value: "```##################################################[100%]```", inline: false },
+                            { name: "Loading Completed <a:AuraCheck:1134071763588878398>", value: "```❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚[100%]```", inline: false },
 
                         )
                         .setTimestamp()
@@ -148,29 +154,46 @@ module.exports = {
 
                     await interaction.editReply({ embeds: [walletManager], ephemeral: true });
 
-                    
+
 
 
                 } else {
 
 
-                    await addTimeout(12);
+                    if (tryCount == 99) {
+
+                        const walletManager = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Get Access")
+                            .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum.\n\nThis page will be updated when it's done, don't close it.\n\nIn the meantime, you can start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
+                            .addFields(
+                                { name: " ", value: " ", inline: false },
+                                { name: "Loading <a:AuraLoading:1134068847616458792>", value: "```❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚[100%]```", inline: false },
+
+                            )
+                            .setTimestamp()
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                        await interaction.editReply({ embeds: [walletManager], ephemeral: true });
+
+                    } else {
+
+                        const walletManager = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Get Access")
+                            .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum.\n\nThis page will be updated when it's done, don't close it.\n\nIn the meantime, you can start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
+                            .addFields(
+                                { name: " ", value: " ", inline: false },
+                                { name: "Loading <a:AuraLoading:1134068847616458792>", value: "```" + generateProgressBar(tryCount + 1) + "```", inline: false },
+
+                            )
+                            .setTimestamp()
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                        await interaction.editReply({ embeds: [walletManager], ephemeral: true });
+
+                        await addTimeout(1);
 
 
-                    const walletManager = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("Get Access")
-                        .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum.\n\nThis page will be updated when it's done, don't close it.\n\nIn the meantime, you can start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
-                        .addFields(
-                            { name: " ", value: " ", inline: false },
-                            { name: "Loading <a:AuraLoading:1134068847616458792>", value: "```" + generateProgressBar(tryCount + 1) + "```", inline: false },
-
-                        )
-                        .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                    await interaction.editReply({ embeds: [walletManager], ephemeral: true });
-
-
+                    }
 
                 }
 
@@ -180,14 +203,14 @@ module.exports = {
             }
 
 
-            if (isSameUsername == false && tryCount == 10) {
+            if (isSameUsername == false && tryCount == 100) {
 
                 const completeLoading = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("Get Access")
                     .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum. This page will be updated when it's done, don't close it.\n\nIn the meantime, you can consult our documentation [here](https://rolls-chasers.gitbook.io/aura), or start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
                     .addFields(
                         { name: " ", value: " ", inline: false },
-                        { name: "Loading Completed <a:AuraCheck:1134071763588878398>", value: "```##################################################[100%]```", inline: false },
+                        { name: "Loading Completed <a:AuraCheck:1134071763588878398>", value: "```❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚[100%]```", inline: false },
 
                     )
                     .setTimestamp()

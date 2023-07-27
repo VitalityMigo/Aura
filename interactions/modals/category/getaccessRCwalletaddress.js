@@ -60,6 +60,8 @@ module.exports = {
 
         const randomKey = generateRandomString(15)
 
+        await interactionData.destroy({ where: { authorId: authorId, commandName: "getAccessRCAuthentificate-button", serverId: serverId } })
+
         //on enregiste le payement dans la database
         await interactionData.create({
 

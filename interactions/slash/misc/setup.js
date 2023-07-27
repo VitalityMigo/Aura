@@ -258,26 +258,28 @@ module.exports = {
 
 
 
-                } else {
+                } 
+                
+                //else {
 
 
-                    if (authorProfile === null) { await interaction.deferReply(); } else {
-                        const authorPrivacyMode = authorProfile.dataValues.privacyMode
+                    // if (authorProfile === null) { await interaction.deferReply(); } else {
+                    //     const authorPrivacyMode = authorProfile.dataValues.privacyMode
 
-                        if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
-                        if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
-                    }
+                    //     if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
+                    //     if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
+                    // }
 
 
-                    const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle(`Not Available`)
-                        .setDescription("The command you try to use is currently being built and will be available in the near future. You can still use all the other commands in the meantime.")
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setTimestamp()
-                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+                    // const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
+                    //     .setTitle(`Not Available`)
+                    //     .setDescription("The command you try to use is currently being built and will be available in the near future. You can still use all the other commands in the meantime.")
+                    //     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    //     .setTimestamp()
+                    //     .setAuthor({ name: authorName, iconURL: userAvatar })
+                    //     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                    await interaction.editReply({ embeds: [availableInTheNearFuture] });
+                    // await interaction.editReply({ embeds: [availableInTheNearFuture] });
 
 
 
@@ -301,9 +303,9 @@ module.exports = {
 
                     // await channelFetch.send({ embeds: [walletManager], components: [buttons1Row] });
 
-                }
+             //   }
 
-            } else if (!member.roles.cache.has(communityAdminRoleId)) {
+            } else  {
 
 
 

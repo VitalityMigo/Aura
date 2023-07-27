@@ -268,7 +268,7 @@ module.exports = {
             let roleIdToCheck1 = "1108761632928182424"
             let roleIdToCheck2 = "1121520920222253086"
 
-            if (interaction.memberroles.cache.has(roleIdToCheck1) && interaction.memberroles.cache.has(roleIdToCheck2)) {
+            if (interaction.member.roles.cache.has(roleIdToCheck1) && interaction.memberroles.cache.has(roleIdToCheck2)) {
 
                 
                 const walletManager = new EmbedBuilder().setColor("#060A8F")

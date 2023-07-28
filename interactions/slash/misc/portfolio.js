@@ -276,8 +276,14 @@ module.exports = {
 
 
                                                     // Tri du tableau JSON en fonction de la valeur "floorAsk * tokenCount" de chaque objet "collection" en ordre décroissant
-                                                    let sortedByFloor = data.collections.sort((a, b) => b.collection.floorAskPrice * b.ownership.tokenCount - a.collection.floorAskPrice * a.ownership.tokenCount);
+                                                    let sortedByFloor2 = data.collections.sort((a, b) => b.collection.floorAskPrice * b.ownership.tokenCount - a.collection.floorAskPrice * a.ownership.tokenCount);
 
+                                                    const sortedByFloor = sortedByFloor2.filter((collection) => {
+                                                        const volume7Days = collection.collection.volume['30day']
+                                                      
+                                                        return volume7Days !== 0
+                                                      });
+                                                      
 
                                                     // Sélection des 12 premiers objets triés du tableau JSON
                                                     let top12Collections = await sortedByFloor.slice(0, 13);
@@ -741,7 +747,8 @@ module.exports = {
                                                         return {
                                                             slug: item.collection.slug,
                                                             floorAskPrice: item.collection.floorAskPrice,
-                                                            ownership: item.ownership.tokenCount
+                                                            ownership: item.ownership.tokenCount,
+                                                            volume30days: item.collection.volume['30day']
                                                         }
                                                     });
 
@@ -762,14 +769,22 @@ module.exports = {
 
 
                                         // Tri du tableau JSON en fonction de la valeur "floorAsk * tokenCount" de chaque objet "collection" en ordre décroissant
-                                        const sortedByFloor = floorHoldingTable.flat().sort((a, b) => {
+                                        const sortedByFloor2 = floorHoldingTable.flat().sort((a, b) => {
                                             const productA = a.floorAskPrice * parseInt(a.ownership);
                                             const productB = b.floorAskPrice * parseInt(b.ownership);
                                             return productB - productA;
                                         });
+                                        
+                                        console.log(sortedByFloor2)
 
 
 
+                                        const sortedByFloor = sortedByFloor2.filter((collection) => {
+                                            const volume7Days = collection.volume30days
+                                          
+                                            return volume7Days !== 0
+                                          });
+                                          
 
                                         // Sélection des 12 premiers objets triés du tableau JSON
                                         let top12Collections = await sortedByFloor.slice(0, 13);

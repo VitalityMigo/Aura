@@ -123,7 +123,7 @@ module.exports = {
                     let collectionBanner = collection.collectionBanner
 
                     setWatchlist.addFields(
-                        { name: collectionName + " (" + collectionSlug + ") ", value: "`Floor: " + collectionFloor.toFixed(3) + "Ξ ∙ 1D Vol: " + totalVolume1D.toFixed(2) + "Ξ ∙ Owners: " + Intl.NumberFormat('en-US').format(parseFloat(collectionOwners).toFixed(0)) + " ∙ Listed: " + collectionListingRatio + "%`\n[alphashark](https://magically.gg/collection/" + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
+                        { name: collectionName + " (" + collectionSlug + ") ", value: "`Floor: " + collectionFloor.toFixed(3) + "Ξ ∙ 1D Vol: " + totalVolume1D.toFixed(2) + "Ξ ∙ Owners: " + Intl.NumberFormat('en-US').format(parseFloat(collectionOwners).toFixed(0)) + " ∙ Listed: " + collectionListingRatio + "%`\n[magically](https://magically.gg/collection/" + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
                     )
 
 

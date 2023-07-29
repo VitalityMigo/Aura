@@ -505,7 +505,7 @@ module.exports = {
                                                                 { name: "Total Derisk", value: "`" + `${totalDerisk}` + "`", inline: true },
                                                                 { name: "AVG Derisk", value: "`" + `${avgDerisk}` + "`", inline: true },
                                                                 { name: "ROI", value: `${roiFormatted}`, inline: true },
-                                                                { name: "Links", value: '[alphashark](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
+                                                                { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
                                                             )
                                                             .setTimestamp()
                                                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -549,7 +549,7 @@ module.exports = {
                                                                 { name: "ROI", value: `${roiFormatted}`, inline: true },
                                                                 { name: ' ', value: '[<:ASxRCPNG:1070385409080696902> Magically](https://magically.gg/collection/' + selectedCollection + ")", inline: true },
                                                                 { name: ' ', value: '[<:opensea:1062318570761101352> OpenSea](https://opensea.io/collection/' + collectionSlug + ")", inline: true },
-                                                                { name: "Links", value: '[alphashark](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
+                                                                { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
                                                             )
                                                             .setTimestamp()
                                                             .setAuthor({ name: authorName, iconURL: userAvatar })
@@ -1202,7 +1202,7 @@ module.exports = {
                                                                                 { name: "Total Derisk", value: "`" + `${totalDerisk}` + "`", inline: true },
                                                                                 { name: "AVG Derisk", value: "`" + `${avgDerisk}` + "`", inline: true },
                                                                                 { name: "ROI", value: `${roiFormatted}`, inline: true },
-                                                                                { name: "Links", value: '[alphashark](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
+                                                                                { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
                                                                             )
                                                                             .setTimestamp()
                                                                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
@@ -1249,7 +1249,7 @@ module.exports = {
                                                                         { name: "Total Derisk", value: "`" + `${totalDerisk}` + "`", inline: true },
                                                                         { name: "AVG Derisk", value: "`" + `${avgDerisk}` + "`", inline: true },
                                                                         { name: "ROI", value: `${roiFormatted}`, inline: true },
-                                                                        { name: "Links", value: '[alphashark](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
+                                                                        { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
                                                                     )
                                                                     .setTimestamp()
                                                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
@@ -1749,7 +1749,7 @@ module.exports = {
                                                     { name: "Total Derisk", value: "`" + totalDerisk + "`", inline: true },
                                                     { name: "Avg. Derisk", value: "`" + avgDerisk + "`", inline: true },
                                                     { name: "Royalties", value: "`" + collectionRoyal + "`", inline: true },
-                                                    { name: "Links", value: '[alphashark](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
+                                                    { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
 
                                                 )
                                                 .setTimestamp()

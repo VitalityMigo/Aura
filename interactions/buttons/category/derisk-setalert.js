@@ -155,7 +155,7 @@ module.exports = {
                     { name: 'Alerts', value: alertFormatted, inline: true },
                     { name: 'Marketplace', value: Marketplace, inline: true },
                     //{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-                    { name: "Links", value: '[alphashark](https://magically.gg/collection/' + seclectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + seclectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + seclectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+                    { name: "Links", value: '[magically](https://magically.gg/collection/' + seclectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + seclectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + seclectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 
                 )
                 .setTimestamp()

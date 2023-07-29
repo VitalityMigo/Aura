@@ -105,7 +105,7 @@ async function intervalalerts(client) {
                                         { name: 'Floor Price', value: "`" + newFp + ' ETH`', inline: true },
                                         { name: 'Alert :chart_with_upwards_trend:', value: "`" + elem.fp + ' ETH`', inline: true },
                                         { name: 'Marketplace', value: Marketplace, inline: true },
-                                        { name: "Links", value: '[alphashark](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+                                        { name: "Links", value: '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 
 
                                     ).setTimestamp()
@@ -164,7 +164,7 @@ async function intervalalerts(client) {
                                         { name: 'Marketplace', value: Marketplace, inline: true },
                                         { name: 'Floor Price', value: "`" + newFp + ' ETH`', inline: true },
                                         { name: 'Alert :chart_with_upwards_trend:', value: "`" + elem.fp2 + ' ETH`', inline: true },
-                                        { name: "Links", value: '[alphashark](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+                                        { name: "Links", value: '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 
                                     ).setTimestamp()
                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -312,7 +312,7 @@ async function intervalalerts(client) {
                                         { name: 'Marketplace', value: Marketplace, inline: true },
                                         { name: 'Floor Price', value: "`" + newFp + ' ETH`', inline: true },
                                         { name: 'Alert :chart_with_downwards_trend:', value: "`" + elem.fp + ' ETH`', inline: true },
-                                        { name: "Links", value: '[alphashark](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+                                        { name: "Links", value: '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 
                                     ).setTimestamp()
                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -364,7 +364,7 @@ async function intervalalerts(client) {
                                         { name: 'Marketplace', value: Marketplace, inline: true },
                                         { name: 'Floor Price', value: "`" + newFp + ' ETH`', inline: true },
                                         { name: 'Alert :chart_with_downwards_trend:', value: "`" + elem.fp2 + ' ETH`', inline: true },
-                                        { name: "Links", value: '[alphashark](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+                                        { name: "Links", value: '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 
                                     ).setTimestamp()
                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })

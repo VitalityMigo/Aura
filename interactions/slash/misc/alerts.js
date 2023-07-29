@@ -267,7 +267,7 @@ module.exports = {
 																{ name: 'Alerts', value: "`" + fpvalue + "Ξ`:chart_with_upwards_trend:", inline: true },
 																{ name: 'Marketplace', value: Marketplace, inline: true },
 																//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-																{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+																{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 
 															)
 															.setTimestamp()
@@ -294,7 +294,7 @@ module.exports = {
 																{ name: 'Alerts', value: "`" + fpvalue + "Ξ`:chart_with_upwards_trend:", inline: true },
 																{ name: 'Marketplace', value: Marketplace, inline: true },
 																//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-																{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+																{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 
 															)
 															.setTimestamp()
@@ -326,7 +326,7 @@ module.exports = {
 															{ name: 'Alerts', value: fpvalue, inline: true },
 															{ name: 'Marketplace', value: Marketplace, inline: true },
 															//	{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-															{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+															{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 														)
 														.setTimestamp()
 														.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -358,7 +358,7 @@ module.exports = {
 														{ name: 'Alerts', value: fpvalue, inline: true },
 														{ name: 'Marketplace', value: Marketplace, inline: true },
 														//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-														{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+														{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 													)
 													.setTimestamp()
 													.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -394,7 +394,7 @@ module.exports = {
 														{ name: 'Alerts', value: fpvalue, inline: true },
 														{ name: 'Marketplace', value: Marketplace, inline: true },
 														//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-														{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+														{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 													)
 													.setTimestamp()
 													.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -429,7 +429,7 @@ module.exports = {
 														{ name: 'Alerts', value: fpvalue, inline: true },
 														{ name: 'Marketplace', value: Marketplace, inline: true },
 														//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-														{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+														{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 													)
 													.setTimestamp()
 													.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -505,7 +505,7 @@ module.exports = {
 													{ name: 'Alerts', value: "`" + fpvalue, inline: true },
 													{ name: 'Marketplace', value: Marketplace, inline: true },
 													//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-													{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+													{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 												)
 												.setTimestamp()
 												.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -583,7 +583,7 @@ module.exports = {
 													{ name: 'Alerts', value: "`" + fpvalue, inline: true },
 													{ name: 'Marketplace', value: Marketplace, inline: true },
 													//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-													{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+													{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 												)
 												.setTimestamp()
 												.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -637,7 +637,7 @@ module.exports = {
 													{ name: 'Alert', value: "`" + fpvalue, inline: true },
 													{ name: 'Marketplace', value: Marketplace, inline: true },
 													//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-													{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+													{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 												)
 												.setTimestamp()
 												.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -692,7 +692,7 @@ module.exports = {
 													{ name: 'Alert', value: "`" + fpvalue, inline: true },
 													{ name: 'Marketplace', value: Marketplace, inline: true },
 													//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-													{ name: "Links", value: '[alphashark](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+													{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
 
 												)
 												.setTimestamp()

@@ -648,6 +648,7 @@ module.exports = {
                                                 } else {
 
 
+                                                    let bidsFormatted = "No bids found for this collection."
                                                     const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
                                                     .setTitle(collectionName + "'s bids")
                                                     .setDescription(">>> Displaying the Blur bid metrics of `" + collectionName + "`.")

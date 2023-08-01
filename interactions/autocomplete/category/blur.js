@@ -15,8 +15,27 @@
 
 const fs = require('fs');
 
-const { wallets, adminsql, reportsql, accessSql, sequelize } = require('../../../events/database');
+const { wallets, apimonitorsql, adminsql, reportsql, accessSql, sequelize } = require('../../../events/database');
 const moment = require('moment');
+
+
+
+//Récupérer les clefs API
+const dotenv = require("dotenv")
+dotenv.config()
+const reservoirApiKey = process.env.reservoirApiKey
+
+
+
+//Reservoir API
+const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
+sdk.auth(reservoirApiKey);
+
+
+const sdk2 = require('api')('@reservoirprotocol/v3.0#2n2re32lkmyg6l7');
+sdk2.auth(reservoirApiKey);
+
+
 
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
@@ -35,42 +54,172 @@ module.exports = {
 
         try {
 
+       const actualSubcommand = interaction.options._subcommand
 
-            // Extract the focused value from the interaction options
-            const focusedValue = interaction.options.getFocused();
 
-            let authorId = interaction.user.id;
 
-            // Retrieve the wallets for the authorID
-            const walletsFilter = await wallets.findAll({ where: { authorId: authorId } });
 
-            const choices = [{ name: "All", value: "All" }]
-            walletsFilter.forEach(elem => {
+            if (actualSubcommand.toLowerCase() == "data") {
 
-                if (isValidEthereumAddress(elem.walletAddress)) {
 
-                choices.push({ name: elem.walletName + " (" + elem.walletAddress.substring(0, 5) + "..." + elem.walletAddress.substring(elem.walletAddress.length - 4, elem.walletAddress.length) + ")", value: elem.walletAddress })
-                
+                // Extract the focused value from the interaction options
+                const focusedValue = interaction.options.getFocused();
+
+                let authorId = interaction.user.id;
+
+                // Retrieve the wallets for the authorID
+                const walletsFilter = await wallets.findAll({ where: { authorId: authorId } });
+
+                const choices = [{ name: "All", value: "All" }]
+                walletsFilter.forEach(elem => {
+
+                    if (isValidEthereumAddress(elem.walletAddress)) {
+
+                        choices.push({ name: elem.walletName + " (" + elem.walletAddress.substring(0, 5) + "..." + elem.walletAddress.substring(elem.walletAddress.length - 4, elem.walletAddress.length) + ")", value: elem.walletAddress })
+
+                    }
+                })
+
+
+                // Filter the wallet names based on the focused value
+                const filtered = choices.filter((blaze) => blaze.name.startsWith(focusedValue));
+
+                // Respond with the filtered wallet names as autocomplete choices
+                await interaction.respond(
+
+                    filtered.map((choice) => ({ name: choice.name, value: choice.value }))
+
+
+                ).catch((err) => {
+                    console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                });
+
+                return;
+
+
+
+            } else if (actualSubcommand.toLowerCase() == "bid") {
+
+
+
+                const focused = interaction.options.getFocused(true);
+                const focusedOption = focused.name
+                const focusedValue = focused.value
+    
+    
+                if (focusedOption === "wallet") {
+    
+    
+    
+    
+                    let authorId = interaction.user.id;
+    
+                    // Retrieve the wallets for the authorID
+                    const walletsFilter = await wallets.findAll({ where: { authorId: authorId, walletCategory: "eth" } });
+    
+                    const choices = [{ name: "All", value: "all" }]
+                    walletsFilter.forEach(elem => {
+    
+                        choices.push({ name: elem.walletName + " (" + elem.walletAddress.substring(0, 5) + "..." + elem.walletAddress.substring(elem.walletAddress.length - 4, elem.walletAddress.length) + ")", value: elem.walletAddress })
+    
+                    })
+    
+    
+                    // Filter the wallet names based on the focused value
+                    const filtered = choices.filter((blaze) => blaze.name.startsWith(focusedValue));
+    
+                    // Respond with the filtered wallet names as autocomplete choices
+                    await interaction.respond(
+    
+                        filtered.map((choice) => ({ name: choice.name, value: choice.value }))
+    
+    
+                    ).catch((err) => {
+                        console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                    });
+    
+                    return;
+    
+    
+    
+                }  if (focusedOption === "collection") {
+    
+    
+    
+                    const choices = []
+                    const collectionTable = []
+        
+        
+    
+                    if (focusedValue == "") {
+
+
+                        sdk2.getCollectionsTopsellingV1({fillType: 'sale', limit: '20', accept: '*/*'})
+                        .then(({ data }) => {
+                            data.collections.forEach(element => {
+                                //console.log(element.name)
+                                if (element) {
+                                    const projectName = element.name
+                                    const pjAddress = element.id
+                                    choices.push({ name: projectName, value: pjAddress });
+                                }
+                            });
+                            
+                            
+                            interaction.respond(
+                                choices.map((choice) => ({ name: choice.name, value: choice.value }))
+                            ).catch((err) => {
+                                console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                            });
+            
+            
+                            //On stock le call API
+                            const timeStamp = Date.now();
+                            apimonitorsql.create({ serverId: serverId.toString(), commandName: "/rcprofit-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
+            
+            
+                            return;
+            
+                        }).catch(err => console.error(err));
+            
+            
+                    } else {
+            
+                    sdk.getSearchCollectionsV1({ name: focusedValue, limit: '20', accept: '*/*' })
+                        .then(({ data }) => {
+                            data.collections.forEach(element => {
+                                //console.log(element.name)
+                                if (element) {
+                                    const projectName = element.name
+                                    const pjAddress = element.contract
+                                    choices.push({ name: projectName, value: pjAddress });
+                                }
+                            })
+                            
+            
+                            
+                            interaction.respond(
+                                choices.map((choice) => ({ name: choice.name, value: choice.value }))
+                            ).catch((err) => {
+                                console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                            });
+            
+                            //On stock le call API
+                            const timeStamp = Date.now();
+                            apimonitorsql.create({ serverId: serverId.toString(), commandName: "/getdata-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
+            
+                            return;
+            
+                        }).catch(err => console.error(err));
+            
             }
-            })
+        
+                }
 
 
-            // Filter the wallet names based on the focused value
-            const filtered = choices.filter((blaze) => blaze.name.startsWith(focusedValue));
-
-            // Respond with the filtered wallet names as autocomplete choices
-            await interaction.respond(
-
-                filtered.map((choice) => ({ name: choice.name, value: choice.value }))
 
 
-            ).catch((err) => {
-                console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
-            });
-
-            return;
-
-
+            }
         } catch (error) {
 
 

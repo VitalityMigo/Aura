@@ -1560,6 +1560,8 @@ module.exports = {
                                                     apiObj.getNFTSales++
                                                 }
 
+                                                console.log(tokenHoldTable)
+                                                console.log(tokenSoldTable)
 
 
 

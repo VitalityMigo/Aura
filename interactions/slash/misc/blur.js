@@ -648,7 +648,7 @@ module.exports = {
                                                 } else {
 
 
-                                                    let bidsFormatted = "No bids found for this collection."
+                                                    let bidsFormatted = "No bids found for this collection                       "
                                                     let pageIndex = '1'
                                                     
                                                     const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")

@@ -498,6 +498,8 @@ module.exports = {
 
                                                     const dataTable = bidData.orders[0]
 
+                                                    if (bidData.orders.length) {
+
                                                     let bidTableFull = dataTable.rawData.pricePoints
 
 
@@ -587,6 +589,8 @@ module.exports = {
                                                     if (pageIndex <= 1) { await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRowNo] }); }
                                                     else { await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRow] }); }
 
+                                                
+
 
 
                                                     let bidUserDataTable = []
@@ -641,10 +645,38 @@ module.exports = {
                                                         totalTradeCount: "N/A",
                                                     })
 
+                                                } else {
 
 
+                                                    const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle(collectionName + "'s bids")
+                                                    .setDescription(">>> Displaying the Blur bid metrics of `" + collectionName + "`.")
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .addFields(
+                                                        { name: "Floor Price", value: "`0.000Ξ`", inline: true },
+                                                        { name: "Rank", value: "`Not found`", inline: true },
+                                                        { name: " ", value: " ", inline: true },
+                                                        { name: "Total Bids Value", value: "`0.000Ξ`", inline: true },
+                                                        { name: "Bid Count", value: "`0`", inline: true },
+                                                        { name: "Unique Bidders", value: "0`", inline: true },
+                                                        { name: "Bids", value: "```" + bidsFormatted + "```", inline: true },
+                                                        { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
+                                                        { name: "Page", value: "`[1/" + pageIndex + "]`", inline: true },
+
+                                                    )
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                                   await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRowNo] }); 
+
+
+                                                }
                                                 })
+
+                                                
                                         })
+
+                                    
 
                                 } else if (!selectedCollection) {
 

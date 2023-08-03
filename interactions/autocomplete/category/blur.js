@@ -54,7 +54,7 @@ module.exports = {
 
         try {
 
-       const actualSubcommand = interaction.options._subcommand
+            const actualSubcommand = interaction.options._subcommand
 
 
 
@@ -98,63 +98,147 @@ module.exports = {
 
 
 
-            } else if (actualSubcommand.toLowerCase() == "bid") {
+            } else if (actualSubcommand.toLowerCase() == "bids") {
 
 
 
                 const focused = interaction.options.getFocused(true);
                 const focusedOption = focused.name
                 const focusedValue = focused.value
-    
-    
+
+
                 if (focusedOption === "wallet") {
-    
-    
-    
-    
+
+
+
+
                     let authorId = interaction.user.id;
-    
+
                     // Retrieve the wallets for the authorID
                     const walletsFilter = await wallets.findAll({ where: { authorId: authorId, walletCategory: "eth" } });
-    
+
                     const choices = [{ name: "All", value: "all" }]
                     walletsFilter.forEach(elem => {
-    
+
                         choices.push({ name: elem.walletName + " (" + elem.walletAddress.substring(0, 5) + "..." + elem.walletAddress.substring(elem.walletAddress.length - 4, elem.walletAddress.length) + ")", value: elem.walletAddress })
-    
+
                     })
-    
-    
+
+
                     // Filter the wallet names based on the focused value
                     const filtered = choices.filter((blaze) => blaze.name.startsWith(focusedValue));
-    
+
                     // Respond with the filtered wallet names as autocomplete choices
                     await interaction.respond(
-    
+
                         filtered.map((choice) => ({ name: choice.name, value: choice.value }))
-    
-    
+
+
                     ).catch((err) => {
                         console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
                     });
-    
+
                     return;
-    
-    
-    
-                }  if (focusedOption === "collection") {
-    
-    
-    
+
+
+
+                } if (focusedOption === "collection") {
+
+
+
                     const choices = []
                     const collectionTable = []
-        
-        
-    
+
+
+
                     if (focusedValue == "") {
 
 
-                        sdk2.getCollectionsTopsellingV1({fillType: 'sale', limit: '20', accept: '*/*'})
+                        sdk2.getCollectionsTopsellingV1({ fillType: 'sale', limit: '20', accept: '*/*' })
+                            .then(({ data }) => {
+                                data.collections.forEach(element => {
+                                    //console.log(element.name)
+                                    if (element) {
+                                        const projectName = element.name
+                                        const pjAddress = element.id
+                                        choices.push({ name: projectName, value: pjAddress });
+                                    }
+                                });
+
+
+                                interaction.respond(
+                                    choices.map((choice) => ({ name: choice.name, value: choice.value }))
+                                ).catch((err) => {
+                                    console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                                });
+
+
+                                //On stock le call API
+                                const timeStamp = Date.now();
+                                apimonitorsql.create({ serverId: serverId.toString(), commandName: "/rcprofit-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
+
+
+                                return;
+
+                            }).catch(err => console.error(err));
+
+
+                    } else {
+
+                        sdk.getSearchCollectionsV1({ name: focusedValue, limit: '20', accept: '*/*' })
+                            .then(({ data }) => {
+                                data.collections.forEach(element => {
+                                    //console.log(element.name)
+                                    if (element) {
+                                        const projectName = element.name
+                                        const pjAddress = element.contract
+                                        choices.push({ name: projectName, value: pjAddress });
+                                    }
+                                })
+
+
+
+                                interaction.respond(
+                                    choices.map((choice) => ({ name: choice.name, value: choice.value }))
+                                ).catch((err) => {
+                                    console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                                });
+
+                                //On stock le call API
+                                const timeStamp = Date.now();
+                                apimonitorsql.create({ serverId: serverId.toString(), commandName: "/getdata-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
+
+                                return;
+
+                            }).catch(err => console.error(err));
+
+                    }
+
+                }
+
+
+
+
+            } else if (actualSubcommand.toLowerCase() == "holders") {
+
+
+                const focused = interaction.options.getFocused(true);
+                const focusedOption = focused.name
+                const focusedValue = focused.value
+
+
+
+
+
+                const choices = []
+                const collectionTable = []
+
+
+
+                if (focusedValue == "") {
+
+
+                    sdk2.getCollectionsTopsellingV1({ fillType: 'sale', limit: '20', accept: '*/*' })
                         .then(({ data }) => {
                             data.collections.forEach(element => {
                                 //console.log(element.name)
@@ -164,27 +248,27 @@ module.exports = {
                                     choices.push({ name: projectName, value: pjAddress });
                                 }
                             });
-                            
-                            
+
+
                             interaction.respond(
                                 choices.map((choice) => ({ name: choice.name, value: choice.value }))
                             ).catch((err) => {
                                 console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
                             });
-            
-            
+
+
                             //On stock le call API
                             const timeStamp = Date.now();
                             apimonitorsql.create({ serverId: serverId.toString(), commandName: "/rcprofit-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
-            
-            
+
+
                             return;
-            
+
                         }).catch(err => console.error(err));
-            
-            
-                    } else {
-            
+
+
+                } else {
+
                     sdk.getSearchCollectionsV1({ name: focusedValue, limit: '20', accept: '*/*' })
                         .then(({ data }) => {
                             data.collections.forEach(element => {
@@ -195,26 +279,29 @@ module.exports = {
                                     choices.push({ name: projectName, value: pjAddress });
                                 }
                             })
-                            
-            
-                            
+
+
+
                             interaction.respond(
                                 choices.map((choice) => ({ name: choice.name, value: choice.value }))
                             ).catch((err) => {
                                 console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
                             });
-            
+
                             //On stock le call API
                             const timeStamp = Date.now();
                             apimonitorsql.create({ serverId: serverId.toString(), commandName: "/getdata-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
-            
+
                             return;
-            
+
                         }).catch(err => console.error(err));
-            
-            }
-        
+
                 }
+
+
+
+
+
 
 
 

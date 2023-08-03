@@ -15,6 +15,8 @@ const dotenv = require("dotenv")
 dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
 const reservoirApiKey = process.env.reservoirApiKey
+const alchemyApiKey = process.env.alchemyApiKey
+
 
 //HTTPS requests
 const axios = require('axios')
@@ -22,6 +24,9 @@ const axios = require('axios')
 //Web3 API + Cloudfare Provider
 var Web3 = require("web3")
 const web3 = new Web3("https://cloudflare-eth.com")
+
+const alchemy2 = require('api')('@alchemy-docs/v1.0#24zcsa23lfbpdnv5');
+
 
 
 //Reservoir API
@@ -31,6 +36,10 @@ sdk.auth(reservoirApiKey);
 
 const sdk3 = require('api')('@reservoirprotocol/v3.0#2n2re32lkmyg6l7');
 sdk3.auth(reservoirApiKey);
+
+function formatWallet(input) {
+    return input.length > 35 ? `${input.substring(0, 10)}…${input.substring(input.length - 10)}` : input;
+}
 
 
 function isValidEthereumAddress(address) {
@@ -69,7 +78,7 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName("bid")
+                .setName("bids")
                 .setDescription("Display collection(s) or wallet(s) Blur bid metrics")
                 .addStringOption(option =>
                     option
@@ -85,6 +94,18 @@ module.exports = {
                         .setRequired(false)
                         .setAutocomplete(true)
                 ),
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("holders")
+                .setDescription("Display a specfic collection's holders")
+                .addStringOption(option =>
+                    option
+                        .setName("collection")
+                        .setDescription("The collection to analyze")
+                        .setRequired(true)
+                        .setAutocomplete(true),
+                )
         ),
 
 
@@ -108,7 +129,7 @@ module.exports = {
 
 
 
-               try {
+            //   try {
 
 
             const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
@@ -409,7 +430,7 @@ module.exports = {
                                 }
                             }
 
-                        } else if (interaction.options.getSubcommand() === 'bid') {
+                        } else if (interaction.options.getSubcommand() === 'bids') {
 
 
                             const buttonsRow = new ActionRowBuilder()
@@ -500,186 +521,186 @@ module.exports = {
 
                                                     if (bidData.orders.length) {
 
-                                                    let bidTableFull = dataTable.rawData.pricePoints
+                                                        let bidTableFull = dataTable.rawData.pricePoints
 
 
-                                                    let totalBidders = await bidTableFull.reduce((total, item) => total + item.bidderCount, 0);
-                                                    let totalBdidValue = await bidTableFull.reduce((total, item) => total + parseFloat(item.price) * item.executableSize, 0);
-                                                    let totalBid = await bidTableFull.reduce((total, item) => total + item.executableSize, 0);
-
-
-
-
-                                                    const maxTotalBidValue = Math.max(...bidTableFull.map(item => parseFloat(item.price) * item.executableSize));
-
-                                                    // Calculer le nombre de ❚ en fonction de la valeur de "price x executableSize" et normaliser à une limite maximum de 25
-                                                    await bidTableFull.forEach(item => {
-                                                        const normalizedBars = Math.ceil((parseFloat(item.price) * item.executableSize) / maxTotalBidValue * 25);
-                                                        item.bars = "❚".repeat(normalizedBars);
-                                                    });
-
-                                                    let bidTable = bidTableFull.slice(0, 16);
-
-                                                    let bidsFormatted = "Price                              Size     Total  User\n\n"
-
-                                                    for (const bid of bidTable) {
-
-                                                        let price = bid.price
-                                                        let bidderCount = bid.bidderCount
-                                                        let bidDepth = bid.executableSize
-                                                        let bars = bid.bars
-
-
-                                                        let lignMaxSize = 55
-                                                        let part1 = parseFloat(price).toFixed(2) + "Ξ " + bars
-                                                        let part2 = bidDepth
-                                                        let part3 = parseFloat(price * bidDepth).toFixed(2) + "Ξ"
-                                                        let part4 = bidderCount + "\n"
-                                                        // let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
-
-                                                        let spaceSize = 39 - (bidDepth.toString()).length - part1.length
-                                                        let spaceLenght = ""
-                                                        for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
-
-                                                        let spaceSize2 = 10 - ((parseFloat(price * bidDepth).toFixed(2) + "Ξ").toString()).length
-                                                        let spaceLenght2 = ""
-                                                        for (let i = 0; i < spaceSize2; i++) { spaceLenght2 += " " }
-
-                                                        let spaceSize3 = 7 - ((bidderCount + "\n").toString()).length
-                                                        let spaceLenght3 = ""
-                                                        for (let i = 0; i < spaceSize3; i++) { spaceLenght3 += " " }
-
-
-                                                        bidsFormatted += part1 + spaceLenght + part2 + spaceLenght2 + part3 + spaceLenght3 + part4
-
-
-                                                    };
+                                                        let totalBidders = await bidTableFull.reduce((total, item) => total + item.bidderCount, 0);
+                                                        let totalBdidValue = await bidTableFull.reduce((total, item) => total + parseFloat(item.price) * item.executableSize, 0);
+                                                        let totalBid = await bidTableFull.reduce((total, item) => total + item.executableSize, 0);
 
 
 
-                                                    const bidRowCount = bidTableFull.length
-                                                    const itemsPerPage = 16; // Nombre d'objets par page
-                                                    let pageIndex = Math.ceil(bidRowCount / itemsPerPage);
+
+                                                        const maxTotalBidValue = Math.max(...bidTableFull.map(item => parseFloat(item.price) * item.executableSize));
+
+                                                        // Calculer le nombre de ❚ en fonction de la valeur de "price x executableSize" et normaliser à une limite maximum de 25
+                                                        await bidTableFull.forEach(item => {
+                                                            const normalizedBars = Math.ceil((parseFloat(item.price) * item.executableSize) / maxTotalBidValue * 25);
+                                                            item.bars = "❚".repeat(normalizedBars);
+                                                        });
+
+                                                        let bidTable = bidTableFull.slice(0, 16);
+
+                                                        let bidsFormatted = "Price                              Size     Total  User\n\n"
+
+                                                        for (const bid of bidTable) {
+
+                                                            let price = bid.price
+                                                            let bidderCount = bid.bidderCount
+                                                            let bidDepth = bid.executableSize
+                                                            let bars = bid.bars
 
 
-                                                    if (bidTable.length <= 0) { bidsFormatted = "No bids found for this collection." }
+                                                            let lignMaxSize = 55
+                                                            let part1 = parseFloat(price).toFixed(2) + "Ξ " + bars
+                                                            let part2 = bidDepth
+                                                            let part3 = parseFloat(price * bidDepth).toFixed(2) + "Ξ"
+                                                            let part4 = bidderCount + "\n"
+                                                            // let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
+
+                                                            let spaceSize = 39 - (bidDepth.toString()).length - part1.length
+                                                            let spaceLenght = ""
+                                                            for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+
+                                                            let spaceSize2 = 10 - ((parseFloat(price * bidDepth).toFixed(2) + "Ξ").toString()).length
+                                                            let spaceLenght2 = ""
+                                                            for (let i = 0; i < spaceSize2; i++) { spaceLenght2 += " " }
+
+                                                            let spaceSize3 = 7 - ((bidderCount + "\n").toString()).length
+                                                            let spaceLenght3 = ""
+                                                            for (let i = 0; i < spaceSize3; i++) { spaceLenght3 += " " }
 
 
-                                                    const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
-                                                        .setTitle(collectionName + "'s bids")
-                                                        .setDescription(">>> Displaying the Blur bid metrics of `" + collectionName + "`.")
-                                                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                        .addFields(
-                                                            { name: "Floor Price", value: "`" + parseFloat(collectionFloor).toFixed(3) + "Ξ`", inline: true },
-                                                            { name: "Rank", value: "`" + rank + "`", inline: true },
-                                                            { name: " ", value: " ", inline: true },
-                                                            { name: "Total Bids Value", value: "`" + parseFloat(totalBdidValue).toFixed(3) + "Ξ`", inline: true },
-                                                            { name: "Bid Count", value: "`" + totalBid + "`", inline: true },
-                                                            { name: "Unique Bidders", value: "`" + totalBidders + "`", inline: true },
-                                                            { name: "Bids", value: "```" + bidsFormatted + "```", inline: true },
-                                                            { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
-                                                            { name: "Page", value: "`[1/" + pageIndex + "]`", inline: true },
-
-                                                        )
-                                                        .setTimestamp()
-                                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                                            bidsFormatted += part1 + spaceLenght + part2 + spaceLenght2 + part3 + spaceLenght3 + part4
 
 
-
-                                                    if (pageIndex <= 1) { await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRowNo] }); }
-                                                    else { await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRow] }); }
-
-                                                
+                                                        };
 
 
 
-                                                    let bidUserDataTable = []
-                                                    let obj = {}
-                                                    obj.collectionName = collectionName
-                                                    obj.collectionFloor = collectionFloor
-                                                    obj.rank = rank
-                                                    obj.totalBdidValue = totalBdidValue
-                                                    obj.totalBid = totalBid
-                                                    obj.totalBidders = totalBidders
-                                                    obj.links = '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")"
-                                                    bidUserDataTable.push(obj)
+                                                        const bidRowCount = bidTableFull.length
+                                                        const itemsPerPage = 16; // Nombre d'objets par page
+                                                        let pageIndex = Math.ceil(bidRowCount / itemsPerPage);
 
 
-                                                    //On fait le call àbn  la base SQL
-                                                    await interactionData.destroy({ where: { authorId: authorId, commandName: "blur-bid", serverId: serverId } })
-
-                                                    await interactionData.create({
-
-                                                        authorId: authorId,
-                                                        authorName: authorName,
-                                                        serverId: serverId,
-                                                        commandName: "blur-bid",
-                                                        interactionId: interaction.id,
-                                                        walletAddress: "N/A",
-                                                        walletCategory: "collection",
-                                                        embed1: JSON.stringify(bidTableFull),
-                                                        embed2: JSON.stringify(bidUserDataTable),
-                                                        embed3: "N/A",
-                                                        pageIndex: pageIndex.toString(),
-                                                        actualPage: "1",
-                                                        walletName: "N/A",
-                                                        selecedTimestamp: "N/A",
-                                                        selectedCollection: "N/A",
-                                                        collectionSlug: "N/A",
-                                                        collectionBanner: "N/A",
-                                                        avgDeriskPrice: "N/A",
-                                                        floorPrice: "N/A",
-                                                        lowerMarketlace: "N/A",
-                                                        collectionName: "N/A",
-                                                        buyCount: "N/A",
-                                                        soldCount: "N/A",
-                                                        remaining: "N/A",
-                                                        avgBuy: "N/A",
-                                                        avgSold: "N/A",
-                                                        realisedProfit: "N/A",
-                                                        potentialProfit: "N/A",
-                                                        roi: "N/A",
-                                                        visualTitle: "N/A",
-                                                        userAvatar: "N/A",
-                                                        nbMembersInvolved: "N/A",
-                                                        totalTradeCount: "N/A",
-                                                    })
-
-                                                } else {
+                                                        if (bidTable.length <= 0) { bidsFormatted = "No bids found for this collection." }
 
 
-                                                    let bidsFormatted = "No bids found for this collection                       "
-                                                    let pageIndex = '1'
-                                                    
-                                                    const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle(collectionName + "'s bids")
-                                                    .setDescription(">>> Displaying the Blur bid metrics of `" + collectionName + "`.")
-                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                    .addFields(
-                                                        { name: "Floor Price", value: "`0.000Ξ`", inline: true },
-                                                        { name: "Rank", value: "`Not found`", inline: true },
-                                                        { name: " ", value: " ", inline: true },
-                                                        { name: "Total Bids Value", value: "`0.000Ξ`", inline: true },
-                                                        { name: "Bid Count", value: "`0`", inline: true },
-                                                        { name: "Unique Bidders", value: "0`", inline: true },
-                                                        { name: "Bids", value: "```" + bidsFormatted + "```", inline: true },
-                                                        { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
-                                                        { name: "Page", value: "`[1/" + pageIndex + "]`", inline: true },
+                                                        const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
+                                                            .setTitle(collectionName + "'s bids")
+                                                            .setDescription(">>> Displaying the Blur bid metrics of `" + collectionName + "`.")
+                                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                            .addFields(
+                                                                { name: "Floor Price", value: "`" + parseFloat(collectionFloor).toFixed(3) + "Ξ`", inline: true },
+                                                                { name: "Rank", value: "`" + rank + "`", inline: true },
+                                                                { name: " ", value: " ", inline: true },
+                                                                { name: "Total Bids Value", value: "`" + parseFloat(totalBdidValue).toFixed(3) + "Ξ`", inline: true },
+                                                                { name: "Bid Count", value: "`" + totalBid + "`", inline: true },
+                                                                { name: "Unique Bidders", value: "`" + totalBidders + "`", inline: true },
+                                                                { name: "Bids", value: "```" + bidsFormatted + "```", inline: true },
+                                                                { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
+                                                                { name: "Page", value: "`[1/" + pageIndex + "]`", inline: true },
 
-                                                    )
-                                                    .setTimestamp()
-                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                                   await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRowNo] }); 
+                                                            )
+                                                            .setTimestamp()
+                                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-                                                }
+
+                                                        if (pageIndex <= 1) { await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRowNo] }); }
+                                                        else { await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRow] }); }
+
+
+
+
+
+                                                        let bidUserDataTable = []
+                                                        let obj = {}
+                                                        obj.collectionName = collectionName
+                                                        obj.collectionFloor = collectionFloor
+                                                        obj.rank = rank
+                                                        obj.totalBdidValue = totalBdidValue
+                                                        obj.totalBid = totalBid
+                                                        obj.totalBidders = totalBidders
+                                                        obj.links = '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")"
+                                                        bidUserDataTable.push(obj)
+
+
+                                                        //On fait le call àbn  la base SQL
+                                                        await interactionData.destroy({ where: { authorId: authorId, commandName: "blur-bid", serverId: serverId } })
+
+                                                        await interactionData.create({
+
+                                                            authorId: authorId,
+                                                            authorName: authorName,
+                                                            serverId: serverId,
+                                                            commandName: "blur-bid",
+                                                            interactionId: interaction.id,
+                                                            walletAddress: "N/A",
+                                                            walletCategory: "collection",
+                                                            embed1: JSON.stringify(bidTableFull),
+                                                            embed2: JSON.stringify(bidUserDataTable),
+                                                            embed3: "N/A",
+                                                            pageIndex: pageIndex.toString(),
+                                                            actualPage: "1",
+                                                            walletName: "N/A",
+                                                            selecedTimestamp: "N/A",
+                                                            selectedCollection: "N/A",
+                                                            collectionSlug: "N/A",
+                                                            collectionBanner: "N/A",
+                                                            avgDeriskPrice: "N/A",
+                                                            floorPrice: "N/A",
+                                                            lowerMarketlace: "N/A",
+                                                            collectionName: "N/A",
+                                                            buyCount: "N/A",
+                                                            soldCount: "N/A",
+                                                            remaining: "N/A",
+                                                            avgBuy: "N/A",
+                                                            avgSold: "N/A",
+                                                            realisedProfit: "N/A",
+                                                            potentialProfit: "N/A",
+                                                            roi: "N/A",
+                                                            visualTitle: "N/A",
+                                                            userAvatar: "N/A",
+                                                            nbMembersInvolved: "N/A",
+                                                            totalTradeCount: "N/A",
+                                                        })
+
+                                                    } else {
+
+
+                                                        let bidsFormatted = "No bids found for this collection                       "
+                                                        let pageIndex = '1'
+
+                                                        const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
+                                                            .setTitle(collectionName + "'s bids")
+                                                            .setDescription(">>> Displaying the Blur bid metrics of `" + collectionName + "`.")
+                                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                            .addFields(
+                                                                { name: "Floor Price", value: "`0.000Ξ`", inline: true },
+                                                                { name: "Rank", value: "`Not found`", inline: true },
+                                                                { name: " ", value: " ", inline: true },
+                                                                { name: "Total Bids Value", value: "`0.000Ξ`", inline: true },
+                                                                { name: "Bid Count", value: "`0`", inline: true },
+                                                                { name: "Unique Bidders", value: "0`", inline: true },
+                                                                { name: "Bids", value: "```" + bidsFormatted + "```", inline: true },
+                                                                { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
+                                                                { name: "Page", value: "`[1/" + pageIndex + "]`", inline: true },
+
+                                                            )
+                                                            .setTimestamp()
+                                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                                        await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRowNo] });
+
+
+                                                    }
                                                 })
 
-                                                
+
                                         })
 
-                                    
+
 
                                 } else if (!selectedCollection) {
 
@@ -691,7 +712,7 @@ module.exports = {
                                         .setImage("https://cdn.discordapp.com/attachments/1108757847208099941/1135761331123916800/Screenshot_2023-08-01_at_04.29.46.png")
                                         .addFields(
                                             { name: "Note", value: "Please note that for the moment, we're only supporting Blur's executable collection bids. Trait bids will available soon too.", inline: false },
-            
+
 
                                         )
                                         .setTimestamp()
@@ -699,7 +720,7 @@ module.exports = {
 
 
 
-                                  await interaction.editReply({ embeds: [getBlurOneWallet]})
+                                    await interaction.editReply({ embeds: [getBlurOneWallet] })
 
 
                                 }
@@ -1697,6 +1718,287 @@ module.exports = {
 
                                 }
                             }
+                        } else if (interaction.options.getSubcommand() === 'holders') {
+                            console.log("ici")
+
+
+
+                            const buttonsRow = new ActionRowBuilder()
+                                .addComponents(
+                                    new ButtonBuilder()
+                                        .setCustomId('blurholderfirst-button')
+                                        .setLabel('first page')
+                                        .setStyle(2)
+                                        .setDisabled(true),
+                                    new ButtonBuilder()
+                                        .setCustomId('blurholderprevious-button')
+                                        .setLabel('previous page')
+                                        .setStyle(2)
+                                        .setDisabled(true),
+                                    new ButtonBuilder()
+                                        .setCustomId('blurholdernext-button')
+                                        .setLabel('next page')
+                                        .setStyle(2),
+                                    new ButtonBuilder()
+                                        .setCustomId('blurholderlast-button')
+                                        .setLabel('last page')
+                                        .setStyle(2),
+                                );
+
+                            const buttonsRowNo = new ActionRowBuilder()
+                                .addComponents(
+                                    new ButtonBuilder()
+                                        .setCustomId('blurholderfirst-button')
+                                        .setLabel('first page')
+                                        .setStyle(2)
+                                        .setDisabled(true),
+                                    new ButtonBuilder()
+                                        .setCustomId('blurholderprevious-button')
+                                        .setLabel('previous page')
+                                        .setStyle(2)
+                                        .setDisabled(true),
+                                    new ButtonBuilder()
+                                        .setCustomId('blurholdernext-button')
+                                        .setLabel('next page')
+                                        .setStyle(2)
+                                        .setDisabled(true),
+                                    new ButtonBuilder()
+                                        .setCustomId('blurholderlast-button')
+                                        .setLabel('last page')
+                                        .setStyle(2)
+                                        .setDisabled(true),
+                                );
+
+
+
+
+                            const selectedCollection = interaction.options.getString("collection");
+
+                            const walletAddressName = await wallets.findAll({ where: { authorId: authorId, walletCategory: "eth" } });
+                            const walletAddresses = walletAddressName.map((wallet) => wallet.dataValues.walletAddress.toLowerCase());
+
+
+                            let holdersList = []
+                            let holdersTable = []
+                            let collectionName = "Blur"
+                            let supply = "10000"
+                            let pageIndex
+
+                            let collectionTwitter = ""
+                            let collectionWebsite = ""
+                            let collectionSlug = ""
+
+                            let top10Holders = 0
+                            let top25Holders = 0
+                            let top50Holders = 0
+
+                            let holdersFormatted = ""
+
+
+                            const { data: collectionInfos } = await alchemy2.getContractMetadata({
+                                contractAddress: selectedCollection,
+                                apiKey: alchemyApiKey
+                            })
+
+
+                            supply = collectionInfos.contractMetadata.totalSupply
+                            collectionName = collectionInfos.contractMetadata.openSea.collectionName
+                            collectionTwitter = collectionInfos.contractMetadata.openSea.twitterUsername
+                            collectionWebsite = collectionInfos.contractMetadata.openSea.externalUrl
+                            collectionSlug = collectionInfos.contractMetadata.openSea.collectionSlug
+
+
+                            // Premier Call API Reservoir : Stats et infos sur la collection
+                            await sdk3.getOwnersV2({ contract: selectedCollection, limit: '500', accept: '*/*' })
+                                .then(async ({ data: collectionHolders }) => {
+
+
+                                    holdersList = await collectionHolders.owners
+
+
+                                    if (holdersList.length > 0) {
+
+                                        let index = 0
+
+                                        holdersFormatted = "Owner                                           # Held\n\n"
+
+                                        for (const holders of holdersList) {
+
+
+
+                                            let address = holders.address
+                                            let tokenCount = holders.ownership.tokenCount
+                                            let supplyPercentage = (tokenCount / supply) * 100;
+                                            let isUser = "no"
+
+                                            if (index <= 15) {
+
+
+                                                let lignMaxSize = 55
+                                                let leftPartNfts = formatWallet(address)
+                                                if (walletAddresses.includes(address.toLowerCase())) { leftPartNfts += " (you)"; isUser = "yes" }
+
+                                                let rightPartNfts = tokenCount + " (" + parseFloat(supplyPercentage).toFixed(2) + "%)\n"
+                                                let leftPartNFTsLenght = leftPartNfts.length
+                                                let rightPartNftsLenght = rightPartNfts.length
+                                                let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
+                                                let spaceLenght = ""
+                                                for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+
+
+                                                holdersFormatted += leftPartNfts + spaceLenght + rightPartNfts
+
+
+                                            }
+
+
+                                            if (index <= 9) { top10Holders += parseInt(tokenCount) }
+                                            if (index <= 24) { top25Holders += parseInt(tokenCount) }
+                                            if (index <= 49) { top50Holders += parseInt(tokenCount) }
+
+
+                                            let obj = {}
+
+                                            obj.address = address
+                                            obj.tokenCount = tokenCount
+                                            obj.supplyPercentage = supplyPercentage
+                                            obj.isUser = isUser
+                                            holdersTable.push(obj)
+
+                                            index++
+
+
+                                        }
+
+
+
+
+                                        const bidRowCount = holdersList.length
+                                        const itemsPerPage = 16; // Nombre d'objets par page
+                                        pageIndex = Math.ceil(bidRowCount / itemsPerPage);
+
+
+
+                                        const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle(collectionName + "'s holders")
+                                            .setDescription(">>> Displaying the top holders of `" + collectionName + "`.")
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .addFields(
+                                                { name: " ", value: " ", inline: false },
+                                                { name: "Supply", value: "`" + supply + "`", inline: false },
+                                                { name: "Top 10 Holders", value: "`" + top10Holders + " (" + parseFloat((top10Holders / supply) * 100).toFixed(2) + "%)`", inline: true },
+                                                { name: "Top 25 Holders", value: "`" + top25Holders + " (" + parseFloat((top25Holders / supply) * 100).toFixed(2) + "%)`", inline: true },
+                                                { name: "Top 50 Holders", value: "`" + top50Holders + " (" + parseFloat((top50Holders / supply) * 100).toFixed(2) + "%)`", inline: true },
+                                                { name: "Holders:", value: "```" + holdersFormatted + "```", inline: false },
+                                                { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
+                                                { name: "Page", value: "`[1/" + pageIndex + "]`", inline: true },
+
+                                            )
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+                                        if (pageIndex <= 1) { await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRowNo] }); }
+                                        else { await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRow] }); }
+
+
+
+                                        let holderDataTable = []
+                                        let obj = {}
+                                        obj.collectionName = collectionName
+                                        obj.supply = supply
+                                        obj.top10Holders = top10Holders + " (" + parseFloat((top10Holders / supply) * 100).toFixed(2) + "%)"
+                                        obj.top25Holders = top25Holders + " (" + parseFloat((top25Holders / supply) * 100).toFixed(2) + "%)"
+                                        obj.top50Holders = top50Holders + " (" + parseFloat((top50Holders / supply) * 100).toFixed(2) + "%)"
+                                        obj.links = '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")"
+                                        holderDataTable.push(obj)
+
+
+                                        //On fait le call àbn  la base SQL
+                                        await interactionData.destroy({ where: { authorId: authorId, commandName: "blur-holder", serverId: serverId } })
+
+                                        await interactionData.create({
+
+                                            authorId: authorId,
+                                            authorName: authorName,
+                                            serverId: serverId,
+                                            commandName: "blur-holder",
+                                            interactionId: interaction.id,
+                                            walletAddress: "N/A",
+                                            walletCategory: "N/A",
+                                            embed1: JSON.stringify(holdersTable),
+                                            embed2: JSON.stringify(holderDataTable),
+                                            embed3: "N/A",
+                                            pageIndex: pageIndex.toString(),
+                                            actualPage: "1",
+                                            walletName: "N/A",
+                                            selecedTimestamp: "N/A",
+                                            selectedCollection: "N/A",
+                                            collectionSlug: "N/A",
+                                            collectionBanner: "N/A",
+                                            avgDeriskPrice: "N/A",
+                                            floorPrice: "N/A",
+                                            lowerMarketlace: "N/A",
+                                            collectionName: "N/A",
+                                            buyCount: "N/A",
+                                            soldCount: "N/A",
+                                            remaining: "N/A",
+                                            avgBuy: "N/A",
+                                            avgSold: "N/A",
+                                            realisedProfit: "N/A",
+                                            potentialProfit: "N/A",
+                                            roi: "N/A",
+                                            visualTitle: "N/A",
+                                            userAvatar: "N/A",
+                                            nbMembersInvolved: "N/A",
+                                            totalTradeCount: "N/A",
+                                        })
+
+
+
+
+                                    } else {
+
+                                        holdersFormatted = "No holders found for this collection                "
+                                        collectionName = "Blur"
+
+                                        const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle(collectionName + "'s holders")
+                                            .setDescription(">>> Displaying the top holders of `" + collectionName + "`.")
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .addFields(
+                                                { name: " ", value: " ", inline: false },
+                                                { name: "Supply", value: "`Not found`", inline: false },
+                                                { name: "Top 10 Holders", value: "`0 (0.00%)`", inline: true },
+                                                { name: "Top 25 Holders", value: "`0 (0.00%)`", inline: true },
+                                                { name: "Top 50 Holders", value: "`0 (0.00%)`", inline: true },
+                                                { name: "Holders:", value: "```" + holdersFormatted + "```", inline: false },
+                                                { name: "Page", value: "`[1/1]`", inline: true },
+
+                                            )
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+
+                                        // if (pageIndex <= 1) { await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRowNo] }); }
+                                        // else { await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRow] }); }
+
+                                        /// TEMPORAIRE
+                                        await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRowNo] })
+
+
+
+                                    }
+
+
+
+
+
+                                })
+
+
+
                         }
 
 
@@ -1772,91 +2074,91 @@ module.exports = {
 
 
 
-            } catch (error) {
+            // } catch (error) {
 
-                console.log("// Error - sent in report ❌")
+            //     console.log("// Error - sent in report ❌")
 
-                //On envoi une notif
-                let botId = interaction.applicationId
-                const botAdmins = await adminsql.findOne({ where: { botId: botId } })
-                const mainServerId = botAdmins.dataValues.mainServerId
-                const logChannelId = botAdmins.dataValues.logChannelId
-                const guild = interaction.client.guilds.cache.get(mainServerId);
-                const channel = guild.channels.cache.get(logChannelId);
-
-
-                const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
-                let adminRoleId = adminAccessInfos.dataValues.adminRoleId
-                let serverName = adminAccessInfos.dataValues.serverName
-                const userRoleList = interaction.member._roles
-                let userHighestRole = "Member"
-                if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-                let reportCommand = "/blur"
-
-                const timeStamp = Date.now();
-                const date = new Date(timeStamp);
-                const dateLisible = date.toLocaleString();
-                const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
-                const formattedDate = date1.format('Do [of] MMMM YYYY');
+            //     //On envoi une notif
+            //     let botId = interaction.applicationId
+            //     const botAdmins = await adminsql.findOne({ where: { botId: botId } })
+            //     const mainServerId = botAdmins.dataValues.mainServerId
+            //     const logChannelId = botAdmins.dataValues.logChannelId
+            //     const guild = interaction.client.guilds.cache.get(mainServerId);
+            //     const channel = guild.channels.cache.get(logChannelId);
 
 
+            //     const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
+            //     let adminRoleId = adminAccessInfos.dataValues.adminRoleId
+            //     let serverName = adminAccessInfos.dataValues.serverName
+            //     const userRoleList = interaction.member._roles
+            //     let userHighestRole = "Member"
+            //     if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
+            //     let reportCommand = "/blur"
 
-                //On enregistre le call
-                await reportsql.create({
-                    botId: botId,
-                    authorId: "Bot",
-                    serverName: serverName,
-                    authorRole: userHighestRole,
-                    serverId: serverId,
-                    date: formattedDate,
-                    reportType: "Bug",
-                    reportCommand: reportCommand,
-                    reportDescription: "```" + error.stack + "```",
-                    reportPriority: "5",
-                    reportState: "Not treated",
-                })
+            //     const timeStamp = Date.now();
+            //     const date = new Date(timeStamp);
+            //     const dateLisible = date.toLocaleString();
+            //     const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
+            //     const formattedDate = date1.format('Do [of] MMMM YYYY');
 
 
 
-                console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
-
-                const reduceText = require("../../../functions/reducetext")
-                const roleTag = "1121510423687090186"
-
-
-                const updateEmbed = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("New Report")
-                    .setDescription(">>> A new report has just been sent.")
-                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                    .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
-                    .setTimestamp()
-                    .addFields(
-                        { name: " ", value: " ", inline: false },
-                        { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
-                        { name: " ", value: " ", inline: false },
-                        { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
-                    )
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-
-                await channel.send("<@&" + roleTag + ">");
-
-                await channel.send({ embeds: [updateEmbed] });
+            //     //On enregistre le call
+            //     await reportsql.create({
+            //         botId: botId,
+            //         authorId: "Bot",
+            //         serverName: serverName,
+            //         authorRole: userHighestRole,
+            //         serverId: serverId,
+            //         date: formattedDate,
+            //         reportType: "Bug",
+            //         reportCommand: reportCommand,
+            //         reportDescription: "```" + error.stack + "```",
+            //         reportPriority: "5",
+            //         reportState: "Not treated",
+            //     })
 
 
 
-                const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("An error occured")
-                    .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
-                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                    .setTimestamp()
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+            //     console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
+
+            //     const reduceText = require("../../../functions/reducetext")
+            //     const roleTag = "1121510423687090186"
 
 
-                await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
+            //     const updateEmbed = new EmbedBuilder().setColor("#060A8F")
+            //         .setTitle("New Report")
+            //         .setDescription(">>> A new report has just been sent.")
+            //         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+            //         .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+            //         .setTimestamp()
+            //         .addFields(
+            //             { name: " ", value: " ", inline: false },
+            //             { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
+            //             { name: " ", value: " ", inline: false },
+            //             { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
+            //         )
+            //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-            }
+            //     await channel.send("<@&" + roleTag + ">");
+
+            //     await channel.send({ embeds: [updateEmbed] });
+
+
+
+            //     const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
+            //         .setTitle("An error occured")
+            //         .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
+            //         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+            //         .setTimestamp()
+            //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+            //     await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
+
+
+            // }
 
 
         } else if (interaction.guildId == null) {

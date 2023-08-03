@@ -115,6 +115,7 @@ module.exports = {
                 const actualPage = lastInteraction.dataValues.actualPage
                 const newPage = parseFloat(actualPage) - 1
                 const commandCategory = lastInteraction.dataValues.walletCategory
+                
                 console.log(newPage)
 
 

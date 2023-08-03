@@ -121,6 +121,7 @@ module.exports = {
                 let tokenCount = holders.tokenCount
                 let supplyPercentage = holders.supplyPercentage
                 let isUser = holders.isUser
+                let isDeployer = holders.isDeployer
 
 
 
@@ -128,6 +129,8 @@ module.exports = {
                 let lignMaxSize = 55
                 let leftPartNfts = formatWallet(address)
                 if (isUser.toLowerCase() == "yes") { leftPartNfts += " (you)" }
+                if (isDeployer.toLowerCase() == "yes") { leftPartNfts += " (deployer)" }
+
 
                 let rightPartNfts = tokenCount + " (" + parseFloat(supplyPercentage).toFixed(2) + "%)\n"
                 let leftPartNFTsLenght = leftPartNfts.length

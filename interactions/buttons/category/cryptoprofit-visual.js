@@ -409,6 +409,7 @@ module.exports = {
             ctxFormatted.font = "bold 28px Futura";
             ctxFormatted.fillStyle = "#ffffff";
             ctxFormatted.fillText(formatNumberVisual(buyCount), 343, 726);
+            console.log(formatNumberVisual(buyCount))
 
             //BUY COUNT
             ctxFormatted.font = "bold 28px Futura";

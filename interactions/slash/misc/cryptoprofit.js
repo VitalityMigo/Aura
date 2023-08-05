@@ -84,7 +84,7 @@ module.exports = {
                 .setName("wallet")
                 .setDescription("The category you want to set up your wallet in")
                 .setRequired(true)
-            // .setAutocomplete(true)
+                .setAutocomplete(true)
         ),
 
     async execute(interaction) {

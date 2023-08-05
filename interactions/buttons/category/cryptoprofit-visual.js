@@ -408,8 +408,8 @@ module.exports = {
             //Mint COUNT
             ctxFormatted.font = "bold 28px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(formatNumberVisual(buyCount), 343, 726);
-            console.log(formatNumberVisual(buyCount))
+            ctxFormatted.fillText(formatNumberVisual(buyCount).toFixed(1), 343, 726);
+            console.log(formatNumberVisual(buyCount).toFixed(1))
 
             //BUY COUNT
             ctxFormatted.font = "bold 28px Futura";
@@ -430,7 +430,7 @@ module.exports = {
             //SOLD COUNT
             ctxFormatted.font = "bold 28px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(formatNumberVisual(soldCount), 840, 726);
+            ctxFormatted.fillText(formatNumberVisual(soldCount).toFixed(1), 840, 726);
 
             //REMAINING COUNT
             ctxFormatted.font = "bold 28px Futura";

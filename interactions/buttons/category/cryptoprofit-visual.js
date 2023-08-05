@@ -134,6 +134,9 @@ module.exports = {
 
             const templateOneCollection = await loadImage("./visual/rollschasers/permanent/cryptoprofittemplate2.png");
 
+            registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
+
+
             const canvasFormatted = createCanvas(1000, 1000);
             const ctxFormatted = canvasFormatted.getContext('2d');
 
@@ -262,7 +265,6 @@ module.exports = {
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
             //NOM COLLECTION
@@ -365,6 +367,8 @@ module.exports = {
 
 
             const templateOneCollection = await loadImage("./visual/rollschasers/permanent/cryptoprofittemplate3.png");
+            registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
+
 
             const canvasFormatted = createCanvas(1000, 1000);
             const ctxFormatted = canvasFormatted.getContext('2d');
@@ -372,7 +376,6 @@ module.exports = {
             ctxFormatted.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
 
 
-            registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
             ctxFormatted.font = "bold 58px SFTransrobotic";
@@ -993,28 +996,28 @@ module.exports = {
 
       console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
-            const reduceText = require("../../../functions/reducetext")
-            const roleTag = "1121510423687090186"
+      const reduceText = require("../../../functions/reducetext")
+      const roleTag = "1121510423687090186"
 
 
-            const updateEmbed = new EmbedBuilder().setColor("#060A8F")
-                .setTitle("New Report")
-                .setDescription(">>> A new report has just been sent.")
-                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
-                .setTimestamp()
-                .addFields(
-                    { name: " ", value: " ", inline: false },
-                    { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
-                    { name: " ", value: " ", inline: false },
-                    { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
-                )
-                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+      const updateEmbed = new EmbedBuilder().setColor("#060A8F")
+        .setTitle("New Report")
+        .setDescription(">>> A new report has just been sent.")
+        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+        .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+        .setTimestamp()
+        .addFields(
+          { name: " ", value: " ", inline: false },
+          { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
+          { name: " ", value: " ", inline: false },
+          { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
+        )
+        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-            await channel.send("<@&" + roleTag + ">");
+      await channel.send("<@&" + roleTag + ">");
 
-            await channel.send({ embeds: [updateEmbed] });
+      await channel.send({ embeds: [updateEmbed] });
 
 
 

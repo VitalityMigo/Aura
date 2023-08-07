@@ -36,7 +36,7 @@ module.exports = {
 
         let authorId = interaction.user.id;
         let authorName = interaction.user.username;
-        let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096?size=4096`;
+        let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096?`;
         let serverId = interaction.member.guild.id
 
 
@@ -69,7 +69,6 @@ module.exports = {
             const userName = (authorProfile.dataValues.authorName)
             const userSpeciality = (authorProfile.dataValues.authorNature).split(' ')[0];
             const userRoleList = interaction.member._roles
-            const userLogo = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096?size=4096`;
             const adminRoleId = serverProfile.dataValues.adminRoleId
             const memberRoleId = serverProfile.dataValues.memberRoleId
             const idPartOne = (authorId.toString()).slice(0, 3); // récupérer les 3 premiers chiffres
@@ -80,6 +79,8 @@ module.exports = {
 
             if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
 
+            const userLogo = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
+            const profileImage = await loadImage(userLogo);
 
 
 
@@ -123,7 +124,6 @@ module.exports = {
                 //PROFILE PICTURE
 
                 // Dessin du cercle de découpe
-                const profileImage = await loadImage(userLogo);
                 const imagesize = 263.6;
                 const imagex = 654.1;
                 const imagey = 161;
@@ -174,7 +174,6 @@ module.exports = {
 
 
                 //PROFILE PICTURE
-                const profileImage = await loadImage(userLogo);
                 const imageSize = 263.6;
                 const imageX = 644;
                 const imageY = 168;

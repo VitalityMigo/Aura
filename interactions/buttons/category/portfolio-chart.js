@@ -62,7 +62,7 @@ module.exports = {
                 console.log("// Step 2 : Authorization - Executed ✅")
 
 
-                 //Récupère régagle de privé/ou pas de l'utilisateur
+                //Récupère régagle de privé/ou pas de l'utilisateur
                 const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
 
                 if (authorProfile === null) { await interaction.deferReply(); } else {
@@ -145,7 +145,7 @@ module.exports = {
                             const eth = await web3.eth.getBalance(selectedWallet, getBlock.data.result);
                             const ethValueSpecific = eth / (10 ** 18)
 
-                            
+
 
                             obj.position = roundCount
                             obj.timestamp = timestamp
@@ -536,8 +536,451 @@ module.exports = {
 
 
 
-                    console.log("coming soon")
 
+
+                    if (selectedWallet !== "All") {
+
+                        // Récupérer l'historique des prix sur 6 mois et définir le wallet
+                        const timeStamp = Date.now();
+                        const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
+
+                        const timestamp0week = actualTimestamp
+                        const timestamp1week = actualTimestamp - (604800 * 0.5)
+                        const timestamp2week = actualTimestamp - (604800 * 1)
+                        const timestamp3week = actualTimestamp - (604800 * 1.5)
+                        const timestamp4week = actualTimestamp - (604800 * 2)
+                        const timestamp5week = actualTimestamp - (604800 * 2.5)
+                        const timestamp6week = actualTimestamp - (604800 * 3)
+                        const timestamp7week = actualTimestamp - (604800 * 3.5)
+                        const timestamp8week = actualTimestamp - (604800 * 4)
+                        const timestamp9week = actualTimestamp - (604800 * 4.5)
+                        const timestamp10week = actualTimestamp - (604800 * 5)
+                        const timestamp11week = actualTimestamp - (604800 * 5.5)
+                        const timestamp12week = actualTimestamp - (604800 * 6)
+                        const timestamp13week = actualTimestamp - (604800 * 6.5)
+                        const timestamp14week = actualTimestamp - (604800 * 7)
+                        const timestamp15week = actualTimestamp - (604800 * 7.5)
+                        const timestamp16week = actualTimestamp - (604800 * 8)
+                        const timestamp17week = actualTimestamp - (604800 * 8.5)
+                        const timestamp18week = actualTimestamp - (604800 * 9)
+                        const timestamp19week = actualTimestamp - (604800 * 9.5)
+                        const timestamp20week = actualTimestamp - (604800 * 10)
+                        const timestamp21week = actualTimestamp - (604800 * 10.5)
+                        const timestamp22week = actualTimestamp - (604800 * 11)
+                        const timestamp23week = actualTimestamp - (604800 * 11.5)
+
+                        let timestampTable = [timestamp23week, timestamp22week, timestamp21week, timestamp20week, timestamp19week, timestamp18week, timestamp17week, timestamp16week, timestamp15week, timestamp14week, timestamp13week, timestamp12week, timestamp11week, timestamp10week, timestamp9week, timestamp8week, timestamp7week, timestamp6week, timestamp5week, timestamp4week, timestamp3week, timestamp2week, timestamp1week, timestamp0week]
+
+
+                        //Boucle pour crée les tableaux
+                        for (const timestamp of timestampTable) {
+
+                            roundCount++
+
+
+                            let obj = {}
+
+                            const date = new Date(timestamp * 1000);
+                            const month = date.getMonth() + 1;
+                            const day = date.getDate();
+                            const formattedDate = `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}`;
+
+
+                            const getBlock = await axios.get('https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=' + timestamp + '&closest=before&apikey=' + etherscanApiKey)
+                            const eth = await web3.eth.getBalance(selectedWallet, getBlock.data.result);
+                            const ethValueSpecific = eth / (10 ** 18)
+
+
+
+                            obj.position = roundCount
+                            obj.timestamp = timestamp
+                            obj.dateFormatted = formattedDate
+                            obj.ethValue = ethValueSpecific
+
+
+                            valueFullTable.push(obj)
+                            ethValue.push(ethValueSpecific)
+                            dateFormatted.push(formattedDate)
+                        }
+
+
+                        const canvas = createCanvas(1500, 900);
+                        const ctx = canvas.getContext('2d');
+
+
+
+                        // Initialisez un nouveau graphique Chart.js
+                        const chart = {
+                            type: 'line',
+                            data: {
+                                labels: dateFormatted, // labels pour les nombres de 1 à 12
+                                datasets: [
+                                    {
+                                        data: ethValue, // Données à afficher sur le graphique
+                                        fill: true,
+                                        borderColor: '#ffffff', // Couleur de la ligne d'évolution
+                                        borderWidth: 3.5,
+                                        tension: 0.4,
+                                        pointRadius: 0, // Définir la taille des points
+                                        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                                    },
+                                ],
+                            },
+                            options: {
+                                layout: {
+                                    padding: {
+                                        top: 85
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: false, // Désactiver le label
+                                    },
+
+                                },
+                                scales: {
+                                    x: {
+
+                                        grid: {
+                                            display: false, // Désactiver la grille de la ligne du bas
+                                        },
+                                        ticks: {
+                                            color: '#ffffff',
+                                            // This more specific font property overrides the global property
+                                            font: {
+                                                size: 10,
+                                                family: "Rockwell",
+                                                weight: 550,
+                                            }
+                                        },
+                                    },
+                                    y: {
+
+                                        grid: {
+                                            display: false, // Désactiver la grille de la ligne du bas
+                                        },
+                                        ticks: {
+                                            beginAtZero: true,
+                                            // min: 8,
+                                            // max: 10,
+                                            // stepSize: 2,
+                                            color: '#ffffff',
+                                            font: {
+                                                size: 10,
+                                                family: "Rockwell",
+                                                weight: 500,
+
+                                            }
+                                        },
+
+                                    },
+                                },
+
+                            },
+                        }
+
+                        const myChart = new Chart(ctx, chart);
+
+
+                        const randomString = generateRandomString(10);
+
+
+                        // Enregistrez l'image générée sur le disque (optionnel)
+                        const buffer1 = canvas.toBuffer('image/png');
+                        fs.writeFileSync("./visual/aura/temporary/" + randomString + "-" + authorId + "generatedchart.png", buffer1);
+
+
+                        const image1 = await loadImage("./visual/aura/permanent/portfoliotemplate.png");
+                        const image2 = await loadImage("./visual/aura/temporary/" + randomString + "-" + authorId + "generatedchart.png");
+
+                        const canvasFormatted = createCanvas(1500, 900);
+                        const ctxFormatted = canvas.getContext('2d');
+
+                        ctxFormatted.drawImage(image1, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+                        ctxFormatted.drawImage(image2, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+
+
+
+                        //NOM USER
+                        ctxFormatted.font = "bold 25px 'Fira Code'";
+                        ctxFormatted.fillStyle = "#ffffff";
+                        const userNameSize = ctxFormatted.measureText(authorName.toString()).width;
+                        ctxFormatted.fillText(authorName.toString(), (1470 - userNameSize), 856);
+
+
+
+                        // Charger l'image de profil
+                        const profileImage = await loadImage(userLogo);
+                        // Position de l'image
+                        const imagesize = 41;
+                        const imagex = 1470 - userNameSize - imagesize - 10;
+                        const imagey = 827;
+
+
+                        ctxFormatted.beginPath();
+                        ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
+                        ctxFormatted.closePath();
+                        ctxFormatted.clip();
+                        ctxFormatted.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
+
+
+
+
+
+
+
+                        //Nombre de wallets
+                        ctxFormatted.font = "bold 14px Rockwell";
+                        ctxFormatted.fillStyle = "#ffffff";
+                        const textWidth2 = ctxFormatted.measureText("(1 wallet)").width;
+                        ctxFormatted.fillText("(1 wallet)", (750 - textWidth2 / 2), 96);
+
+
+
+
+
+
+
+                        const buffer2 = canvas.toBuffer('image/png');
+
+
+
+                        await interaction.editReply({
+
+                            files: [buffer2],
+                        });
+
+
+                        // Supprime le fichier
+                        fs.unlinkSync("./visual/aura/temporary/" + randomString + "-" + authorId + "generatedchart.png");
+
+
+
+
+                        //On stock les call API
+                        for (let i = 0; i < timestampTable.length; i++) {
+                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/portfolio-chartGenerator", apiCallName: "getBlock", apiProvider: "etherscan", timestamp: timeStamp.toString() })
+                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/portfolio-chartGenerator", apiCallName: "getBalance", apiProvider: "web3.eth", timestamp: timeStamp.toString() })
+                        }
+
+
+
+                    } else if (selectedWallet === "All") {
+
+                        //On définit la plage de wallet
+                        let allWalletAddressOfAuthorTable = []
+                        const allWalletsOfAuthor = await wallets.findAll({ where: { authorId: authorId } });
+                        for (let i = 0; i < allWalletsOfAuthor.length; i++) { allWalletAddressOfAuthorTable.push(allWalletsOfAuthor[i].dataValues.walletAddress); }
+
+                        let walletCount = allWalletAddressOfAuthorTable.length
+
+
+
+                        // Récupérer l'historique des prix sur 6 mois et définir le wallet
+                        const timeStamp = Date.now();
+                        const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
+
+                        const timestamp0week = actualTimestamp
+                        const timestamp2week = actualTimestamp - (604800 * 1)
+                        const timestamp4week = actualTimestamp - (604800 * 2)
+                        const timestamp6week = actualTimestamp - (604800 * 3)
+                        const timestamp8week = actualTimestamp - (604800 * 4)
+                        const timestamp10week = actualTimestamp - (604800 * 5)
+                        const timestamp12week = actualTimestamp - (604800 * 6)
+                        const timestamp14week = actualTimestamp - (604800 * 7)
+                        const timestamp16week = actualTimestamp - (604800 * 8)
+                        const timestamp18week = actualTimestamp - (604800 * 9)
+                        const timestamp20week = actualTimestamp - (604800 * 10)
+                        const timestamp22week = actualTimestamp - (604800 * 11)
+
+                        let timestampTable = [timestamp22week, timestamp20week, timestamp18week, timestamp16week, timestamp14week, timestamp12week, timestamp10week, timestamp8week, timestamp6week, timestamp4week, timestamp2week, timestamp0week]
+
+
+                        //Boucle pour crée les tableaux
+                        for (const timestamp of timestampTable) {
+
+                            let ethValueSpecific = 0
+
+                            for (const selectedWallet of allWalletAddressOfAuthorTable) {
+
+                                const getBlock = await axios.get('https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=' + timestamp + '&closest=before&apikey=' + etherscanApiKey)
+                                const eth = await web3.eth.getBalance(selectedWallet, getBlock.data.result);
+                                ethValueSpecific += eth / (10 ** 18)
+
+                            }
+                            roundCount++
+
+
+
+                            let obj = {}
+
+                            const date = new Date(timestamp * 1000);
+                            const month = date.getMonth() + 1;
+                            const day = date.getDate();
+                            const formattedDate = `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}`;
+
+
+
+
+                            obj.position = roundCount
+                            obj.timestamp = timestamp
+                            obj.dateFormatted = formattedDate
+                            obj.ethValue = ethValueSpecific
+
+
+                            valueFullTable.push(obj)
+                            ethValue.push(ethValueSpecific)
+                            dateFormatted.push(formattedDate)
+                        }
+
+
+
+
+                        const canvas = createCanvas(1500, 900);
+                        const ctx = canvas.getContext('2d');
+
+
+
+                        // Initialisez un nouveau graphique Chart.js
+                        const chart = {
+                            type: 'line',
+                            data: {
+                                labels: dateFormatted, // labels pour les nombres de 1 à 12
+                                datasets: [
+                                    {
+                                        data: ethValue, // Données à afficher sur le graphique
+                                        fill: true,
+                                        borderColor: '#ffffff', // Couleur de la ligne d'évolution
+                                        borderWidth: 3.5,
+                                        tension: 0.4,
+                                        pointRadius: 0, // Définir la taille des points
+                                        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                                    },
+                                ],
+                            },
+                            options: {
+                                layout: {
+                                    padding: {
+                                        top: 85
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: false, // Désactiver le label
+                                    },
+
+                                },
+                                scales: {
+                                    x: {
+
+                                        grid: {
+                                            display: false, // Désactiver la grille de la ligne du bas
+                                        },
+                                        ticks: {
+                                            color: '#ffffff',
+                                            // This more specific font property overrides the global property
+                                            font: {
+                                                size: 10,
+                                                family: "Rockwell",
+                                                weight: 550,
+                                            }
+                                        },
+                                    },
+                                    y: {
+
+                                        grid: {
+                                            display: false, // Désactiver la grille de la ligne du bas
+                                        },
+                                        ticks: {
+                                            beginAtZero: true,
+                                            // min: 8,
+                                            // max: 10,
+                                            // stepSize: 2,
+                                            color: '#ffffff',
+                                            font: {
+                                                size: 10,
+                                                family: "Rockwell",
+                                                weight: 500,
+
+                                            }
+                                        },
+
+                                    },
+                                },
+
+                            },
+                        }
+
+                        const myChart = new Chart(ctx, chart);
+
+                        const randomString = generateRandomString(10);
+
+
+                        // Enregistrez l'image générée sur le disque (optionnel)
+                        const buffer1 = canvas.toBuffer('image/png');
+                        fs.writeFileSync("./visual/aura/temporary/" + randomString + "-" + authorId + "generatedchart.png", buffer1);
+
+
+                        const image1 = await loadImage("./visual/aura/permanent/portfoliotemplate.png");
+                        const image2 = await loadImage("./visual/aura/temporary/" + randomString + "-" + authorId + "generatedchart.png");
+
+                        const canvasFormatted = createCanvas(1500, 900);
+                        const ctxFormatted = canvas.getContext('2d');
+
+                        ctxFormatted.drawImage(image1, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+                        ctxFormatted.drawImage(image2, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+
+                        //Ecrire le nombre de wallet
+                        ctxFormatted.font = "bold 14px 'Fira Code'";
+                        ctxFormatted.fillStyle = "#ffffff";
+                        const textWidth2 = ctxFormatted.measureText("(" + walletCount + " wallets)").width;
+                        ctxFormatted.fillText("(" + walletCount + " wallets)", (750 - textWidth2 / 2), 96);
+
+
+                        // Dessiner l'image de profil sur le canvas
+                        ctxFormatted.font = "bold 25px 'Fira Code'";
+                        ctxFormatted.fillStyle = "#ffffff";
+                        const userNameSize = ctxFormatted.measureText(authorName.toString()).width;
+                        ctxFormatted.fillText(authorName.toString(), (1470 - userNameSize), 856);
+
+                        // Charger l'image de profil
+                        const profileImage = await loadImage(userLogo);
+                        const imagesize = 41;
+                        const imagex = 1470 - userNameSize - imagesize - 10;
+                        const imagey = 827;
+
+                        ctxFormatted.beginPath();
+                        ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
+                        ctxFormatted.closePath();
+                        ctxFormatted.clip();
+                        ctxFormatted.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
+
+
+
+
+                        const buffer2 = canvas.toBuffer('image/png');
+
+
+
+                        await interaction.editReply({
+
+                            files: [buffer2],
+                        });
+
+
+                        // Supprime le fichier
+                        fs.unlinkSync("./visual/aura/temporary/" + randomString + "-" + authorId + "generatedchart.png");
+
+
+
+                        //On stock les call API
+                        for (let i = 0; i < timestampTable.length; i++) {
+                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/portfolio-chartGenerator", apiCallName: "getBlock", apiProvider: "etherscan", timestamp: timeStamp.toString() })
+                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/portfolio-chartGenerator", apiCallName: "getBalance", apiProvider: "web3.eth", timestamp: timeStamp.toString() })
+                        }
+
+
+                    }
 
 
                 }

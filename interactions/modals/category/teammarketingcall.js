@@ -282,7 +282,7 @@ module.exports = {
 
 
 
-                registerFont("./visual/aura/font/OPT.ttf", { family: "OPT" })
+                registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 
 
                 const templateOneCollection = await loadImage("./visual/aura/permanent/callprofit.png");
@@ -311,7 +311,7 @@ module.exports = {
 
 
                  //WL COUNT
-                 ctxFormatted.font = "60px OPT";
+                 ctxFormatted.font = "60px opt";
                  if (profit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (profit < 0) { ctxFormatted.fillStyle = "#e60015"; }
                  const profitText = ctxFormatted.measureText(profitSign + parseFloat(profit).toFixed(3) + "Ξ").width
                  ctxFormatted.fillText(profitSign + parseFloat(profit).toFixed(3) + "Ξ", 500 - (profitText / 2), 800);

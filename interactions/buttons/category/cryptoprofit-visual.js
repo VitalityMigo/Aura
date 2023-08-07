@@ -774,7 +774,7 @@ module.exports = {
 
           const templateOneCollection = await loadImage("./visual/aura/permanent/cryptoprofittemplate1.png");
 
-          registerFont("./visual/aura/font/OPT.ttf", { family: "OPT" })
+          registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 
 
           const canvasFormatted = createCanvas(1000, 1000);
@@ -882,7 +882,7 @@ module.exports = {
 
           while (userNameSize > MAX_WIDTH2) {
             fontSize2 -= 1;
-            ctxFormatted.font = `${fontSize2}px OPT`;
+            ctxFormatted.font = `${fontSize2}px opt`;
             userNameSize = ctxFormatted.measureText(authorName.toUpperCase()).width;
           }
 
@@ -896,7 +896,7 @@ module.exports = {
 
           let pfpAndNameSize = ctxFormatted.measureText(imagesize + 8 + authorName.toUpperCase()).width;
 
-          ctxFormatted.font = `${fontSize2}px OPT`;
+          ctxFormatted.font = `${fontSize2}px opt`;
           ctxFormatted.textBaseline = "middle";
           ctxFormatted.fillText(authorName.toUpperCase(), startImageAndName + imagesize + 12 - (pfpAndNameSize / 2), 969);
 

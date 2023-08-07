@@ -654,7 +654,7 @@ module.exports = {
         } else {
 
 
-          registerFont("./visual/aura/font/OPT.ttf", { family: "OPT" })
+          registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 
 
           const templateOneCollection = await loadImage("./visual/aura/permanent/rcprofittemplate1.png");
@@ -758,7 +758,7 @@ module.exports = {
 
           //NOM USER
           ctxFormatted.textBaseline = "alphabetic";
-          ctxFormatted.font = "23px OPT";
+          ctxFormatted.font = "23px opt";
           ctxFormatted.fillStyle = "#ffffff";
           const userNameSize = ctxFormatted.measureText("Group Profits").width;
           ctxFormatted.fillText("Group Profits", 718, 978);

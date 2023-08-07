@@ -259,7 +259,7 @@ module.exports = {
 
 
              registerFont("./visual/aura/font/firacode.ttf", { family: "FiraCode" })
-                registerFont("./visual/aura/font/OPT.ttf", { family: "OPT" })
+                registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 
 
                 const templateOneCollection = await loadImage("./visual/aura/permanent/giveawayprofit.png");
@@ -296,7 +296,7 @@ module.exports = {
 
 
                 //Potential PROFIT
-                ctxFormatted.font = "60px OPT";
+                ctxFormatted.font = "60px opt";
                 if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
                 const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ").width
                 ctxFormatted.fillText(potentialProfit.toString() + "Ξ", 500 - potentialProfitText / 2, 810);

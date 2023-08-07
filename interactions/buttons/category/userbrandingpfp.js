@@ -59,6 +59,9 @@ module.exports = {
                 //Checkpoint
                 console.log("// Step 2 : Authorization - Executed ✅")
 
+                const avatar = await loadImage(`https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`)
+
+
 
                 if (serverId === "949291624389816331") {
 
@@ -70,7 +73,7 @@ module.exports = {
                     const canvasFormatted = createCanvas(4096, 4096);
                     const ctxFormatted = canvasFormatted.getContext('2d');
 
-                    const avatar = await loadImage(`https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096?size=4096`);
+                    //const avatar = await loadImage(`https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`);
                     const pfpLayer = await loadImage("./visual/rollschasers/permanent/identitypfp.png");
 
 
@@ -104,7 +107,7 @@ module.exports = {
                     const canvasFormatted = createCanvas(4096, 4096);
                     const ctxFormatted = canvasFormatted.getContext('2d');
 
-                    const avatar = await loadImage(`https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096?size=4096`);
+                    // const avatar = await loadImage(`https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`);
                     const pfpLayer = await loadImage("./visual/aura/permanent/identitypfp.png");
 
 

@@ -181,7 +181,7 @@ module.exports = {
 
                 const templateIdentityCard = await loadImage("./visual/aura/permanent/identitybanner.png");
 
-                registerFont("./visual/aura/font/OPT.ttf", { family: "OPT" })
+                registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 
 
                 const canvasFormatted = createCanvas(1500, 500);
@@ -194,7 +194,7 @@ module.exports = {
 
 
                 // Charge la police
-                ctxFormatted.font = '54px OPT';
+                ctxFormatted.font = '54px opt';
                 ctxFormatted.fillStyle = "#FFFFFF"; // blanc opaque à 100%
                 ctxFormatted.textAlign = 'right'; // Alignement du texte à droite
                 ctxFormatted.fillText(userName.toUpperCase(), 871, 206);

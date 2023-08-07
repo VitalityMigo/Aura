@@ -18,7 +18,10 @@ const moment = require('moment');
 
 const { registerFont, createCanvas, loadImage } = require('canvas');
 
+registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
+registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
+
 
 
 
@@ -77,7 +80,6 @@ module.exports = {
             if (serverId === "949291624389816331") {
 
 
-                registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
                 const userIdentityId = "0x" + idPartTwo + idPartOne

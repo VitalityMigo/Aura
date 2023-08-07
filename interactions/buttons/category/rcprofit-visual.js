@@ -20,6 +20,12 @@ const moment = require('moment');
 const generateRandomString = require('../../../functions/randomkey');
 const { registerFont, createCanvas, loadImage } = require('canvas');
 
+registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
+registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
+registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
+
+
+
 const axios = require('axios')
 
 
@@ -123,7 +129,6 @@ module.exports = {
 
         if (serverId === "949291624389816331") {
 
-          registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
           profileImage = await loadImage("https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png")
 
@@ -654,7 +659,6 @@ module.exports = {
         } else {
 
 
-          registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 
 
           const templateOneCollection = await loadImage("./visual/aura/permanent/rcprofittemplate1.png");

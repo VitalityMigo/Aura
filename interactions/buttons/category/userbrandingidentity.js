@@ -12,13 +12,16 @@
 
 
 
-
-
-
 const { registerFont, createCanvas, loadImage } = require('canvas');
 const { ButtonInteraction } = require('discord.js');
 const { EmbedBuilder } = require("discord.js");
 const { accessSql, profileData, adminsql, reportsql, sequelize } = require('../../../events/database');
+
+registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
+registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
+registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
+
+
 const moment = require('moment');
 
 const capFirstLetter = require("../../../functions/capfirstletter")
@@ -88,7 +91,6 @@ module.exports = {
 
 
 
-                registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
                 const canvasFormatted = createCanvas(1000, 585.38);
                 const ctxFormatted = canvasFormatted.getContext('2d');
@@ -144,7 +146,6 @@ module.exports = {
 
             } else {
 
-                registerFont("./visual/aura/font/firacode.ttf", { family: "FiraCode" })
 
 
                 const canvasFormatted = createCanvas(1000, 585.38);

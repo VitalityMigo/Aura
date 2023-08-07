@@ -23,6 +23,11 @@ const formatNumberVisual = require("../../../functions/reducenumbervisual")
 const { registerFont, createCanvas, loadImage } = require('canvas');
 
 
+registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
+registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
+registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
+
+
 const axios = require('axios')
 
 
@@ -134,7 +139,6 @@ module.exports = {
 
             const templateOneCollection = await loadImage("./visual/rollschasers/permanent/cryptoprofittemplate2.png");
 
-            registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
             const canvasFormatted = createCanvas(1000, 1000);
@@ -367,7 +371,6 @@ module.exports = {
 
 
             const templateOneCollection = await loadImage("./visual/rollschasers/permanent/cryptoprofittemplate3.png");
-            registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
             const canvasFormatted = createCanvas(1000, 1000);
@@ -579,7 +582,6 @@ module.exports = {
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
             //NOM COLLECTION
             const MAX_WIDTH = 515;
@@ -647,8 +649,6 @@ module.exports = {
 
           const templateOneCollection = await loadImage("./visual/embassy/permanent/cryptoprofittemplate1.png");
 
-
-          registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
 
           const canvasFormatted = createCanvas(1000, 1000);
           const ctxFormatted = canvasFormatted.getContext('2d');
@@ -774,7 +774,6 @@ module.exports = {
 
           const templateOneCollection = await loadImage("./visual/aura/permanent/cryptoprofittemplate1.png");
 
-          registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 
 
           const canvasFormatted = createCanvas(1000, 1000);

@@ -16,19 +16,27 @@ const { EmbedBuilder } = require("discord.js");
 const { accessSql, profileData, interactionData, wallets, apimonitorsql, reportsql, adminsql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-const fs = require('fs');
-const Chart = require('chart.js');
-const { createCanvas, loadImage, registerFont } = require('canvas');
-const generateRandomString = require('../../../functions/randomkey');
-
-
 //Récupérer les clefs API
 const dotenv = require("dotenv")
 dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
 
 
+
+const fs = require('fs');
+const Chart = require('chart.js');
+const { createCanvas, loadImage, registerFont } = require('canvas');
+const generateRandomString = require('../../../functions/randomkey');
+
+
+registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
+registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
+registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
+
+
+
 const axios = require('axios')
+
 //Web3 API + Cloudfare Provider
 var Web3 = require("web3")
 const web3 = new Web3("https://cloudflare-eth.com")
@@ -90,7 +98,6 @@ module.exports = {
 
                 if (serverId === "949291624389816331") {
 
-                    registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
                     if (selectedWallet !== "All") {

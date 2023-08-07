@@ -21,6 +21,13 @@ const moment = require('moment');
 const generateRandomString = require('../../../functions/randomkey');
 const { registerFont, createCanvas, loadImage } = require('canvas');
 
+registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
+registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
+registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
+
+
+
+
 const axios = require('axios')
 
 
@@ -126,7 +133,6 @@ module.exports = {
         if (serverId === "949291624389816331") {
 
 
-          registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
           if (visualSelect === "2" || privacyBigDataAuthor === null) {
@@ -637,7 +643,6 @@ module.exports = {
         } else if (serverId === "944918328135286804") {
 
 
-          registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
 
 
 
@@ -772,7 +777,6 @@ module.exports = {
 
           const templateOneCollection = await loadImage("./visual/aura/permanent/profittemplate1.png");
 
-          registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 
 
           const canvasFormatted = createCanvas(1000, 1000);

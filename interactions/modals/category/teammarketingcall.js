@@ -15,6 +15,12 @@ const moment = require('moment');
 
 const { registerFont, createCanvas, loadImage } = require('canvas');
 
+registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
+registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
+registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
+
+
+
 const capFirstLetter = require("../../../functions/capfirstletter")
 
 
@@ -87,7 +93,6 @@ module.exports = {
             if (serverId === "949291624389816331") {
 
 
-                registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
 
@@ -188,7 +193,6 @@ module.exports = {
             } else if (serverId === "944918328135286804") {
 
 
-                registerFont("./visual/embassy/font/akira.ttf", { family: "akira" })
 
 
                 const templateOneCollection = await loadImage("./visual/embassy/permanent/callprofit.png");
@@ -282,7 +286,6 @@ module.exports = {
 
 
 
-                registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 
 
                 const templateOneCollection = await loadImage("./visual/aura/permanent/callprofit.png");

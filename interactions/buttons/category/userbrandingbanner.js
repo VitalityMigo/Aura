@@ -18,6 +18,7 @@ const moment = require('moment');
 
 const { registerFont, createCanvas, loadImage } = require('canvas');
 
+registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 
 
 
@@ -181,14 +182,12 @@ module.exports = {
 
                 const templateIdentityCard = await loadImage("./visual/aura/permanent/identitybanner.png");
 
-                registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 
 
                 const canvasFormatted = createCanvas(1500, 500);
                 const ctxFormatted = canvasFormatted.getContext('2d');
 
                 ctxFormatted.drawImage(templateIdentityCard, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
-
 
 
 

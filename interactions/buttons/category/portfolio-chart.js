@@ -331,7 +331,7 @@ module.exports = {
 
                         //On définit la plage de wallet
                         let allWalletAddressOfAuthorTable = []
-                        const allWalletsOfAuthor = await wallets.findAll({ where: { authorId: authorId } });
+                        const allWalletsOfAuthor = await wallets.findAll({ where: { authorId: authorId, walletCategory: "eth" } });
                         for (let i = 0; i < allWalletsOfAuthor.length; i++) { allWalletAddressOfAuthorTable.push(allWalletsOfAuthor[i].dataValues.walletAddress); }
 
                         let walletCount = allWalletAddressOfAuthorTable.length
@@ -782,7 +782,7 @@ module.exports = {
 
                         //On définit la plage de wallet
                         let allWalletAddressOfAuthorTable = []
-                        const allWalletsOfAuthor = await wallets.findAll({ where: { authorId: authorId } });
+                        const allWalletsOfAuthor = await wallets.findAll({ where: { authorId: authorId, walletCategory: "eth" } });
                         for (let i = 0; i < allWalletsOfAuthor.length; i++) { allWalletAddressOfAuthorTable.push(allWalletsOfAuthor[i].dataValues.walletAddress); }
 
                         let walletCount = allWalletAddressOfAuthorTable.length

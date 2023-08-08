@@ -592,7 +592,7 @@ module.exports = {
 
                                             const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
                                                 .setTitle(`No wallet`)
-                                                .setDescription("Aura can't analyze your wallet's data because you don't have any Ethereum wallet registered in your portfolio. Please use `/setwallet` to register a wallet in your portfolio then try again.")
+                                                .setDescription("Aura can't analyze your wallet's data because you don't have any Ethereum wallet registered in your portfolio. Please use `/wallet set` or `/wallet raw` to register a wallet in your portfolio then try again.")
                                                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                                 .setTimestamp()
@@ -866,7 +866,7 @@ module.exports = {
 
                                             const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
                                                 .setTitle(`No wallet`)
-                                                .setDescription("Aura can't analyze your wallet's data because you don't have any Bitcoin wallet registered in your portfolio. Please use `/setwallet` to register a wallet in your portfolio then try again.")
+                                                .setDescription("Aura can't analyze your wallet's data because you don't have any Bitcoin wallet registered in your portfolio. Please use `/wallet set` or `/wallet raw` to register a wallet in your portfolio then try again.")
                                                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                                 .setTimestamp()

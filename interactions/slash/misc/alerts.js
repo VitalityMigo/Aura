@@ -813,7 +813,7 @@ module.exports = {
 
 									} else {
 
-										alertsUpEmbed = "`No upwards alert found in your database`"
+										alertsUpEmbed = "`No upward alert found in your database`"
 
 									}
 
@@ -862,7 +862,7 @@ module.exports = {
 
 									} else {
 
-										alertsDownEmbed = "`No upwards alert found in your database`"
+										alertsDownEmbed = "`No downward alert found in your database`"
 
 									}
 
@@ -988,7 +988,7 @@ module.exports = {
 
 									} else {
 
-										alertsUpEmbedCollection = "`No upwards alert found for " + collection.toLowerCase() + "`"
+										alertsUpEmbedCollection = "`No upward alert found for " + collection.toLowerCase() + "`"
 
 									}
 
@@ -1038,7 +1038,7 @@ module.exports = {
 									} else {
 
 
-										alertsDownEmbedCollection = "`No downwards alerts alert found for " + collection.toLowerCase() + "`"
+										alertsDownEmbedCollection = "`No downward alerts alert found for " + collection.toLowerCase() + "`"
 
 									}
 

@@ -1564,7 +1564,7 @@ module.exports = {
 
                             const botOff = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle(`${authorName}'s portfolio`)
-                                .setDescription("Your portfolio is empty, both on Ethereum and Bitcoin. To set a wallet in your portfolio, you can use `/setwallet`. To set multiple wallets at once, you can use `/setwalletraw`.")
+                                .setDescription("Your portfolio is empty, both on Ethereum and Bitcoin. To set a wallet in your portfolio, you can use `/wallet set` or `/wallet raw`. To set multiple wallets at once, you can use `/setwalletraw`.")
                                 .setThumbnail(userAvatar)
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                 .setTimestamp()

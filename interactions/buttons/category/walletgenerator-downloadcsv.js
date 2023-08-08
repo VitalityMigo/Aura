@@ -38,165 +38,206 @@ module.exports = {
 
     try {
 
-    //Checkpoint
-    console.log("// Step 1 : Initialization - Executed ✅")
+      //Checkpoint
+      console.log("// Step 1 : Initialization - Executed ✅")
 
 
 
 
 
-    //Checkpoint
-    console.log("// Step 2 : Authorization - Executed ✅")
+      //Checkpoint
+      console.log("// Step 2 : Authorization - Executed ✅")
 
 
-    const walletsGeneratedOfAuthor = await walletsgenerated.findAll({ where: { authorId: authorId } })
+      const walletsGeneratedOfAuthor = await walletsgenerated.findAll({ where: { authorId: authorId } })
 
-    let walletsTable = []
+      let walletsTable = []
+      let isDMOpen = true
+      let messageSent = false
 
 
-    const header = ['Address', 'Private Key', 'Statut'];
-    const dataArrays = [['Address', 'Private Key', 'Statut']];
+      const header = ['Address', 'Private Key', 'Statut'];
+      const dataArrays = [['Address', 'Private Key', 'Statut']];
 
-    walletsGeneratedOfAuthor.forEach(obj => {
-      const arr = [decrypt(obj.walletAddress), decrypt(obj.privateKey), "Active"];
-      if (obj.authorId === authorId) {
-        dataArrays.push(arr)
-        walletsTable.push(decrypt(obj.walletAddress))
+      walletsGeneratedOfAuthor.forEach(obj => {
+        const arr = [decrypt(obj.walletAddress), decrypt(obj.privateKey), "Active"];
+        if (obj.authorId === authorId) {
+          dataArrays.push(arr)
+          walletsTable.push(decrypt(obj.walletAddress))
 
-      }
-    });
-
-    stringify(dataArrays, {
-      header,
-      delimiter: ';'
-    }, (err, output) => {
-      if (err) {
-        console.log(18, err)
-        return;
-      }
-      const buffer = Buffer.from(output, 'utf-8');
-
-      let csvName = authorName.split(' ')[0] + "Wallets.csv"
-
-      member.send({
-        files: [{ attachment: buffer, name: csvName }]
+        }
       });
 
+      const sendMessage = async () => {
+        try {
+          const output = await new Promise((resolve, reject) => {
+            stringify(dataArrays, {
+              header,
+              delimiter: ';'
+            }, (err, output) => {
+              if (err) {
+                console.log(18, err);
+                reject(err);
+              } else {
+                resolve(output);
+              }
+            });
+          });
 
-    });
+          const buffer = Buffer.from(output, 'utf-8');
+          const csvName = authorName.split(' ')[0] + "Wallets.csv";
+
+          await member.send({
+            files: [{ attachment: buffer, name: csvName }]
+          });
+
+          console.log("Message envoyé avec succès !");
+        } catch (error) {
+          console.error("Une erreur s'est produite :", error);
+
+          if (error.message.includes("Cannot send messages to this user") || error.message.includes("Impossible d'envoyer un message à cet utilisateur.")) {
+            isDMOpen = false;
+          }
+        }
+      };
 
 
 
 
-    let walletCreatedList = ""
-    let generationStatut = "`Failed`"
-    let walletDisplayLimit = 0
+      await sendMessage();
+
+
+      let walletCreatedList = ""
+      let generationStatut = "`Failed`"
+      let walletDisplayLimit = 0
 
 
 
 
 
-    for (const address of walletsTable) {
+      for (const address of walletsTable) {
 
 
-      if (walletDisplayLimit < 19) {
+        if (walletDisplayLimit < 19) {
 
-        walletCreatedList += address + ",        \n"
+          walletCreatedList += address + ",        \n"
 
-      } else if (walletDisplayLimit === 19) {
+        } else if (walletDisplayLimit === 19) {
 
-        walletCreatedList += "and " + (walletsTable.length - 19) + " more..."
+          walletCreatedList += "and " + (walletsTable.length - 19) + " more..."
 
-      } else if (walletDisplayLimit > 19) {
+        } else if (walletDisplayLimit > 19) {
 
+
+
+        }
+        walletDisplayLimit += 1
 
 
       }
-      walletDisplayLimit += 1
 
 
-    }
-
-
-    generationStatut = "`Succeed`"
+      generationStatut = "`Succeed`"
 
 
 
-    //On fait les settings du boutton d'ajout au portfolio
+      //On fait les settings du boutton d'ajout au portfolio
 
 
-    const walletUserAll = await wallets.findAll({ where: { authorId: authorId } })
+      const walletUserAll = await wallets.findAll({ where: { authorId: authorId } })
 
-    const registeredWalletLength = walletUserAll.length
-    // const walletTableLength = walletsTable.length
-    // const walletLength = uniqueWalletAddresses.length
-    const walletAvailable = 24 - registeredWalletLength
-
-
-    let buttonsRow = ''
-    let walletAvailableButton = 24 - registeredWalletLength
-    if (walletsTable.length < walletAvailableButton) { walletAvailableButton = walletsTable.length }
-
-    if (walletAvailable > 0) {
-
-      buttonsRow = new ActionRowBuilder()
-        .addComponents(
-          new ButtonBuilder()
-            .setCustomId('download-button')
-            .setLabel('Download CSV')
-            .setStyle(2),
-          new ButtonBuilder()
-            .setCustomId('walletgeneratoraddwallets-button')
-            .setLabel('Add ' + walletAvailableButton + " wallets")
-            .setStyle(2),
-          // new ButtonBuilder()
-          //   .setCustomId('walletmanagermenu-button')
-          //   .setLabel('menu')
-          //   .setStyle(2), 
-
-        );
-
-    } else {
+      const registeredWalletLength = walletUserAll.length
+      // const walletTableLength = walletsTable.length
+      // const walletLength = uniqueWalletAddresses.length
+      const walletAvailable = 24 - registeredWalletLength
 
 
-      buttonsRow = new ActionRowBuilder()
-        .addComponents(
-          new ButtonBuilder()
-            .setCustomId('download-button')
-            .setLabel('Download CSV')
-            .setStyle(2),
-          // new ButtonBuilder()
-          //   .setCustomId('walletmanagermenu-button')
-          //   .setLabel('menu')
-          //   .setStyle(2), 
+      let buttonsRow = ''
+      let walletAvailableButton = 24 - registeredWalletLength
+      if (walletsTable.length < walletAvailableButton) { walletAvailableButton = walletsTable.length }
 
-        );
+      if (walletAvailable > 0) {
 
-    }
+        buttonsRow = new ActionRowBuilder()
+          .addComponents(
+            new ButtonBuilder()
+              .setCustomId('download-button')
+              .setLabel('Download CSV')
+              .setStyle(2),
+            new ButtonBuilder()
+              .setCustomId('walletgeneratoraddwallets-button')
+              .setLabel('Add ' + walletAvailableButton + " wallets")
+              .setStyle(2),
+            // new ButtonBuilder()
+            //   .setCustomId('walletmanagermenu-button')
+            //   .setLabel('menu')
+            //   .setStyle(2), 
 
+          );
 
-
-
-    const walletGenerator = new EmbedBuilder().setColor("#060A8F")
-      .setTitle("Wallet Generator")
-      .setDescription(">>> `" + walletsTable.length + "` wallets have been successfully generated")
-      .setAuthor({ name: authorName, iconURL: userAvatar })
-      .setTimestamp()
-      .addFields(
-        { name: "Wallet Count", value: "`" + walletsTable.length + "`", inline: true },
-        { name: "Network", value: "`Ethereum (ETH)`", inline: true },
-        { name: "Generation Statut", value: generationStatut, inline: true },
-        { name: "Wallets Created:", value: "```" + walletCreatedList + "```", inline: false },
-        { name: " ", value: " ", inline: false },
-        { name: " ", value: "✅ The wallets infos have been sent to your DMs. Private keys are not stored.", inline: false },
-
-      )
-      .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-    await interaction.update({ embeds: [walletGenerator], components: [buttonsRow] });
+      } else {
 
 
+        buttonsRow = new ActionRowBuilder()
+          .addComponents(
+            new ButtonBuilder()
+              .setCustomId('download-button')
+              .setLabel('Download CSV')
+              .setStyle(2),
+            // new ButtonBuilder()
+            //   .setCustomId('walletmanagermenu-button')
+            //   .setLabel('menu')
+            //   .setStyle(2), 
 
+          );
+
+      }
+      console.log(isDMOpen)
+
+      if (isDMOpen == true) {
+
+        const walletGenerator = new EmbedBuilder().setColor("#060A8F")
+          .setTitle("Wallet Generator")
+          .setDescription(">>> `" + walletsTable.length + "` wallets have been successfully generated")
+          .setAuthor({ name: authorName, iconURL: userAvatar })
+          .setTimestamp()
+          .addFields(
+            { name: "Wallet Count", value: "`" + walletsTable.length + "`", inline: true },
+            { name: "Network", value: "`Ethereum (ETH)`", inline: true },
+            { name: "Generation Statut", value: generationStatut, inline: true },
+            { name: "Wallets Created:", value: "```" + walletCreatedList + "```", inline: false },
+            { name: " ", value: " ", inline: false },
+            { name: " ", value: "✅ The wallets infos have been sent to your DMs. Private keys are not stored.", inline: false },
+
+          )
+          .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+        await interaction.update({ embeds: [walletGenerator], components: [buttonsRow] });
+
+
+      } else if (isDMOpen == false) {
+
+
+        const walletGenerator = new EmbedBuilder().setColor("#060A8F")
+          .setTitle("Wallet Generator")
+          .setDescription(">>> `" + walletsTable.length + "` wallets have been successfully generated")
+          .setAuthor({ name: authorName, iconURL: userAvatar })
+          .setTimestamp()
+          .addFields(
+            { name: "Wallet Count", value: "`" + walletsTable.length + "`", inline: true },
+            { name: "Network", value: "`Ethereum (ETH)`", inline: true },
+            { name: "Generation Statut", value: generationStatut, inline: true },
+            { name: "Wallets Created:", value: "```" + walletCreatedList + "```", inline: false },
+            { name: " ", value: " ", inline: false },
+            { name: " ", value: "❌ Your DMs are closed. Please unable server DMs to receive your wallets.", inline: false },
+
+          )
+          .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+        await interaction.update({ embeds: [walletGenerator], components: [buttonsRow] });
+
+
+      }
 
 
 
@@ -249,28 +290,28 @@ module.exports = {
 
       console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
-            const reduceText = require("../../../functions/reducetext")
-            const roleTag = "1121510423687090186"
+      const reduceText = require("../../../functions/reducetext")
+      const roleTag = "1121510423687090186"
 
 
-            const updateEmbed = new EmbedBuilder().setColor("#060A8F")
-                .setTitle("New Report")
-                .setDescription(">>> A new report has just been sent.")
-                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
-                .setTimestamp()
-                .addFields(
-                    { name: " ", value: " ", inline: false },
-                    { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
-                    { name: " ", value: " ", inline: false },
-                    { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
-                )
-                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+      const updateEmbed = new EmbedBuilder().setColor("#060A8F")
+        .setTitle("New Report")
+        .setDescription(">>> A new report has just been sent.")
+        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+        .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+        .setTimestamp()
+        .addFields(
+          { name: " ", value: " ", inline: false },
+          { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
+          { name: " ", value: " ", inline: false },
+          { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
+        )
+        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-            await channel.send("<@&" + roleTag + ">");
+      await channel.send("<@&" + roleTag + ">");
 
-            await channel.send({ embeds: [updateEmbed] });
+      await channel.send({ embeds: [updateEmbed] });
 
 
 

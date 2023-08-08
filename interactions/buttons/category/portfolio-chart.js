@@ -314,6 +314,9 @@ module.exports = {
 
 
 
+                        // Supprime le fichier
+                         fs.unlinkSync("./visual/rollschasers/temporary/" + randomString + "-" + authorId + "generatedchart.png");
+
 
 
                         //On stock les call API
@@ -527,6 +530,9 @@ module.exports = {
                         });
 
 
+
+                        // Supprime le fichier
+                        fs.unlinkSync("./visual/rollschasers/temporary/" + randomString + "-" + authorId + "generatedchart.png");
 
 
                         //On stock les call API
@@ -937,11 +943,11 @@ module.exports = {
                         ctxFormatted.drawImage(image1, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
                         ctxFormatted.drawImage(image2, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
 
-                        //Ecrire le nombre de wallet
-                        ctxFormatted.font = "bold 14px 'Fira Code'";
-                        ctxFormatted.fillStyle = "#ffffff";
-                        const textWidth2 = ctxFormatted.measureText("(" + walletCount + " wallets)").width;
-                        ctxFormatted.fillText("(" + walletCount + " wallets)", (750 - textWidth2 / 2), 96);
+                        // //Ecrire le nombre de wallet
+                        // ctxFormatted.font = "bold 14px 'Fira Code'";
+                        // ctxFormatted.fillStyle = "#ffffff";
+                        // const textWidth2 = ctxFormatted.measureText("(" + walletCount + " wallets)").width;
+                        // ctxFormatted.fillText("(" + walletCount + " wallets)", (750 - textWidth2 / 2), 96);
 
 
                         // Dessiner l'image de profil sur le canvas

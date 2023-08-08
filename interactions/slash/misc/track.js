@@ -1723,7 +1723,7 @@ module.exports = {
 
                                     const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
                                         .setTitle("Mint Tracker")
-                                        .setDescription("Aura can't analyze your wallet's data because you don't have any Ethereum or Bitcoin wallet registered in your portfolio. Please use `/setwallet` to register a wallet in your portfolio then try again.")
+                                        .setDescription("Aura can't analyze your wallet's data because you don't have any Ethereum or Bitcoin wallet registered in your portfolio. Please use `/wallet set` or `/wallet raw` to register a wallet in your portfolio then try again.")
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                         .setTimestamp()
                                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -1891,7 +1891,7 @@ module.exports = {
 
                                 const notMember = new EmbedBuilder().setColor("#060A8F")
                                     .setTitle(`Token Tracker`)
-                                    .setDescription("Aura can't analyze your wallet's data because you don't have any Ethereum wallet registered in your portfolio. Please use `/setwallet` to register a wallet in your portfolio then try again.")
+                                    .setDescription("Aura can't analyze your wallet's data because you don't have any Ethereum wallet registered in your portfolio. Please use `/wallet set` or `/wallet raw` to register a wallet in your portfolio then try again.")
                                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                     .setAuthor({ name: authorName, iconURL: userAvatar })
                                     .setTimestamp()
@@ -2067,7 +2067,7 @@ module.exports = {
 
                                 const notMember = new EmbedBuilder().setColor("#060A8F")
                                     .setTitle(`Token Tracker`)
-                                    .setDescription("Aura can't analyze your wallet's data because you don't have any Bitcoin wallet registered in your portfolio. Please use `/setwallet` to register a wallet in your portfolio then try again.")
+                                    .setDescription("Aura can't analyze your wallet's data because you don't have any Bitcoin wallet registered in your portfolio. Please use `/wallet set` or `/wallet raw` to register a wallet in your portfolio then try again.")
                                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                     .setAuthor({ name: authorName, iconURL: userAvatar })
                                     .setTimestamp()

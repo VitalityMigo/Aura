@@ -121,7 +121,7 @@ module.exports = {
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/blur` command allows the user to display key Blur metrics of his wallet(s. The user can choose between displaying the metrics on one of his registered wallet or across all his registered wallets.", inline: false },
-					{ name: 'Specificity', value: "The wallet selection is user-based, which means that the wallets you registered using /setwallet are the same accross all your server that have access to the bot.", inline: false },
+					{ name: 'Specificity', value: "The wallet selection is user-based, which means that the wallets you registered using `/wallet set` or `/wallet raw` are the same accross all your server that have access to the bot.", inline: false },
 					{ name: ' ', value: " ", inline: false },
 					{ name: ' ', value: "*For a full presentation of the command, click [here](https://rolls-chasers.gitbook.io/aura/commands/commands/blur)*", inline: false },
 				)
@@ -365,7 +365,7 @@ module.exports = {
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
 					{ name: 'Features', value: "The `/portfolio` command allows the user to display the main metrics of one of his registered Ethereum wallets or accross all his registered wallets. The analyze retrieve various metrics such as the wallet balance, the main ERC20/ERC721 tokens amount held and more.", inline: false },
-					{ name: 'Specificity', value: "The wallet selection is user-based, which means that the wallets you registered using /setwallet are the same accross all your server that have access to the bot.", inline: false },
+					{ name: 'Specificity', value: "The wallet selection is user-based, which means that the wallets you registered using `/wallet set` or `/wallet raw` are the same accross all your server that have access to the bot.", inline: false },
 					{ name: ' ', value: " ", inline: false },
 					{ name: ' ', value: "*For a full presentation of the command, click [here](https://rolls-chasers.gitbook.io/aura/commands/commands/portfolio)*", inline: false },
 				)
@@ -592,7 +592,7 @@ module.exports = {
 				.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 				.addFields(
 					{ name: ' ', value: " ", inline: false },
-					{ name: 'Features', value: "The wallets commands are composed of `/setwallet`, to set a new Ethereum or Bitcoin wallet in your portfolio, of `/getwallet`, to display all your registered wallets, and of `/removewallet`, to remove a wallet from your portfolio.", inline: false },
+					{ name: 'Features', value: "The wallets commands are composed of `/wallet set` or `/wallet raw`, to set a new Ethereum or Bitcoin wallet in your portfolio, of `/getwallet`, to display all your registered wallets, and of `/removewallet`, to remove a wallet from your portfolio.", inline: false },
 					{ name: 'Specificity', value: "This command is user based, which means if you have set a wallet in a community, the wallet will also be set across all the community you are part of that use the bot. Your portfolio of wallet remains the same everywhere.", inline: false },
 					{ name: ' ', value: " ", inline: false },
 					{ name: ' ', value: "*For a full presentation of the command, click [here](https://rolls-chasers.gitbook.io/aura/commands/commands/wallet-set)*", inline: false },

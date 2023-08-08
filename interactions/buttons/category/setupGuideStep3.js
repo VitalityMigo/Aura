@@ -51,7 +51,7 @@ module.exports = {
 
             const passwordManagement = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("Set your wallets")
-                .setDescription("Let's move on to an important stage: your wallets. This is the basis of many of Aura's features.\n\nUse `/setwallet` to register your wallets, give them a name and put them in a category. Note that Bitcoin wallets can only be in the Bitcoin category.\n\nYou've done the hard part, now let's move on to the final stage.\n\n`[3/4]`")
+                .setDescription("Let's move on to an important stage: your wallets. This is the basis of many of Aura's features.\n\nUse `/wallet set` or `/wallet raw` to register your wallets, give them a name and put them in a category. Note that Bitcoin wallets can only be in the Bitcoin category.\n\nYou've done the hard part, now let's move on to the final stage.\n\n`[3/4]`")
                 .setAuthor({ name: authorName, iconURL: userAvatar })
                 .setTimestamp()
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })

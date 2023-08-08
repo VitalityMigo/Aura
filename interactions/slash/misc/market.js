@@ -34,7 +34,7 @@ const axios = require('axios')
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("market")
-        .setDescription("Display the public profile of one of the community member")
+        .setDescription("Display various global metrics of the market")
         .addStringOption(option =>
             option
                 .setName("chain")

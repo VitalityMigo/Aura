@@ -99,14 +99,19 @@ module.exports = {
                                 let availableCommands = ""
 
                                 if (serverTier.toLowerCase() === "s-tier") {
-                                    availableCommands = "`/access` ∙ `/blur` ∙ `/data` ∙ `/derisk` ∙ `/ens` ∙ `/gascalculator` ∙ `/gastracker` ∙ `/getalerts` ∙ `/getprofile` ∙ `/getwallets` ∙ `/getwatchlist` ∙ `/guide` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/removealert` ∙ `/removewallet` ∙ `/removewatchlist` ∙ `/report` ∙ `/setalert` ∙ `/setwallet` ∙ `/setwatchlist` ∙ `/statut` ∙ `/twitter` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/walletgenerator`"
+                                    availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/statut` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
                                 }
 
                                 if (serverTier.toLowerCase() === "a-tier") {
+                                    //availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/statut` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
+
                                     availableCommands = "`/access` ∙ `/data` ∙ `/derisk` ∙ `/ens` ∙ `/gastracker` ∙ `/gascalculator` ∙ `/getprofile` ∙ `/getwallets` ∙ `/getwatchlist` ∙ `/guide` ∙ `/privacy` ∙ `/profit` ∙ `/removewallet` ∙ `/removewatchlist` ∙ `/report` ∙ `/setwallet` ∙ `/setwatchlist` ∙ `/statut ∙ `/walletgenerator` ∙ `/vouch` ∙ `/vouchleaderboard`"
                                 }
 
                                 if (serverTier.toLowerCase() === "b-tier") {
+
+                                   // availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/statut` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
+
                                     availableCommands = "`/access` ∙ `/getwallets` ∙ `/getprofile` ∙ `/guide` ∙ `/privacy` ∙ `/profit` ∙ `/report` ∙ `/removewallet` ∙ `/setwallet` ∙ `/statut ∙ `/vouch` ∙ `/vouchleaderboard`"
                                 }
 

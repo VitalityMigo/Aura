@@ -151,7 +151,7 @@ module.exports = {
             //MINT COUNT
             ctxFormatted.font = "bold 22px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(formatNumberVisual(buyCount), 337, 226.5);
+            ctxFormatted.fillText(formatNumberVisual(buyCount).toFixed(1), 337, 226.5);
 
             //BUY COUNT
             ctxFormatted.font = "bold 22px Futura";
@@ -167,12 +167,12 @@ module.exports = {
             //SOLD COUNT
             ctxFormatted.font = "bold 22px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(formatNumberVisual(soldCount), 337, 387.5);
+            ctxFormatted.fillText(parseFloat(formatNumberVisual(soldCount)).toFixed(1), 337, 387.5);
 
             //REMAINING
             ctxFormatted.font = "bold 22px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(formatNumberVisual(remaining), 337, 433);
+            ctxFormatted.fillText(parseFloat(formatNumberVisual(remaining)).toFixed(1), 337, 433);
 
             //AVG SOLD
             ctxFormatted.font = "bold 22px Futura";
@@ -189,12 +189,12 @@ module.exports = {
             //REALIZED PROFIT
             ctxFormatted.font = "bold 22px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(realisedProfit.toString() + "Ξ", 337, 594);
+            ctxFormatted.fillText(parseFloat(realisedProfit).toFixed(3) + "Ξ", 337, 594);
 
             //Potential ROI
             ctxFormatted.font = "bold 22px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(potentialRoiFormatted.toString() + "%", 337, 639);
+            ctxFormatted.fillText(parseFloat(potentialRoiFormatted).toFixed(3) + "%", 337, 639);
 
 
 
@@ -203,13 +203,10 @@ module.exports = {
             // POTENTIAL PROFIT
             ctxFormatted.font = "bold 68px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            const text = potentialProfit.toString() + "Ξ" // (" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
+            const text = parseFloat(potentialProfit).toFixed(3) + "Ξ" // (" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
             ctxFormatted.font = "bold 35px Futura";
             const text2 = "(" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
-            const textPart1 = potentialProfit.toString() + "Ξ"
-            const textPart2 = + "(" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
-            const text3 = potentialProfit.toString() + "Ξ" // (" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
-
+            
 
             const bigTextSize2 = ctxFormatted.measureText(text2).width;
             ctxFormatted.font = "bold 54px Futura";
@@ -421,12 +418,12 @@ module.exports = {
             //AVG SPENT VALUE
             ctxFormatted.font = "bold 28px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(avgBuy.toString() + "Ξ", 343, 823);
+            ctxFormatted.fillText(parseFloat(avgBuy).toFixed(3) + "Ξ", 343, 823);
 
             //AVG SALE VALUE
             ctxFormatted.font = "bold 28px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(avgSold.toString() + "Ξ", 343, 872);
+            ctxFormatted.fillText(parseFloat(avgSold).toFixed(3) + "Ξ", 343, 872);
 
 
             //SOLD COUNT
@@ -437,7 +434,7 @@ module.exports = {
             //REMAINING COUNT
             ctxFormatted.font = "bold 28px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(formatNumberVisual(remaining), 840, 774);
+            ctxFormatted.fillText(parseFloat(formatNumberVisual(remaining)).toFixed(1), 840, 774);
 
 
             //TOTAL HELD VALUE
@@ -448,7 +445,7 @@ module.exports = {
             //REALIZED PROFIT
             ctxFormatted.font = "bold 28px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(realisedProfit.toString() + "Ξ", 840, 872);
+            ctxFormatted.fillText(parseFloat(realisedProfit).toFixed(3) + "Ξ", 840, 872);
 
             //REALIZED ROI
             ctxFormatted.font = "bold 35px SFTransrobotic";
@@ -463,7 +460,7 @@ module.exports = {
             //POTENTIAL PROFIT (ETH)
             ctxFormatted.font = "bold 80px SFTransrobotic";
             if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-            ctxFormatted.fillText(potentialProfit.toString() + "Ξ", 547, 653);
+            ctxFormatted.fillText(parseFloat(potentialProfit).toFixed(3) + "Ξ", 547, 653);
 
 
 
@@ -527,8 +524,8 @@ module.exports = {
             //MINT COUNT
             ctxFormatted.font = "bold 31px Futura";
             ctxFormatted.fillStyle = "#E5EAFF";
-            const mintCountText = ctxFormatted.measureText(formatNumberVisual(buyCount)).width
-            ctxFormatted.fillText(formatNumberVisual(buyCount), 197 - mintCountText / 2, 420);
+            const mintCountText = ctxFormatted.measureText(parseFloat(formatNumberVisual(buyCount)).toFixed(1)).width
+            ctxFormatted.fillText(parseFloat(formatNumberVisual(buyCount)).toFixed(1), 197 - mintCountText / 2, 420);
 
             //BUY COUNT
             ctxFormatted.font = "bold 31px Futura";
@@ -545,14 +542,14 @@ module.exports = {
             //SOLD COUNT
             ctxFormatted.font = "bold 31px Futura";
             ctxFormatted.fillStyle = "#E5EAFF";
-            const soldCountText = ctxFormatted.measureText(formatNumberVisual(soldCount)).width
-            ctxFormatted.fillText(parseFloat(soldCount).toFixed(1), 197 - soldCountText / 2, 585);
+            const soldCountText = ctxFormatted.measureText(parseFloat(formatNumberVisual(soldCount)).toFixed(1)).width
+            ctxFormatted.fillText(parseFloat(formatNumberVisual(soldCount)).toFixed(1), 197 - soldCountText / 2, 585);
 
             //REMAINING
             ctxFormatted.font = "bold 31px Futura";
             ctxFormatted.fillStyle = "#E5EAFF";
-            const remainingText = ctxFormatted.measureText(formatNumberVisual(remaining)).width
-            ctxFormatted.fillText(parseFloat(remaining).toFixed(1), 498 - remainingText / 2, 585);
+            const remainingText = ctxFormatted.measureText(parseFloat(formatNumberVisual(remaining)).toFixed(1)).width
+            ctxFormatted.fillText(parseFloat(formatNumberVisual(remaining)).toFixed(1), 498 - remainingText / 2, 585);
 
             //AVG SOLD
             ctxFormatted.font = "bold 31px Futura";
@@ -565,13 +562,13 @@ module.exports = {
             ctxFormatted.font = "bold 31px Futura";
             if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
             const realisedProfitText = ctxFormatted.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ").width
-            ctxFormatted.fillText(realisedProfit.toString() + "Ξ", 201 - realisedProfitText / 2, 749);
+            ctxFormatted.fillText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ", 201 - realisedProfitText / 2, 749);
 
             //Potential PROFIT
             ctxFormatted.font = "bold 31px Futura";
             if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
             const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ").width
-            ctxFormatted.fillText(potentialProfit.toString() + "Ξ", 498 - potentialProfitText / 2, 749);
+            ctxFormatted.fillText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ", 498 - potentialProfitText / 2, 749);
 
             //Potential ROI
             ctxFormatted.font = "bold 31px Futura";
@@ -682,50 +679,50 @@ module.exports = {
           //BUY COUNT
           ctxFormatted.font = "bold 38px Courrier New";
           ctxFormatted.fillStyle = "#ffffff";
-          const buyCountTextSize = ctxFormatted.measureText(formatNumberVisual(buyCount)).width;
-          ctxFormatted.fillText(formatNumberVisual(buyCount), 222 - buyCountTextSize / 2, 590);
+          const buyCountTextSize = ctxFormatted.measureText(parseFloat(formatNumberVisual(buyCount)).toFixed(1)).width;
+          ctxFormatted.fillText(parseFloat(formatNumberVisual(buyCount)).toFixed(1), 222 - buyCountTextSize / 2, 590);
 
 
 
           //SOLD COUNT
           ctxFormatted.font = "bold 38px Courrier New";
           ctxFormatted.fillStyle = "#ffffff";
-          const soldCountTextSize = ctxFormatted.measureText(formatNumberVisual(soldCount)).width;
-          ctxFormatted.fillText(formatNumberVisual(soldCount), 504 - soldCountTextSize / 2, 590);
+          const soldCountTextSize = ctxFormatted.measureText(parseFloat(formatNumberVisual(soldCount)).toFixed(1)).width;
+          ctxFormatted.fillText(parseFloat(formatNumberVisual(soldCount)).toFixed(1), 504 - soldCountTextSize / 2, 590);
 
           //REMAINING COUNT
           ctxFormatted.font = "bold 38px Courrier New";
           ctxFormatted.fillStyle = "#ffffff";
-          const remainingTextSize = ctxFormatted.measureText(formatNumberVisual(remaining)).width;
-          ctxFormatted.fillText(formatNumberVisual(remaining), 803 - remainingTextSize / 2, 590);
+          const remainingTextSize = ctxFormatted.measureText(parseFloat(formatNumberVisual(remaining)).toFixed(1)).width;
+          ctxFormatted.fillText(parseFloat(formatNumberVisual(remaining)).toFixed(1), 803 - remainingTextSize / 2, 590);
 
 
           //AVG SPENT VALUE
           ctxFormatted.font = "bold 38px Courrier New";
           ctxFormatted.fillStyle = "#ffffff";
-          const avgSpentTextSize = ctxFormatted.measureText(avgBuy.toString() + "Ξ").width;
-          ctxFormatted.fillText(avgBuy.toString() + "Ξ", 222 - avgSpentTextSize / 2, 740);
+          const avgSpentTextSize = ctxFormatted.measureText(parseFloat(avgBuy).toFixed(3) + "Ξ").width;
+          ctxFormatted.fillText(parseFloat(avgBuy).toFixed(3) + "Ξ", 222 - avgSpentTextSize / 2, 740);
 
           //AVG SALE VALUE
           ctxFormatted.font = "bold 38px Courrier New";
           ctxFormatted.fillStyle = "#ffffff";
-          const avgSaleTextSize = ctxFormatted.measureText(avgSold.toString() + "Ξ").width;
-          ctxFormatted.fillText(avgSold.toString() + "Ξ", 504 - avgSaleTextSize / 2, 740);
+          const avgSaleTextSize = ctxFormatted.measureText(parseFloat(avgSold).toFixed(3) + "Ξ").width;
+          ctxFormatted.fillText(parseFloat(avgSold).toFixed(3) + "Ξ", 504 - avgSaleTextSize / 2, 740);
 
 
           //Realized PROFIT (ETH)
           ctxFormatted.font = "bold 38px Courrier New";
           //if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (realisedProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-          const realizedProfitTextSize = ctxFormatted.measureText(realisedProfit.toString() + "Ξ").width;
-          ctxFormatted.fillText(realisedProfit.toString() + "Ξ", 803 - realizedProfitTextSize / 2, 740);
+          const realizedProfitTextSize = ctxFormatted.measureText(parseFloat(realisedProfit).toFixed(3) + "Ξ").width;
+          ctxFormatted.fillText(parseFloat(realisedProfit).toFixed(3) + "Ξ", 803 - realizedProfitTextSize / 2, 740);
 
 
 
           //POTENTIAL PROFIT (ETH)
           ctxFormatted.font = "bold 45px EmbassyGothic";
           if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-          const potentialProfitTextSize = ctxFormatted.measureText(potentialProfit.toString() + "Ξ (" + potentialRoiFormatted + "%)").width;
-          ctxFormatted.fillText(potentialProfit.toString() + "Ξ (" + potentialRoiFormatted + "%)", 500 - potentialProfitTextSize / 2, 876);
+          const potentialProfitTextSize = ctxFormatted.measureText(parseFloat(potentialProfit).toFixed(3) + "Ξ (" + potentialRoiFormatted + "%)").width;
+          ctxFormatted.fillText(parseFloat(potentialProfit).toFixed(3) + "Ξ (" + potentialRoiFormatted + "%)", 500 - potentialProfitTextSize / 2, 876);
 
 
 
@@ -786,8 +783,8 @@ module.exports = {
           //MINT COUNT
           ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
-          const mintCountText = ctxFormatted.measureText(formatNumberVisual(buyCount)).width
-          ctxFormatted.fillText(formatNumberVisual(buyCount), 190 - mintCountText / 2, 420);
+          const mintCountText = ctxFormatted.measureText(parseFloat(formatNumberVisual(buyCount)).toFixed(1)).width
+          ctxFormatted.fillText(parseFloat(formatNumberVisual(buyCount)).toFixed(1), 190 - mintCountText / 2, 420);
 
           //BUY COUNT
           ctxFormatted.font = "700 35px 'Fira Code'";
@@ -804,14 +801,14 @@ module.exports = {
           //SOLD COUNT
           ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
-          const soldCountText = ctxFormatted.measureText(formatNumberVisual(soldCount)).width
-          ctxFormatted.fillText(formatNumberVisual(soldCount), 190 - soldCountText / 2, 585);
+          const soldCountText = ctxFormatted.measureText(parseFloat(formatNumberVisual(soldCount)).toFixed(1)).width
+          ctxFormatted.fillText(parseFloat(formatNumberVisual(soldCount)).toFixed(1), 190 - soldCountText / 2, 585);
 
           //REMAINING
           ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
-          const remainingText = ctxFormatted.measureText(formatNumberVisual(remaining)).width
-          ctxFormatted.fillText(formatNumberVisual(remaining), 500 - remainingText / 2, 585);
+          const remainingText = ctxFormatted.measureText(parseFloat(formatNumberVisual(remaining)).toFixed(1)).width
+          ctxFormatted.fillText(parseFloat(formatNumberVisual(remaining)).toFixed(1), 500 - remainingText / 2, 585);
 
           //AVG SOLD
           ctxFormatted.font = "700 35px 'Fira Code'";
@@ -824,13 +821,13 @@ module.exports = {
           ctxFormatted.font = "700 35px 'Fira Code'";
           if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
           const realisedProfitText = ctxFormatted.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ").width
-          ctxFormatted.fillText(realisedProfit.toString() + "Ξ", 190 - realisedProfitText / 2, 749);
+          ctxFormatted.fillText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ", 190 - realisedProfitText / 2, 749);
 
           //Potential PROFIT
           ctxFormatted.font = "700 35px 'Fira Code'";
           if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
           const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ").width
-          ctxFormatted.fillText(potentialProfit.toString() + "Ξ", 500 - potentialProfitText / 2, 749);
+          ctxFormatted.fillText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ", 500 - potentialProfitText / 2, 749);
 
           //Potential ROI
           ctxFormatted.font = "700 35px 'Fira Code'";

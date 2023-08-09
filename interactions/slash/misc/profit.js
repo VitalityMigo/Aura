@@ -338,7 +338,7 @@ module.exports = {
                             const allWalletsOfAuthorBTC = await wallets.findAll({ where: { authorId: authorId, walletCategory: "btc" } });
                             for (let i = 0; i < allWalletsOfAuthor.length; i++) { allWalletAddressOfAuthorTable.push(allWalletsOfAuthor[i].dataValues.walletAddress); }
                             walletConcerned = allWalletAddressOfAuthorTable.lenght
-                            if (walletConcerned) { walletConcerned = allWalletAddressOfAuthorTable.lenght } else if (!walletConcerned) { walletConcerned = "0" }
+                            if (walletConcerned > 0) { walletConcerned = allWalletAddressOfAuthorTable.lenght } else { walletConcerned = "0" }
 
 
                             if ((allWalletAddressOfAuthorTable.length + allWalletsOfAuthorBTC.length) > 0) {
@@ -370,14 +370,14 @@ module.exports = {
                                     ////////////////// A BUILD (ALL COLLECTION) \\\\\\\\\\\\\\\\\\\\
 
                                     const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
-                                        .setTitle(`${authorName}'s profit`)
-                                        .setDescription("The command you try to use is currently being built and will be available in the near future. You can still use all the commands not including `all Collection` in the meantime.")
-                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                        .setTimestamp()
-                                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                    .setTitle(`${authorName}'s profit`)
+                                    .setDescription("The option you try to use is currently being built and will be available in the near future. You can still use all the commands not including `all collections` in the meantime.")
+                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                    .setTimestamp()
+                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                    await interaction.editReply({ embeds: [availableInTheNearFuture] });
+                                await interaction.editReply({ embeds: [availableInTheNearFuture] });
 
 
                                     ////////////////// A BUILD (ALL COLLECTION) \\\\\\\\\\\\\\\\\\\\
@@ -864,7 +864,7 @@ module.exports = {
                                                     //Embed getRCprofitPrecisedAll
                                                     const getprofitAllWalletOneCollection = new EmbedBuilder().setColor("#060A8F")
                                                         .setTitle(`${collectionName}`)
-                                                        .setDescription(">>> `" + selectedTimeFormatted + "` profits made by all the wallets (" + walletConcerned + ") of " + authorName + " on " + collectionName)
+                                                        .setDescription(">>> `" + selectedTimeFormatted + "` profits made by all the wallets `(" + walletConcerned + ")` of " + authorName + " on " + collectionName)
                                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                                         //.setThumbnail(collectionLogo)
                                                         .setImage(collectionBanner)
@@ -1437,14 +1437,14 @@ module.exports = {
                                 ////////////////// A BUILD (ALL COLLECTION) \\\\\\\\\\\\\\\\\\\\
 
                                 const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
-                                    .setTitle(`${authorName}'s profit`)
-                                    .setDescription("The command you try to use is currently being built and will be available in the near future. You can still use all the commands not including `all Collection` in the meantime.")
-                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                    .setTimestamp()
-                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+                                .setTitle(`${authorName}'s profit`)
+                                .setDescription("The option you try to use is currently being built and will be available in the near future. You can still use all the commands not including `all collections` in the meantime.")
+                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                .setTimestamp()
+                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                await interaction.editReply({ embeds: [availableInTheNearFuture] });
+                            await interaction.editReply({ embeds: [availableInTheNearFuture] });
 
 
                                 ////////////////// A BUILD (ALL COLLECTION) \\\\\\\\\\\\\\\\\\\\

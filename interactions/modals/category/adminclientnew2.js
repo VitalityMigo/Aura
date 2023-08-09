@@ -84,7 +84,7 @@ module.exports = {
                 { name: " ", value: " ", inline: false },
                 { name: "Client Mecanism", value: "The client page allows the bot administrator to consult, to search, to delete and to create new client. This page is a sensitive one, make sure to double-check all the actions you trigger.", inline: true },
                 { name: " ", value: " ", inline: false },
-                { name: "Statut", value: "The client list and database are `available`", inline: false },
+                { name: "Status", value: "The client list and database are `available`", inline: false },
                 { name: " ", value: " ", inline: false },
                 { name: " ", value: "✅ *The client has been added to the database. Password is* `" + password + "`", inline: false },
 
@@ -111,7 +111,7 @@ module.exports = {
             .setTimestamp()
             .addFields(
                 { name: " ", value: " ", inline: false },
-                { name: "Statut:", value: "A new community has just been registered to the database. You can use the client page to consult it's informations. If this is unexpected, use the remove button in the client list to remove the community.", inline: false },
+                { name: "Status:", value: "A new community has just been registered to the database. You can use the client page to consult it's informations. If this is unexpected, use the remove button in the client list to remove the community.", inline: false },
             )
             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 

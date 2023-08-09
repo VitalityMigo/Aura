@@ -193,7 +193,7 @@ async function apiMonthlyChecker(client) {
             .setTimestamp()
             .addFields(
                 { name: "API Calls:", value: "`" + apiCallCount + " calls`", inline: false },
-                { name: "Statut", value: "`Available`", inline: true },
+                { name: "Status", value: "`Available`", inline: true },
                 { name: "Risk Alert:", value: "`" + riskAlertEmbed + "`", inline: true },
                 { name: " ", value: " ", inline: false },
                 { name: "Providers:", value: apiProviderCallTableEmbed, inline: false },

@@ -168,7 +168,7 @@ module.exports = {
                         { name: "Client Mecanism", value: "The client page allows the bot administrator to consult, to search, to delete and to create new client. This page is a sensitive one, make sure to double-check all the actions you trigger.", inline: true },
                         { name: " ", value: " ", inline: false },
                         { name: "Client Count", value: "`" + clientCount + "`", inline: true },
-                        { name: "Subscription Statut", value: "`" + validSubscribtionCount + "/" + clientCount + "`", inline: true },
+                        { name: "Subscription Status", value: "`" + validSubscribtionCount + "/" + clientCount + "`", inline: true },
                         { name: "Access Tier Distribution", value: accessTierDistributionFormatted, inline: false },
                         { name: "Page", value: "`[1/" + (clientCount + 1) + "]`", inline: false },
 

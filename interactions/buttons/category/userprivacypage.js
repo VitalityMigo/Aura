@@ -130,7 +130,7 @@ module.exports = {
                     { name: " ", value: " ", inline: false },
                     { name: "Privacy Mecanism", value: "In `private mode`, only you can see the result of the commands you're using, which is not the case in `public mode`. Not that some commands are always private.\n\nChanging the privacy settings will modify your privacy settings accross all the servers that are using Rolls Chasers Analytics.", inline: true },
                     { name: " ", value: " ", inline: false },
-                    { name: "Statut", value: "Your are in " + privacyModeFormatted, inline: false }
+                    { name: "Status", value: "Your are in " + privacyModeFormatted, inline: false }
                 )
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 

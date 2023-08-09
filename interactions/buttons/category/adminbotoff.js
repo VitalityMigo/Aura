@@ -74,9 +74,9 @@ module.exports = {
                         .setTimestamp()
                         .addFields(
                             { name: " ", value: " ", inline: false },
-                            { name: "Power Mecanism", value: "The power state is what allows the bot's admins to switch the bot's global statut to on or off. You can change the bot statut by using the button below.", inline: true },
+                            { name: "Power Mecanism", value: "The power state is what allows the bot's admins to switch the bot's global status to on or off. You can change the bot status by using the button below.", inline: true },
                             { name: " ", value: " ", inline: false },
-                            { name: "Statut", value: "The bot is now in `sleep mode 🔴`", inline: false },
+                            { name: "Status", value: "The bot is now in `sleep mode 🔴`", inline: false },
                             { name: " ", value: " ", inline: false },
                             { name: " ", value: "*✅ The power state of the bot has been successfully updated.*", inline: false },
 

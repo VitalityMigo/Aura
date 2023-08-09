@@ -127,7 +127,7 @@ module.exports = {
                             { name: 'Command', value: "`" + reportreportCommand + "`", inline: true },
                             { name: 'Description', value: reportreportDescription, inline: false },
                             { name: 'Priority', value: "`" + reportScaleFormatted + "`", inline: true },
-                            { name: 'Statut', value: "`" + reportreportState + "`", inline: true },
+                            { name: 'Status', value: "`" + reportreportState + "`", inline: true },
                             { name: "Page", value: "`[" + actualPage + "/" + pageIndex + "]`", inline: false },
 
                         )
@@ -182,7 +182,7 @@ module.exports = {
                             { name: 'Command', value: "`" + reportreportCommand + "`", inline: true },
                             { name: 'Description', value: reportreportDescription, inline: false },
                             { name: 'Priority', value: "`" + reportScaleFormatted + "`", inline: true },
-                            { name: 'Statut', value: "`" + reportreportState + "`", inline: true },
+                            { name: 'Status', value: "`" + reportreportState + "`", inline: true },
                             { name: "Page", value: "`[" + actualPage2 + "/" + pageIndex + "]`", inline: false },
 
                         )

@@ -104,7 +104,7 @@ module.exports = {
                         .setAuthor({ name: authorName, iconURL: userAvatar })
                         .addFields(
                             { name: " ", value: " ", inline: false },
-                            { name: "Statut", value: "`Access Denied ❌`", inline: true },
+                            { name: "Status", value: "`Access Denied ❌`", inline: true },
                             { name: "Required Role", value: "<@&" + communityAdminRoleId + ">", inline: true },
                             { name: "Problem Detected", value: "Your access to the `/admin` command has been denied. You can only use this if you have the required admin role in this community. If you usually have access to this command, make sure you're in the right community or contact an admin of the bot.", inline: false },
                         )
@@ -137,7 +137,7 @@ module.exports = {
                     .setAuthor({ name: authorName, iconURL: userAvatar })
                     .addFields(
                         { name: " ", value: " ", inline: false },
-                        { name: "Statut", value: "`Access Denied ❌`", inline: true },
+                        { name: "Status", value: "`Access Denied ❌`", inline: true },
                         { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
                         { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
                     )

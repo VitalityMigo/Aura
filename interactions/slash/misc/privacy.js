@@ -151,7 +151,7 @@ module.exports = {
                                 { name: " ", value: " ", inline: false },
                                 { name: "Privacy Mecanism", value: "In `private mode`, only you can see the result of the commands you're using, which is not the case in `public mode`. Not that some commands are always private.\n\nChanging the privacy settings will modify your privacy settings accross all the servers that are using Rolls Chasers Analytics.", inline: true },
                                 { name: " ", value: " ", inline: false },
-                                { name: "Statut", value: "Your are in " + privacyModeFormatted, inline: false }
+                                { name: "Status", value: "Your are in " + privacyModeFormatted, inline: false }
                             )
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
@@ -171,7 +171,7 @@ module.exports = {
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .addFields(
                                 { name: " ", value: " ", inline: false },
-                                { name: "Statut", value: "`Access Denied ❌`", inline: true },
+                                { name: "Status", value: "`Access Denied ❌`", inline: true },
                                 { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
                                 { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
                             )
@@ -187,12 +187,12 @@ module.exports = {
 
 
                     const botOff = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle(`Bot statut`)
-                        .setDescription(">>> Showing the bot statut")
+                        .setTitle(`Bot status`)
+                        .setDescription(">>> Showing the bot status")
                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                         .setAuthor({ name: authorName, iconURL: userAvatar })
                         .addFields(
-                            { name: 'Global Statut', value: "`Inactive 🔴`", inline: true },
+                            { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
                             { name: 'Commands', value: "`Not available`", inline: true },
                             { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
                         )
@@ -214,7 +214,7 @@ module.exports = {
                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                     .setAuthor({ name: authorName, iconURL: userAvatar })
                     .addFields(
-                        { name: 'Access Statut', value: "`Denied 🔴`", inline: true },
+                        { name: 'Access Status', value: "`Denied 🔴`", inline: true },
                         { name: 'Commands', value: "`Not available`", inline: true },
                         { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
                     )

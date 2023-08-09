@@ -65,7 +65,7 @@ module.exports = {
                     { name: " ", value: " ", inline: false },
                     { name: "Invite Mecanism", value: "The invite page is where an admin can generate a unique link to invite the bot in a sepcific community. Make sure to double check the link before using it.", inline: true },
                     { name: " ", value: " ", inline: false },
-                    { name: "Statut", value: "The bot's invite link is `available` : [invite](https://discord.com/api/oauth2/authorize?client_id=1074328639165964368&permissions=8&scope=applications.commands%20bot)", inline: true },
+                    { name: "Status", value: "The bot's invite link is `available` : [invite](https://discord.com/api/oauth2/authorize?client_id=1074328639165964368&permissions=8&scope=applications.commands%20bot)", inline: true },
                     { name: " ", value: " ", inline: false },
 
 

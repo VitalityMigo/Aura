@@ -143,7 +143,7 @@ module.exports = {
                                 .setStyle(1),
                             new ButtonBuilder()
                                 .setCustomId('getaccesssubstatut-button')
-                                .setLabel('Sub. Statut')
+                                .setLabel('Sub. Status')
                                 .setStyle(1),
                             //     new ButtonBuilder()
                             //     .setCustomId('getaccess1monthsubverify-button')
@@ -220,7 +220,7 @@ module.exports = {
                     //     .setTimestamp()
                     //     .addFields(
                     //         { name: ' ', value: " ", inline: false },
-                    //         { name: 'Global Commands', value: "** `/guide`** - display all the commands.\n** `/statut`** - display the bot's current statut\n** `/privacy`** - consult and modify your privacy settings\n** `/report`** - report an idea or a bug to our team\n** `/access`** - check your level of access to the bot", inline: false },
+                    //         { name: 'Global Commands', value: "** `/guide`** - display all the commands.\n** `/status`** - display the bot's current status\n** `/privacy`** - consult and modify your privacy settings\n** `/report`** - report an idea or a bug to our team\n** `/access`** - check your level of access to the bot", inline: false },
                     //         { name: 'Analytics Commands', value: "** `/blur`** - display blur metrics for your wallets.\n** `/cryptoprofit`** - display the profit/loss infos on a ERC20 coin accross your wallets.\n** `/coin`** - display key infos on a coin (ETH or BTC)\n** `/ens`** - display key infos about an ens name\n** `/gascalculator`** - display the gas infos for a mint\n** `/gastracker`** - display the gas metrics\n** `/data`** - display major metrics of a given collection (ETH or BTC)\n** `/derisk`** - display the derisk metrics on a given collection and wallet(s)\n** `/portfolio`** - display the key portfolio metrics across your wallets\n** `/profit`** - display the profit/loss infos across all your wallets (ETH or BTC)\n** `/rcprofit`** - display the profit/loss infos across all the community wallets\n** `/twitter`** - display the key metrics of a twitter profile\n** `/walletgenerator`** - generate an unlimited number of wallets and private key", inline: false },
                     //         { name: 'Community Commands', value: "** `/vouch`** - vouch for a community member.\n** `/vouchleaderboard`** - consult the vouch leaderboard\n** `/getprofile`** - consult the public profile of a community member\n** `/profile`** - access your personal dashboard", inline: false },
                     //         { name: 'Database Commands', value: "** `/setwallet`** - set a wallet to your portfolio.\n** `/getwallets`** - display the wallets registered in your portfolio\n** `/removewallet`** - remove a wallet from your portfolio\n** `/setalert`** - set a floor price alert\n** `/getalert`** - display the floor price alerts registered in your database\n** `/removealert`** - remove a floor price alert from your database\n** `/setwatchlist`** - set a project in your watchlist (ETH or BTC)\n** `/getwatchlist`** - display the projects currently in your watchlist\n** `/removewatchlist`** - remove a project from your watchlist", inline: false },
@@ -319,7 +319,7 @@ module.exports = {
                     .setAuthor({ name: authorName, iconURL: userAvatar })
                     .addFields(
                         { name: " ", value: " ", inline: false },
-                        { name: "Statut", value: "`Access Denied ❌`", inline: true },
+                        { name: "Status", value: "`Access Denied ❌`", inline: true },
                         { name: "Required Role", value: "<@&" + communityAdminRoleId + ">", inline: true },
                         { name: "Problem Detected", value: "Your access to the `/admin` command has been denied. You can only use this if you have the required admin role in this community. If you usually have access to this command, make sure you're in the right community or contact an admin of the bot.", inline: false },
                     )
@@ -355,7 +355,7 @@ module.exports = {
                 .setAuthor({ name: authorName, iconURL: userAvatar })
                 .addFields(
                     { name: " ", value: " ", inline: false },
-                    { name: "Statut", value: "`Access Denied ❌`", inline: true },
+                    { name: "Status", value: "`Access Denied ❌`", inline: true },
                     { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
                     { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
                 )

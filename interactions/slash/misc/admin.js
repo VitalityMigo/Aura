@@ -114,7 +114,7 @@ module.exports = {
                         .setAuthor({ name: authorName, iconURL: userAvatar })
                         .addFields(
                             { name: " ", value: " ", inline: false },
-                            { name: "Statut", value: "`Access Denied ❌`", inline: true },
+                            { name: "Status", value: "`Access Denied ❌`", inline: true },
                             { name: "Required Role", value: "`Team Member`", inline: true },
                             { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use this command if you are in Rolls Chasers Analytics team. If you usually have access to the command, contact one of the team member.", inline: false },
                         )

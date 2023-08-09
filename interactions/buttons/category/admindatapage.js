@@ -77,7 +77,7 @@ module.exports = {
                         { name: " ", value: " ", inline: false },
                         { name: "Data Mecanism", value: "The data page allows the administrator of the bots to consult various data about the bot's usage, as the API reports but also the different users of the bot. Make sure to keep this page private and to never share sensitive data.", inline: true },
                         { name: " ", value: " ", inline: false },
-                        { name: "Statut", value: "The various data reports are `available`", inline: true },
+                        { name: "Status", value: "The various data reports are `available`", inline: true },
                         { name: " ", value: " ", inline: false },
 
 

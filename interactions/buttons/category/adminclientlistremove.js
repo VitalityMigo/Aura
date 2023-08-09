@@ -137,10 +137,10 @@ module.exports = {
                         { name: 'Update Channel', value: "`" + updateChannel + "`", inline: true },
                         { name: 'Admin Wallet', value: "`" + adminWalletAddress + "`", inline: false },
                         { name: 'Password', value: "`" + password + "`", inline: true },
-                        { name: 'Bot Statut', value: "`" + actualPower + "`", inline: true },
-                        { name: 'Client Statut', value: "`" + accessStatutFormatted + "`", inline: true },
+                        { name: 'Bot Status', value: "`" + actualPower + "`", inline: true },
+                        { name: 'Client Status', value: "`" + accessStatutFormatted + "`", inline: true },
                         { name: 'Subscribtion Price', value: "`" + parseFloat(subscribtionPrice).toFixed(3) + "Ξ/month`", inline: true },
-                        { name: 'Subscribtion Statut', value: "`" + subscribtionStatutFormatted + "`", inline: true },
+                        { name: 'Subscribtion Status', value: "`" + subscribtionStatutFormatted + "`", inline: true },
                         { name: 'Access Date', value: "`" + formattedDate + "`", inline: false },
                         { name: "Page", value: "`[" + actualPage + "/" + pageIndex + "]`", inline: false },
 

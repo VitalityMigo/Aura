@@ -73,7 +73,7 @@ module.exports = {
                     { name: " ", value: " ", inline: false },
                     { name: "Update Mecanism", value: "The update page allows the bot administrators to send a message to all the servers that uses the bot. Use the button below to start a message", inline: true },
                     { name: " ", value: " ", inline: false },
-                    { name: "Statut", value: "There's currently `" + serverCount + "` communities that will receive the update.", inline: true },
+                    { name: "Status", value: "There's currently `" + serverCount + "` communities that will receive the update.", inline: true },
                     { name: " ", value: " ", inline: false },
 
 

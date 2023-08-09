@@ -215,7 +215,7 @@ module.exports = {
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .addFields(
                                 { name: " ", value: " ", inline: false },
-                                { name: "Statut", value: "`Access Denied ❌`", inline: true },
+                                { name: "Status", value: "`Access Denied ❌`", inline: true },
                                 { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
                                 { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
                             )
@@ -232,12 +232,12 @@ module.exports = {
 
 
                     const botOff = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle(`Bot statut`)
-                        .setDescription(">>> Showing the bot statut")
+                        .setTitle(`Bot status`)
+                        .setDescription(">>> Showing the bot status")
                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                         .setAuthor({ name: authorName, iconURL: userAvatar })
                         .addFields(
-                            { name: 'Global Statut', value: "`Inactive 🔴`", inline: true },
+                            { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
                             { name: 'Commands', value: "`Not available`", inline: true },
                             { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
                         )
@@ -259,7 +259,7 @@ module.exports = {
                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                     .setAuthor({ name: authorName, iconURL: userAvatar })
                     .addFields(
-                        { name: 'Access Statut', value: "`Denied 🔴`", inline: true },
+                        { name: 'Access Status', value: "`Denied 🔴`", inline: true },
                         { name: 'Commands', value: "`Not available`", inline: true },
                         { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
                     )

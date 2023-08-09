@@ -138,7 +138,7 @@ module.exports = {
             .addFields(
                 { name: "Wallet Count", value: "`" + walletNumber + "`", inline: true },
                 { name: "Network", value: "`Ethereum (ETH)`", inline: true },
-                { name: "Generation Statut", value: generationStatut, inline: true },
+                { name: "Generation Status", value: generationStatut, inline: true },
                 { name: "Wallets Created:", value: "```" + walletCreatedList + "```", inline: false },
             )
             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })

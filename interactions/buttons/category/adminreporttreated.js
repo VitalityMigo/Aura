@@ -124,7 +124,7 @@ module.exports = {
                     { name: 'Command', value: "`" + reportreportCommand + "`", inline: true },
                     { name: 'Description', value: reportreportDescription, inline: false },
                     { name: 'Priority', value: "`" + reportScaleFormatted + "`", inline: true },
-                    { name: 'Statut', value: "`Treated ✅`", inline: true },
+                    { name: 'Status', value: "`Treated ✅`", inline: true },
                     { name: "Page", value: "`[" + actualPage + "/" + pageIndex + "]`", inline: false },
 
                 )

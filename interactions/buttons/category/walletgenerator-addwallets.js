@@ -228,7 +228,7 @@ module.exports = {
             .addFields(
                 { name: "Wallet Count", value: "`" + walletsTable.length + "`", inline: true },
                 { name: "Network", value: "`Ethereum (ETH)`", inline: true },
-                { name: "Generation Statut", value: generationStatut, inline: true },
+                { name: "Generation Status", value: generationStatut, inline: true },
                 { name: "Wallets Created:", value: "```" + walletCreatedList + "```", inline: false },
                 { name: " ", value: " ", inline: false },
                 { name: " ", value: "✅ The wallets  have been set in your portfolio", inline: false },

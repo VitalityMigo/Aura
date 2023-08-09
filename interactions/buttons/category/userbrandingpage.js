@@ -100,7 +100,7 @@ module.exports = {
                             { name: " ", value: " ", inline: false },
                             { name: "Branding Mecanism", value: "This page allows the user to access and use his branding package. The package is composed of 3 elements : identity card, identity banner and identity profile picture.", inline: true },
                             { name: " ", value: " ", inline: false },
-                            { name: "Statut", value: "All your visual are `available`", inline: false },
+                            { name: "Status", value: "All your visual are `available`", inline: false },
 
                         )
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -124,7 +124,7 @@ module.exports = {
                             { name: " ", value: " ", inline: false },
                             { name: "Public Profile Mecanism", value: "The Rolls Chasers Analytics bot allows the user to set a public profile, which can be consult by any member of the communities he's part of. You can use the button below to set it.", inline: true },
                             { name: " ", value: " ", inline: false },
-                            { name: "Statut", value: "Your profile is currently `not registered`.", inline: false },
+                            { name: "Status", value: "Your profile is currently `not registered`.", inline: false },
 
                         )
                         .setTimestamp()
@@ -148,7 +148,7 @@ module.exports = {
                         { name: " ", value: " ", inline: false },
                         { name: "Public Profile Mecanism", value: "The Rolls Chasers Analytics bot allows the user to set a public profile, which can be consult by any member of the communities he's part of. You can use the button below to set it.", inline: true },
                         { name: " ", value: " ", inline: false },
-                        { name: "Statut", value: "Your profile is currently `not registered`.", inline: false },
+                        { name: "Status", value: "Your profile is currently `not registered`.", inline: false },
 
                     )
                     .setTimestamp()

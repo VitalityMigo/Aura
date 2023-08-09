@@ -56,7 +56,7 @@ module.exports = {
                         { name: " ", value: " ", inline: false },
                         { name: "Client Mecanism", value: "The client page allows the bot administrator to consult, to search, to delete and to create new client. This page is a sensitive one, make sure to double-check all the actions you trigger.", inline: true },
                         { name: " ", value: " ", inline: false },
-                        { name: "Statut", value: "The client list and database are `available`", inline: false },
+                        { name: "Status", value: "The client list and database are `available`", inline: false },
                         { name: " ", value: " ", inline: false },
 
 

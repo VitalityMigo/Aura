@@ -71,7 +71,7 @@ module.exports = {
                         { name: " ", value: " ", inline: false },
                         { name: "Privacy Mecanism", value: "In `private mode`, only you can see the result of the commands you're using, which is not the case in `public mode`. Not that some commands are always private.\n\nChanging the privacy settings will modify your privacy settings accross all the servers that are using Rolls Chasers Analytics.", inline: true },
                         { name: " ", value: " ", inline: false },
-                        { name: "Statut", value: "Your are now in `private mode 🔒`", inline: false },
+                        { name: "Status", value: "Your are now in `private mode 🔒`", inline: false },
                         { name: " ", value: " ", inline: false },
                         { name: " ", value: "***Privacy settings successfully updated***", inline: false },
 

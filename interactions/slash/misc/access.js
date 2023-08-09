@@ -99,20 +99,20 @@ module.exports = {
                                 let availableCommands = ""
 
                                 if (serverTier.toLowerCase() === "s-tier") {
-                                    availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/statut` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
+                                    availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/status` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
                                 }
 
                                 if (serverTier.toLowerCase() === "a-tier") {
-                                    //availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/statut` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
+                                    //availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/status` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
 
-                                    availableCommands = "`/access` ∙ `/data` ∙ `/derisk` ∙ `/ens` ∙ `/gastracker` ∙ `/gascalculator` ∙ `/getprofile` ∙ `/getwallets` ∙ `/getwatchlist` ∙ `/guide` ∙ `/privacy` ∙ `/profit` ∙ `/removewallet` ∙ `/removewatchlist` ∙ `/report` ∙ `/setwallet` ∙ `/setwatchlist` ∙ `/statut ∙ `/walletgenerator` ∙ `/vouch` ∙ `/vouchleaderboard`"
+                                    availableCommands = "`/access` ∙ `/data` ∙ `/derisk` ∙ `/ens` ∙ `/gastracker` ∙ `/gascalculator` ∙ `/getprofile` ∙ `/getwallets` ∙ `/getwatchlist` ∙ `/guide` ∙ `/privacy` ∙ `/profit` ∙ `/removewallet` ∙ `/removewatchlist` ∙ `/report` ∙ `/setwallet` ∙ `/setwatchlist` ∙ `/status ∙ `/walletgenerator` ∙ `/vouch` ∙ `/vouchleaderboard`"
                                 }
 
                                 if (serverTier.toLowerCase() === "b-tier") {
 
-                                   // availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/statut` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
+                                   // availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/status` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
 
-                                    availableCommands = "`/access` ∙ `/getwallets` ∙ `/getprofile` ∙ `/guide` ∙ `/privacy` ∙ `/profit` ∙ `/report` ∙ `/removewallet` ∙ `/setwallet` ∙ `/statut ∙ `/vouch` ∙ `/vouchleaderboard`"
+                                    availableCommands = "`/access` ∙ `/getwallets` ∙ `/getprofile` ∙ `/guide` ∙ `/privacy` ∙ `/profit` ∙ `/report` ∙ `/removewallet` ∙ `/setwallet` ∙ `/status ∙ `/vouch` ∙ `/vouchleaderboard`"
                                 }
 
 
@@ -199,12 +199,12 @@ module.exports = {
 
 
                         const botOff = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle(`Bot statut`)
-                            .setDescription(">>> Showing the bot statut")
+                            .setTitle(`Bot status`)
+                            .setDescription(">>> Showing the bot status")
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .addFields(
-                                { name: 'Global Statut', value: "`Inactive 🔴`", inline: true },
+                                { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
                                 { name: 'Commands', value: "`Not available`", inline: true },
                                 { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
                             )
@@ -229,7 +229,7 @@ module.exports = {
                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                         .setAuthor({ name: authorName, iconURL: userAvatar })
                         .addFields(
-                            { name: 'Access Statut', value: "`Denied 🔴`", inline: true },
+                            { name: 'Access Status', value: "`Denied 🔴`", inline: true },
                             { name: 'Commands', value: "`Not available`", inline: true },
                             { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
                         )

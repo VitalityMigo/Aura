@@ -56,8 +56,8 @@ module.exports = {
       let messageSent = false
 
 
-      const header = ['Address', 'Private Key', 'Statut'];
-      const dataArrays = [['Address', 'Private Key', 'Statut']];
+      const header = ['Address', 'Private Key', 'Status'];
+      const dataArrays = [['Address', 'Private Key', 'Status']];
 
       walletsGeneratedOfAuthor.forEach(obj => {
         const arr = [decrypt(obj.walletAddress), decrypt(obj.privateKey), "Active"];
@@ -204,7 +204,7 @@ module.exports = {
           .addFields(
             { name: "Wallet Count", value: "`" + walletsTable.length + "`", inline: true },
             { name: "Network", value: "`Ethereum (ETH)`", inline: true },
-            { name: "Generation Statut", value: generationStatut, inline: true },
+            { name: "Generation Status", value: generationStatut, inline: true },
             { name: "Wallets Created:", value: "```" + walletCreatedList + "```", inline: false },
             { name: " ", value: " ", inline: false },
             { name: " ", value: "✅ The wallets infos have been sent to your DMs. Private keys are not stored.", inline: false },
@@ -226,7 +226,7 @@ module.exports = {
           .addFields(
             { name: "Wallet Count", value: "`" + walletsTable.length + "`", inline: true },
             { name: "Network", value: "`Ethereum (ETH)`", inline: true },
-            { name: "Generation Statut", value: generationStatut, inline: true },
+            { name: "Generation Status", value: generationStatut, inline: true },
             { name: "Wallets Created:", value: "```" + walletCreatedList + "```", inline: false },
             { name: " ", value: " ", inline: false },
             { name: " ", value: "❌ Your DMs are closed. Please unable server DMs to receive your wallets.", inline: false },

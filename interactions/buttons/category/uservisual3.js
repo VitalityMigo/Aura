@@ -142,7 +142,7 @@ module.exports = {
                     { name: " ", value: " ", inline: false },
                     { name: "Visual Mecanism", value: "The Rolls Chasers Analytics bot allows the user to choose between few profit visual. Use the button below to choose the visual you'd like to use.", inline: true },
                     { name: " ", value: " ", inline: false },
-                    { name: "Statut", value: "Your are currently using the `visual 3`.", inline: false },
+                    { name: "Status", value: "Your are currently using the `visual 3`.", inline: false },
                     { name: " ", value: " ", inline: false },
                     { name: " ", value: "*✅ The profit visual selection has been successfully updated.*", inline: false },
 

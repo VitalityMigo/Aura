@@ -307,7 +307,7 @@ module.exports = {
                         { name: " ", value: " ", inline: false },
                         { name: "Visual Mecanism", value: "The Rolls Chasers Analytics bot allows the user to choose between few profit visual. Use the button below to choose the visual you'd like to use.", inline: true },
                         { name: " ", value: " ", inline: false },
-                        { name: "Statut", value: "Your are currently using the `visual " + visualSelect + "`.", inline: false }
+                        { name: "Status", value: "Your are currently using the `visual " + visualSelect + "`.", inline: false }
                     )
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 

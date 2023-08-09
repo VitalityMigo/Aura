@@ -151,7 +151,7 @@ module.exports = {
             //MINT COUNT
             ctxFormatted.font = "bold 22px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(formatNumberVisual(buyCount).toFixed(1), 337, 226.5);
+            ctxFormatted.fillText(formatNumberVisual(buyCount), 337, 226.5);
 
             //BUY COUNT
             ctxFormatted.font = "bold 22px Futura";
@@ -167,12 +167,12 @@ module.exports = {
             //SOLD COUNT
             ctxFormatted.font = "bold 22px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(parseFloat(formatNumberVisual(soldCount)).toFixed(1), 337, 387.5);
+            ctxFormatted.fillText(formatNumberVisual(soldCount), 337, 387.5);
 
             //REMAINING
             ctxFormatted.font = "bold 22px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(parseFloat(formatNumberVisual(remaining)).toFixed(1), 337, 433);
+            ctxFormatted.fillText(formatNumberVisual(remaining), 337, 433);
 
             //AVG SOLD
             ctxFormatted.font = "bold 22px Futura";
@@ -408,7 +408,7 @@ module.exports = {
             //Mint COUNT
             ctxFormatted.font = "bold 28px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(parseFloat(formatNumberVisual(buyCount)).toFixed(1), 343, 726);
+            ctxFormatted.fillText(formatNumberVisual(buyCount), 343, 726);
 
             //BUY COUNT
             ctxFormatted.font = "bold 28px Futura";
@@ -429,12 +429,12 @@ module.exports = {
             //SOLD COUNT
             ctxFormatted.font = "bold 28px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(parseFloat(formatNumberVisual(soldCount)).toFixed(1), 840, 726);
+            ctxFormatted.fillText(formatNumberVisual(soldCount), 840, 726);
 
             //REMAINING COUNT
             ctxFormatted.font = "bold 28px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(parseFloat(formatNumberVisual(remaining)).toFixed(1), 840, 774);
+            ctxFormatted.fillText(formatNumberVisual(remaining), 840, 774);
 
 
             //TOTAL HELD VALUE
@@ -524,8 +524,8 @@ module.exports = {
             //MINT COUNT
             ctxFormatted.font = "bold 31px Futura";
             ctxFormatted.fillStyle = "#E5EAFF";
-            const mintCountText = ctxFormatted.measureText(parseFloat(formatNumberVisual(buyCount)).toFixed(1)).width
-            ctxFormatted.fillText(parseFloat(formatNumberVisual(buyCount)).toFixed(1), 197 - mintCountText / 2, 420);
+            const mintCountText = ctxFormatted.measureText(formatNumberVisual(buyCount)).width
+            ctxFormatted.fillText(formatNumberVisual(buyCount), 197 - mintCountText / 2, 420);
 
             //BUY COUNT
             ctxFormatted.font = "bold 31px Futura";
@@ -542,14 +542,14 @@ module.exports = {
             //SOLD COUNT
             ctxFormatted.font = "bold 31px Futura";
             ctxFormatted.fillStyle = "#E5EAFF";
-            const soldCountText = ctxFormatted.measureText(parseFloat(formatNumberVisual(soldCount)).toFixed(1)).width
-            ctxFormatted.fillText(parseFloat(formatNumberVisual(soldCount)).toFixed(1), 197 - soldCountText / 2, 585);
+            const soldCountText = ctxFormatted.measureText(formatNumberVisual(soldCount)).width
+            ctxFormatted.fillText(formatNumberVisual(soldCount), 197 - soldCountText / 2, 585);
 
             //REMAINING
             ctxFormatted.font = "bold 31px Futura";
             ctxFormatted.fillStyle = "#E5EAFF";
-            const remainingText = ctxFormatted.measureText(parseFloat(formatNumberVisual(remaining)).toFixed(1)).width
-            ctxFormatted.fillText(parseFloat(formatNumberVisual(remaining)).toFixed(1), 498 - remainingText / 2, 585);
+            const remainingText = ctxFormatted.measureText(formatNumberVisual(remaining)).width
+            ctxFormatted.fillText(formatNumberVisual(remaining), 498 - remainingText / 2, 585);
 
             //AVG SOLD
             ctxFormatted.font = "bold 31px Futura";
@@ -679,22 +679,22 @@ module.exports = {
           //BUY COUNT
           ctxFormatted.font = "bold 38px Courrier New";
           ctxFormatted.fillStyle = "#ffffff";
-          const buyCountTextSize = ctxFormatted.measureText(parseFloat(formatNumberVisual(buyCount)).toFixed(1)).width;
-          ctxFormatted.fillText(parseFloat(formatNumberVisual(buyCount)).toFixed(1), 222 - buyCountTextSize / 2, 590);
+          const buyCountTextSize = ctxFormatted.measureText(formatNumberVisual(buyCount)).width;
+          ctxFormatted.fillText(formatNumberVisual(buyCount), 222 - buyCountTextSize / 2, 590);
 
 
 
           //SOLD COUNT
           ctxFormatted.font = "bold 38px Courrier New";
           ctxFormatted.fillStyle = "#ffffff";
-          const soldCountTextSize = ctxFormatted.measureText(parseFloat(formatNumberVisual(soldCount)).toFixed(1)).width;
-          ctxFormatted.fillText(parseFloat(formatNumberVisual(soldCount)).toFixed(1), 504 - soldCountTextSize / 2, 590);
+          const soldCountTextSize = ctxFormatted.measureText(formatNumberVisual(soldCount)).width;
+          ctxFormatted.fillText(formatNumberVisual(soldCount), 504 - soldCountTextSize / 2, 590);
 
           //REMAINING COUNT
           ctxFormatted.font = "bold 38px Courrier New";
           ctxFormatted.fillStyle = "#ffffff";
-          const remainingTextSize = ctxFormatted.measureText(parseFloat(formatNumberVisual(remaining)).toFixed(1)).width;
-          ctxFormatted.fillText(parseFloat(formatNumberVisual(remaining)).toFixed(1), 803 - remainingTextSize / 2, 590);
+          const remainingTextSize = ctxFormatted.measureText(formatNumberVisual(remaining)).width;
+          ctxFormatted.fillText(formatNumberVisual(remaining), 803 - remainingTextSize / 2, 590);
 
 
           //AVG SPENT VALUE
@@ -783,8 +783,8 @@ module.exports = {
           //MINT COUNT
           ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
-          const mintCountText = ctxFormatted.measureText(parseFloat(formatNumberVisual(buyCount)).toFixed(1)).width
-          ctxFormatted.fillText(parseFloat(formatNumberVisual(buyCount)).toFixed(1), 190 - mintCountText / 2, 420);
+          const mintCountText = ctxFormatted.measureText(formatNumberVisual(buyCount)).width
+          ctxFormatted.fillText(formatNumberVisual(buyCount), 190 - mintCountText / 2, 420);
 
           //BUY COUNT
           ctxFormatted.font = "700 35px 'Fira Code'";
@@ -801,14 +801,14 @@ module.exports = {
           //SOLD COUNT
           ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
-          const soldCountText = ctxFormatted.measureText(parseFloat(formatNumberVisual(soldCount)).toFixed(1)).width
-          ctxFormatted.fillText(parseFloat(formatNumberVisual(soldCount)).toFixed(1), 190 - soldCountText / 2, 585);
+          const soldCountText = ctxFormatted.measureText(formatNumberVisual(soldCount)).width
+          ctxFormatted.fillText(formatNumberVisual(soldCount), 190 - soldCountText / 2, 585);
 
           //REMAINING
           ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
-          const remainingText = ctxFormatted.measureText(parseFloat(formatNumberVisual(remaining)).toFixed(1)).width
-          ctxFormatted.fillText(parseFloat(formatNumberVisual(remaining)).toFixed(1), 500 - remainingText / 2, 585);
+          const remainingText = ctxFormatted.measureText(formatNumberVisual(remaining)).width
+          ctxFormatted.fillText(formatNumberVisual(remaining), 500 - remainingText / 2, 585);
 
           //AVG SOLD
           ctxFormatted.font = "700 35px 'Fira Code'";

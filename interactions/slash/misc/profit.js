@@ -337,8 +337,9 @@ module.exports = {
                             const allWalletsOfAuthor = await wallets.findAll({ where: { authorId: authorId, walletCategory: "eth" } });
                             const allWalletsOfAuthorBTC = await wallets.findAll({ where: { authorId: authorId, walletCategory: "btc" } });
                             for (let i = 0; i < allWalletsOfAuthor.length; i++) { allWalletAddressOfAuthorTable.push(allWalletsOfAuthor[i].dataValues.walletAddress); }
-                            walletConcerned = allWalletAddressOfAuthorTable.lenght
-                            if (walletConcerned > 0) { walletConcerned = allWalletAddressOfAuthorTable.lenght } else { walletConcerned = "0" }
+                            walletConcerned = allWalletsOfAuthor.length
+                            if (walletConcerned < 0) { walletConcerned = "0" }
+                            console.log(allWalletAddressOfAuthorTable)
 
 
                             if ((allWalletAddressOfAuthorTable.length + allWalletsOfAuthorBTC.length) > 0) {
@@ -391,7 +392,7 @@ module.exports = {
 
 
                                     // SI collection précise, wallet = All et pas wallet category
-                                } else if (selectedCollection.toLowercase() !== "all") {
+                                } else if (selectedCollection !== "all") {
 
 
 
@@ -804,63 +805,15 @@ module.exports = {
                                                     }
                                                     let transferCountFormated = transferPrefix + parseFloat(transferCount)
 
-
-
-
-
-                                                    //////CALL BASE SQL
-
-
-                                                    await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
-
-                                                    await interactionData.create({
-
-                                                        authorId: authorId,
-                                                        authorName: authorName,
-                                                        serverId: serverId,
-                                                        walletAddress: "N/A",
-                                                        commandName: "profit",
-                                                        interactionId: interaction.id,
-                                                        walletName: "N/A",
-                                                        selecedTimestamp: "N/A",
-                                                        embed1: "N/A",
-                                                        embed2: "N/A",
-                                                        embed3: "N/A",
-                                                        pageIndex: "N/A",
-                                                        actualPage: "N/A",
-                                                        walletCategory: "eth",
-                                                        selectedCollection: selectedCollection,
-                                                        collectionSlug: "N/A",
-                                                        collectionBanner: "N/A",
-                                                        avgDeriskPrice: "N/A",
-                                                        floorPrice: collectionFp.toString(),
-                                                        lowerMarketlace: "N/A",
-                                                        collectionName: collectionName,
-                                                        collectionTwitter: "N/A",
-                                                        collectionWebsite: "N/A",
-                                                        buyCount: totalBuyCount.toString(),
-                                                        mintCount: mintCount.toString(),
-                                                        soldCount: soldCount.toString(),
-                                                        remaining: holdCount.toString(),
-                                                        avgBuy: parseFloat(averageSpentValue).toFixed(3),
-                                                        avgSold: parseFloat(averageSoldValue).toFixed(3),
-                                                        realisedProfit: parseFloat(realisedProfit).toFixed(3),
-                                                        potentialProfit: parseFloat(potentialProfit).toFixed(3),
-                                                        roi: roi.toString(),
-                                                        visualTitle: "N/A",
-                                                        userAvatar: userAvatar,
-                                                        nbMembersInvolved: "N/A",
-                                                        totalTradeCount: "N/A",
-
-                                                    })
-
-                                                    //////CALL BASE SQL
-
+                                            
 
 
 
                                                     let selectedTimeFormatted = selectedTime
                                                     if (!selectedTime) { selectedTimeFormatted = "All Time" }
+
+
+
                                                     //Embed getRCprofitPrecisedAll
                                                     const getprofitAllWalletOneCollection = new EmbedBuilder().setColor("#060A8F")
                                                         .setTitle(`${collectionName}`)
@@ -900,6 +853,57 @@ module.exports = {
 
                                                     await interaction.editReply({ embeds: [getprofitAllWalletOneCollection], components: [buttonsRow] });
 
+
+
+
+                                                      //////CALL BASE SQL
+
+
+                                                      await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
+
+                                                      await interactionData.create({
+  
+                                                          authorId: authorId,
+                                                          authorName: authorName,
+                                                          serverId: serverId,
+                                                          walletAddress: "N/A",
+                                                          commandName: "profit",
+                                                          interactionId: interaction.id,
+                                                          walletName: "N/A",
+                                                          selecedTimestamp: "N/A",
+                                                          embed1: "N/A",
+                                                          embed2: "N/A",
+                                                          embed3: "N/A",
+                                                          pageIndex: "N/A",
+                                                          actualPage: "N/A",
+                                                          walletCategory: "eth",
+                                                          selectedCollection: selectedCollection,
+                                                          collectionSlug: "N/A",
+                                                          collectionBanner: "N/A",
+                                                          avgDeriskPrice: "N/A",
+                                                          floorPrice: collectionFp.toString(),
+                                                          lowerMarketlace: "N/A",
+                                                          collectionName: collectionName,
+                                                          collectionTwitter: "N/A",
+                                                          collectionWebsite: "N/A",
+                                                          buyCount: totalBuyCount.toString(),
+                                                          mintCount: mintCount.toString(),
+                                                          soldCount: soldCount.toString(),
+                                                          remaining: holdCount.toString(),
+                                                          avgBuy: parseFloat(averageSpentValue).toFixed(3),
+                                                          avgSold: parseFloat(averageSoldValue).toFixed(3),
+                                                          realisedProfit: parseFloat(realisedProfit).toFixed(3),
+                                                          potentialProfit: parseFloat(potentialProfit).toFixed(3),
+                                                          roi: roi.toString(),
+                                                          visualTitle: "N/A",
+                                                          userAvatar: userAvatar,
+                                                          nbMembersInvolved: "N/A",
+                                                          totalTradeCount: "N/A",
+  
+                                                      })
+  
+                                                      //////CALL BASE SQL
+  
 
 
                                                     //On enregistre le call API dans la database
@@ -1876,6 +1880,54 @@ module.exports = {
 
 
 
+
+
+
+                                                let selectedTimeFormatted = selectedTime
+                                                if (!selectedTime) { selectedTimeFormatted = "All Time" }
+
+                                                //Embed getRCprofitPrecisedAll
+                                                const getprofitOneWalletOneCollection = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle(`${collectionName}`)
+                                                    .setDescription(">>> `" + selectedTimeFormatted + "` profits made by the `" + precisedWalletNameofAuthor + "` wallet of " + authorName + " on " + collectionName)
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setImage(collectionBanner)
+                                                    .addFields(
+                                                        { name: "Mint Spent", value: "`" + parseFloat(mintSpent).toFixed(3) + "Ξ (" + parseFloat(mintSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Mint Gas Spent", value: "`" + parseFloat(mintGasSpent).toFixed(3) + "Ξ (" + parseFloat(mintGasSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Total Mint Spent", value: "`" + parseFloat(totalMintSpent).toFixed(3) + "Ξ (" + parseFloat(totalMintSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Buy Spent", value: "`" + parseFloat(buyMarketplaceSpent).toFixed(3) + "Ξ (" + parseFloat(buyMarketplaceSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Buy Gas Spent", value: "`" + parseFloat(buyMarketplaceGasSpent).toFixed(3) + "Ξ (" + parseFloat(buyMarketplaceGasSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Total Buy Spent", value: "`" + parseFloat(buyMarketplaceTotalSpent).toFixed(3) + "Ξ (" + parseFloat(buyMarketplaceTotalSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Sold Value", value: "`" + parseFloat(soldValue).toFixed(3) + "Ξ (" + parseFloat(soldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Sold Gas Value", value: "`" + parseFloat(soldGasValue).toFixed(3) + "Ξ (" + parseFloat(soldGasValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Total Sold Value", value: "`" + parseFloat(totalSoldValue).toFixed(3) + "Ξ (" + parseFloat(totalSoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "NFT Mint Count", value: "`" + mintCount + "`", inline: true },
+                                                        { name: "NFT Buy Count", value: "`" + buyMarketplaceCount + "`", inline: true },
+                                                        { name: "NFT Total Count", value: "`" + totalBuyCount + "`", inline: true },
+                                                        { name: "NFT Hold Count", value: "`" + holdCount + "`", inline: true },
+                                                        { name: "NFT Sold Count", value: "`" + soldCount + "`", inline: true },
+                                                        { name: "NFT Transfer Count", value: "`" + transferCountFormated + "`", inline: true },
+                                                        { name: "AVG Mint Value ", value: "`" + parseFloat(averageMintValue).toFixed(3) + "Ξ (" + parseFloat(averageMintValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "AVG Buy Value ", value: "`" + parseFloat(averageBuyValue).toFixed(3) + "Ξ (" + parseFloat(averageBuyValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "AVG Spent Value ", value: "`" + parseFloat(averageSpentValue).toFixed(3) + "Ξ (" + parseFloat(averageSpentValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "AVG Sold Value", value: "`" + parseFloat(averageSoldValue).toFixed(3) + "Ξ (" + parseFloat(averageSoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "AVG Hold Value", value: "`" + parseFloat(averageHoldValue).toFixed(3) + "Ξ (" + parseFloat(averageHoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Total Hold Value", value: "`" + parseFloat(totalHoldValue).toFixed(3) + "Ξ (" + parseFloat(totalHoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + parseFloat(realisedProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + parseFloat(potentialProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Potential ROI", value: roiFormatted, inline: true },
+
+                                                    )
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                await interaction.editReply({ embeds: [getprofitOneWalletOneCollection], components: [buttonsRow] });
+
+
+
+
+
                                                 //////CALL BASE SQL
 
 
@@ -1924,53 +1976,6 @@ module.exports = {
 
                                                 //////CALL BASE SQL
 
-
-
-
-
-
-
-
-                                                let selectedTimeFormatted = selectedTime
-                                                if (!selectedTime) { selectedTimeFormatted = "All Time" }
-
-                                                //Embed getRCprofitPrecisedAll
-                                                const getprofitOneWalletOneCollection = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle(`${collectionName}`)
-                                                    .setDescription(">>> `" + selectedTimeFormatted + "` profits made by the `" + precisedWalletNameofAuthor + "` wallet of " + authorName + " on " + collectionName)
-                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                    .setImage(collectionBanner)
-                                                    .addFields(
-                                                        { name: "Mint Spent", value: "`" + parseFloat(mintSpent).toFixed(3) + "Ξ (" + parseFloat(mintSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "Mint Gas Spent", value: "`" + parseFloat(mintGasSpent).toFixed(3) + "Ξ (" + parseFloat(mintGasSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "Total Mint Spent", value: "`" + parseFloat(totalMintSpent).toFixed(3) + "Ξ (" + parseFloat(totalMintSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "Buy Spent", value: "`" + parseFloat(buyMarketplaceSpent).toFixed(3) + "Ξ (" + parseFloat(buyMarketplaceSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "Buy Gas Spent", value: "`" + parseFloat(buyMarketplaceGasSpent).toFixed(3) + "Ξ (" + parseFloat(buyMarketplaceGasSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "Total Buy Spent", value: "`" + parseFloat(buyMarketplaceTotalSpent).toFixed(3) + "Ξ (" + parseFloat(buyMarketplaceTotalSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "Sold Value", value: "`" + parseFloat(soldValue).toFixed(3) + "Ξ (" + parseFloat(soldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "Sold Gas Value", value: "`" + parseFloat(soldGasValue).toFixed(3) + "Ξ (" + parseFloat(soldGasValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "Total Sold Value", value: "`" + parseFloat(totalSoldValue).toFixed(3) + "Ξ (" + parseFloat(totalSoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "NFT Mint Count", value: "`" + mintCount + "`", inline: true },
-                                                        { name: "NFT Buy Count", value: "`" + buyMarketplaceCount + "`", inline: true },
-                                                        { name: "NFT Total Count", value: "`" + totalBuyCount + "`", inline: true },
-                                                        { name: "NFT Hold Count", value: "`" + holdCount + "`", inline: true },
-                                                        { name: "NFT Sold Count", value: "`" + soldCount + "`", inline: true },
-                                                        { name: "NFT Transfer Count", value: "`" + transferCountFormated + "`", inline: true },
-                                                        { name: "AVG Mint Value ", value: "`" + parseFloat(averageMintValue).toFixed(3) + "Ξ (" + parseFloat(averageMintValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "AVG Buy Value ", value: "`" + parseFloat(averageBuyValue).toFixed(3) + "Ξ (" + parseFloat(averageBuyValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "AVG Spent Value ", value: "`" + parseFloat(averageSpentValue).toFixed(3) + "Ξ (" + parseFloat(averageSpentValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "AVG Sold Value", value: "`" + parseFloat(averageSoldValue).toFixed(3) + "Ξ (" + parseFloat(averageSoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "AVG Hold Value", value: "`" + parseFloat(averageHoldValue).toFixed(3) + "Ξ (" + parseFloat(averageHoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "Total Hold Value", value: "`" + parseFloat(totalHoldValue).toFixed(3) + "Ξ (" + parseFloat(totalHoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + parseFloat(realisedProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + parseFloat(potentialProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                        { name: "Potential ROI", value: roiFormatted, inline: true },
-
-                                                    )
-                                                    .setTimestamp()
-                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-                                                await interaction.editReply({ embeds: [getprofitOneWalletOneCollection], components: [buttonsRow] });
 
 
                                                 //On enregistre le call API dans la database

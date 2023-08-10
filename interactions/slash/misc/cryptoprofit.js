@@ -282,6 +282,7 @@ module.exports = {
 
                                         console.log("// Début des deux blocs de transactions : ")
                                         console.log(tradeInTxn)
+                                        console.log("// \\")
                                         console.log(tradeOutTxn)
                                         console.log("Fin des deux blocs de transactions // ")
 
@@ -386,6 +387,8 @@ module.exports = {
 
 
 
+                                        let tradeOutHashTable = []
+
                                         //Ensuite on fait les trade out
                                         for (const transaction of tradeOutTxn) {
 
@@ -418,8 +421,13 @@ module.exports = {
 
                                                 }
 
+                                                if (!tradeOutHashTable.includes(hash.toLowerCase())) {
 
-                                                soldGasValue += gasSpent
+                                                    soldGasValue += gasSpent
+                                                    tradeOutHashTable.push(hash.toLowerCase())
+
+                                                }
+
 
 
                                             } else if (tokenLookup.length > 0) {
@@ -436,9 +444,14 @@ module.exports = {
 
                                                 tradeOutCount++
                                                 tokenSoldCount += value
-                                                soldGasValue += gasSpent
                                                 soldValue += (bisTokenOutPriceEth) * ((tokenLookup[0].value) / (10 ** tokenInPrice.raw.tokenDecimals))
 
+                                                if (!tradeOutHashTable.includes(hash.toLowerCase())) {
+
+                                                    soldGasValue += gasSpent
+                                                    tradeOutHashTable.push(hash.toLowerCase())
+
+                                                }
 
 
 
@@ -446,13 +459,18 @@ module.exports = {
 
                                                 console.log("C'est un token -> ETH")
 
-                                                console.log("ici: ")
-                                                console.log(internalLookup)
 
                                                 tradeOutCount++
                                                 soldValue += parseFloat(web3.utils.fromWei((internalLookup[0].value).toString(), 'ether'))
-                                                soldGasValue += gasSpent
                                                 tokenSoldCount += value
+
+                                                if (!tradeOutHashTable.includes(hash.toLowerCase())) {
+
+                                                    soldGasValue += gasSpent
+                                                    tradeOutHashTable.push(hash.toLowerCase())
+
+                                                }
+
                                             }
 
 
@@ -615,7 +633,7 @@ module.exports = {
                                                 { name: "Airdrop/Claim", value: "`" + airdropCount + "`", inline: true },
                                                 { name: "AVG Bought", value: "`" + parseFloat(avgBuy).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgBuy * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                 { name: "AVG Sold", value: "`" + parseFloat(avgSold).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgSold * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                { name: "AVG Held", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format( parseFloat(avgHeld * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                { name: "AVG Held", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgHeld * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                 { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(realisedProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                 { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(potentialProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                 { name: "Potential ROI", value: roiFormatted, inline: true },
@@ -1107,7 +1125,7 @@ module.exports = {
                                                 { name: "AVG Sold", value: "`" + parseFloat(avgSold).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgSold * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                 { name: "AVG Held", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgHeld * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                 { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(realisedProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" +new Intl.NumberFormat('en-US').format(parseFloat(potentialProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(potentialProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                 { name: "Potential ROI", value: roiFormatted, inline: true },
                                                 { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinAddress + ") ∙ " + '[DexTools](https://www.dextools.io/app/en/ether/pair-explorer/' + coinAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinAddress + ") ∙ " + '[DappRadar](https://dappradar.com/hub/token/eth/' + coinAddress + ")", inline: true },
                                             )

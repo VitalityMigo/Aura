@@ -175,7 +175,7 @@ module.exports = {
                                     const vouchEmbed = new EmbedBuilder().setColor("#060A8F")
                                         .setTitle(`Vouch Leaderboard`)
                                         .setDescription(">>> Vouch leaderboard since the `" + formattedDate + "`")
-                                        .setThumbnail('https://media.discordapp.net/attachments/949294457562468372/1092094011206029413/RC_-_Logo_V1.1.jpg?width=1252&height=1196')
+                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                         .addFields(
                                             { name: "Voucher", value: "`" + voucherCount + " vouchers`", inline: true },
@@ -215,7 +215,7 @@ module.exports = {
                                 const vouchEmbed = new EmbedBuilder().setColor("#060A8F")
                                     .setTitle(`Vouch Leaderboard`)
                                     .setDescription(">>> Vouch leaderboard since the `" + formattedDate + "`")
-                                    .setThumbnail('https://media.discordapp.net/attachments/949294457562468372/1092094011206029413/RC_-_Logo_V1.1.jpg?width=1252&height=1196')
+                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                     .setAuthor({ name: authorName, iconURL: userAvatar })
                                     .addFields(
                                         { name: "Voucher", value: "`" + voucherCount + " vouchers`", inline: true },
@@ -368,7 +368,7 @@ module.exports = {
                         { name: " ", value: " ", inline: false },
                         { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
                     )
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png' })
 
 
                 await channel.send("<@&" + roleTag + ">");

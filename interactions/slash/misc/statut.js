@@ -87,7 +87,7 @@ module.exports = {
                                 { name: 'Global Status', value: "`Active`🟢", inline: true },
                                 { name: 'Commands', value: "`Available`", inline: true },
                                 { name: 'Database', value: "`Available`", inline: true },
-                                { name: 'API Keys', value: "`Active`", inline: true },
+                                { name: 'Live data', value: "`Active`", inline: true },
                                 { name: 'Alerts', value: "`Available`", inline: true },
                                 { name: 'Node', value: "`Active`", inline: true },
                             )

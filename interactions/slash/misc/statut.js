@@ -75,9 +75,8 @@ module.exports = {
                 const botAdmins = await adminsql.findOne({ where: { botId: botId } })
                 const botGlobalState = botAdmins.dataValues.botState
 
-                console.log("botGlobalState")
                 let botStateFormatted = "`Active 🟢`"
-                if (botGlobalState.toLowerCase() == "off") { botStateFormatted = "`Inactive 🔴`·" }
+                if (botGlobalState.toLowerCase() == "off") { botStateFormatted = "`Inactive 🔴`" }
 
                 const setwalletEmbed = new EmbedBuilder().setColor("#060A8F")
                     .setTitle(`Status`)

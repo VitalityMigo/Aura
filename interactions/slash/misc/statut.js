@@ -84,12 +84,12 @@ module.exports = {
                             .setDescription(`>>> Display the current status of the different part of the bot`)
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .addFields(
-                                { name: 'Global Status', value: "`Active`🟢", inline: true },
+                                { name: 'Global Status', value: "`Active 🟢`", inline: true },
                                 { name: 'Commands', value: "`Available`", inline: true },
                                 { name: 'Database', value: "`Available`", inline: true },
-                                { name: 'Live data', value: "`Active`", inline: true },
+                                { name: 'API Keys', value: "`Active`", inline: true },
                                 { name: 'Alerts', value: "`Available`", inline: true },
-                                { name: 'Node', value: "`Active`", inline: true },
+                                { name: 'Node', value: "`Available`", inline: true },
                             )
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })

@@ -78,8 +78,11 @@ module.exports = {
         let serverId = interaction.member.guild.id
 
 
+        await interaction.deferUpdate()
 
         // try {
+
+
 
         //Checkpoint
         console.log("// Step 1 : Initialization - Executed ✅")
@@ -226,7 +229,7 @@ module.exports = {
                         }
                     }
 
-                    console.log(fullBRC721Summary)
+                    console.log("NFT :" + fullBRC721Summary)
                     console.log('1')
 
                     // Tri du tableau JSON en fonction de la valeur "floorAsk * tokenCount" de chaque objet "collection" en ordre décroissant
@@ -283,8 +286,7 @@ module.exports = {
                     if (BRC20Overview == "") { BRC20Overview = "`No BRC20 tokens owned                      `" }
                     if (nftsOverview == "") { nftsOverview = "`No Ordinal NFTs owned                                             `  \n" }
 
-                    console.log('3')
-
+                   
 
                     const getPortfolioOneWallet = new EmbedBuilder().setColor("#060A8F")
                         .setTitle(`${authorName}'s portfolio`)
@@ -303,7 +305,7 @@ module.exports = {
                         .setTimestamp()
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                    await interaction.update({ embeds: [getPortfolioOneWallet], components: [chartVisual1] });
+                    await interaction.editReply({ embeds: [getPortfolioOneWallet], components: [chartVisual1] });
 
 
 

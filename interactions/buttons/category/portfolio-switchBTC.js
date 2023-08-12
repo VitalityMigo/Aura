@@ -162,7 +162,7 @@ module.exports = {
                     const sortedByToken = tickerTable.sort((a, b) => b.overall_balance - a.overall_balance);
 
                     // Sélection des 5 premiers tokens
-                    const top5tokens = sortedByToken.slice(0, 7);
+                    const top5tokens = sortedByToken.slice(0, 6);
 
                     let BRC20Overview = ""
 

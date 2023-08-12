@@ -131,11 +131,10 @@ module.exports = {
 
 
                         const urlBRC20 = "https://api.bestinslot.xyz/v3/brc20/wallet_balances?address=" + selectedWallet;
-                        const responseBRC20 = await axios.get(urlBRC20, { BISHeader });
+                        const responseBRC20 = await axios.get(urlBRC20, { headers: BISHeader });
                         const brc20Call = await responseBRC20.data;
 
-
-                        for (const ticker of brc20Call.data.data) {
+                        for (const ticker of brc20Call.data) {
 
                             tickerTable.push(ticker)
 
@@ -163,7 +162,7 @@ module.exports = {
                     const sortedByToken = tickerTable.sort((a, b) => b.overall_balance - a.overall_balance);
 
                     // Sélection des 5 premiers tokens
-                    const top5tokens = sortedByToken.slice(0, 13);
+                    const top5tokens = sortedByToken.slice(0, 7);
 
                     let BRC20Overview = ""
 
@@ -228,6 +227,7 @@ module.exports = {
                     }
 
                     console.log(fullBRC721Summary)
+                    console.log('1')
 
                     // Tri du tableau JSON en fonction de la valeur "floorAsk * tokenCount" de chaque objet "collection" en ordre décroissant
                     const sortedByValue = fullBRC721Summary.sort((a, b) => b.value - a.value);
@@ -241,6 +241,8 @@ module.exports = {
 
 
                     let nftsOverview = ""
+
+                    console.log('2')
 
                     for (const obj of top13Collections) {
 
@@ -280,6 +282,8 @@ module.exports = {
 
                     if (BRC20Overview == "") { BRC20Overview = "`No BRC20 tokens owned                      `" }
                     if (nftsOverview == "") { nftsOverview = "`No Ordinal NFTs owned                                             `  \n" }
+
+                    console.log('3')
 
 
                     const getPortfolioOneWallet = new EmbedBuilder().setColor("#060A8F")

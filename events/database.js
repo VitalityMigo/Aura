@@ -662,6 +662,34 @@ const paymentHistory = sequelize.define('payment', {
     },
 });
 
+
+//Alert up
+const data = sequelize.define('data', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    commandName: {
+        type: Sequelize.STRING,
+    },
+    options: {
+        type: Sequelize.STRING,
+    },
+    data: {
+        type: Sequelize.STRING,
+    },
+    timestamp: {
+        type: Sequelize.STRING,
+    },
+
+
+});
+
+
+
 //Synching the tables
 
 accessSql.sync();
@@ -680,6 +708,7 @@ alertsDown.sync();
 alertsUp.sync();
 walletManager.sync()
 paymentHistory.sync()
+data.sync()
 
 
 //Export the tables informations
@@ -701,6 +730,7 @@ module.exports = {
     alertsUp,
     walletManager,
     paymentHistory,
+    data,
     Op,
 }
 

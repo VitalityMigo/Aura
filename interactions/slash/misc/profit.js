@@ -846,6 +846,8 @@ module.exports = {
                                                             { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + parseFloat(realisedProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
                                                             { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + parseFloat(potentialProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
                                                             { name: "Potential ROI", value: roiFormatted, inline: true },
+                                                            { name: " ", value: "*Please note that Aura isn't analyzing Blur V3 contract sales for the moment. We're working on it to make it available ASAP.*", inline: false },
+
 
                                                         )
                                                         .setTimestamp()
@@ -1295,7 +1297,8 @@ module.exports = {
                                                     { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "₿ (" + parseFloat(realisedProfit * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
                                                     { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "₿ (" + parseFloat(potentialProfit * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
                                                     { name: "Potential ROI", value: roiFormatted, inline: true },
-                                                    { name: "Links", value: linksFormatted, inline: false },
+                                                    { name: " ", value: "*Please note that Aura isn't analyzing Blur V3 contract sales for the moment. We're working on it to make it available ASAP.*", inline: false },
+                                                    //{ name: "Links", value: linksFormatted, inline: false },
 
                                                 )
                                                 .setTimestamp()
@@ -1917,6 +1920,7 @@ module.exports = {
                                                         { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + parseFloat(realisedProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
                                                         { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + parseFloat(potentialProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
                                                         { name: "Potential ROI", value: roiFormatted, inline: true },
+                                                        { name: " ", value: "*Please note that Aura isn't analyzing Blur V3 contract sales for the moment. We're working on it to make it available ASAP.*", inline: false },
 
                                                     )
                                                     .setTimestamp()
@@ -2356,7 +2360,8 @@ module.exports = {
                                                 { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "₿ (" + parseFloat(realisedProfit * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
                                                 { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "₿ (" + parseFloat(potentialProfit * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
                                                 { name: "Potential ROI", value: roiFormatted, inline: true },
-                                                { name: "Links", value: linksFormatted, inline: false },
+                                                { name: " ", value: "*Please note that Aura isn't analyzing Blur V3 contract sales for the moment. We're working on it to make it available ASAP.*", inline: false },
+                                                //{ name: "Links", value: linksFormatted, inline: false },
 
                                             )
                                             .setTimestamp()

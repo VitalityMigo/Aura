@@ -35,91 +35,92 @@ module.exports = {
             let member = interaction.member;
             let botId = interaction.applicationId
 
-         //   try {
+            //   try {
 
-                const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
-                let communityMemberRoleId = communityRolePerms.dataValues.memberRoleId
-                let communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
-                let botPowerStatut = communityRolePerms.dataValues.actualPower
-                let communityStatut = communityRolePerms.dataValues.statut
+            const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
+            let communityMemberRoleId = communityRolePerms.dataValues.memberRoleId
+            let communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
+            let botPowerStatut = communityRolePerms.dataValues.actualPower
+            let communityStatut = communityRolePerms.dataValues.statut
 
-                const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
+            const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
 
-                if (authorProfile === null) { await interaction.deferReply(); } else {
-                    const authorPrivacyMode = authorProfile.dataValues.privacyMode
+            if (authorProfile === null) { await interaction.deferReply(); } else {
+                const authorPrivacyMode = authorProfile.dataValues.privacyMode
 
-                    if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
-                    if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
-                }
+                if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
+                if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
+            }
+
+
+
+            //Checkpoint
+            console.log("// Step 1 : Initialization - Executed ✅")
+
+            if (member.roles.cache.has(communityMemberRoleId)) {
 
 
 
                 //Checkpoint
-                console.log("// Step 1 : Initialization - Executed ✅")
-
-                if (member.roles.cache.has(communityMemberRoleId)) {
+                console.log("// Step 2 : Authorization - Executed ✅")
 
 
 
-                    //Checkpoint
-                    console.log("// Step 2 : Authorization - Executed ✅")
+                //On enregistre le user si il est pas encore dans la database
+                const timeStamp1 = Date.now();
+                const actualTimestamp1 = parseFloat(timeStamp1 / 1000).toFixed(0)
+                const isUser = await usersql.findOne({ where: { userId: authorId, serverId: serverId } })
+                if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp1 }) }
+
+                const botAdmins = await adminsql.findOne({ where: { botId: botId } })
+                const botGlobalState = botAdmins.dataValues.botState
+
+                console.log("botGlobalState")
+                let botStateFormatted = "`Active 🟢`"
+                if (botGlobalState.toLowerCase() == "off") { botStateFormatted = "`Inactive 🔴`·" }
+
+                const setwalletEmbed = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle(`Status`)
+                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                    .setDescription(`>>> Display the current status of the different part of the bot`)
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .addFields(
+                        { name: 'Global Status', value: botStateFormatted, inline: true },
+                        { name: 'Commands', value: "`Available`", inline: true },
+                        { name: 'Database', value: "`Available`", inline: true },
+                        { name: 'API Keys', value: "`Available`", inline: true },
+                        { name: 'Alerts', value: "`Available`", inline: true },
+                        { name: 'Node', value: "`Available`", inline: true },
+                    )
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                // Send the embed as a response to the interaction
+                await interaction.editReply({ embeds: [setwalletEmbed] });
+
+
+            } else if (!member.roles.cache.has(communityMemberRoleId)) {
 
 
 
-                    //On enregistre le user si il est pas encore dans la database
-                    const timeStamp1 = Date.now();
-                    const actualTimestamp1 = parseFloat(timeStamp1 / 1000).toFixed(0)
-                    const isUser = await usersql.findOne({ where: { userId: authorId, serverId: serverId } })
-                    if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp1 }) }
+                const notMember = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle(`Bot Access`)
+                    .setDescription(">>> Showing access data")
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                    .addFields(
+                        { name: " ", value: " ", inline: false },
+                        { name: "Status", value: "`Access Denied ❌`", inline: true },
+                        { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
+                        { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
+                    )
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                    const botAdmins = await adminsql.findOne({ where: { botId: botId } })
-                    const botGlobalState = botAdmins.dataValues.botState
-
-                    let botStateFormatted = "`Active 🟢`"
-if (botGlobalState.toLowerCase() == "off") { botStateFormatted == "`Inactive 🔴`·" }
-
-                    const setwalletEmbed = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle(`Status`)
-                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .setDescription(`>>> Display the current status of the different part of the bot`)
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .addFields(
-                            { name: 'Global Status', value: botStateFormatted, inline: true },
-                            { name: 'Commands', value: "`Available`", inline: true },
-                            { name: 'Database', value: "`Available`", inline: true },
-                            { name: 'API Keys', value: "`Available`", inline: true },
-                            { name: 'Alerts', value: "`Available`", inline: true },
-                            { name: 'Node', value: "`Available`", inline: true },
-                        )
-                        .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                    // Send the embed as a response to the interaction
-                    await interaction.editReply({ embeds: [setwalletEmbed] });
+                await interaction.editReply({ embeds: [notMember] });
 
 
-                } else if (!member.roles.cache.has(communityMemberRoleId)) {
-
-
-
-                    const notMember = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle(`Bot Access`)
-                        .setDescription(">>> Showing access data")
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .addFields(
-                            { name: " ", value: " ", inline: false },
-                            { name: "Status", value: "`Access Denied ❌`", inline: true },
-                            { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
-                            { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
-                        )
-                        .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-                    await interaction.editReply({ embeds: [notMember] });
-
-
-                }
+            }
 
 
 

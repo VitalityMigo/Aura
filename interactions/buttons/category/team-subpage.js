@@ -78,6 +78,7 @@ module.exports = {
             let subscribtionPrice = communityAccess.dataValues.subscribtionPrice
             let communityStatut = communityAccess.dataValues.statut
             let subscribtionStatut = communityAccess.dataValues.subscribtionStatut
+            let accessTier = communityAccess.dataValues.accessTier
             let subscribtionStatutFormatted = "Lifetime"
             let actualPowerFormatted = 'Active'
 
@@ -108,17 +109,18 @@ module.exports = {
                     .setTimestamp()
                     .addFields(
                         { name: " ", value: " ", inline: false },
-                        { name: "Susbscribtion Mecanism", value: "The subscribtion page is what allows the community team's member to consult and manage the community's subscribtion to the bot. The subscribtion can be paid directly from this page using one of the methods below.", inline: true },
+                        { name: "Susbscribtion Mecanism", value: "The subscribtion page is what allows the community team's member to consult the community's subscribtion to Aura. For any questions or inquiries, please address it to our team.", inline: true },
                         { name: " ", value: " ", inline: false },
-                        { name: "Payment Methods", value: "`Private Key` - Use this button to enter the community's wallet private key and perform the month payement.\n`Submit proof` - Use this button to enter the hash of the txn with the month's payment, using the wallet attached to the community, in a delay of 3 days maximum.", inline: false },
+                        { name: "Payment Methods", value: "At aura, we prefer a direct relationship with our growth partners. If you wish to pay or change your subscription, please feel free to contact a member of our team.", inline: false },
                         { name: " ", value: " ", inline: false },
                         { name: "Sub. State", value: "`" + actualPowerFormatted + "`", inline: true },
-                        { name: "Sub. Status", value: "`" + subscribtionStatutFormatted + "`", inline: true },
                         { name: " ", value: " ", inline: false },
-                        { name: "Team's Wallet", value: "`" + adminWalletAddress + "`", inline: false },
-                        { name: "Pricing", value: "`" + parseFloat(subscribtionPrice).toFixed(3) + "Ξ/month`", inline: false },
                         { name: " ", value: " ", inline: false },
-                        { name: " ", value: "The payment can be done at this address : `0x862284B87b774bbEC86c4f13bA6c283C4552AfAB (rollschasers.eth)`.", inline: false },
+                        { name: "Access Tier", value: "`" + accessTier.toUpperCase() + "`", inline: true },
+                        { name: "Pricing", value: "`" + parseFloat(subscribtionPrice).toFixed(3) + "Ξ/month`", inline: true },
+                        { name: " ", value: " ", inline: false },
+                        { name: "Aura's Wallet", value: "`0x862284B87b774bbEC86c4f13bA6c283C4552AfAB (rollschasers.eth)`", inline: false },
+                        { name: " ", value: " ", inline: false },
 
                     )
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })

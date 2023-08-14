@@ -73,10 +73,11 @@ module.exports = {
             ////// USER //////
 
 
-            //Rapport Mensuel
-            const userMonthlyReport = schedule.scheduleJob('0 20 1 * *', function () {
-                userMonthlyChecker(client);
-            });
+            //Rapport Mensuel - EN SUSPEND FTM
+            
+            // const userMonthlyReport = schedule.scheduleJob('0 20 1 * *', function () {
+            //     userMonthlyChecker(client);
+            // });
 
 
             ////// SUB. SINGLE //////

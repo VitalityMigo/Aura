@@ -1612,7 +1612,9 @@ module.exports = {
                             } else {
 
 
-                                accessTier = "Free Tier"
+                                if (accessTier == "") {
+								accessTier = "Free Tier"
+							}
 
 
                                 const botOff = new EmbedBuilder().setColor("#060A8F")
@@ -1623,7 +1625,7 @@ module.exports = {
                                     .addFields(
                                         { name: 'Access Status', value: "`Denied 🔴`", inline: false },
                                         { name: 'Access Tier', value: "`" + accessTier.toUpperCase() + "`", inline: true },
-                                        { name: 'Access Tier', value: "`A-TIER`", inline: true },
+                                        { name: 'Required Tier', value: "`A-TIER`", inline: true },
                                         { name: "Problem Detected", value: "Your access to this command has been denied. You need a higher access tier to use this feature. You can consult the available commands in this community by using `/access`.", inline: false },
                                     )
                                     .setTimestamp()

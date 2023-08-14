@@ -87,6 +87,7 @@ module.exports = {
                     obj.subscribtionStatut = clientList[index].dataValues.subscribtionStatut
                     obj.subscribtionPrice = clientList[index].dataValues.subscribtionPrice
                     obj.statut = clientList[index].dataValues.statut
+                    obj.contact = clientList[index].dataValues.contact
 
 
 

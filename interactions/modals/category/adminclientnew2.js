@@ -51,7 +51,7 @@ module.exports = {
         const adminRoleId = interaction.fields.getTextInputValue('newClientAdminDashboardChangeR5');
         const memberRoleId = interaction.fields.getTextInputValue('newClientAdminDashboardChangeR6');
         const updateChannel = interaction.fields.getTextInputValue('newClientAdminDashboardChangeR7');
-        const adminWalletAddress = interaction.fields.getTextInputValue('newClientAdminDashboardChangeR8');
+        const contactId = interaction.fields.getTextInputValue('newClientAdminDashboardChangeR8');
         const accessSince = new Date().getTime();
         const password = generateRandomString(20);
 
@@ -61,7 +61,8 @@ module.exports = {
             adminRoleId: adminRoleId,
             memberRoleId: memberRoleId,
             updateChannel: updateChannel,
-            adminWalletAddress: adminWalletAddress,
+            contact: contactId,
+            adminWalletAddress: "N/A",
             accessSince: accessSince.toString(),
             statut: "Active",
             actualPower: "on",

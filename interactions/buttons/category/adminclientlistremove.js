@@ -89,6 +89,7 @@ module.exports = {
                 let subscribtionPrice = reportTable[actualPageIndex].subscribtionPrice
                 let accessStatut = reportTable[actualPageIndex].statut
                 let subscribtionStatutFormatted = "Lifetime"
+                let contact = reportTable[actualPageIndex].contact
 
 
                 if (subscribtionStatut.toLowerCase() !== "lifetime") {
@@ -142,7 +143,12 @@ module.exports = {
                         { name: 'Subscribtion Price', value: "`" + parseFloat(subscribtionPrice).toFixed(3) + "Ξ/month`", inline: true },
                         { name: 'Subscribtion Status', value: "`" + subscribtionStatutFormatted + "`", inline: true },
                         { name: 'Access Date', value: "`" + formattedDate + "`", inline: false },
+                        { name: ' ', value: " ", inline: false },
                         { name: "Page", value: "`[" + actualPage + "/" + pageIndex + "]`", inline: false },
+                        { name: ' ', value: " ", inline: false },
+                        { name: ' ', value: "*🤝 The priority contact in this community's team is the following Discord user : `" + contact + "`*", inline: false },
+                        { name: ' ', value: " ", inline: false },
+
 
                     )
                     .setTimestamp()

@@ -65,10 +65,9 @@ module.exports = {
                 // Create the text input components
                 const channel4 = new TextInputBuilder()
                     .setCustomId('newClientAdminDashboardChangeR8')
-                    .setLabel("Team Wallet")
-                    .setPlaceholder("The address of the team's wallet")
+                    .setLabel("Contact")
+                    .setPlaceholder("The contact in the team")
                     .setStyle(TextInputStyle.Short)
-                    .setMaxLength(40)
 
 
 

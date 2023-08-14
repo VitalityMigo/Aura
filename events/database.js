@@ -61,6 +61,9 @@ const accessSql = sequelize.define('access', {
     statut: {
         type: Sequelize.STRING,
     },
+    contact: {
+        type: Sequelize.STRING,
+    },
 });
 
 

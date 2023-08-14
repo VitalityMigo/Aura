@@ -97,6 +97,7 @@ module.exports = {
                 let subscribtionStatut = reportTable[indexTable].subscribtionStatut
                 let subscribtionPrice = reportTable[indexTable].subscribtionPrice
                 let accessStatut = reportTable[indexTable].statut
+                let contact = reportTable[indexTable].contact
 
                 let subscribtionStatutFormatted = "Lifetime"
 
@@ -146,7 +147,12 @@ module.exports = {
                         { name: 'Subscribtion Price', value: "`" + parseFloat(subscribtionPrice).toFixed(3) + "Ξ/month`", inline: true },
                         { name: 'Subscribtion Status', value: "`" + subscribtionStatutFormatted + "`", inline: true },
                         { name: 'Access Date', value: "`" + formattedDate + "`", inline: false },
+                        { name: ' ', value: " ", inline: false },
                         { name: "Page", value: "`[" + pageIndex + "/" + pageIndex + "]`", inline: false },
+                        { name: ' ', value: " ", inline: false },
+                        { name: ' ', value: "*🤝 The priority contact in this community's team is the following Discord user : `" + contact + "`*", inline: false },
+                        { name: ' ', value: " ", inline: false },
+
 
                     )
                     .setTimestamp()

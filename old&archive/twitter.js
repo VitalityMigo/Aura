@@ -32,7 +32,11 @@ module.exports = {
 
         try {
 
-            const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
+             const botAdmins = await adminsql.findOne({ where: { botId: botId } })
+                const botGlobalState = botAdmins.dataValues.botState
+
+                //Récupère info varibale sur le bot et le serveur
+                const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
             let communityMemberRoleId = communityRolePerms.dataValues.memberRoleId
             let communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
             let botPowerStatut = communityRolePerms.dataValues.actualPower
@@ -53,7 +57,7 @@ module.exports = {
             console.log("// Step 1 : Initialization - Executed ✅")
 
 
-            if (communityStatut.toLowerCase() === "active") {
+            if (communityStatut.toLowerCase() === "active" || communityStatut == "") {
 
 
                 if (botPowerStatut.toLowerCase() === "on") {

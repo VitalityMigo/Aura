@@ -86,11 +86,26 @@ module.exports = {
 
 
 
+                const botAdmins = await adminsql.findOne({ where: { botId: botId } })
+                const botGlobalState = botAdmins.dataValues.botState
+
+                let communityMemberRoleId = ""
+                let communityAdminRoleId = ""
+                let botPowerStatut = ""
+                let communityStatut = ""
+                let accessTier = ""
+
+                //Récupère info varibale sur le bot et le serveur
                 const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
-                let communityMemberRoleId = communityRolePerms.dataValues.memberRoleId
-                let communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
-                let botPowerStatut = communityRolePerms.dataValues.actualPower
-                let communityStatut = communityRolePerms.dataValues.statut
+                if (communityRolePerms != null) {
+                    communityMemberRoleId = communityRolePerms.dataValues.memberRoleId
+                    communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
+                    botPowerStatut = communityRolePerms.dataValues.actualPower
+                    communityStatut = communityRolePerms.dataValues.statut
+                    accessTier = communityRolePerms.dataValues.accessTier
+                }
+
+
 
                 //Récupère régagle de privé/ou pas de l'utilisateur
                 const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
@@ -105,12 +120,12 @@ module.exports = {
                 //Checkpoint
                 console.log("// Step 1 : Initialization - Executed ✅")
 
+                if (botGlobalState.toLowerCase() === "on") {
 
-                if (communityStatut.toLowerCase() === "active") {
 
+                    if (communityStatut.toLowerCase() === "active" || communityStatut == "") {
 
-                    if (botPowerStatut.toLowerCase() === "on") {
-
+                        if (accessTier.toLowerCase() == "s-tier" || accessTier.toLowerCase() == "a-tier") {
 
                         if (member.roles.cache.has(communityMemberRoleId)) {
 
@@ -313,14 +328,14 @@ module.exports = {
                                 } else {
 
                                     const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
-                                    .setTitle("Coin")
-                                    .setDescription("The token symbol you entered `" + coinTicker + "` isn't a valid BRC20 token symbol. If the token you'd like to analyze is an ERC20 token, please enter the Ethereum token address instead. If it's a BRC20 token, please enter a valid token symbol.")
-                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    .setTimestamp()
-                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                        .setTitle("Coin")
+                                        .setDescription("The token symbol you entered `" + coinTicker + "` isn't a valid BRC20 token symbol. If the token you'd like to analyze is an ERC20 token, please enter the Ethereum token address instead. If it's a BRC20 token, please enter a valid token symbol.")
+                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                await interaction.editReply({ embeds: [getDataCollectionAddress] });
+                                    await interaction.editReply({ embeds: [getDataCollectionAddress] });
 
 
 
@@ -511,18 +526,45 @@ module.exports = {
 
                         }
 
-                    } else if (botPowerStatut.toLowerCase() === "off") {
+
+                    } else {
+
+
+                        accessTier = "Free Tier"
 
 
                         const botOff = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle(`Bot status`)
-                            .setDescription(">>> Showing the bot status")
+                            .setTitle(`Bot Access`)
+                            .setDescription(">>> Showing the community's bot access")
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .addFields(
-                                { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
+                                { name: 'Access Status', value: "`Denied 🔴`", inline: false },
+                                { name: 'Access Tier', value: "`" + accessTier.toUpperCase() + "`", inline: true },
+                                { name: 'Access Tier', value: "`A-TIER`", inline: true },
+                                { name: "Problem Detected", value: "Your access to this command has been denied. You need a higher access tier to use this feature. You can consult the available commands in this community by using `/access`.", inline: false },
+                            )
+                            .setTimestamp()
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                        await interaction.editReply({ embeds: [botOff] });
+
+                    }
+
+
+
+                    } else {
+
+
+                        const botOff = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle(`Bot Access`)
+                            .setDescription(">>> Showing the community's bot access")
+                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                            .addFields(
+                                { name: 'Access Status', value: "`Denied 🔴`", inline: true },
                                 { name: 'Commands', value: "`Not available`", inline: true },
-                                { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
+                                { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
                             )
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
@@ -533,24 +575,29 @@ module.exports = {
 
                     }
 
+
                 } else {
 
 
+                    console.log("// Step 2 : Unauthorized - Executed ✅")
+
+
                     const botOff = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle(`Bot Access`)
-                        .setDescription(">>> Showing the community's bot access")
+                        .setTitle(`Bot status`)
+                        .setDescription(">>> Showing the bot status")
                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                         .setAuthor({ name: authorName, iconURL: userAvatar })
                         .addFields(
-                            { name: 'Access Status', value: "`Denied 🔴`", inline: true },
+                            { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
                             { name: 'Commands', value: "`Not available`", inline: true },
-                            { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
+                            { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
                         )
                         .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
                     await interaction.editReply({ embeds: [botOff] });
 
+                    console.log("// Step 3 : Answer - Executed ✅")
 
 
                 }

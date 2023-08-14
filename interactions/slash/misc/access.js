@@ -33,12 +33,25 @@ module.exports = {
 
             try {
 
+                const botAdmins = await adminsql.findOne({ where: { botId: "1074328639165964368" } })
+                const botGlobalState = botAdmins.dataValues.botState
+
+
+                let communityMemberRoleId = ""
+                let communityAdminRoleId = ""
+                let botPowerStatut = ""
+                let communityStatut = ""
+                let accessTier = ""
+
                 //Récupère info varibale sur le bot et le serveur
                 const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
-                let communityMemberRoleId = communityRolePerms.dataValues.memberRoleId
-                let communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
-                let botPowerStatut = communityRolePerms.dataValues.actualPower
-                let communityStatut = communityRolePerms.dataValues.statut
+                if (communityRolePerms != null) {
+                    communityMemberRoleId = communityRolePerms.dataValues.memberRoleId
+                    communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
+                    botPowerStatut = communityRolePerms.dataValues.actualPower
+                    communityStatut = communityRolePerms.dataValues.statut
+                    accessTier = communityRolePerms.dataValues.accessTier
+                }
 
                 //Récupère régagle de privé/ou pas de l'utilisateur
                 const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
@@ -53,121 +66,90 @@ module.exports = {
                 //Checkpoint
                 console.log("// Step 1 : Initialization - Executed ✅")
 
-                if (communityStatut.toLowerCase() === "active") {
+                if (botGlobalState.toLowerCase() === "on") {
 
 
-                    if (botPowerStatut.toLowerCase() === "on") {
+
+                    //Checkpoint
+                    console.log("// Step 2 : Authorization - Executed ✅")
+
+
+
+
+                    // On enregistre le user si il est pas encore dans la database
+                    const timeStamp = Date.now();
+                    const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
+                    const isUser = await usersql.findOne({ where: { userId: authorId, serverId: serverId } })
+                    if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp }) }
+
+
+
+                    let serverName = interaction.member.guild.name
+                    let serverLogo = interaction.member.guild.icon
+
+
+                    //On récupère les infos sur l'accès de la commu au bot
+                    const communityInfos = await accessSql.findOne({ where: { serverId: serverId } })
+
+                    if (communityInfos !== null) {
 
 
                         if (member.roles.cache.has(communityMemberRoleId)) {
 
-                            //Checkpoint
-                            console.log("// Step 2 : Authorization - Executed ✅")
 
 
+                            let serverTier = communityInfos.dataValues.accessTier
+                            let serverAccessTime = communityInfos.dataValues.accessSince
+                            let serverAccessTimeFormatted = serverAccessTime * 1000
+
+                            const date = new Date(serverAccessTimeFormatted);
+                            const dateLisible = date.toLocaleString();
+
+                            const date1 = moment(dateLisible, 'M/D/YYYY');
+                            const formattedDate = date1.format('Do [of] MMMM YYYY');
 
 
-                            // On enregistre le user si il est pas encore dans la database
-                            const timeStamp = Date.now();
-                            const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
-                            const isUser = await usersql.findOne({ where: { userId: authorId, serverId: serverId } })
-                            if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp }) }
+                            //on définit le message renvoyé
+                            let availableCommands = ""
 
+                            if (serverTier.toLowerCase() === "s-tier") {
+                                availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/status` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
+                            }
 
+                            if (serverTier.toLowerCase() === "a-tier") {
+                                //availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/status` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
 
-                            let serverName = interaction.member.guild.name
-                            let serverLogo = interaction.member.guild.icon
+                                availableCommands = "`/access` ∙ `/data` ∙ `/derisk` ∙ `/ens` ∙ `/gastracker` ∙ `/gascalculator` ∙ `/getprofile` ∙ `/getwallets` ∙ `/getwatchlist` ∙ `/guide` ∙ `/privacy` ∙ `/profit` ∙ `/removewallet` ∙ `/removewatchlist` ∙ `/report` ∙ `/setwallet` ∙ `/setwatchlist` ∙ `/status ∙ `/walletgenerator` ∙ `/vouch` ∙ `/vouchleaderboard`"
+                            }
 
+                            if (serverTier.toLowerCase() === "b-tier") {
 
-                            //On récupère les infos sur l'accès de la commu au bot
-                            const communityInfos = await accessSql.findOne({ where: { serverId: serverId } })
+                                // availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/status` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
 
-                            if (communityInfos !== null) {
-
-                                let serverTier = communityInfos.dataValues.accessTier
-                                let serverAccessTime = communityInfos.dataValues.accessSince
-                                let serverAccessTimeFormatted = serverAccessTime * 1000
-
-                                const date = new Date(serverAccessTimeFormatted);
-                                const dateLisible = date.toLocaleString();
-
-                                const date1 = moment(dateLisible, 'M/D/YYYY');
-                                const formattedDate = date1.format('Do [of] MMMM YYYY');
-
-
-                                //on définit le message renvoyé
-                                let availableCommands = ""
-
-                                if (serverTier.toLowerCase() === "s-tier") {
-                                    availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/status` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
-                                }
-
-                                if (serverTier.toLowerCase() === "a-tier") {
-                                    //availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/status` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
-
-                                    availableCommands = "`/access` ∙ `/data` ∙ `/derisk` ∙ `/ens` ∙ `/gastracker` ∙ `/gascalculator` ∙ `/getprofile` ∙ `/getwallets` ∙ `/getwatchlist` ∙ `/guide` ∙ `/privacy` ∙ `/profit` ∙ `/removewallet` ∙ `/removewatchlist` ∙ `/report` ∙ `/setwallet` ∙ `/setwatchlist` ∙ `/status ∙ `/walletgenerator` ∙ `/vouch` ∙ `/vouchleaderboard`"
-                                }
-
-                                if (serverTier.toLowerCase() === "b-tier") {
-
-                                   // availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/status` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
-
-                                    availableCommands = "`/access` ∙ `/getwallets` ∙ `/getprofile` ∙ `/guide` ∙ `/privacy` ∙ `/profit` ∙ `/report` ∙ `/removewallet` ∙ `/setwallet` ∙ `/status ∙ `/vouch` ∙ `/vouchleaderboard`"
-                                }
-
-
-                                console.log("// Step 3 : Analyze - Executed ✅")
-
-
-
-                                const accessEmbed = new EmbedBuilder().setColor("#060A8F")
-                                    .setTitle(serverName + "'s access")
-                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    .setDescription(`>>> Display the level of access of ` + serverName + " to the bot ")
-                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                    .addFields(
-                                        { name: 'Community', value: "`" + serverName + "`", inline: true },
-                                        { name: 'Access Tier', value: "`" + serverTier.toUpperCase() + "`", inline: true },
-                                        { name: 'Access Date', value: "`" + formattedDate + "`", inline: true },
-                                        { name: 'Available Commands:', value: availableCommands, inline: true },)
-                                    .setTimestamp()
-                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                await interaction.editReply({ embeds: [accessEmbed] });
-
-                                console.log("// Step 4 : Answer - Executed ✅")
-
-
-                            } else if (communityInfos === null) {
-
-                                //Dans le cas où la communauté n'a pas accès
-                                let availableCommands = ""
-
-                                availableCommands = "```No access for " + serverName + " to Rolls Chasers Analytics. Please use the bot in a community that has access or contact an administrator to get help.```"
-
-
-                                const accessEmbed = new EmbedBuilder().setColor("#060A8F")
-                                    .setTitle(serverName + "'s access")
-                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    .setDescription(`>>> Display the level of access of ` + serverName + " to the bot ")
-                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                    .addFields(
-                                        { name: 'Community', value: "`" + serverName + "`", inline: true },
-                                        { name: 'Access Tier', value: "`No access`", inline: true },
-                                        { name: 'Access Date', value: "`No access`", inline: true },
-                                        { name: 'Available Commands:', value: availableCommands, inline: true },
-                                    )
-                                    .setTimestamp()
-                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-
-                                await interaction.editReply({ embeds: [accessEmbed] });
-
-                                console.log("// Step 3 : Answer - Executed ✅")
-
+                                availableCommands = "`/access` ∙ `/getwallets` ∙ `/getprofile` ∙ `/guide` ∙ `/privacy` ∙ `/profit` ∙ `/report` ∙ `/removewallet` ∙ `/setwallet` ∙ `/status ∙ `/vouch` ∙ `/vouchleaderboard`"
                             }
 
 
+                            console.log("// Step 3 : Analyze - Executed ✅")
+
+
+
+                            const accessEmbed = new EmbedBuilder().setColor("#060A8F")
+                                .setTitle(serverName + "'s access")
+                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                .setDescription(`>>> Display the level of access of ` + serverName + " to the bot ")
+                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                .addFields(
+                                    { name: 'Community', value: "`" + serverName + "`", inline: true },
+                                    { name: 'Access Tier', value: "`" + serverTier.toUpperCase() + "`", inline: true },
+                                    { name: 'Access Date', value: "`" + formattedDate + "`", inline: true },
+                                    { name: 'Available Commands:', value: availableCommands, inline: true },)
+                                .setTimestamp()
+                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                            await interaction.editReply({ embeds: [accessEmbed] });
+
+                            console.log("// Step 4 : Answer - Executed ✅")
 
 
                         } else if (!member.roles.cache.has(communityMemberRoleId)) {
@@ -177,68 +159,81 @@ module.exports = {
 
                             const notMember = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle(`Bot Access`)
-                                .setDescription("As a public user, you have access to few commands :\n\n• `access` - allows you to display your level of access to the bot\n• `data` - display the key metrics of a Bitcoin or Ethereum collection\n• `derisk txn` - dipslay the derisk (break even) metrics of a given ERC721 transaction\n• `guide` - display the bot's command list and infos.\n\nIf you'd like to gain full access to Aura, go here : <#1108757700885622784>.")
+                                .setDescription(">>> Showing access data")
                                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
+                                .addFields(
+                                    { name: " ", value: " ", inline: false },
+                                    { name: "Status", value: "`Access Denied ❌`", inline: true },
+                                    { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
+                                    { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
+                                )
                                 .setTimestamp()
-                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
                             await interaction.editReply({ embeds: [notMember] });
 
                             console.log("// Step 3 : Answer - Executed ✅")
 
-
                         }
 
 
 
-                    } else if (botPowerStatut.toLowerCase() === "off") {
+                    } else if (communityInfos === null) {
+
+                        console.log("ici")
+                        //Dans le cas où la communauté n'a pas accès
+                        let availableCommands = " "
 
 
-                        console.log("// Step 2 : Unauthorized - Executed ✅")
+                        /////// A FAIRE  \\\\\\\\\
+                        availableCommands = "`/access` ∙ `/derisk txn` ∙ `/guide` ∙ `/report` ∙ `/status` "
 
 
-                        const botOff = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle(`Bot status`)
-                            .setDescription(">>> Showing the bot status")
-                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                        const accessEmbed = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle(serverName + "'s access")
                             .setAuthor({ name: authorName, iconURL: userAvatar })
+                            .setDescription(`>>> Display the level of access of ` + serverName + " to the bot ")
+                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .addFields(
-                                { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
-                                { name: 'Commands', value: "`Not available`", inline: true },
-                                { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
+                                { name: 'Community', value: "`" + serverName + "`", inline: true },
+                                { name: 'Access Tier', value: "`Free Tier`", inline: true },
+                                { name: 'Access Date', value: "`None`", inline: true },
+                                { name: 'Available Commands:', value: availableCommands, inline: true },
                             )
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                        await interaction.editReply({ embeds: [botOff] });
+
+                        await interaction.editReply({ embeds: [accessEmbed] });
 
                         console.log("// Step 3 : Answer - Executed ✅")
 
-
                     }
 
+
+
+
                 } else {
+
 
                     console.log("// Step 2 : Unauthorized - Executed ✅")
 
 
                     const botOff = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle(`Bot Access`)
-                        .setDescription(">>> Showing the community's bot access")
+                        .setTitle(`Bot status`)
+                        .setDescription(">>> Showing the bot status")
                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                         .setAuthor({ name: authorName, iconURL: userAvatar })
                         .addFields(
-                            { name: 'Access Status', value: "`Denied 🔴`", inline: true },
+                            { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
                             { name: 'Commands', value: "`Not available`", inline: true },
-                            { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
+                            { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
                         )
                         .setTimestamp()
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-
                     await interaction.editReply({ embeds: [botOff] });
-
 
                     console.log("// Step 3 : Answer - Executed ✅")
 
@@ -246,12 +241,11 @@ module.exports = {
                 }
 
 
-
-
             } catch (error) {
 
 
                 console.log("// Error - sent in report ❌")
+                console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
                 //On envoi une notif
                 let botId = interaction.applicationId
@@ -294,7 +288,6 @@ module.exports = {
                 })
 
 
-                console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
                 const reduceText = require("../../../functions/reducetext")
                 const roleTag = "1121510423687090186"

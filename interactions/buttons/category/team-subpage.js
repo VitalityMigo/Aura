@@ -115,11 +115,10 @@ module.exports = {
                         { name: " ", value: " ", inline: false },
                         { name: "Sub. State", value: "`" + actualPowerFormatted + "`", inline: true },
                         { name: " ", value: " ", inline: false },
-                        { name: " ", value: " ", inline: false },
                         { name: "Access Tier", value: "`" + accessTier.toUpperCase() + "`", inline: true },
-                        { name: "Pricing", value: "`" + parseFloat(subscribtionPrice).toFixed(3) + "Ξ/month`", inline: true },
+                        { name: "Pricing", value: "`" + parseFloat(subscribtionPrice).toFixed(3) + "Ξ/month`", inline: false },
                         { name: " ", value: " ", inline: false },
-                        { name: "Aura's Wallet", value: "`0x862284B87b774bbEC86c4f13bA6c283C4552AfAB (rollschasers.eth)`", inline: false },
+                        { name: " ", value: "The Aura's wallet is the following:\n`0x862284B87b774bbEC86c4f13bA6c283C4552AfAB (rollschasers.eth)`", inline: false },
                         { name: " ", value: " ", inline: false },
 
                     )

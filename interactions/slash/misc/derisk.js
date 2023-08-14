@@ -133,7 +133,7 @@ module.exports = {
             let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
             let serverId = interaction.member.guild.id
             let member = interaction.member;
-
+            let botId = interaction.applicationId
 
             try {
 

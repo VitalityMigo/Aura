@@ -26,14 +26,14 @@ module.exports = {
             let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
             let serverId = interaction.member.guild.id
             let member = interaction.member;
-
+            let botId = interaction.applicationId
 
 
             //Lancement du try
 
             try {
 
-                const botAdmins = await adminsql.findOne({ where: { botId: "1074328639165964368" } })
+                const botAdmins = await adminsql.findOne({ where: { botId: botId } })
                 const botGlobalState = botAdmins.dataValues.botState
 
 

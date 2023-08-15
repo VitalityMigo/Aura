@@ -333,21 +333,6 @@ module.exports = {
                                 //Condition qui vérifie si c'est Wallet ou Category qui a été séléctionné, dans ce cas Wallet
 
                                 // Condition qui vérifie que le choix de wallet est legit, dans ce cas non
-                                if (!walletChoices && walletAddress.toLowerCase() !== "all") {
-
-
-                                    const getprofitInvalidwalletEmbed = new EmbedBuilder().setColor("#060A8F")
-                                        .setTitle(`${authorName}'s profit`)
-                                        .setDescription("The wallet you try to get profit from isn't registered in your portfolio. Please select a valid wallet.")
-                                        .setThumbnail(userAvatar)
-                                        .setTimestamp()
-                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                    await interaction.editReply({ embeds: [getprofitInvalidwalletEmbed] });
-
-                                    // Condition qui vérifie que le choix de wallet est legit, dans ce cas oui
-                                } else if (walletChoices || walletAddress.toLowerCase() == "all") {
-
 
 
                                     // Si wallet est all
@@ -2477,7 +2462,7 @@ module.exports = {
                                         }
                                     }
 
-                                }
+                                
 
                                 //Condition qui vérifie si c'est Wallet ou Category qui a été séléctionné, dans ce cas Category
 

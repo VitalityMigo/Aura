@@ -16,6 +16,7 @@ const reservoirApiKey = process.env.reservoirApiKey
 const blockspanApiKey = process.env.blockspanApiKey
 const alchemyApiKey = process.env.alchemyApiKey
 const magicedenApiKey = process.env.magicedenApiKey
+const nftgoApiKey = process.env.nftgoApiKey
 
 const axios = require('axios')
 
@@ -41,6 +42,10 @@ const settings = {
 };
 const alchemy = new Alchemy(settings);
 const alchemy2 = require('api')('@alchemy-docs/v1.0#24zcsa23lfbpdnv5');
+
+//CALL API NFT.GO
+const nftgo = require('api')('@nftgo/v1.0#28807z4klgnauhl3');
+nftgo.auth(nftgoApiKey);
 
 // Configuration de l'en-tête d'autorisation
 const headers = {
@@ -69,6 +74,21 @@ function isBRC20BitcoinWallet(wallet) {
     return regex.test(wallet);
 }
 
+
+//FONCTION POUR COLLECTION ALL
+function calculateRatios(num1, num2) {
+    const total = num1 + num2;
+    const ratio1 = (num1 / total) * 100;
+    const ratio2 = (num2 / total) * 100;
+    return [ratio1, ratio2];
+}
+
+function divideNumber(number, ratio1, ratio2) {
+    const totalRatio = ratio1 + ratio2;
+    const number1 = (ratio1 / totalRatio) * number;
+    const number2 = (ratio2 / totalRatio) * number;
+    return [number1, number2];
+}
 
 
 module.exports = {
@@ -146,7 +166,7 @@ module.exports = {
             let member = interaction.member;
             let botId = interaction.applicationId
 
-            
+
             try {
 
                 const botAdmins = await adminsql.findOne({ where: { botId: botId } })
@@ -335,1094 +355,21 @@ module.exports = {
                                 // Condition qui vérifie que le choix de wallet est legit, dans ce cas non
 
 
-                                    // Si wallet est all
-                                    if (walletAddress.toLowerCase() === "all") {
+                                // Si wallet est all
+                                if (walletAddress.toLowerCase() === "all") {
 
-                                        //Définir la plage de wallet
-                                        let allWalletAddressOfAuthorTable = []
-                                        const allWalletsOfAuthor = await wallets.findAll({ where: { authorId: authorId, walletCategory: "eth" } });
-                                        const allWalletsOfAuthorBTC = await wallets.findAll({ where: { authorId: authorId, walletCategory: "btc" } });
-                                        for (let i = 0; i < allWalletsOfAuthor.length; i++) { allWalletAddressOfAuthorTable.push(allWalletsOfAuthor[i].dataValues.walletAddress); }
-                                        walletConcerned = allWalletsOfAuthor.length
-                                        if (walletConcerned < 0) { walletConcerned = "0" }
-                                        console.log(allWalletAddressOfAuthorTable)
+                                    //Définir la plage de wallet
+                                    let allWalletAddressOfAuthorTable = []
+                                    const allWalletsOfAuthor = await wallets.findAll({ where: { authorId: authorId, walletCategory: "eth" } });
+                                    const allWalletsOfAuthorBTC = await wallets.findAll({ where: { authorId: authorId, walletCategory: "btc" } });
+                                    for (let i = 0; i < allWalletsOfAuthor.length; i++) { allWalletAddressOfAuthorTable.push(allWalletsOfAuthor[i].dataValues.walletAddress); }
+                                    walletConcerned = allWalletsOfAuthor.length
+                                    if (walletConcerned < 0) { walletConcerned = "0" }
+                                    console.log(allWalletAddressOfAuthorTable)
 
 
-                                        if ((allWalletAddressOfAuthorTable.length + allWalletsOfAuthorBTC.length) > 0) {
+                                    if ((allWalletAddressOfAuthorTable.length + allWalletsOfAuthorBTC.length) > 0) {
 
-
-
-                                            //Ajustement du Timestamp
-                                            if (selectedTime === "1 Day") { selectedTimestamp = actualTimestamp - 86400 }
-                                            if (selectedTime === "3 Days") { selectedTimestamp = actualTimestamp - 259200 }
-                                            if (selectedTime === "7 Days") { selectedTimestamp = actualTimestamp - 604800 }
-                                            if (selectedTime === "14 Days") { selectedTimestamp = actualTimestamp - 1209600 }
-                                            if (selectedTime === "30 Days") { selectedTimestamp = actualTimestamp - 2592000 }
-                                            if (selectedTime === "90 Days") { selectedTimestamp = actualTimestamp - 7776000 }
-                                            if (selectedTime === "1 Year") { selectedTimestamp = actualTimestamp - 31536000 }
-                                            if (selectedTime === "All Time" || !selectedTime) { selectedTimestamp = 0 }
-
-
-
-
-                                            // SI collection = All, wallet = All et pas wallet category
-                                            if (selectedCollection.toLowerCase() === "all") {
-
-
-
-                                                ////////////////// A BUILD (ALL COLLECTION) \\\\\\\\\\\\\\\\\\\\
-
-
-
-                                                ////////////////// A BUILD (ALL COLLECTION) \\\\\\\\\\\\\\\\\\\\
-
-                                                const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle(`${authorName}'s profit`)
-                                                    .setDescription("The option you try to use is currently being built and will be available in the near future. You can still use all the commands not including `all collections` in the meantime.")
-                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                                    .setTimestamp()
-                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                                await interaction.editReply({ embeds: [availableInTheNearFuture] });
-
-
-                                                ////////////////// A BUILD (ALL COLLECTION) \\\\\\\\\\\\\\\\\\\\
-
-
-
-                                                ////////////////// A BUILD (ALL COLLECTION) \\\\\\\\\\\\\\\\\\\\
-
-
-
-
-
-                                                // SI collection précise, wallet = All et pas wallet category
-                                            } else if (selectedCollection !== "all") {
-
-
-
-
-
-                                                if (isValidEthereumAddress(selectedCollection)) {
-
-                                                    if (allWalletAddressOfAuthorTable.length > 0) {
-
-
-
-                                                        //On initialise le tableau de call api pour mesurer
-                                                        let apiObj = {}
-                                                        apiObj.getCollectionsV5 = 0
-                                                        apiObj.getFloorPrice = 0
-                                                        apiObj.getUsersUserTokensV6 = 0
-                                                        apiObj.getNFTSales = 0
-                                                        apiObj.getSalesV4 = 0
-                                                        apiObj.getTransaction = 0
-                                                        apiObj.getTransactionReceipt = 0
-                                                        apiObj.getAllTransfers = 0
-
-
-
-                                                        sdk.getCollectionsV5({ id: selectedCollection, accept: '*/*' })
-                                                            .then(async ({ data }) => {
-
-
-                                                                //On incrément le compteur de call API
-                                                                apiObj.getCollectionsV5++
-
-                                                                const secondcollectionFp = await alchemy.nft.getFloorPrice(selectedCollection)
-
-
-                                                                //On incrément le compteur de call API
-                                                                apiObj.getFloorPrice++
-
-
-                                                                let collectionName = data.collections[0].name
-                                                                let collectionLogo = data.collections[0].image
-                                                                let collectionSlug = data.collections[0].slug
-                                                                let collectionFp
-                                                                let collectionBanner = data.collections[0].banner
-
-                                                                if (!(data.collections[0].floorAsk.price) && secondcollectionFp.openSea.floorPrice === 0) {
-
-                                                                    collectionFp = "N/A"
-
-                                                                } else if (data.collections[0].floorAsk.price) {
-
-                                                                    collectionFp = data.collections[0].floorAsk.price.amount.decimal
-
-                                                                } else if (secondcollectionFp.openSea.floorPrice !== 0) {
-
-                                                                    collectionFp = secondcollectionFp.openSea.floorPrice
-                                                                }
-
-                                                                let royalties = data.collections[0].royalties.bps
-                                                                let collectionRoyal = parseFloat(royalties / 100 + 0.5).toFixed(2) + "%"
-
-
-
-                                                                // Récuperer les ID des tokens hold 
-                                                                for await (const walletAddress of allWalletAddressOfAuthorTable) {
-                                                                    const { data: userTokens } = await sdk.getUsersUserTokensV6({ collection: selectedCollection, limit: '200', user: walletAddress, accept: '*/*' });
-
-
-                                                                    for (let i = 0; i < userTokens.tokens.length; i++) { tokenHoldTable.push(userTokens.tokens[i].token.tokenId); }
-
-                                                                    if (userTokens.tokens.length > 0) { walletsInvolvedTable.push(walletAddress) }
-
-
-                                                                    //On incrément le compteur de call API
-                                                                    apiObj.getUsersUserTokensV6++
-                                                                }
-
-
-
-
-                                                                // Récuperer les ID des tokens sell 
-                                                                for await (const walletAddress of allWalletAddressOfAuthorTable) {
-                                                                    const { data: userSoldTokens } = await alchemy2.getNFTSales({
-                                                                        fromBlock: '0',
-                                                                        toBlock: 'latest',
-                                                                        order: 'desc',
-                                                                        contractAddress: selectedCollection,
-                                                                        sellerAddress: walletAddress,
-                                                                        limit: '1000',
-                                                                        apiKey: alchemyApiKey
-                                                                    })
-
-                                                                    for (let i = 0; i < userSoldTokens.nftSales.length; i++) { tokenSoldTable.push(userSoldTokens.nftSales[i].tokenId); }
-
-                                                                    if (userSoldTokens.nftSales.length > 0) { walletsInvolvedTable.push(walletAddress) }
-
-                                                                    //On incrément le compteur de call API
-                                                                    apiObj.getNFTSales++
-                                                                }
-
-
-
-
-                                                                // Récuperer le méthode (mint) prix d'achat et de vente de chaque token (vente : avec from = selectedWallet / achat : avec to = selectedWallet  )
-                                                                for (const tokenId of tokenHoldTable) {
-                                                                    const { data: userPriceToken } = await
-                                                                        sdk.getSalesV4({
-                                                                            token: selectedCollection + '%3A' + tokenId,
-                                                                            startTimestamp: selectedTimestamp,
-                                                                            limit: '100',
-                                                                            accept: '*/*'
-                                                                        })
-
-
-                                                                    //On incrément le compteur de call API
-                                                                    apiObj.getSalesV4++
-
-
-                                                                    const filteredSales = userPriceToken.sales.filter(sale => allWalletAddressOfAuthorTable.includes(sale.to));
-
-                                                                    if (filteredSales.length <= 0) {
-
-
-                                                                        buyMarketplaceSpent += 0;
-                                                                        buyMarketplaceGasSpent += 0;
-                                                                        incomingTransferCount += 1
-                                                                        outgoingTransferCount += 0
-
-
-                                                                    } else if (filteredSales[0].orderSide === "bid") {
-
-                                                                        buyMarketplaceSpent += parseFloat(filteredSales[0].price.amount.native);
-                                                                        buyMarketplaceGasSpent += 0;
-                                                                        buyMarketplaceCount += 1
-
-
-
-
-                                                                    } else {
-
-
-                                                                        let tokenHashTxn = filteredSales[0].txHash
-
-                                                                        const hashValueReader = await web3.eth.getTransaction(tokenHashTxn)
-                                                                        const hashGasReader = await web3.eth.getTransactionReceipt(tokenHashTxn)
-                                                                        const { data: hashTransferReader } = await bsp.getAllTransfers({ chain: 'eth-main', hash: tokenHashTxn, page_size: '100' })
-
-                                                                        //On incrément le compteur de call API
-                                                                        apiObj.getTransaction++
-                                                                        apiObj.getTransactionReceipt++
-                                                                        apiObj.getAllTransfers++
-
-
-                                                                        const hashTransferReaderObject = hashTransferReader.results;
-                                                                        const uniqueIds = {}; // stockage temporaire des ids uniques
-                                                                        let uniqueIdCount = 0; // compteur d'ids uniques
-
-                                                                        for (let i = 0; i < hashTransferReaderObject.length; i++) {
-                                                                            const objectId = hashTransferReaderObject[i].id;
-                                                                            if (!uniqueIds[objectId]) { // si cet id n'a pas été vu auparavant
-                                                                                uniqueIds[objectId] = true; // marquer l'id comme vu
-                                                                                uniqueIdCount++; // incrémenter le compteur d'ids uniques
-                                                                            }
-                                                                        }
-
-                                                                        if (filteredSales[0].orderKind === "mint") {
-
-                                                                            mintSpent += parseFloat(filteredSales[0].price.amount.native);
-                                                                            mintGasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
-                                                                            mintCount += 1
-
-                                                                        } else {
-
-                                                                            buyMarketplaceSpent += parseFloat(filteredSales[0].price.amount.native);
-                                                                            buyMarketplaceGasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
-                                                                            buyMarketplaceCount += 1
-
-                                                                        }
-                                                                    }
-                                                                }
-
-
-
-                                                                // Même chose pour token sold
-                                                                for (const tokenId of tokenSoldTable) {
-                                                                    const { data: userPriceToken } = await
-                                                                        sdk.getSalesV4({
-                                                                            token: selectedCollection + '%3A' + tokenId,
-                                                                            startTimestamp: selectedTimestamp,
-                                                                            limit: '100',
-                                                                            accept: '*/*'
-                                                                        })
-
-
-                                                                    //On incrément le compteur de call API
-                                                                    apiObj.getSalesV4++
-
-                                                                    const filteredSales = userPriceToken.sales.filter(sale => allWalletAddressOfAuthorTable.includes(sale.to));
-
-                                                                    if (filteredSales.length <= 0) {
-
-
-                                                                        buyMarketplaceSpent += 0;
-                                                                        buyMarketplaceGasSpent += 0;
-                                                                        incomingTransferCount += 1
-                                                                        outgoingTransferCount += 0
-
-                                                                    } else if (filteredSales[0].orderSide === "bid") {
-
-                                                                        buyMarketplaceSpent += parseFloat(filteredSales[0].price.amount.native);
-                                                                        buyMarketplaceGasSpent += 0;
-                                                                        buyMarketplaceCount += 1
-
-
-                                                                    } else {
-
-                                                                        let tokenHashTxn = filteredSales[0].txHash
-
-                                                                        const hashValueReader = await web3.eth.getTransaction(tokenHashTxn)
-                                                                        const hashGasReader = await web3.eth.getTransactionReceipt(tokenHashTxn)
-                                                                        const { data: hashTransferReader } = await bsp.getAllTransfers({ chain: 'eth-main', hash: tokenHashTxn, page_size: '100' })
-
-
-                                                                        //On incrément le compteur de call API
-                                                                        apiObj.getTransaction++
-                                                                        apiObj.getTransactionReceipt++
-                                                                        apiObj.getAllTransfers++
-
-
-
-                                                                        const hashTransferReaderObject = hashTransferReader.results;
-                                                                        const uniqueIds = {}; // stockage temporaire des ids uniques
-                                                                        let uniqueIdCount = 0; // compteur d'ids uniques
-
-                                                                        for (let i = 0; i < hashTransferReaderObject.length; i++) {
-                                                                            const objectId = hashTransferReaderObject[i].id;
-                                                                            if (!uniqueIds[objectId]) { // si cet id n'a pas été vu auparavant
-                                                                                uniqueIds[objectId] = true; // marquer l'id comme vu
-                                                                                uniqueIdCount++; // incrémenter le compteur d'ids uniques
-                                                                            }
-                                                                        }
-
-                                                                        if (filteredSales[0].orderKind === "mint") {
-
-                                                                            mintSpent += parseFloat(filteredSales[0].price.amount.native);
-                                                                            mintGasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
-                                                                            mintCount += 1
-
-                                                                        } else {
-
-                                                                            buyMarketplaceSpent += parseFloat(filteredSales[0].price.amount.native);
-                                                                            buyMarketplaceGasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
-                                                                            buyMarketplaceCount += 1
-                                                                        }
-
-                                                                    }
-                                                                }
-
-
-
-
-
-                                                                // Calculer la valeur des ventes de token sold
-                                                                for (const tokenId of tokenSoldTable) {
-                                                                    const { data: userPriceToken } = await
-                                                                        sdk.getSalesV4({
-                                                                            token: selectedCollection + '%3A' + tokenId,
-                                                                            startTimestamp: selectedTimestamp,
-                                                                            limit: '100',
-                                                                            accept: '*/*'
-                                                                        })
-
-
-                                                                    //On incrément le compteur de call API
-                                                                    apiObj.getSalesV4++
-
-
-
-                                                                    const filteredSales = userPriceToken.sales.filter(sale => allWalletAddressOfAuthorTable.includes(sale.from));
-
-                                                                    if (filteredSales.length <= 0) {
-
-
-                                                                        soldValue += 0;
-                                                                        soldGasValue += 0;
-                                                                        incomingTransferCount += 0
-                                                                        outgoingTransferCount += 1
-
-                                                                    } else if (filteredSales[0].orderSide === "bid") {
-
-                                                                        soldValue += parseFloat(filteredSales[0].price.amount.native);
-
-
-                                                                        let tokenHashTxn = filteredSales[0].txHash
-
-                                                                        const hashValueReader = await web3.eth.getTransaction(tokenHashTxn)
-                                                                        const hashGasReader = await web3.eth.getTransactionReceipt(tokenHashTxn)
-                                                                        const { data: hashTransferReader } = await bsp.getAllTransfers({ chain: 'eth-main', hash: tokenHashTxn, page_size: '100' })
-
-
-                                                                        //On incrément le compteur de call API
-                                                                        apiObj.getTransaction++
-                                                                        apiObj.getTransactionReceipt++
-                                                                        apiObj.getAllTransfers++
-
-
-                                                                        const hashTransferReaderObject = hashTransferReader.results;
-                                                                        const uniqueIds = {}; // stockage temporaire des ids uniques
-                                                                        let uniqueIdCount = 0; // compteur d'ids uniques
-
-                                                                        for (let i = 0; i < hashTransferReaderObject.length; i++) {
-                                                                            const objectId = hashTransferReaderObject[i].id;
-                                                                            if (!uniqueIds[objectId]) { // si cet id n'a pas été vu auparavant
-                                                                                uniqueIds[objectId] = true; // marquer l'id comme vu
-                                                                                uniqueIdCount++; // incrémenter le compteur d'ids uniques
-                                                                            }
-                                                                        }
-
-                                                                        soldGasValue += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
-
-
-
-                                                                    } else {
-
-                                                                        soldValue += parseFloat(filteredSales[0].price.amount.native);
-                                                                        soldGasValue += 0;
-
-
-                                                                    }
-                                                                }
-
-
-
-                                                                //Résultat calcul API
-                                                                totalTokenTradedCount = tokenHoldTable.length + tokenSoldTable.length
-                                                                holdCount = tokenHoldTable.length
-                                                                totalBuyCount = buyMarketplaceCount + mintCount
-                                                                soldCount = tokenSoldTable.length
-                                                                transferCount = incomingTransferCount - outgoingTransferCount
-
-                                                                totalMintSpent = mintGasSpent + mintSpent
-                                                                buyMarketplaceTotalSpent = buyMarketplaceGasSpent + buyMarketplaceSpent
-                                                                totalSoldValue = soldValue - soldGasValue
-                                                                totalSpent = buyMarketplaceTotalSpent + totalMintSpent
-
-                                                                if (totalSpent > 0) {
-                                                                    if (buyMarketplaceTotalSpent > 0) {
-                                                                        averageBuyValue = buyMarketplaceTotalSpent / buyMarketplaceCount
-
-                                                                    }
-                                                                    averageSpentValue = totalSpent / totalTokenTradedCount
-
-                                                                    if (mintCount > 0) {
-                                                                        averageMintValue = totalMintSpent / mintCount
-                                                                    }
-                                                                }
-
-                                                                if (totalSoldValue > 0) {
-                                                                    averageSoldValue = totalSoldValue / soldCount
-                                                                }
-
-                                                                if (holdCount > 0) {
-                                                                    totalHoldValue = holdCount * collectionFp
-                                                                    averageHoldValue = totalHoldValue / holdCount
-
-                                                                }
-
-
-                                                                potentialProfit = (soldValue + totalHoldValue) - totalSpent // Ajouter royalties ?
-                                                                realisedProfit = soldValue - totalSpent
-
-                                                                //ROI Variable
-                                                                if (!(data.collections[0].floorAsk.price) && secondcollectionFp.openSea.floorPrice === 0) {
-                                                                    roi = "N/A"
-                                                                } else {
-                                                                    roi = ((((totalHoldValue + soldValue) - totalSpent) / totalSpent) * 100).toFixed(2)
-                                                                }
-
-
-                                                                if (roi !== 0 && totalSpent !== 0 && collectionFp !== 'N/A') {
-
-                                                                    if (roi > 0) {
-                                                                        roiPrefix = "+";
-                                                                        roiSuffix = " :chart_with_upwards_trend:";
-                                                                    } else if (roi < 0) {
-                                                                        roiSuffix = " :chart_with_downwards_trend:";
-                                                                    }
-                                                                    roiFormatted = "`" + roiPrefix + parseFloat(roi).toFixed(2) + "%" + "`" + roiSuffix;
-
-                                                                } else if (roi === 0 || roi === "NaN") {
-
-                                                                    roiFormatted = "`0.00%`"
-
-                                                                } else if (collectionFp === "N/A") {
-
-                                                                    roiFormatted = "'N/A'"
-
-                                                                } else if (totalSpent === 0 && (soldCount + holdCount > 0)) {
-
-                                                                    roiFormatted = "`INFINITY`<a:RCRich:1044762000837840926>"
-
-                                                                }
-
-                                                                // Transfer mise en forme
-                                                                if (transferCount > 0) {
-                                                                    transferPrefix = "+";
-                                                                } else if (transferCount < 0) {
-                                                                    transferPrefix = "-";
-                                                                } else {
-                                                                    transferPrefix = ""
-                                                                }
-                                                                let transferCountFormated = transferPrefix + parseFloat(transferCount)
-
-
-
-
-
-                                                                let selectedTimeFormatted = selectedTime
-                                                                if (!selectedTime) { selectedTimeFormatted = "All Time" }
-
-
-
-                                                                //Embed getRCprofitPrecisedAll
-                                                                const getprofitAllWalletOneCollection = new EmbedBuilder().setColor("#060A8F")
-                                                                    .setTitle(`${collectionName}`)
-                                                                    .setDescription(">>> `" + selectedTimeFormatted + "` profits made by all the wallets `(" + walletConcerned + ")` of " + authorName + " on " + collectionName)
-                                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                                    //.setThumbnail(collectionLogo)
-                                                                    .setImage(collectionBanner)
-                                                                    .addFields(
-                                                                        { name: "Mint Spent", value: "`" + parseFloat(mintSpent).toFixed(3) + "Ξ (" + parseFloat(mintSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "Mint Gas Spent", value: "`" + parseFloat(mintGasSpent).toFixed(3) + "Ξ (" + parseFloat(mintGasSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "Total Mint Spent", value: "`" + parseFloat(totalMintSpent).toFixed(3) + "Ξ (" + parseFloat(totalMintSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "Buy Spent", value: "`" + parseFloat(buyMarketplaceSpent).toFixed(3) + "Ξ (" + parseFloat(buyMarketplaceSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "Buy Gas Spent", value: "`" + parseFloat(buyMarketplaceGasSpent).toFixed(3) + "Ξ (" + parseFloat(buyMarketplaceGasSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "Total Buy Spent", value: "`" + parseFloat(buyMarketplaceTotalSpent).toFixed(3) + "Ξ (" + parseFloat(buyMarketplaceTotalSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "Sold Value", value: "`" + parseFloat(soldValue).toFixed(3) + "Ξ (" + parseFloat(soldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "Sold Gas Value", value: "`" + parseFloat(soldGasValue).toFixed(3) + "Ξ (" + parseFloat(soldGasValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "Total Sold Value", value: "`" + parseFloat(totalSoldValue).toFixed(3) + "Ξ (" + parseFloat(totalSoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "NFT Mint Count", value: "`" + mintCount + "`", inline: true },
-                                                                        { name: "NFT Buy Count", value: "`" + buyMarketplaceCount + "`", inline: true },
-                                                                        { name: "NFT Total Count", value: "`" + totalBuyCount + "`", inline: true },
-                                                                        { name: "NFT Hold Count", value: "`" + holdCount + "`", inline: true },
-                                                                        { name: "NFT Sold Count", value: "`" + soldCount + "`", inline: true },
-                                                                        { name: "NFT Transfer Count", value: "`" + transferCountFormated + "`", inline: true },
-                                                                        { name: "AVG Mint Value ", value: "`" + parseFloat(averageMintValue).toFixed(3) + "Ξ (" + parseFloat(averageMintValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "AVG Buy Value ", value: "`" + parseFloat(averageBuyValue).toFixed(3) + "Ξ (" + parseFloat(averageBuyValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "AVG Spent Value ", value: "`" + parseFloat(averageSpentValue).toFixed(3) + "Ξ (" + parseFloat(averageSpentValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "AVG Sold Value", value: "`" + parseFloat(averageSoldValue).toFixed(3) + "Ξ (" + parseFloat(averageSoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "AVG Hold Value", value: "`" + parseFloat(averageHoldValue).toFixed(3) + "Ξ (" + parseFloat(averageHoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "Total Hold Value", value: "`" + parseFloat(totalHoldValue).toFixed(3) + "Ξ (" + parseFloat(totalHoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + parseFloat(realisedProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + parseFloat(potentialProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                        { name: "Potential ROI", value: roiFormatted, inline: true },
-                                                                        { name: " ", value: "*Please note that Aura isn't analyzing Blur V3 contract sales for the moment. We're working on it to make it available ASAP.*", inline: false },
-
-
-                                                                    )
-                                                                    .setTimestamp()
-                                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-                                                                await interaction.editReply({ embeds: [getprofitAllWalletOneCollection], components: [buttonsRow] });
-
-
-
-
-                                                                //////CALL BASE SQL
-
-
-                                                                await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
-
-                                                                await interactionData.create({
-
-                                                                    authorId: authorId,
-                                                                    authorName: authorName,
-                                                                    serverId: serverId,
-                                                                    walletAddress: "N/A",
-                                                                    commandName: "profit",
-                                                                    interactionId: interaction.id,
-                                                                    walletName: "N/A",
-                                                                    selecedTimestamp: "N/A",
-                                                                    embed1: "N/A",
-                                                                    embed2: "N/A",
-                                                                    embed3: "N/A",
-                                                                    pageIndex: "N/A",
-                                                                    actualPage: "N/A",
-                                                                    walletCategory: "eth",
-                                                                    selectedCollection: selectedCollection,
-                                                                    collectionSlug: "N/A",
-                                                                    collectionBanner: "N/A",
-                                                                    avgDeriskPrice: "N/A",
-                                                                    floorPrice: collectionFp.toString(),
-                                                                    lowerMarketlace: "N/A",
-                                                                    collectionName: collectionName,
-                                                                    collectionTwitter: "N/A",
-                                                                    collectionWebsite: "N/A",
-                                                                    buyCount: totalBuyCount.toString(),
-                                                                    mintCount: mintCount.toString(),
-                                                                    soldCount: soldCount.toString(),
-                                                                    remaining: holdCount.toString(),
-                                                                    avgBuy: parseFloat(averageSpentValue).toFixed(3),
-                                                                    avgSold: parseFloat(averageSoldValue).toFixed(3),
-                                                                    realisedProfit: parseFloat(realisedProfit).toFixed(3),
-                                                                    potentialProfit: parseFloat(potentialProfit).toFixed(3),
-                                                                    roi: roi.toString(),
-                                                                    visualTitle: "N/A",
-                                                                    userAvatar: userAvatar,
-                                                                    nbMembersInvolved: "N/A",
-                                                                    totalTradeCount: "N/A",
-
-                                                                })
-
-                                                                //////CALL BASE SQL
-
-
-
-                                                                //On enregistre le call API dans la database
-                                                                const timeStamp = Date.now();
-                                                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "ethUsdPrice", apiProvider: "etherscan", timestamp: timeStamp.toString() })
-                                                                for (let i = 0; i < apiObj.getCollectionsV5; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getCollectionsV5", apiProvider: "reservoir", timestamp: timeStamp.toString() }) }
-                                                                for (let i = 0; i < apiObj.getFloorPrice; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getFloorPrice", apiProvider: "alchemy", timestamp: timeStamp.toString() }) }
-                                                                for (let i = 0; i < apiObj.getUsersUserTokensV6; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getUsersUserTokensV6", apiProvider: "reservoir", timestamp: timeStamp.toString() }) }
-                                                                for (let i = 0; i < apiObj.getNFTSales; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getNFTSales", apiProvider: "alchemy2", timestamp: timeStamp.toString() }) }
-                                                                for (let i = 0; i < apiObj.getSalesV4; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getSalesV4", apiProvider: "reservoir", timestamp: timeStamp.toString() }) }
-                                                                for (let i = 0; i < apiObj.getTransaction; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getTransaction", apiProvider: "web3.eth", timestamp: timeStamp.toString() }) }
-                                                                for (let i = 0; i < apiObj.getTransactionReceipt; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getTransactionReceipt", apiProvider: "web3.eth", timestamp: timeStamp.toString() }) }
-                                                                for (let i = 0; i < apiObj.getAllTransfers; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getAllTransfers", apiProvider: "blockspan", timestamp: timeStamp.toString() }) }
-
-
-
-
-
-                                                            })
-
-                                                    } else {
-
-                                                        const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
-                                                            .setTitle(`No wallet`)
-                                                            .setDescription("Aura can't analyze your wallet's data on this collection because you don't have any Ethereum wallet registered in your portfolio. Please use `/wallet set` or `/wallet raw` to register a wallet in your portfolio then try again.")
-                                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                            .setTimestamp()
-                                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                                        await interaction.editReply({ embeds: [setwalletErrorEmbed] });
-
-                                                    }
-
-                                                } else if (isValidInput(selectedCollection)) {
-
-
-
-
-
-
-                                                    const btcWalletCount = allWalletsOfAuthorBTC.length
-                                                    const btcWalletTable = [...new Set(allWalletsOfAuthorBTC.map(wallet => wallet.dataValues.walletAddress))];
-
-                                                    if (btcWalletTable.length > 0) {
-
-
-                                                        let name = ""
-                                                        let collectionLogo = ""
-                                                        let twitter = ""
-                                                        let discord = ""
-                                                        let website = ""
-
-                                                        let mintSpent = 0
-                                                        let mintGasSpent = 0
-                                                        let totalMintSpent = 0
-                                                        let buyMarketplaceSpent = 0
-                                                        let buyMarketplaceGasSpent = 0
-                                                        let buyMarketplaceTotalSpent = 0
-                                                        let soldValue = 0
-                                                        let soldGasValue = 0
-                                                        let totalSoldValue = 0
-                                                        let mintCount = 0
-                                                        let buyMarketplaceCount = 0
-                                                        let totalBuyCount = 0
-                                                        let holdCount = 0
-                                                        let soldCount = 0
-                                                        let transferCount = 0
-                                                        let transferCountFormated = 0
-                                                        let averageMintValue = 0
-                                                        let averageBuyValue = 0
-                                                        let averageSpentValue = 0
-                                                        let averageSoldValue = 0
-                                                        let averageHeldValue = 0
-                                                        let totalHoldValue = 0
-                                                        let realisedProfit = 0
-                                                        let potentialProfit = 0
-                                                        let roiFormatted = 0
-
-
-                                                        const btcCallPrice = await axios.get("https://blockchain.info/q/24hrprice")
-                                                        const BTCUsdPrice = btcCallPrice.data
-
-
-
-
-                                                        const url = `https://api-mainnet.magiceden.dev/v2/ord/btc/collections/` + selectedCollection;
-                                                        const response = await axios.get(url, { headers });
-                                                        const data = await response.data;
-
-                                                        collectionLogo = data.imageURI
-                                                        name = data.name
-                                                        twitter = data.twitterLink
-                                                        discord = data.discordLink
-                                                        website = data.websiteLink
-
-
-                                                        const url2 = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=` + selectedCollection;
-                                                        const response2 = await axios.get(url2, { headers });
-                                                        const data2 = await response2.data;
-
-
-                                                        const floorPrice = (data2.floorPrice) / (10 ** 8)
-
-                                                        let tokenHeldId = []
-                                                        console.log(btcWalletTable)
-                                                        for (const walletAddress of btcWalletTable) {
-
-                                                            const url3 = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?collectionSymbol=` + selectedCollection + `&ownerAddress=` + walletAddress + `&showAll=true&sortBy=priceAsc`;
-                                                            const response3 = await axios.get(url3, { headers });
-                                                            const data3 = await response3.data;
-
-                                                            for (const token of data3.tokens) {
-                                                                tokenHeldId.push(token.id)
-                                                            }
-                                                        }
-                                                        console.log(tokenHeldId)
-
-                                                        totalHoldValue = floorPrice * tokenHeldId.length
-                                                        averageHeldValue = totalHoldValue / holdCount
-
-
-
-                                                        //On calcul le prix et méthode d'achat des token held
-                                                        for (const token of tokenHeldId) {
-
-                                                            //Buy classic
-                                                            const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token
-                                                            const tokenBuyCall = await axios.get(tokenBuyLink, { headers });
-                                                            const tokenBuy = await tokenBuyCall.data.activities;
-
-                                                            const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== walletAddress.toLowerCase() && activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
-
-
-                                                            if (tokenBuyByWallet.length > 0) {
-
-                                                                const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
-
-                                                                buyMarketplaceSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
-                                                                buyMarketplaceGasSpent += mempoolCall.data.fee / (10 ** 8)
-                                                                buyMarketplaceCount += 1
-
-                                                            } else {
-
-
-                                                                //Create
-                                                                const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenInscription
-                                                                const tokenCreateCall = await axios.get(tokenCreateLink, { headers });
-                                                                const tokenCreate = await tokenCreateCall.data.activities;
-
-                                                                const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
-
-                                                                if (tokenCreateByWallet.length > 0) {
-
-                                                                    const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
-
-                                                                    mintSpent += ((tokenBuyByWallet[0].txValue) / (10 ** 8))
-                                                                    mintGasSpent += mempoolCall.data.fee / (10 ** 8)
-                                                                    mintCount += 1
-
-                                                                } else {
-
-                                                                    //Mint
-                                                                    const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenInscription
-                                                                    const tokenMintCall = await axios.get(tokenMintLink, { headers });
-                                                                    const tokenMint = await tokenMintCall.data.activities;
-
-                                                                    const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
-
-                                                                    if (tokenMintByWallet.length > 0) {
-
-                                                                        const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
-
-                                                                        mintSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
-                                                                        mintGasSpent += mempoolCall.data.fee / (10 ** 8)
-                                                                        mintCount += 1
-
-                                                                    } else {
-
-                                                                        //Transfert & Airdrop
-                                                                        buyMarketplaceSpent += 0
-                                                                        buyMarketplaceGasSpent += 0
-                                                                        transferCount += 1
-
-                                                                    }
-                                                                }
-
-                                                            }
-
-
-
-
-
-                                                        }
-
-
-                                                        for (const walletAddress of btcWalletTable) {
-
-
-                                                            //Call pour récupérer les token sold
-                                                            const recentSalesLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&ownerAddress=` + walletAddress + "&collectionSymbol=" + selectedCollection
-                                                            const recentSalesCall = await axios.get(recentSalesLink, { headers });
-                                                            const recentSales = await recentSalesCall.data.activities;
-
-                                                            const filteredTable = recentSales.filter(activity => activity.oldOwner.toLowerCase() == walletAddress.toLowerCase() && activity.newOwner.toLowerCase() !== walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
-
-
-
-
-                                                            //On calcul le prix et méthode d'achat des token sold
-                                                            for (const token of filteredTable) {
-
-
-                                                                //Calculer le prix de vente + les gas.
-                                                                const mempoolCall = await axios.get("https://mempool.space/api/tx/" + token.txId)
-
-                                                                soldGasValue += mempoolCall.data.fee / (10 ** 8)
-                                                                soldValue += token.listedPrice / (10 ** 8)
-                                                                soldCount += 1
-
-
-                                                                ////// SWITCH //////
-
-
-                                                                //Calculer le prix d'achat.
-
-                                                                //Buy classic
-                                                                const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token.tokenId
-                                                                const tokenBuyCall = await axios.get(tokenBuyLink, { headers });
-                                                                const tokenBuy = await tokenBuyCall.data.activities;
-
-                                                                const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== walletAddress.toLowerCase() && activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
-
-
-                                                                if (tokenBuyByWallet.length > 0) {
-
-                                                                    const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
-
-                                                                    buyMarketplaceSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
-                                                                    buyMarketplaceGasSpent += mempoolCall.data.fee / (10 ** 8)
-                                                                    buyMarketplaceCount += 1
-
-                                                                } else {
-
-
-                                                                    //Create
-                                                                    const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenId
-                                                                    const tokenCreateCall = await axios.get(tokenCreateLink, { headers });
-                                                                    const tokenCreate = await tokenCreateCall.data.activities;
-
-                                                                    const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
-
-                                                                    if (tokenCreateByWallet.length > 0) {
-
-                                                                        const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
-
-                                                                        mintSpent += ((tokenBuyByWallet[0].txValue) / (10 ** 8))
-                                                                        mintGasSpent += mempoolCall.data.fee / (10 ** 8)
-                                                                        mintCount += 1
-
-                                                                    } else {
-
-                                                                        //Mint
-                                                                        const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenId
-                                                                        const tokenMintCall = await axios.get(tokenMintLink, { headers });
-                                                                        const tokenMint = await tokenMintCall.data.activities;
-
-                                                                        const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
-
-                                                                        if (tokenMintByWallet.length > 0) {
-
-                                                                            const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
-
-                                                                            mintSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
-                                                                            mintGasSpent += mempoolCall.data.fee / (10 ** 8)
-                                                                            mintCount += 1
-
-                                                                        } else {
-
-                                                                            //Transfert & Airdrop
-                                                                            buyMarketplaceSpent += 0
-                                                                            buyMarketplaceGasSpent += 0
-                                                                            transferCount += 1
-
-                                                                        }
-                                                                    }
-
-                                                                }
-
-
-                                                            }
-                                                        }
-
-
-
-                                                        if (transferCount > 0) { transferCountFormated = "+" + transferCount }
-
-
-                                                        totalMintSpent = mintSpent + mintGasSpent
-                                                        buyMarketplaceTotalSpent = buyMarketplaceSpent - buyMarketplaceGasSpent
-                                                        totalSoldValue = soldValue - soldGasValue
-
-                                                        totalBuyCount = mintCount + buyMarketplaceCount
-                                                        holdCount = tokenHeldId.length
-                                                        totalHoldValue = floorPrice * holdCount
-                                                        if (holdCount > 0) { averageHeldValue = floorPrice } else { averageHeldValue = 0 }
-
-                                                        if (totalMintSpent > 0) { averageMintValue = totalMintSpent / mintCount }
-                                                        if (buyMarketplaceTotalSpent > 0) { averageBuyValue = buyMarketplaceTotalSpent / buyMarketplaceCount }
-                                                        if (totalBuyCount > 0) { averageSpentValue = (totalMintSpent + buyMarketplaceTotalSpent) / totalBuyCount }
-                                                        if (soldCount > 0) { averageSoldValue = soldValue / soldCount }
-
-                                                        realisedProfit = totalSoldValue - (totalMintSpent + buyMarketplaceTotalSpent)
-                                                        potentialProfit = (totalSoldValue + totalHoldValue) - (totalMintSpent + buyMarketplaceTotalSpent)
-                                                        roi = ((((totalHoldValue + totalSoldValue) - (totalMintSpent + buyMarketplaceTotalSpent)) / (totalMintSpent + buyMarketplaceTotalSpent)) * 100).toFixed(2)
-
-
-                                                        // ROI format Variable
-                                                        let roiPrefix = ""
-                                                        let roiSuffix = ""
-
-                                                        if (roi !== 0 && (totalMintSpent + buyMarketplaceTotalSpent) !== 0 && floorPrice) {
-
-                                                            if (roi > 0) {
-                                                                roiPrefix = "+";
-                                                                roiSuffix = " :chart_with_upwards_trend:";
-                                                            } else if (roi < 0) {
-                                                                roiSuffix = " :chart_with_downwards_trend:";
-                                                            }
-                                                            roiFormatted = "`" + roiPrefix + parseFloat(roi).toFixed(2) + "%" + "`" + roiSuffix;
-
-
-                                                        } else if (roi == 0) {
-
-                                                            roiFormatted = "`0.00%`"
-
-                                                        } else if (!floorPrice) {
-
-                                                            roiFormatted = "'N/A'"
-
-                                                        } else if ((totalMintSpent + buyMarketplaceTotalSpent) == 0) {
-
-                                                            roiFormatted = "`INFINITY`<a:RCRich:1044762000837840926>"
-
-                                                        }
-
-
-                                                        let linksFormatted = ""
-                                                        if (estLienHTTPS(discord) && estLienHTTPS(website)) { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ") ∙ " + "[discord](" + discord + ") ∙ " + '[website](' + website + ")" }
-                                                        else if (estLienHTTPS(discord) && !estLienHTTPS(website)) { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ") ∙ " + "[discord](" + discord + ")" }
-                                                        else if (!estLienHTTPS(discord) && estLienHTTPS(website)) { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ") ∙ " + '[website](' + website + ")" }
-                                                        else { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ")" }
-
-
-
-
-                                                        let selectedTimeFormatted = selectedTime
-                                                        if (!selectedTime) { selectedTimeFormatted = "All Time" }
-
-
-                                                        //Embed getRCprofitPrecisedAll
-                                                        const embed1 = new EmbedBuilder().setColor("#060A8F")
-                                                            .setTitle(`${name}`)
-                                                            .setDescription(">>> `" + selectedTimeFormatted + "` profits made by all the wallets `[" + btcWalletTable.length + "]` of " + authorName + " on " + name)
-                                                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                            .setThumbnail(collectionLogo)
-                                                            .addFields(
-                                                                { name: "Mint Spent", value: "`" + parseFloat(mintSpent).toFixed(3) + "₿ (" + parseFloat(mintSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "Mint Gas Spent", value: "`" + parseFloat(mintGasSpent).toFixed(3) + "₿ (" + parseFloat(mintGasSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "Total Mint Spent", value: "`" + parseFloat(totalMintSpent).toFixed(3) + "₿ (" + parseFloat(totalMintSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "Buy Spent", value: "`" + parseFloat(buyMarketplaceSpent).toFixed(3) + "₿ (" + parseFloat(buyMarketplaceSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "Buy Gas Spent", value: "`" + parseFloat(buyMarketplaceGasSpent).toFixed(3) + "₿ (" + parseFloat(buyMarketplaceGasSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "Total Buy Spent", value: "`" + parseFloat(buyMarketplaceTotalSpent).toFixed(3) + "₿ (" + parseFloat(buyMarketplaceTotalSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "Sold Value", value: "`" + parseFloat(soldValue).toFixed(3) + "₿ (" + parseFloat(soldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "Sold Gas Value", value: "`" + parseFloat(soldGasValue).toFixed(3) + "₿ (" + parseFloat(soldGasValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "Total Sold Value", value: "`" + parseFloat(totalSoldValue).toFixed(3) + "₿ (" + parseFloat(totalSoldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "NFT Mint Count", value: "`" + mintCount + "`", inline: true },
-                                                                { name: "NFT Buy Count", value: "`" + buyMarketplaceCount + "`", inline: true },
-                                                                { name: "NFT Total Count", value: "`" + totalBuyCount + "`", inline: true },
-                                                                { name: "NFT Held Count", value: "`" + holdCount + "`", inline: true },
-                                                                { name: "NFT Sold Count", value: "`" + soldCount + "`", inline: true },
-                                                                { name: "NFT Transfer Count", value: "`" + transferCountFormated + "`", inline: true },
-                                                                { name: "AVG Mint Value ", value: "`" + parseFloat(averageMintValue).toFixed(3) + "₿ (" + parseFloat(averageMintValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "AVG Buy Value ", value: "`" + parseFloat(averageBuyValue).toFixed(3) + "₿ (" + parseFloat(averageBuyValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "AVG Spent Value ", value: "`" + parseFloat(averageSpentValue).toFixed(3) + "₿ (" + parseFloat(averageSpentValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "AVG Sold Value", value: "`" + parseFloat(averageSoldValue).toFixed(3) + "₿ (" + parseFloat(averageSoldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "AVG Held Value", value: "`" + parseFloat(averageHeldValue).toFixed(3) + "₿ (" + parseFloat(averageHeldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "Total Held Value", value: "`" + parseFloat(totalHoldValue).toFixed(3) + "₿ (" + parseFloat(totalHoldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "₿ (" + parseFloat(realisedProfit * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "₿ (" + parseFloat(potentialProfit * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                                { name: "Potential ROI", value: roiFormatted, inline: true },
-                                                                { name: " ", value: "*Please note that Aura isn't analyzing Blur V3 contract sales for the moment. We're working on it to make it available ASAP.*", inline: false },
-                                                                //{ name: "Links", value: linksFormatted, inline: false },
-
-                                                            )
-                                                            .setTimestamp()
-                                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                                        await interaction.editReply({ embeds: [embed1], components: [buttonsRow] });
-
-
-
-
-
-                                                        await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
-
-                                                        await interactionData.create({
-
-                                                            authorId: authorId,
-                                                            authorName: authorName,
-                                                            serverId: serverId,
-                                                            walletAddress: "N/A",
-                                                            commandName: "profit",
-                                                            interactionId: interaction.id,
-                                                            walletName: "N/A",
-                                                            selecedTimestamp: "N/A",
-                                                            embed1: "N/A",
-                                                            embed2: "N/A",
-                                                            embed3: "N/A",
-                                                            pageIndex: "N/A",
-                                                            actualPage: "N/A",
-                                                            walletCategory: "btc",
-                                                            selectedCollection: selectedCollection,
-                                                            collectionSlug: "N/A",
-                                                            collectionBanner: "N/A",
-                                                            avgDeriskPrice: "N/A",
-                                                            floorPrice: floorPrice.toString(),
-                                                            lowerMarketlace: "N/A",
-                                                            collectionName: name,
-                                                            collectionTwitter: "N/A",
-                                                            collectionWebsite: "N/A",
-                                                            buyCount: totalBuyCount.toString(),
-                                                            mintCount: mintCount.toString(),
-                                                            soldCount: soldCount.toString(),
-                                                            remaining: holdCount.toString(),
-                                                            avgBuy: parseFloat(averageSpentValue).toFixed(3),
-                                                            avgSold: parseFloat(averageSoldValue).toFixed(3),
-                                                            realisedProfit: parseFloat(realisedProfit).toFixed(3),
-                                                            potentialProfit: parseFloat(potentialProfit).toFixed(3),
-                                                            roi: roi.toString(),
-                                                            visualTitle: "N/A",
-                                                            userAvatar: userAvatar,
-                                                            nbMembersInvolved: "N/A",
-                                                            totalTradeCount: "N/A",
-
-                                                        })
-
-                                                    } else {
-
-                                                        const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
-                                                            .setTitle(`No wallet`)
-                                                            .setDescription("Aura can't analyze your wallet's data on this collection because you don't have any Ethereum wallet registered in your portfolio. Please use `/wallet set` or `/wallet raw` to register a wallet in your portfolio then try again.")
-                                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                            .setTimestamp()
-                                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                                        await interaction.editReply({ embeds: [setwalletErrorEmbed] });
-
-
-
-                                                    }
-
-
-
-
-                                                } else {
-
-
-
-                                                    const notMember = new EmbedBuilder().setColor("#060A8F")
-                                                        .setTitle("Profit")
-                                                        .setDescription("The collection you selected isn't valid. Please try again selecting a valid Bitcoin or Ethereum collection. You can also find the desired collection by using the contract address (Ethereum) or Magic Eden ID (Bitcoin).")
-                                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                        .setTimestamp()
-                                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-                                                    await interaction.editReply({ embeds: [notMember] });
-
-
-
-
-                                                }
-                                            }
-
-                                        } else {
-
-                                            const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle(`No wallet`)
-                                                .setDescription("Aura can't analyze your wallet's data because you don't have any wallet registered in your portfolio. Please use `/wallet set` or `/wallet raw` to register a wallet in your portfolio then try again.")
-                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                .setTimestamp()
-                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                            await interaction.editReply({ embeds: [setwalletErrorEmbed] });
-                                        }
-
-                                        //Si wallet est un wallet précis
-                                    } else if (walletAddress.toLowerCase() !== "all") {
-
-                                        //On définit la plage de wallet
-                                        let precisedWalletofAuthorTable = []
-                                        let precisedWalletNameofAuthor = ""
-
-                                        const WalletofAuthor = await wallets.findOne({ where: { authorId: authorId, walletAddress: walletAddress } });
-                                        if (WalletofAuthor !== null) {
-                                            precisedWalletofAuthorTable.push(WalletofAuthor.dataValues.walletAddress)
-                                            precisedWalletNameofAuthor = WalletofAuthor.dataValues.walletName
-                                        } else { precisedWalletNameofAuthor = walletAddress.substring(0, 5) + "..." + walletAddress.substring(walletAddress.length - 4, walletAddress.length) }
 
 
                                         //Ajustement du Timestamp
@@ -1438,12 +385,27 @@ module.exports = {
 
 
 
-                                        // SI collection = ALL, wallet précis et pas wallet category
+                                        // SI collection = All, wallet = All et pas wallet category
                                         if (selectedCollection.toLowerCase() === "all") {
 
 
 
-                                            ////////////////// A BUILD (ALL COLLECTION) \\\\\\\\\\\\\\\\\\\\
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                            /* ////////////////// A BUILD (ALL COLLECTION) \\\\\\\\\\\\\\\\\\\\
 
 
 
@@ -1465,23 +427,21 @@ module.exports = {
 
 
                                             ////////////////// A BUILD (ALL COLLECTION) \\\\\\\\\\\\\\\\\\\\
+*/
 
 
 
 
+                                            // SI collection précise, wallet = All et pas wallet category
+                                        } else if (selectedCollection !== "all") {
 
-                                            // SI collection précise, wallet précis et pas wallet category
-                                        } else if (selectedCollection.toLowerCase() !== "all") {
+
+
 
 
                                             if (isValidEthereumAddress(selectedCollection)) {
 
-
-
-
-                                                if (isValidEthereumAddress(walletAddress)) {
-
-
+                                                if (allWalletAddressOfAuthorTable.length > 0) {
 
 
 
@@ -1498,9 +458,9 @@ module.exports = {
 
 
 
-
                                                     sdk.getCollectionsV5({ id: selectedCollection, accept: '*/*' })
                                                         .then(async ({ data }) => {
+
 
                                                             //On incrément le compteur de call API
                                                             apiObj.getCollectionsV5++
@@ -1510,6 +470,7 @@ module.exports = {
 
                                                             //On incrément le compteur de call API
                                                             apiObj.getFloorPrice++
+
 
                                                             let collectionName = data.collections[0].name
                                                             let collectionLogo = data.collections[0].image
@@ -1536,7 +497,7 @@ module.exports = {
 
 
                                                             // Récuperer les ID des tokens hold 
-                                                            for await (const walletAddress of precisedWalletofAuthorTable) {
+                                                            for await (const walletAddress of allWalletAddressOfAuthorTable) {
                                                                 const { data: userTokens } = await sdk.getUsersUserTokensV6({ collection: selectedCollection, limit: '200', user: walletAddress, accept: '*/*' });
 
 
@@ -1553,7 +514,7 @@ module.exports = {
 
 
                                                             // Récuperer les ID des tokens sell 
-                                                            for await (const walletAddress of precisedWalletofAuthorTable) {
+                                                            for await (const walletAddress of allWalletAddressOfAuthorTable) {
                                                                 const { data: userSoldTokens } = await alchemy2.getNFTSales({
                                                                     fromBlock: '0',
                                                                     toBlock: 'latest',
@@ -1568,13 +529,10 @@ module.exports = {
 
                                                                 if (userSoldTokens.nftSales.length > 0) { walletsInvolvedTable.push(walletAddress) }
 
-
                                                                 //On incrément le compteur de call API
                                                                 apiObj.getNFTSales++
                                                             }
 
-                                                            console.log(tokenHoldTable)
-                                                            console.log(tokenSoldTable)
 
 
 
@@ -1588,11 +546,12 @@ module.exports = {
                                                                         accept: '*/*'
                                                                     })
 
+
                                                                 //On incrément le compteur de call API
                                                                 apiObj.getSalesV4++
 
 
-                                                                const filteredSales = userPriceToken.sales.filter(sale => precisedWalletofAuthorTable.includes(sale.to));
+                                                                const filteredSales = userPriceToken.sales.filter(sale => allWalletAddressOfAuthorTable.includes(sale.to));
 
                                                                 if (filteredSales.length <= 0) {
 
@@ -1620,7 +579,6 @@ module.exports = {
                                                                     const hashValueReader = await web3.eth.getTransaction(tokenHashTxn)
                                                                     const hashGasReader = await web3.eth.getTransactionReceipt(tokenHashTxn)
                                                                     const { data: hashTransferReader } = await bsp.getAllTransfers({ chain: 'eth-main', hash: tokenHashTxn, page_size: '100' })
-
 
                                                                     //On incrément le compteur de call API
                                                                     apiObj.getTransaction++
@@ -1668,11 +626,11 @@ module.exports = {
                                                                         accept: '*/*'
                                                                     })
 
+
                                                                 //On incrément le compteur de call API
                                                                 apiObj.getSalesV4++
 
-
-                                                                const filteredSales = userPriceToken.sales.filter(sale => precisedWalletofAuthorTable.includes(sale.to));
+                                                                const filteredSales = userPriceToken.sales.filter(sale => allWalletAddressOfAuthorTable.includes(sale.to));
 
                                                                 if (filteredSales.length <= 0) {
 
@@ -1697,10 +655,12 @@ module.exports = {
                                                                     const hashGasReader = await web3.eth.getTransactionReceipt(tokenHashTxn)
                                                                     const { data: hashTransferReader } = await bsp.getAllTransfers({ chain: 'eth-main', hash: tokenHashTxn, page_size: '100' })
 
+
                                                                     //On incrément le compteur de call API
                                                                     apiObj.getTransaction++
                                                                     apiObj.getTransactionReceipt++
                                                                     apiObj.getAllTransfers++
+
 
 
                                                                     const hashTransferReaderObject = hashTransferReader.results;
@@ -1750,7 +710,8 @@ module.exports = {
                                                                 apiObj.getSalesV4++
 
 
-                                                                const filteredSales = userPriceToken.sales.filter(sale => precisedWalletofAuthorTable.includes(sale.from));
+
+                                                                const filteredSales = userPriceToken.sales.filter(sale => allWalletAddressOfAuthorTable.includes(sale.from));
 
                                                                 if (filteredSales.length <= 0) {
 
@@ -1776,7 +737,6 @@ module.exports = {
                                                                     apiObj.getTransaction++
                                                                     apiObj.getTransactionReceipt++
                                                                     apiObj.getAllTransfers++
-
 
 
                                                                     const hashTransferReaderObject = hashTransferReader.results;
@@ -1844,7 +804,6 @@ module.exports = {
                                                             potentialProfit = (soldValue + totalHoldValue) - totalSpent // Ajouter royalties ?
                                                             realisedProfit = soldValue - totalSpent
 
-
                                                             //ROI Variable
                                                             if (!(data.collections[0].floorAsk.price) && secondcollectionFp.openSea.floorPrice === 0) {
                                                                 roi = "N/A"
@@ -1864,6 +823,7 @@ module.exports = {
                                                                 roiFormatted = "`" + roiPrefix + parseFloat(roi).toFixed(2) + "%" + "`" + roiSuffix;
 
                                                             } else if (roi === 0 || roi === "NaN") {
+
                                                                 roiFormatted = "`0.00%`"
 
                                                             } else if (collectionFp === "N/A") {
@@ -1890,16 +850,17 @@ module.exports = {
 
 
 
-
-
                                                             let selectedTimeFormatted = selectedTime
                                                             if (!selectedTime) { selectedTimeFormatted = "All Time" }
 
+
+
                                                             //Embed getRCprofitPrecisedAll
-                                                            const getprofitOneWalletOneCollection = new EmbedBuilder().setColor("#060A8F")
+                                                            const getprofitAllWalletOneCollection = new EmbedBuilder().setColor("#060A8F")
                                                                 .setTitle(`${collectionName}`)
-                                                                .setDescription(">>> `" + selectedTimeFormatted + "` profits made by the `" + precisedWalletNameofAuthor + "` wallet of " + authorName + " on " + collectionName)
+                                                                .setDescription(">>> `" + selectedTimeFormatted + "` profits made by all the wallets `(" + walletConcerned + ")` of " + authorName + " on " + collectionName)
                                                                 .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                                //.setThumbnail(collectionLogo)
                                                                 .setImage(collectionBanner)
                                                                 .addFields(
                                                                     { name: "Mint Spent", value: "`" + parseFloat(mintSpent).toFixed(3) + "Ξ (" + parseFloat(mintSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
@@ -1928,12 +889,12 @@ module.exports = {
                                                                     { name: "Potential ROI", value: roiFormatted, inline: true },
                                                                     { name: " ", value: "*Please note that Aura isn't analyzing Blur V3 contract sales for the moment. We're working on it to make it available ASAP.*", inline: false },
 
+
                                                                 )
                                                                 .setTimestamp()
                                                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                                                            await interaction.editReply({ embeds: [getprofitOneWalletOneCollection], components: [buttonsRow] });
-
+                                                            await interaction.editReply({ embeds: [getprofitAllWalletOneCollection], components: [buttonsRow] });
 
 
 
@@ -1968,8 +929,8 @@ module.exports = {
                                                                 collectionName: collectionName,
                                                                 collectionTwitter: "N/A",
                                                                 collectionWebsite: "N/A",
-                                                                mintCount: mintCount.toString(),
                                                                 buyCount: totalBuyCount.toString(),
+                                                                mintCount: mintCount.toString(),
                                                                 soldCount: soldCount.toString(),
                                                                 remaining: holdCount.toString(),
                                                                 avgBuy: parseFloat(averageSpentValue).toFixed(3),
@@ -2004,30 +965,33 @@ module.exports = {
 
 
 
-
                                                         })
 
                                                 } else {
 
-                                                    const notMember = new EmbedBuilder().setColor("#060A8F")
-                                                        .setTitle("Derisk")
-                                                        .setDescription("Aura can't analyze your wallet metrics because you selected a Ethereum collection and a Bitcoin wallet. Please try again selecting both a Bitcoin or Ethereum collection and wallet.")
+                                                    const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
+                                                        .setTitle(`No wallet`)
+                                                        .setDescription("Aura can't analyze your wallet's data on this collection because you don't have any Ethereum wallet registered in your portfolio. Please use `/wallet set` or `/wallet raw` to register a wallet in your portfolio then try again.")
                                                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                                         .setTimestamp()
-                                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+                                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                                    await interaction.editReply({ embeds: [notMember] });
-
+                                                    await interaction.editReply({ embeds: [setwalletErrorEmbed] });
 
                                                 }
-
 
                                             } else if (isValidInput(selectedCollection)) {
 
 
-                                                if (isBRC20BitcoinWallet(walletAddress)) {
 
+
+
+
+                                                const btcWalletCount = allWalletsOfAuthorBTC.length
+                                                const btcWalletTable = [...new Set(allWalletsOfAuthorBTC.map(wallet => wallet.dataValues.walletAddress))];
+
+                                                if (btcWalletTable.length > 0) {
 
 
                                                     let name = ""
@@ -2087,19 +1051,23 @@ module.exports = {
 
                                                     const floorPrice = (data2.floorPrice) / (10 ** 8)
 
+                                                    let tokenHeldId = []
+                                                    console.log(btcWalletTable)
+                                                    for (const walletAddress of btcWalletTable) {
 
-                                                    const url3 = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?collectionSymbol=` + selectedCollection + `&ownerAddress=` + walletAddress + `&showAll=true&sortBy=priceAsc`;
-                                                    const response3 = await axios.get(url3, { headers });
-                                                    const data3 = await response3.data;
+                                                        const url3 = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?collectionSymbol=` + selectedCollection + `&ownerAddress=` + walletAddress + `&showAll=true&sortBy=priceAsc`;
+                                                        const response3 = await axios.get(url3, { headers });
+                                                        const data3 = await response3.data;
 
+                                                        for (const token of data3.tokens) {
+                                                            tokenHeldId.push(token.id)
+                                                        }
+                                                    }
+                                                    console.log(tokenHeldId)
 
-                                                    totalHoldValue = floorPrice * holdCount
+                                                    totalHoldValue = floorPrice * tokenHeldId.length
                                                     averageHeldValue = totalHoldValue / holdCount
 
-                                                    let tokenHeldId = []
-                                                    for (const token of data3.tokens) {
-                                                        tokenHeldId.push(token.id)
-                                                    }
 
 
                                                     //On calcul le prix et méthode d'achat des token held
@@ -2175,99 +1143,103 @@ module.exports = {
                                                     }
 
 
-
-                                                    //Call pour récupérer les token sold
-                                                    const recentSalesLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&ownerAddress=` + walletAddress + "&collectionSymbol=" + selectedCollection
-                                                    const recentSalesCall = await axios.get(recentSalesLink, { headers });
-                                                    const recentSales = await recentSalesCall.data.activities;
-
-                                                    const filteredTable = recentSales.filter(activity => activity.oldOwner.toLowerCase() == walletAddress.toLowerCase() && activity.newOwner.toLowerCase() !== walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+                                                    for (const walletAddress of btcWalletTable) {
 
 
+                                                        //Call pour récupérer les token sold
+                                                        const recentSalesLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&ownerAddress=` + walletAddress + "&collectionSymbol=" + selectedCollection
+                                                        const recentSalesCall = await axios.get(recentSalesLink, { headers });
+                                                        const recentSales = await recentSalesCall.data.activities;
+
+                                                        const filteredTable = recentSales.filter(activity => activity.oldOwner.toLowerCase() == walletAddress.toLowerCase() && activity.newOwner.toLowerCase() !== walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
 
 
-                                                    //On calcul le prix et méthode d'achat des token sold
-                                                    for (const token of filteredTable) {
 
 
-                                                        //Calculer le prix de vente + les gas.
-                                                        const mempoolCall = await axios.get("https://mempool.space/api/tx/" + token.txId)
-
-                                                        soldGasValue += mempoolCall.data.fee / (10 ** 8)
-                                                        soldValue += token.listedPrice / (10 ** 8)
-                                                        soldCount += 1
+                                                        //On calcul le prix et méthode d'achat des token sold
+                                                        for (const token of filteredTable) {
 
 
-                                                        ////// SWITCH //////
+                                                            //Calculer le prix de vente + les gas.
+                                                            const mempoolCall = await axios.get("https://mempool.space/api/tx/" + token.txId)
+
+                                                            soldGasValue += mempoolCall.data.fee / (10 ** 8)
+                                                            soldValue += token.listedPrice / (10 ** 8)
+                                                            soldCount += 1
 
 
-                                                        //Calculer le prix d'achat.
-
-                                                        //Buy classic
-                                                        const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token.tokenId
-                                                        const tokenBuyCall = await axios.get(tokenBuyLink, { headers });
-                                                        const tokenBuy = await tokenBuyCall.data.activities;
-
-                                                        const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== walletAddress.toLowerCase() && activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+                                                            ////// SWITCH //////
 
 
-                                                        if (tokenBuyByWallet.length > 0) {
+                                                            //Calculer le prix d'achat.
 
-                                                            const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
+                                                            //Buy classic
+                                                            const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token.tokenId
+                                                            const tokenBuyCall = await axios.get(tokenBuyLink, { headers });
+                                                            const tokenBuy = await tokenBuyCall.data.activities;
 
-                                                            buyMarketplaceSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
-                                                            buyMarketplaceGasSpent += mempoolCall.data.fee / (10 ** 8)
-                                                            buyMarketplaceCount += 1
-
-                                                        } else {
+                                                            const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== walletAddress.toLowerCase() && activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
 
 
-                                                            //Create
-                                                            const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenId
-                                                            const tokenCreateCall = await axios.get(tokenCreateLink, { headers });
-                                                            const tokenCreate = await tokenCreateCall.data.activities;
-
-                                                            const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
-
-                                                            if (tokenCreateByWallet.length > 0) {
+                                                            if (tokenBuyByWallet.length > 0) {
 
                                                                 const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
 
-                                                                mintSpent += ((tokenBuyByWallet[0].txValue) / (10 ** 8))
-                                                                mintGasSpent += mempoolCall.data.fee / (10 ** 8)
-                                                                mintCount += 1
+                                                                buyMarketplaceSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
+                                                                buyMarketplaceGasSpent += mempoolCall.data.fee / (10 ** 8)
+                                                                buyMarketplaceCount += 1
 
                                                             } else {
 
-                                                                //Mint
-                                                                const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenId
-                                                                const tokenMintCall = await axios.get(tokenMintLink, { headers });
-                                                                const tokenMint = await tokenMintCall.data.activities;
 
-                                                                const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+                                                                //Create
+                                                                const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenId
+                                                                const tokenCreateCall = await axios.get(tokenCreateLink, { headers });
+                                                                const tokenCreate = await tokenCreateCall.data.activities;
 
-                                                                if (tokenMintByWallet.length > 0) {
+                                                                const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+
+                                                                if (tokenCreateByWallet.length > 0) {
 
                                                                     const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
 
-                                                                    mintSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
+                                                                    mintSpent += ((tokenBuyByWallet[0].txValue) / (10 ** 8))
                                                                     mintGasSpent += mempoolCall.data.fee / (10 ** 8)
                                                                     mintCount += 1
 
                                                                 } else {
 
-                                                                    //Transfert & Airdrop
-                                                                    buyMarketplaceSpent += 0
-                                                                    buyMarketplaceGasSpent += 0
-                                                                    transferCount += 1
+                                                                    //Mint
+                                                                    const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenId
+                                                                    const tokenMintCall = await axios.get(tokenMintLink, { headers });
+                                                                    const tokenMint = await tokenMintCall.data.activities;
 
+                                                                    const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+
+                                                                    if (tokenMintByWallet.length > 0) {
+
+                                                                        const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
+
+                                                                        mintSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
+                                                                        mintGasSpent += mempoolCall.data.fee / (10 ** 8)
+                                                                        mintCount += 1
+
+                                                                    } else {
+
+                                                                        //Transfert & Airdrop
+                                                                        buyMarketplaceSpent += 0
+                                                                        buyMarketplaceGasSpent += 0
+                                                                        transferCount += 1
+
+                                                                    }
                                                                 }
+
                                                             }
 
+
                                                         }
-
-
                                                     }
+
 
 
                                                     if (transferCount > 0) { transferCountFormated = "+" + transferCount }
@@ -2338,7 +1310,7 @@ module.exports = {
                                                     //Embed getRCprofitPrecisedAll
                                                     const embed1 = new EmbedBuilder().setColor("#060A8F")
                                                         .setTitle(`${name}`)
-                                                        .setDescription(">>> `" + selectedTimeFormatted + "` profits made by the `" + precisedWalletNameofAuthor + "` wallet of " + authorName + " on " + name)
+                                                        .setDescription(">>> `" + selectedTimeFormatted + "` profits made by all the wallets `[" + btcWalletTable.length + "]` of " + authorName + " on " + name)
                                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                                         .setThumbnail(collectionLogo)
                                                         .addFields(
@@ -2374,6 +1346,8 @@ module.exports = {
                                                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
                                                     await interaction.editReply({ embeds: [embed1], components: [buttonsRow] });
+
+
 
 
 
@@ -2420,19 +1394,18 @@ module.exports = {
 
                                                     })
 
-
-
                                                 } else {
 
-                                                    const notMember = new EmbedBuilder().setColor("#060A8F")
-                                                        .setTitle("Derisk")
-                                                        .setDescription("Aura can't analyze your wallet metrics because you selected a Ethereum collection and a Bitcoin wallet. Please try again selecting both a Bitcoin or Ethereum collection and wallet.")
+                                                    const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
+                                                        .setTitle(`No wallet`)
+                                                        .setDescription("Aura can't analyze your wallet's data on this collection because you don't have any Ethereum wallet registered in your portfolio. Please use `/wallet set` or `/wallet raw` to register a wallet in your portfolio then try again.")
                                                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                                         .setTimestamp()
-                                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+                                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                                    await interaction.editReply({ embeds: [notMember] });
+                                                    await interaction.editReply({ embeds: [setwalletErrorEmbed] });
+
 
 
                                                 }
@@ -2440,9 +1413,8 @@ module.exports = {
 
 
 
-
-
                                             } else {
+
 
 
                                                 const notMember = new EmbedBuilder().setColor("#060A8F")
@@ -2460,9 +1432,1217 @@ module.exports = {
 
                                             }
                                         }
+
+                                    } else {
+
+                                        const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle(`No wallet`)
+                                            .setDescription("Aura can't analyze your wallet's data because you don't have any wallet registered in your portfolio. Please use `/wallet set` or `/wallet raw` to register a wallet in your portfolio then try again.")
+                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                        await interaction.editReply({ embeds: [setwalletErrorEmbed] });
                                     }
 
-                                
+                                    //Si wallet est un wallet précis
+                                } else if (walletAddress.toLowerCase() !== "all") {
+
+                                    //On définit la plage de wallet
+                                    let precisedWalletofAuthorTable = []
+                                    let precisedWalletNameofAuthor = ""
+
+                                    const WalletofAuthor = await wallets.findOne({ where: { authorId: authorId, walletAddress: walletAddress } });
+                                    if (WalletofAuthor !== null) {
+                                        precisedWalletofAuthorTable.push(WalletofAuthor.dataValues.walletAddress)
+                                        precisedWalletNameofAuthor = WalletofAuthor.dataValues.walletName
+                                    } else { precisedWalletNameofAuthor = walletAddress.substring(0, 5) + "..." + walletAddress.substring(walletAddress.length - 4, walletAddress.length) }
+
+
+                                    //Ajustement du Timestamp
+                                    if (selectedTime === "1 Day") { selectedTimestamp = actualTimestamp - 86400 }
+                                    if (selectedTime === "3 Days") { selectedTimestamp = actualTimestamp - 259200 }
+                                    if (selectedTime === "7 Days") { selectedTimestamp = actualTimestamp - 604800 }
+                                    if (selectedTime === "14 Days") { selectedTimestamp = actualTimestamp - 1209600 }
+                                    if (selectedTime === "30 Days") { selectedTimestamp = actualTimestamp - 2592000 }
+                                    if (selectedTime === "90 Days") { selectedTimestamp = actualTimestamp - 7776000 }
+                                    if (selectedTime === "1 Year") { selectedTimestamp = actualTimestamp - 31536000 }
+                                    if (selectedTime === "All Time" || !selectedTime) { selectedTimestamp = 0 }
+
+
+
+
+                                    // SI collection = ALL, wallet précis et pas wallet category
+                                    if (selectedCollection.toLowerCase() === "all") {
+
+
+                                        if (isValidEthereumAddress(walletAddress)) {
+
+
+
+
+                                            let mintCount = 0
+                                            let buyCount = 0
+                                            let soldCount = 0
+                                            let transferCount = 0
+                                            let buySpent = 0
+                                            let gasSpent = 0
+                                            let heldValue = 0
+                                            let soldValue = 0
+                                            let realisedProfit = 0
+                                            let potentialProfit = 0
+                                            let heldCount = 0
+                                            let transactionCount = 0
+                                            let collectionCount = 0
+
+                                            let roi = 0
+                                            let roiFormatted = 0
+
+                                            let avgBuy = 0
+                                            let avgSold = 0
+                                            let avgHeld = 0
+
+                                            let gasBuySpent = 0
+                                            let gasSoldValue = 0
+                                            let gasTable = 0
+
+                                            let transferCountFormated = 0
+
+
+                                            await nftgo.get_metrics_eth_v2_address_metrics_get({ address: walletAddress })
+                                                .then(async ({ data: walletData }) => {
+
+
+                                                    mintCount = walletData.mint_num
+                                                    buyCount = walletData.buy_num
+                                                    totalBuyCount = mintCount + buyCount
+                                                    soldCount = walletData.sell_num
+                                                    transferCount = walletData.receive_num - walletData.send_num
+                                                    transactionCount = walletData.activity_num
+                                                    heldCount = walletData.nft_num
+                                                    collectionCount = walletData.collection_num
+
+
+
+                                                    buySpent = walletData.total_spent.eth
+                                                    gasSpent = walletData.total_gas.eth
+                                                    totalBuySpent = buySpent + gasSpent
+                                                    soldValue = walletData.total_revenue.eth
+                                                    heldValue = walletData.portfolio_value.eth
+
+
+                                                    if (buySpent > 0) { avgBuy = buySpent / totalBuyCount }
+                                                    if (soldValue > 0) { avgSold = soldValue / soldCount }
+                                                    if (heldValue > 0) { avgHeld = heldValue / heldCount }
+
+                                                    realisedProfit = walletData.realized_profit.eth
+                                                    potentialProfit = walletData.pnl_value.eth
+                                                    roi = ((((heldValue + soldValue) - buySpent) / buySpent) * 100).toFixed(2)
+
+                                                })
+
+
+
+                                            transferCountFormated = transferCount
+                                            if (transferCount > 0) { console.log("ici"); transferCountFormated = "+" + transferCount }
+
+
+                                            if (roi !== 0 && totalBuySpent !== 0) {
+
+                                                if (roi > 0) {
+                                                    roiPrefix = "+";
+                                                    roiSuffix = " :chart_with_upwards_trend:";
+                                                } else if (roi < 0) {
+                                                    roiSuffix = " :chart_with_downwards_trend:";
+                                                }
+                                                roiFormatted = "`" + roiPrefix + parseFloat(roi).toFixed(2) + "%" + "`" + roiSuffix;
+
+
+                                            } else if (roi == 0) {
+
+                                                roiFormatted = "`0.00%`"
+
+                                            } else if (totalBuySpent == 0) {
+
+                                                roiFormatted = "`INFINITY`<a:RCRich:1044762000837840926>"
+
+                                            }
+
+                                            let selectedTimeFormatted = selectedTime
+                                            if (!selectedTime) { selectedTimeFormatted = "All Time" }
+
+                                            //Embed getRCprofitPrecisedAll
+                                            const getprofitOneWalletOneCollection = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle(`All Collections`)
+                                                .setDescription(">>> `" + selectedTimeFormatted + "` profits made by the `" + precisedWalletNameofAuthor + "` wallet of " + authorName + " on `all collections`")
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setImage("https://cdn.discordapp.com/attachments/1108757872315219968/1141028844686540940/Pallette_7.png")
+                                                .addFields(
+                                                    { name: "Buy Spent", value: "`" + parseFloat(buySpent).toFixed(3) + "Ξ (" + parseFloat(buySpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "Gas Spent", value: "`" + parseFloat(gasSpent).toFixed(3) + "Ξ (" + parseFloat(gasSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "Sold Value", value: "`" + parseFloat(soldValue).toFixed(3) + "Ξ (" + parseFloat(soldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "NFT Mint Count", value: "`" + mintCount + "`", inline: true },
+                                                    { name: "NFT Buy Count", value: "`" + buyCount + "`", inline: true },
+                                                    { name: "NFT Total Count", value: "`" + totalBuyCount + "`", inline: true },
+                                                    { name: "NFT Hold Count", value: "`" + heldCount + "`", inline: true },
+                                                    { name: "NFT Sold Count", value: "`" + soldCount + "`", inline: true },
+                                                    { name: "NFT Transfer Count", value: "`" + transferCountFormated + "`", inline: true },
+                                                    { name: "AVG Buy Value ", value: "`" + parseFloat(avgBuy).toFixed(3) + "Ξ (" + parseFloat(averageBuyValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "AVG Sold Value", value: "`" + parseFloat(avgSold).toFixed(3) + "Ξ (" + parseFloat(averageSoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "AVG Held Value", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + parseFloat(averageHoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + parseFloat(realisedProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + parseFloat(potentialProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "Potential ROI", value: roiFormatted, inline: true },
+                                                    { name: " ", value: "*Please note that Aura isn't analyzing Blur V3 contract sales for the moment. We're working on it to make it available ASAP.*", inline: false },
+
+                                                )
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                            await interaction.editReply({ embeds: [getprofitOneWalletOneCollection], components: [buttonsRow] });
+
+
+
+
+
+
+                                        } else {
+
+                                            const notMember = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle("Profit")
+                                                    .setDescription("Aura can't analyze your wallet metrics. The filter `all collection` of this command is only available with Ethereum wallets. Please try again selecting an Ethereum wallet.")
+                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                await interaction.editReply({ embeds: [notMember] });
+
+
+                                        }
+
+
+                                        /* ////////////////// A BUILD (ALL COLLECTION) \\\\\\\\\\\\\\\\\\\\
+
+
+
+                                        ////////////////// A BUILD (ALL COLLECTION) \\\\\\\\\\\\\\\\\\\\
+
+                                        const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle(`${authorName}'s profit`)
+                                            .setDescription("The option you try to use is currently being built and will be available in the near future. You can still use all the commands not including `all collections` in the meantime.")
+                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                            .setTimestamp()
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                        await interaction.editReply({ embeds: [availableInTheNearFuture] });
+
+
+                                        ////////////////// A BUILD (ALL COLLECTION) \\\\\\\\\\\\\\\\\\\\
+
+
+
+                                        ////////////////// A BUILD (ALL COLLECTION) \\\\\\\\\\\\\\\\\\\\
+
+*/
+
+
+
+                                        // SI collection précise, wallet précis et pas wallet category
+                                    } else if (selectedCollection.toLowerCase() !== "all") {
+
+
+                                        if (isValidEthereumAddress(selectedCollection)) {
+
+
+
+
+                                            if (isValidEthereumAddress(walletAddress)) {
+
+
+
+
+
+                                                //On initialise le tableau de call api pour mesurer
+                                                let apiObj = {}
+                                                apiObj.getCollectionsV5 = 0
+                                                apiObj.getFloorPrice = 0
+                                                apiObj.getUsersUserTokensV6 = 0
+                                                apiObj.getNFTSales = 0
+                                                apiObj.getSalesV4 = 0
+                                                apiObj.getTransaction = 0
+                                                apiObj.getTransactionReceipt = 0
+                                                apiObj.getAllTransfers = 0
+
+
+
+
+                                                sdk.getCollectionsV5({ id: selectedCollection, accept: '*/*' })
+                                                    .then(async ({ data }) => {
+
+                                                        //On incrément le compteur de call API
+                                                        apiObj.getCollectionsV5++
+
+                                                        const secondcollectionFp = await alchemy.nft.getFloorPrice(selectedCollection)
+
+
+                                                        //On incrément le compteur de call API
+                                                        apiObj.getFloorPrice++
+
+                                                        let collectionName = data.collections[0].name
+                                                        let collectionLogo = data.collections[0].image
+                                                        let collectionSlug = data.collections[0].slug
+                                                        let collectionFp
+                                                        let collectionBanner = data.collections[0].banner
+
+                                                        if (!(data.collections[0].floorAsk.price) && secondcollectionFp.openSea.floorPrice === 0) {
+
+                                                            collectionFp = "N/A"
+
+                                                        } else if (data.collections[0].floorAsk.price) {
+
+                                                            collectionFp = data.collections[0].floorAsk.price.amount.decimal
+
+                                                        } else if (secondcollectionFp.openSea.floorPrice !== 0) {
+
+                                                            collectionFp = secondcollectionFp.openSea.floorPrice
+                                                        }
+
+                                                        let royalties = data.collections[0].royalties.bps
+                                                        let collectionRoyal = parseFloat(royalties / 100 + 0.5).toFixed(2) + "%"
+
+
+
+                                                        // Récuperer les ID des tokens hold 
+                                                        for await (const walletAddress of precisedWalletofAuthorTable) {
+                                                            const { data: userTokens } = await sdk.getUsersUserTokensV6({ collection: selectedCollection, limit: '200', user: walletAddress, accept: '*/*' });
+
+
+                                                            for (let i = 0; i < userTokens.tokens.length; i++) { tokenHoldTable.push(userTokens.tokens[i].token.tokenId); }
+
+                                                            if (userTokens.tokens.length > 0) { walletsInvolvedTable.push(walletAddress) }
+
+
+                                                            //On incrément le compteur de call API
+                                                            apiObj.getUsersUserTokensV6++
+                                                        }
+
+
+
+
+                                                        // Récuperer les ID des tokens sell 
+                                                        for await (const walletAddress of precisedWalletofAuthorTable) {
+                                                            const { data: userSoldTokens } = await alchemy2.getNFTSales({
+                                                                fromBlock: '0',
+                                                                toBlock: 'latest',
+                                                                order: 'desc',
+                                                                contractAddress: selectedCollection,
+                                                                sellerAddress: walletAddress,
+                                                                limit: '1000',
+                                                                apiKey: alchemyApiKey
+                                                            })
+
+                                                            for (let i = 0; i < userSoldTokens.nftSales.length; i++) { tokenSoldTable.push(userSoldTokens.nftSales[i].tokenId); }
+
+                                                            if (userSoldTokens.nftSales.length > 0) { walletsInvolvedTable.push(walletAddress) }
+
+
+                                                            //On incrément le compteur de call API
+                                                            apiObj.getNFTSales++
+                                                        }
+
+                                                        console.log(tokenHoldTable)
+                                                        console.log(tokenSoldTable)
+
+
+
+                                                        // Récuperer le méthode (mint) prix d'achat et de vente de chaque token (vente : avec from = selectedWallet / achat : avec to = selectedWallet  )
+                                                        for (const tokenId of tokenHoldTable) {
+                                                            const { data: userPriceToken } = await
+                                                                sdk.getSalesV4({
+                                                                    token: selectedCollection + '%3A' + tokenId,
+                                                                    startTimestamp: selectedTimestamp,
+                                                                    limit: '100',
+                                                                    accept: '*/*'
+                                                                })
+
+                                                            //On incrément le compteur de call API
+                                                            apiObj.getSalesV4++
+
+
+                                                            const filteredSales = userPriceToken.sales.filter(sale => precisedWalletofAuthorTable.includes(sale.to));
+
+                                                            if (filteredSales.length <= 0) {
+
+
+                                                                buyMarketplaceSpent += 0;
+                                                                buyMarketplaceGasSpent += 0;
+                                                                incomingTransferCount += 1
+                                                                outgoingTransferCount += 0
+
+
+                                                            } else if (filteredSales[0].orderSide === "bid") {
+
+                                                                buyMarketplaceSpent += parseFloat(filteredSales[0].price.amount.native);
+                                                                buyMarketplaceGasSpent += 0;
+                                                                buyMarketplaceCount += 1
+
+
+
+
+                                                            } else {
+
+
+                                                                let tokenHashTxn = filteredSales[0].txHash
+
+                                                                const hashValueReader = await web3.eth.getTransaction(tokenHashTxn)
+                                                                const hashGasReader = await web3.eth.getTransactionReceipt(tokenHashTxn)
+                                                                const { data: hashTransferReader } = await bsp.getAllTransfers({ chain: 'eth-main', hash: tokenHashTxn, page_size: '100' })
+
+
+                                                                //On incrément le compteur de call API
+                                                                apiObj.getTransaction++
+                                                                apiObj.getTransactionReceipt++
+                                                                apiObj.getAllTransfers++
+
+
+                                                                const hashTransferReaderObject = hashTransferReader.results;
+                                                                const uniqueIds = {}; // stockage temporaire des ids uniques
+                                                                let uniqueIdCount = 0; // compteur d'ids uniques
+
+                                                                for (let i = 0; i < hashTransferReaderObject.length; i++) {
+                                                                    const objectId = hashTransferReaderObject[i].id;
+                                                                    if (!uniqueIds[objectId]) { // si cet id n'a pas été vu auparavant
+                                                                        uniqueIds[objectId] = true; // marquer l'id comme vu
+                                                                        uniqueIdCount++; // incrémenter le compteur d'ids uniques
+                                                                    }
+                                                                }
+
+                                                                if (filteredSales[0].orderKind === "mint") {
+
+                                                                    mintSpent += parseFloat(filteredSales[0].price.amount.native);
+                                                                    mintGasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
+                                                                    mintCount += 1
+
+                                                                } else {
+
+                                                                    buyMarketplaceSpent += parseFloat(filteredSales[0].price.amount.native);
+                                                                    buyMarketplaceGasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
+                                                                    buyMarketplaceCount += 1
+
+                                                                }
+                                                            }
+                                                        }
+
+
+
+                                                        // Même chose pour token sold
+                                                        for (const tokenId of tokenSoldTable) {
+                                                            const { data: userPriceToken } = await
+                                                                sdk.getSalesV4({
+                                                                    token: selectedCollection + '%3A' + tokenId,
+                                                                    startTimestamp: selectedTimestamp,
+                                                                    limit: '100',
+                                                                    accept: '*/*'
+                                                                })
+
+                                                            //On incrément le compteur de call API
+                                                            apiObj.getSalesV4++
+
+
+                                                            const filteredSales = userPriceToken.sales.filter(sale => precisedWalletofAuthorTable.includes(sale.to));
+
+                                                            if (filteredSales.length <= 0) {
+
+
+                                                                buyMarketplaceSpent += 0;
+                                                                buyMarketplaceGasSpent += 0;
+                                                                incomingTransferCount += 1
+                                                                outgoingTransferCount += 0
+
+                                                            } else if (filteredSales[0].orderSide === "bid") {
+
+                                                                buyMarketplaceSpent += parseFloat(filteredSales[0].price.amount.native);
+                                                                buyMarketplaceGasSpent += 0;
+                                                                buyMarketplaceCount += 1
+
+
+                                                            } else {
+
+                                                                let tokenHashTxn = filteredSales[0].txHash
+
+                                                                const hashValueReader = await web3.eth.getTransaction(tokenHashTxn)
+                                                                const hashGasReader = await web3.eth.getTransactionReceipt(tokenHashTxn)
+                                                                const { data: hashTransferReader } = await bsp.getAllTransfers({ chain: 'eth-main', hash: tokenHashTxn, page_size: '100' })
+
+                                                                //On incrément le compteur de call API
+                                                                apiObj.getTransaction++
+                                                                apiObj.getTransactionReceipt++
+                                                                apiObj.getAllTransfers++
+
+
+                                                                const hashTransferReaderObject = hashTransferReader.results;
+                                                                const uniqueIds = {}; // stockage temporaire des ids uniques
+                                                                let uniqueIdCount = 0; // compteur d'ids uniques
+
+                                                                for (let i = 0; i < hashTransferReaderObject.length; i++) {
+                                                                    const objectId = hashTransferReaderObject[i].id;
+                                                                    if (!uniqueIds[objectId]) { // si cet id n'a pas été vu auparavant
+                                                                        uniqueIds[objectId] = true; // marquer l'id comme vu
+                                                                        uniqueIdCount++; // incrémenter le compteur d'ids uniques
+                                                                    }
+                                                                }
+
+                                                                if (filteredSales[0].orderKind === "mint") {
+
+                                                                    mintSpent += parseFloat(filteredSales[0].price.amount.native);
+                                                                    mintGasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
+                                                                    mintCount += 1
+
+                                                                } else {
+
+                                                                    buyMarketplaceSpent += parseFloat(filteredSales[0].price.amount.native);
+                                                                    buyMarketplaceGasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
+                                                                    buyMarketplaceCount += 1
+                                                                }
+
+                                                            }
+                                                        }
+
+
+
+
+
+                                                        // Calculer la valeur des ventes de token sold
+                                                        for (const tokenId of tokenSoldTable) {
+                                                            const { data: userPriceToken } = await
+                                                                sdk.getSalesV4({
+                                                                    token: selectedCollection + '%3A' + tokenId,
+                                                                    startTimestamp: selectedTimestamp,
+                                                                    limit: '100',
+                                                                    accept: '*/*'
+                                                                })
+
+
+                                                            //On incrément le compteur de call API
+                                                            apiObj.getSalesV4++
+
+
+                                                            const filteredSales = userPriceToken.sales.filter(sale => precisedWalletofAuthorTable.includes(sale.from));
+
+                                                            if (filteredSales.length <= 0) {
+
+
+                                                                soldValue += 0;
+                                                                soldGasValue += 0;
+                                                                incomingTransferCount += 0
+                                                                outgoingTransferCount += 1
+
+                                                            } else if (filteredSales[0].orderSide === "bid") {
+
+                                                                soldValue += parseFloat(filteredSales[0].price.amount.native);
+
+
+                                                                let tokenHashTxn = filteredSales[0].txHash
+
+                                                                const hashValueReader = await web3.eth.getTransaction(tokenHashTxn)
+                                                                const hashGasReader = await web3.eth.getTransactionReceipt(tokenHashTxn)
+                                                                const { data: hashTransferReader } = await bsp.getAllTransfers({ chain: 'eth-main', hash: tokenHashTxn, page_size: '100' })
+
+
+                                                                //On incrément le compteur de call API
+                                                                apiObj.getTransaction++
+                                                                apiObj.getTransactionReceipt++
+                                                                apiObj.getAllTransfers++
+
+
+
+                                                                const hashTransferReaderObject = hashTransferReader.results;
+                                                                const uniqueIds = {}; // stockage temporaire des ids uniques
+                                                                let uniqueIdCount = 0; // compteur d'ids uniques
+
+                                                                for (let i = 0; i < hashTransferReaderObject.length; i++) {
+                                                                    const objectId = hashTransferReaderObject[i].id;
+                                                                    if (!uniqueIds[objectId]) { // si cet id n'a pas été vu auparavant
+                                                                        uniqueIds[objectId] = true; // marquer l'id comme vu
+                                                                        uniqueIdCount++; // incrémenter le compteur d'ids uniques
+                                                                    }
+                                                                }
+
+                                                                soldGasValue += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
+
+
+
+                                                            } else {
+
+                                                                soldValue += parseFloat(filteredSales[0].price.amount.native);
+                                                                soldGasValue += 0;
+
+
+                                                            }
+                                                        }
+
+
+
+                                                        //Résultat calcul API
+                                                        totalTokenTradedCount = tokenHoldTable.length + tokenSoldTable.length
+                                                        holdCount = tokenHoldTable.length
+                                                        totalBuyCount = buyMarketplaceCount + mintCount
+                                                        soldCount = tokenSoldTable.length
+                                                        transferCount = incomingTransferCount - outgoingTransferCount
+
+                                                        totalMintSpent = mintGasSpent + mintSpent
+                                                        buyMarketplaceTotalSpent = buyMarketplaceGasSpent + buyMarketplaceSpent
+                                                        totalSoldValue = soldValue - soldGasValue
+                                                        totalSpent = buyMarketplaceTotalSpent + totalMintSpent
+
+                                                        if (totalSpent > 0) {
+                                                            if (buyMarketplaceTotalSpent > 0) {
+                                                                averageBuyValue = buyMarketplaceTotalSpent / buyMarketplaceCount
+
+                                                            }
+                                                            averageSpentValue = totalSpent / totalTokenTradedCount
+
+                                                            if (mintCount > 0) {
+                                                                averageMintValue = totalMintSpent / mintCount
+                                                            }
+                                                        }
+
+                                                        if (totalSoldValue > 0) {
+                                                            averageSoldValue = totalSoldValue / soldCount
+                                                        }
+
+                                                        if (holdCount > 0) {
+                                                            totalHoldValue = holdCount * collectionFp
+                                                            averageHoldValue = totalHoldValue / holdCount
+
+                                                        }
+
+
+                                                        potentialProfit = (soldValue + totalHoldValue) - totalSpent // Ajouter royalties ?
+                                                        realisedProfit = soldValue - totalSpent
+
+
+                                                        //ROI Variable
+                                                        if (!(data.collections[0].floorAsk.price) && secondcollectionFp.openSea.floorPrice === 0) {
+                                                            roi = "N/A"
+                                                        } else {
+                                                            roi = ((((totalHoldValue + soldValue) - totalSpent) / totalSpent) * 100).toFixed(2)
+                                                        }
+
+
+                                                        if (roi !== 0 && totalSpent !== 0 && collectionFp !== 'N/A') {
+
+                                                            if (roi > 0) {
+                                                                roiPrefix = "+";
+                                                                roiSuffix = " :chart_with_upwards_trend:";
+                                                            } else if (roi < 0) {
+                                                                roiSuffix = " :chart_with_downwards_trend:";
+                                                            }
+                                                            roiFormatted = "`" + roiPrefix + parseFloat(roi).toFixed(2) + "%" + "`" + roiSuffix;
+
+                                                        } else if (roi === 0 || roi === "NaN") {
+                                                            roiFormatted = "`0.00%`"
+
+                                                        } else if (collectionFp === "N/A") {
+
+                                                            roiFormatted = "'N/A'"
+
+                                                        } else if (totalSpent === 0 && (soldCount + holdCount > 0)) {
+
+                                                            roiFormatted = "`INFINITY`<a:RCRich:1044762000837840926>"
+
+                                                        }
+
+                                                        // Transfer mise en forme
+                                                        if (transferCount > 0) {
+                                                            transferPrefix = "+";
+                                                        } else if (transferCount < 0) {
+                                                            transferPrefix = "-";
+                                                        } else {
+                                                            transferPrefix = ""
+                                                        }
+                                                        let transferCountFormated = transferPrefix + parseFloat(transferCount)
+
+
+
+
+
+
+
+                                                        let selectedTimeFormatted = selectedTime
+                                                        if (!selectedTime) { selectedTimeFormatted = "All Time" }
+
+                                                        //Embed getRCprofitPrecisedAll
+                                                        const getprofitOneWalletOneCollection = new EmbedBuilder().setColor("#060A8F")
+                                                            .setTitle(`${collectionName}`)
+                                                            .setDescription(">>> `" + selectedTimeFormatted + "` profits made by the `" + precisedWalletNameofAuthor + "` wallet of " + authorName + " on " + collectionName)
+                                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                            .setImage(collectionBanner)
+                                                            .addFields(
+                                                                { name: "Mint Spent", value: "`" + parseFloat(mintSpent).toFixed(3) + "Ξ (" + parseFloat(mintSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "Mint Gas Spent", value: "`" + parseFloat(mintGasSpent).toFixed(3) + "Ξ (" + parseFloat(mintGasSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "Total Mint Spent", value: "`" + parseFloat(totalMintSpent).toFixed(3) + "Ξ (" + parseFloat(totalMintSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "Buy Spent", value: "`" + parseFloat(buyMarketplaceSpent).toFixed(3) + "Ξ (" + parseFloat(buyMarketplaceSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "Buy Gas Spent", value: "`" + parseFloat(buyMarketplaceGasSpent).toFixed(3) + "Ξ (" + parseFloat(buyMarketplaceGasSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "Total Buy Spent", value: "`" + parseFloat(buyMarketplaceTotalSpent).toFixed(3) + "Ξ (" + parseFloat(buyMarketplaceTotalSpent * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "Sold Value", value: "`" + parseFloat(soldValue).toFixed(3) + "Ξ (" + parseFloat(soldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "Sold Gas Value", value: "`" + parseFloat(soldGasValue).toFixed(3) + "Ξ (" + parseFloat(soldGasValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "Total Sold Value", value: "`" + parseFloat(totalSoldValue).toFixed(3) + "Ξ (" + parseFloat(totalSoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "NFT Mint Count", value: "`" + mintCount + "`", inline: true },
+                                                                { name: "NFT Buy Count", value: "`" + buyMarketplaceCount + "`", inline: true },
+                                                                { name: "NFT Total Count", value: "`" + totalBuyCount + "`", inline: true },
+                                                                { name: "NFT Hold Count", value: "`" + holdCount + "`", inline: true },
+                                                                { name: "NFT Sold Count", value: "`" + soldCount + "`", inline: true },
+                                                                { name: "NFT Transfer Count", value: "`" + transferCountFormated + "`", inline: true },
+                                                                { name: "AVG Mint Value ", value: "`" + parseFloat(averageMintValue).toFixed(3) + "Ξ (" + parseFloat(averageMintValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "AVG Buy Value ", value: "`" + parseFloat(averageBuyValue).toFixed(3) + "Ξ (" + parseFloat(averageBuyValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "AVG Spent Value ", value: "`" + parseFloat(averageSpentValue).toFixed(3) + "Ξ (" + parseFloat(averageSpentValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "AVG Sold Value", value: "`" + parseFloat(averageSoldValue).toFixed(3) + "Ξ (" + parseFloat(averageSoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "AVG Hold Value", value: "`" + parseFloat(averageHoldValue).toFixed(3) + "Ξ (" + parseFloat(averageHoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "Total Hold Value", value: "`" + parseFloat(totalHoldValue).toFixed(3) + "Ξ (" + parseFloat(totalHoldValue * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + parseFloat(realisedProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + parseFloat(potentialProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                                { name: "Potential ROI", value: roiFormatted, inline: true },
+                                                                { name: " ", value: "*Please note that Aura isn't analyzing Blur V3 contract sales for the moment. We're working on it to make it available ASAP.*", inline: false },
+
+                                                            )
+                                                            .setTimestamp()
+                                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                        await interaction.editReply({ embeds: [getprofitOneWalletOneCollection], components: [buttonsRow] });
+
+
+
+
+
+                                                        //////CALL BASE SQL
+
+
+                                                        await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
+
+                                                        await interactionData.create({
+
+                                                            authorId: authorId,
+                                                            authorName: authorName,
+                                                            serverId: serverId,
+                                                            walletAddress: "N/A",
+                                                            commandName: "profit",
+                                                            interactionId: interaction.id,
+                                                            walletName: "N/A",
+                                                            selecedTimestamp: "N/A",
+                                                            embed1: "N/A",
+                                                            embed2: "N/A",
+                                                            embed3: "N/A",
+                                                            pageIndex: "N/A",
+                                                            actualPage: "N/A",
+                                                            walletCategory: "eth",
+                                                            selectedCollection: selectedCollection,
+                                                            collectionSlug: "N/A",
+                                                            collectionBanner: "N/A",
+                                                            avgDeriskPrice: "N/A",
+                                                            floorPrice: collectionFp.toString(),
+                                                            lowerMarketlace: "N/A",
+                                                            collectionName: collectionName,
+                                                            collectionTwitter: "N/A",
+                                                            collectionWebsite: "N/A",
+                                                            mintCount: mintCount.toString(),
+                                                            buyCount: totalBuyCount.toString(),
+                                                            soldCount: soldCount.toString(),
+                                                            remaining: holdCount.toString(),
+                                                            avgBuy: parseFloat(averageSpentValue).toFixed(3),
+                                                            avgSold: parseFloat(averageSoldValue).toFixed(3),
+                                                            realisedProfit: parseFloat(realisedProfit).toFixed(3),
+                                                            potentialProfit: parseFloat(potentialProfit).toFixed(3),
+                                                            roi: roi.toString(),
+                                                            visualTitle: "N/A",
+                                                            userAvatar: userAvatar,
+                                                            nbMembersInvolved: "N/A",
+                                                            totalTradeCount: "N/A",
+
+                                                        })
+
+                                                        //////CALL BASE SQL
+
+
+
+                                                        //On enregistre le call API dans la database
+                                                        const timeStamp = Date.now();
+                                                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "ethUsdPrice", apiProvider: "etherscan", timestamp: timeStamp.toString() })
+                                                        for (let i = 0; i < apiObj.getCollectionsV5; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getCollectionsV5", apiProvider: "reservoir", timestamp: timeStamp.toString() }) }
+                                                        for (let i = 0; i < apiObj.getFloorPrice; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getFloorPrice", apiProvider: "alchemy", timestamp: timeStamp.toString() }) }
+                                                        for (let i = 0; i < apiObj.getUsersUserTokensV6; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getUsersUserTokensV6", apiProvider: "reservoir", timestamp: timeStamp.toString() }) }
+                                                        for (let i = 0; i < apiObj.getNFTSales; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getNFTSales", apiProvider: "alchemy2", timestamp: timeStamp.toString() }) }
+                                                        for (let i = 0; i < apiObj.getSalesV4; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getSalesV4", apiProvider: "reservoir", timestamp: timeStamp.toString() }) }
+                                                        for (let i = 0; i < apiObj.getTransaction; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getTransaction", apiProvider: "web3.eth", timestamp: timeStamp.toString() }) }
+                                                        for (let i = 0; i < apiObj.getTransactionReceipt; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getTransactionReceipt", apiProvider: "web3.eth", timestamp: timeStamp.toString() }) }
+                                                        for (let i = 0; i < apiObj.getAllTransfers; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit", apiCallName: "getAllTransfers", apiProvider: "blockspan", timestamp: timeStamp.toString() }) }
+
+
+
+
+
+
+                                                    })
+
+                                            } else {
+
+                                                const notMember = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle("Profit")
+                                                    .setDescription("Aura can't analyze your wallet metrics because you selected a Ethereum collection and a Bitcoin wallet. Please try again selecting both a Bitcoin or Ethereum collection and wallet.")
+                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                await interaction.editReply({ embeds: [notMember] });
+
+
+                                            }
+
+
+                                        } else if (isValidInput(selectedCollection)) {
+
+
+                                            if (isBRC20BitcoinWallet(walletAddress)) {
+
+
+
+                                                let name = ""
+                                                let collectionLogo = ""
+                                                let twitter = ""
+                                                let discord = ""
+                                                let website = ""
+
+                                                let mintSpent = 0
+                                                let mintGasSpent = 0
+                                                let totalMintSpent = 0
+                                                let buyMarketplaceSpent = 0
+                                                let buyMarketplaceGasSpent = 0
+                                                let buyMarketplaceTotalSpent = 0
+                                                let soldValue = 0
+                                                let soldGasValue = 0
+                                                let totalSoldValue = 0
+                                                let mintCount = 0
+                                                let buyMarketplaceCount = 0
+                                                let totalBuyCount = 0
+                                                let holdCount = 0
+                                                let soldCount = 0
+                                                let transferCount = 0
+                                                let transferCountFormated = 0
+                                                let averageMintValue = 0
+                                                let averageBuyValue = 0
+                                                let averageSpentValue = 0
+                                                let averageSoldValue = 0
+                                                let averageHeldValue = 0
+                                                let totalHoldValue = 0
+                                                let realisedProfit = 0
+                                                let potentialProfit = 0
+                                                let roiFormatted = 0
+
+
+                                                const btcCallPrice = await axios.get("https://blockchain.info/q/24hrprice")
+                                                const BTCUsdPrice = btcCallPrice.data
+
+
+
+
+                                                const url = `https://api-mainnet.magiceden.dev/v2/ord/btc/collections/` + selectedCollection;
+                                                const response = await axios.get(url, { headers });
+                                                const data = await response.data;
+
+                                                collectionLogo = data.imageURI
+                                                name = data.name
+                                                twitter = data.twitterLink
+                                                discord = data.discordLink
+                                                website = data.websiteLink
+
+
+                                                const url2 = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=` + selectedCollection;
+                                                const response2 = await axios.get(url2, { headers });
+                                                const data2 = await response2.data;
+
+
+                                                const floorPrice = (data2.floorPrice) / (10 ** 8)
+
+
+                                                const url3 = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?collectionSymbol=` + selectedCollection + `&ownerAddress=` + walletAddress + `&showAll=true&sortBy=priceAsc`;
+                                                const response3 = await axios.get(url3, { headers });
+                                                const data3 = await response3.data;
+
+
+                                                totalHoldValue = floorPrice * holdCount
+                                                averageHeldValue = totalHoldValue / holdCount
+
+                                                let tokenHeldId = []
+                                                for (const token of data3.tokens) {
+                                                    tokenHeldId.push(token.id)
+                                                }
+
+
+                                                //On calcul le prix et méthode d'achat des token held
+                                                for (const token of tokenHeldId) {
+
+                                                    //Buy classic
+                                                    const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token
+                                                    const tokenBuyCall = await axios.get(tokenBuyLink, { headers });
+                                                    const tokenBuy = await tokenBuyCall.data.activities;
+
+                                                    const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== walletAddress.toLowerCase() && activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+
+
+                                                    if (tokenBuyByWallet.length > 0) {
+
+                                                        const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
+
+                                                        buyMarketplaceSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
+                                                        buyMarketplaceGasSpent += mempoolCall.data.fee / (10 ** 8)
+                                                        buyMarketplaceCount += 1
+
+                                                    } else {
+
+
+                                                        //Create
+                                                        const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenInscription
+                                                        const tokenCreateCall = await axios.get(tokenCreateLink, { headers });
+                                                        const tokenCreate = await tokenCreateCall.data.activities;
+
+                                                        const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+
+                                                        if (tokenCreateByWallet.length > 0) {
+
+                                                            const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
+
+                                                            mintSpent += ((tokenBuyByWallet[0].txValue) / (10 ** 8))
+                                                            mintGasSpent += mempoolCall.data.fee / (10 ** 8)
+                                                            mintCount += 1
+
+                                                        } else {
+
+                                                            //Mint
+                                                            const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenInscription
+                                                            const tokenMintCall = await axios.get(tokenMintLink, { headers });
+                                                            const tokenMint = await tokenMintCall.data.activities;
+
+                                                            const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+
+                                                            if (tokenMintByWallet.length > 0) {
+
+                                                                const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
+
+                                                                mintSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
+                                                                mintGasSpent += mempoolCall.data.fee / (10 ** 8)
+                                                                mintCount += 1
+
+                                                            } else {
+
+                                                                //Transfert & Airdrop
+                                                                buyMarketplaceSpent += 0
+                                                                buyMarketplaceGasSpent += 0
+                                                                transferCount += 1
+
+                                                            }
+                                                        }
+
+                                                    }
+
+
+
+
+
+                                                }
+
+
+
+                                                //Call pour récupérer les token sold
+                                                const recentSalesLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&ownerAddress=` + walletAddress + "&collectionSymbol=" + selectedCollection
+                                                const recentSalesCall = await axios.get(recentSalesLink, { headers });
+                                                const recentSales = await recentSalesCall.data.activities;
+
+                                                const filteredTable = recentSales.filter(activity => activity.oldOwner.toLowerCase() == walletAddress.toLowerCase() && activity.newOwner.toLowerCase() !== walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+
+
+
+
+                                                //On calcul le prix et méthode d'achat des token sold
+                                                for (const token of filteredTable) {
+
+
+                                                    //Calculer le prix de vente + les gas.
+                                                    const mempoolCall = await axios.get("https://mempool.space/api/tx/" + token.txId)
+
+                                                    soldGasValue += mempoolCall.data.fee / (10 ** 8)
+                                                    soldValue += token.listedPrice / (10 ** 8)
+                                                    soldCount += 1
+
+
+                                                    ////// SWITCH //////
+
+
+                                                    //Calculer le prix d'achat.
+
+                                                    //Buy classic
+                                                    const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token.tokenId
+                                                    const tokenBuyCall = await axios.get(tokenBuyLink, { headers });
+                                                    const tokenBuy = await tokenBuyCall.data.activities;
+
+                                                    const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== walletAddress.toLowerCase() && activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+
+
+                                                    if (tokenBuyByWallet.length > 0) {
+
+                                                        const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
+
+                                                        buyMarketplaceSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
+                                                        buyMarketplaceGasSpent += mempoolCall.data.fee / (10 ** 8)
+                                                        buyMarketplaceCount += 1
+
+                                                    } else {
+
+
+                                                        //Create
+                                                        const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenId
+                                                        const tokenCreateCall = await axios.get(tokenCreateLink, { headers });
+                                                        const tokenCreate = await tokenCreateCall.data.activities;
+
+                                                        const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+
+                                                        if (tokenCreateByWallet.length > 0) {
+
+                                                            const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
+
+                                                            mintSpent += ((tokenBuyByWallet[0].txValue) / (10 ** 8))
+                                                            mintGasSpent += mempoolCall.data.fee / (10 ** 8)
+                                                            mintCount += 1
+
+                                                        } else {
+
+                                                            //Mint
+                                                            const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenId
+                                                            const tokenMintCall = await axios.get(tokenMintLink, { headers });
+                                                            const tokenMint = await tokenMintCall.data.activities;
+
+                                                            const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+
+                                                            if (tokenMintByWallet.length > 0) {
+
+                                                                const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
+
+                                                                mintSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
+                                                                mintGasSpent += mempoolCall.data.fee / (10 ** 8)
+                                                                mintCount += 1
+
+                                                            } else {
+
+                                                                //Transfert & Airdrop
+                                                                buyMarketplaceSpent += 0
+                                                                buyMarketplaceGasSpent += 0
+                                                                transferCount += 1
+
+                                                            }
+                                                        }
+
+                                                    }
+
+
+                                                }
+
+
+                                                if (transferCount > 0) { transferCountFormated = "+" + transferCount }
+
+
+                                                totalMintSpent = mintSpent + mintGasSpent
+                                                buyMarketplaceTotalSpent = buyMarketplaceSpent - buyMarketplaceGasSpent
+                                                totalSoldValue = soldValue - soldGasValue
+
+                                                totalBuyCount = mintCount + buyMarketplaceCount
+                                                holdCount = tokenHeldId.length
+                                                totalHoldValue = floorPrice * holdCount
+                                                if (holdCount > 0) { averageHeldValue = floorPrice } else { averageHeldValue = 0 }
+
+                                                if (totalMintSpent > 0) { averageMintValue = totalMintSpent / mintCount }
+                                                if (buyMarketplaceTotalSpent > 0) { averageBuyValue = buyMarketplaceTotalSpent / buyMarketplaceCount }
+                                                if (totalBuyCount > 0) { averageSpentValue = (totalMintSpent + buyMarketplaceTotalSpent) / totalBuyCount }
+                                                if (soldCount > 0) { averageSoldValue = soldValue / soldCount }
+
+                                                realisedProfit = totalSoldValue - (totalMintSpent + buyMarketplaceTotalSpent)
+                                                potentialProfit = (totalSoldValue + totalHoldValue) - (totalMintSpent + buyMarketplaceTotalSpent)
+                                                roi = ((((totalHoldValue + totalSoldValue) - (totalMintSpent + buyMarketplaceTotalSpent)) / (totalMintSpent + buyMarketplaceTotalSpent)) * 100).toFixed(2)
+
+
+                                                // ROI format Variable
+                                                let roiPrefix = ""
+                                                let roiSuffix = ""
+
+                                                if (roi !== 0 && (totalMintSpent + buyMarketplaceTotalSpent) !== 0 && floorPrice) {
+
+                                                    if (roi > 0) {
+                                                        roiPrefix = "+";
+                                                        roiSuffix = " :chart_with_upwards_trend:";
+                                                    } else if (roi < 0) {
+                                                        roiSuffix = " :chart_with_downwards_trend:";
+                                                    }
+                                                    roiFormatted = "`" + roiPrefix + parseFloat(roi).toFixed(2) + "%" + "`" + roiSuffix;
+
+
+                                                } else if (roi == 0) {
+
+                                                    roiFormatted = "`0.00%`"
+
+                                                } else if (!floorPrice) {
+
+                                                    roiFormatted = "'N/A'"
+
+                                                } else if ((totalMintSpent + buyMarketplaceTotalSpent) == 0) {
+
+                                                    roiFormatted = "`INFINITY`<a:RCRich:1044762000837840926>"
+
+                                                }
+
+
+                                                let linksFormatted = ""
+                                                if (estLienHTTPS(discord) && estLienHTTPS(website)) { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ") ∙ " + "[discord](" + discord + ") ∙ " + '[website](' + website + ")" }
+                                                else if (estLienHTTPS(discord) && !estLienHTTPS(website)) { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ") ∙ " + "[discord](" + discord + ")" }
+                                                else if (!estLienHTTPS(discord) && estLienHTTPS(website)) { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ") ∙ " + '[website](' + website + ")" }
+                                                else { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ")" }
+
+
+
+
+                                                let selectedTimeFormatted = selectedTime
+                                                if (!selectedTime) { selectedTimeFormatted = "All Time" }
+
+
+                                                //Embed getRCprofitPrecisedAll
+                                                const embed1 = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle(`${name}`)
+                                                    .setDescription(">>> `" + selectedTimeFormatted + "` profits made by the `" + precisedWalletNameofAuthor + "` wallet of " + authorName + " on " + name)
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setThumbnail(collectionLogo)
+                                                    .addFields(
+                                                        { name: "Mint Spent", value: "`" + parseFloat(mintSpent).toFixed(3) + "₿ (" + parseFloat(mintSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Mint Gas Spent", value: "`" + parseFloat(mintGasSpent).toFixed(3) + "₿ (" + parseFloat(mintGasSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Total Mint Spent", value: "`" + parseFloat(totalMintSpent).toFixed(3) + "₿ (" + parseFloat(totalMintSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Buy Spent", value: "`" + parseFloat(buyMarketplaceSpent).toFixed(3) + "₿ (" + parseFloat(buyMarketplaceSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Buy Gas Spent", value: "`" + parseFloat(buyMarketplaceGasSpent).toFixed(3) + "₿ (" + parseFloat(buyMarketplaceGasSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Total Buy Spent", value: "`" + parseFloat(buyMarketplaceTotalSpent).toFixed(3) + "₿ (" + parseFloat(buyMarketplaceTotalSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Sold Value", value: "`" + parseFloat(soldValue).toFixed(3) + "₿ (" + parseFloat(soldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Sold Gas Value", value: "`" + parseFloat(soldGasValue).toFixed(3) + "₿ (" + parseFloat(soldGasValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Total Sold Value", value: "`" + parseFloat(totalSoldValue).toFixed(3) + "₿ (" + parseFloat(totalSoldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "NFT Mint Count", value: "`" + mintCount + "`", inline: true },
+                                                        { name: "NFT Buy Count", value: "`" + buyMarketplaceCount + "`", inline: true },
+                                                        { name: "NFT Total Count", value: "`" + totalBuyCount + "`", inline: true },
+                                                        { name: "NFT Held Count", value: "`" + holdCount + "`", inline: true },
+                                                        { name: "NFT Sold Count", value: "`" + soldCount + "`", inline: true },
+                                                        { name: "NFT Transfer Count", value: "`" + transferCountFormated + "`", inline: true },
+                                                        { name: "AVG Mint Value ", value: "`" + parseFloat(averageMintValue).toFixed(3) + "₿ (" + parseFloat(averageMintValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "AVG Buy Value ", value: "`" + parseFloat(averageBuyValue).toFixed(3) + "₿ (" + parseFloat(averageBuyValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "AVG Spent Value ", value: "`" + parseFloat(averageSpentValue).toFixed(3) + "₿ (" + parseFloat(averageSpentValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "AVG Sold Value", value: "`" + parseFloat(averageSoldValue).toFixed(3) + "₿ (" + parseFloat(averageSoldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "AVG Held Value", value: "`" + parseFloat(averageHeldValue).toFixed(3) + "₿ (" + parseFloat(averageHeldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Total Held Value", value: "`" + parseFloat(totalHoldValue).toFixed(3) + "₿ (" + parseFloat(totalHoldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "₿ (" + parseFloat(realisedProfit * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "₿ (" + parseFloat(potentialProfit * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                        { name: "Potential ROI", value: roiFormatted, inline: true },
+                                                        { name: " ", value: "*Please note that Aura isn't analyzing Blur V3 contract sales for the moment. We're working on it to make it available ASAP.*", inline: false },
+                                                        //{ name: "Links", value: linksFormatted, inline: false },
+
+                                                    )
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                                await interaction.editReply({ embeds: [embed1], components: [buttonsRow] });
+
+
+
+                                                await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
+
+                                                await interactionData.create({
+
+                                                    authorId: authorId,
+                                                    authorName: authorName,
+                                                    serverId: serverId,
+                                                    walletAddress: "N/A",
+                                                    commandName: "profit",
+                                                    interactionId: interaction.id,
+                                                    walletName: "N/A",
+                                                    selecedTimestamp: "N/A",
+                                                    embed1: "N/A",
+                                                    embed2: "N/A",
+                                                    embed3: "N/A",
+                                                    pageIndex: "N/A",
+                                                    actualPage: "N/A",
+                                                    walletCategory: "btc",
+                                                    selectedCollection: selectedCollection,
+                                                    collectionSlug: "N/A",
+                                                    collectionBanner: "N/A",
+                                                    avgDeriskPrice: "N/A",
+                                                    floorPrice: floorPrice.toString(),
+                                                    lowerMarketlace: "N/A",
+                                                    collectionName: name,
+                                                    collectionTwitter: "N/A",
+                                                    collectionWebsite: "N/A",
+                                                    buyCount: totalBuyCount.toString(),
+                                                    mintCount: mintCount.toString(),
+                                                    soldCount: soldCount.toString(),
+                                                    remaining: holdCount.toString(),
+                                                    avgBuy: parseFloat(averageSpentValue).toFixed(3),
+                                                    avgSold: parseFloat(averageSoldValue).toFixed(3),
+                                                    realisedProfit: parseFloat(realisedProfit).toFixed(3),
+                                                    potentialProfit: parseFloat(potentialProfit).toFixed(3),
+                                                    roi: roi.toString(),
+                                                    visualTitle: "N/A",
+                                                    userAvatar: userAvatar,
+                                                    nbMembersInvolved: "N/A",
+                                                    totalTradeCount: "N/A",
+
+                                                })
+
+
+
+                                            } else {
+
+                                                const notMember = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle("Profit")
+                                                    .setDescription("Aura can't analyze your wallet metrics because you selected a Ethereum collection and a Bitcoin wallet. Please try again selecting both a Bitcoin or Ethereum collection and wallet.")
+                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                await interaction.editReply({ embeds: [notMember] });
+
+
+                                            }
+
+
+
+
+
+
+                                        } else {
+
+
+                                            const notMember = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle("Profit")
+                                                .setDescription("The collection you selected isn't valid. Please try again selecting a valid Bitcoin or Ethereum collection. You can also find the desired collection by using the contract address (Ethereum) or Magic Eden ID (Bitcoin).")
+                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                            await interaction.editReply({ embeds: [notMember] });
+
+
+
+
+                                        }
+                                    }
+                                }
+
+
 
                                 //Condition qui vérifie si c'est Wallet ou Category qui a été séléctionné, dans ce cas Category
 
@@ -2494,9 +2674,9 @@ module.exports = {
 
                         } else {
 
-							if (accessTier == "") {
-								accessTier = "Free Tier"
-							}
+                            if (accessTier == "") {
+                                accessTier = "Free Tier"
+                            }
 
                             const botOff = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle(`Bot Access`)

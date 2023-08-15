@@ -178,11 +178,14 @@ module.exports = {
                 if (botGlobalState.toLowerCase() === "on") {
 
 
-                    if (communityStatut.toLowerCase() === "active" || communityStatut == "") {
+                    if (interaction.options.getSubcommand() === 'collection') {
 
 
 
-                        if (interaction.options.getSubcommand() === 'collection') {
+                        if (communityStatut.toLowerCase() === "active" || communityStatut == "") {
+
+
+
 
 
                             if (accessTier.toLowerCase() == "s-tier" || accessTier.toLowerCase() == "a-tier") {
@@ -1613,8 +1616,8 @@ module.exports = {
 
 
                                 if (accessTier == "") {
-								accessTier = "Free Tier"
-							}
+                                    accessTier = "Free Tier"
+                                }
 
 
                                 const botOff = new EmbedBuilder().setColor("#060A8F")
@@ -1636,195 +1639,205 @@ module.exports = {
                             }
 
 
-                        } else if (interaction.options.getSubcommand() === 'txn') {
+                        } else {
+
+
+                            const botOff = new EmbedBuilder().setColor("#060A8F")
+                                .setTitle(`Bot Access`)
+                                .setDescription(">>> Showing the community's bot access")
+                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                .addFields(
+                                    { name: 'Access Status', value: "`Denied 🔴`", inline: true },
+                                    { name: 'Commands', value: "`Not available`", inline: true },
+                                    { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
+                                )
+                                .setTimestamp()
+                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                            await interaction.editReply({ embeds: [botOff] });
+
+
+
+                        }
 
 
 
 
-                            const txn = interaction.options.getString("hash");
-
-                            if (isValidEthereumTxn(txn)) {
-
-
-                                let selectedCollection = ""
-                                let buySpent = 0
-                                let buyGasSpent = 0
-                                let buyTotal = 0
-                                let tokenBought = 0
-                                let name = ""
-                                let isNFT = true
-
-
-                                const hashValueReader = await web3.eth.getTransaction(txn)
-                                const hashGasReader = await web3.eth.getTransactionReceipt(txn)
-                                buyGasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether')))
-
-
-                                await sdk3.getTransfersV3({
-                                    txHash: txn,
-                                    accept: '*/*'
-                                }).then(async ({ data }) => {
-
-                                    if (data.transfers.length > 0) {
-
-                                        for (const token of data.transfers) {
+                    } else if (interaction.options.getSubcommand() === 'txn') {
 
 
 
-                                            let collection = token.token.contract
-                                            let tokenId = token.token.tokenId
-                                            let selectedWallet = token.to
 
-                                            selectedCollection = token.token.contract
-                                            tokenBought = data.transfers.length
-                                            name = token.token.collection.name
+                        const txn = interaction.options.getString("hash");
+
+                        if (isValidEthereumTxn(txn)) {
 
 
-
-                                            const { data: userBuy } = await alchemy2.getNFTSales({
-                                                fromBlock: '0',
-                                                toBlock: 'latest',
-                                                order: 'desc',
-                                                contractAddress: collection,
-                                                tokenId: tokenId,
-                                                buyerAddress: selectedWallet,
-                                                limit: '1000',
-                                                apiKey: alchemyApiKey
-                                            })
+                            let selectedCollection = ""
+                            let buySpent = 0
+                            let buyGasSpent = 0
+                            let buyTotal = 0
+                            let tokenBought = 0
+                            let name = ""
+                            let isNFT = true
 
 
+                            const hashValueReader = await web3.eth.getTransaction(txn)
+                            const hashGasReader = await web3.eth.getTransactionReceipt(txn)
+                            buyGasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether')))
 
-                                            let sellerFee = 0
-                                            let royaltyFee = 0
-                                            let protocolFee = 0
 
-                                            if (userBuy.nftSales.length > 0) {
+                            await sdk3.getTransfersV3({
+                                txHash: txn,
+                                accept: '*/*'
+                            }).then(async ({ data }) => {
 
-                                                sellerFee = parseFloat(userBuy.nftSales[0].sellerFee.amount / (10 ** 18))
-                                                if (userBuy.nftSales[0].royaltyFee.amount) { royaltyFee = parseFloat(userBuy.nftSales[0].royaltyFee.amount / (10 ** 18)) }
-                                                if (userBuy.nftSales[0].protocolFee.amount) { protocolFee = parseFloat(userBuy.nftSales[0].protocolFee.amount / (10 ** 18)) }
-                                                let totalBuyPrice = parseFloat(sellerFee + royaltyFee + protocolFee)
+                                if (data.transfers.length > 0) {
+
+                                    for (const token of data.transfers) {
+
+
+
+                                        let collection = token.token.contract
+                                        let tokenId = token.token.tokenId
+                                        let selectedWallet = token.to
+
+                                        selectedCollection = token.token.contract
+                                        tokenBought = data.transfers.length
+                                        name = token.token.collection.name
+
+
+
+                                        const { data: userBuy } = await alchemy2.getNFTSales({
+                                            fromBlock: '0',
+                                            toBlock: 'latest',
+                                            order: 'desc',
+                                            contractAddress: collection,
+                                            tokenId: tokenId,
+                                            buyerAddress: selectedWallet,
+                                            limit: '1000',
+                                            apiKey: alchemyApiKey
+                                        })
+
+
+
+                                        let sellerFee = 0
+                                        let royaltyFee = 0
+                                        let protocolFee = 0
+
+                                        if (userBuy.nftSales.length > 0) {
+
+                                            sellerFee = parseFloat(userBuy.nftSales[0].sellerFee.amount / (10 ** 18))
+                                            if (userBuy.nftSales[0].royaltyFee.amount) { royaltyFee = parseFloat(userBuy.nftSales[0].royaltyFee.amount / (10 ** 18)) }
+                                            if (userBuy.nftSales[0].protocolFee.amount) { protocolFee = parseFloat(userBuy.nftSales[0].protocolFee.amount / (10 ** 18)) }
+                                            let totalBuyPrice = parseFloat(sellerFee + royaltyFee + protocolFee)
+
+                                            buySpent += totalBuyPrice
+
+
+                                        } else {
+
+                                            const { data: mintInfos } = await
+                                                sdk.getSalesV4({
+                                                    token: collection + '%3A' + tokenId,
+                                                    limit: '100',
+                                                    accept: '*/*'
+                                                })
+
+                                            const filteredMint = mintInfos.sales.filter(sale => (sale.to).toLowerCase() == selectedWallet.toLowerCase() && sale.orderKind === "mint");
+
+                                            if (filteredMint.length > 0) {
+
+                                                let totalBuyPrice = parseFloat(filteredMint[0].price.amount.native).toFixed(3)
 
                                                 buySpent += totalBuyPrice
 
 
-                                            } else {
 
-                                                const { data: mintInfos } = await
-                                                    sdk.getSalesV4({
-                                                        token: collection + '%3A' + tokenId,
-                                                        limit: '100',
-                                                        accept: '*/*'
-                                                    })
-
-                                                const filteredMint = mintInfos.sales.filter(sale => (sale.to).toLowerCase() == selectedWallet.toLowerCase() && sale.orderKind === "mint");
-
-                                                if (filteredMint.length > 0) {
-
-                                                    let totalBuyPrice = parseFloat(filteredMint[0].price.amount.native).toFixed(3)
-
-                                                    buySpent += totalBuyPrice
-
-
-
-                                                }
                                             }
-
-
-
-
                                         }
 
-                                    } else {
 
-                                        isNFT = false
+
 
                                     }
 
-
-                                })
-
-                                if (isNFT == true) {
-
-                                    let royalties = ""
-                                    let collectionRoyal = ""
-                                    let collectionSlug = ""
-                                    let collectionBanner = ""
-                                    let collectionTwitter = ""
-                                    let collectionWebsite = ""
-
-
-
-                                    // Premier Call API Reservoir : Stats et infos sur la collection
-                                    sdk.getCollectionsV5({ id: selectedCollection, accept: '*/*' })
-                                        .then(async ({ data: collectionStats }) => {
-
-                                            royalties = collectionStats.collections[0].royalties.bps
-                                            collectionRoyal = parseFloat(royalties / 100 + 0.5).toFixed(2) + "%"
-                                            collectionSlug = collectionStats.collections[0].slug
-                                            collectionBanner = collectionStats.collections[0].banner
-                                            collectionTwitter = collectionStats.collections[0].twitterUsername
-                                            collectionWebsite = collectionStats.collections[0].externalUrl
-
-
-
-
-
-                                            buySpent = buySpent
-                                            gasSpent = buyGasSpent
-                                            buyTotal = (buyGasSpent + buySpent)
-                                            totalDerisk = ((buyGasSpent + buySpent) / (1 - ((royalties / 100 + 0.5) / 100))).toFixed(3) + "Ξ"
-                                            avgDerisk = parseFloat(((buyGasSpent + buySpent) / (1 - ((royalties / 100 + 0.5) / 100))) / tokenBought).toFixed(3) + "Ξ"
-
-
-
-
-
-                                            const getderiskSelectedWallet = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle(name)
-                                                .setDescription(">>> Derisk data for the provided transaction")
-                                                .setImage(collectionBanner)
-                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                .addFields(
-                                                    { name: "Txn", value: "`" + txn.toLowerCase() + "`", inline: false },
-                                                    { name: "Buy Spent", value: "`" + parseFloat(buySpent).toFixed(3) + "`", inline: true },
-                                                    { name: "Gas Spent", value: "`" + parseFloat(gasSpent).toFixed(3) + "`", inline: true },
-                                                    { name: "Total Spent", value: "`" + parseFloat(buyTotal).toFixed(3) + "`", inline: true },
-                                                    { name: "Total Derisk", value: "`" + totalDerisk + "`", inline: true },
-                                                    { name: "Avg. Derisk", value: "`" + avgDerisk + "`", inline: true },
-                                                    { name: "Royalties", value: "`" + collectionRoyal + "`", inline: true },
-                                                    { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
-
-                                                )
-                                                .setTimestamp()
-                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-
-                                            await interaction.editReply({ embeds: [getderiskSelectedWallet] });
-
-                                        })
-
-
                                 } else {
 
-                                    const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
-                                        .setTitle(`Derisk Txn`)
-                                        .setDescription("Aura can't analyze the transaction derisk metrics because your transaction doesn't contain any NFT. Please try again with an appropriate transaction.")
-                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                        .setTimestamp()
-                                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-                                    await interaction.editReply({ embeds: [availableInTheNearFuture] });
-
+                                    isNFT = false
 
                                 }
+
+
+                            })
+
+                            if (isNFT == true) {
+
+                                let royalties = ""
+                                let collectionRoyal = ""
+                                let collectionSlug = ""
+                                let collectionBanner = ""
+                                let collectionTwitter = ""
+                                let collectionWebsite = ""
+
+
+
+                                // Premier Call API Reservoir : Stats et infos sur la collection
+                                sdk.getCollectionsV5({ id: selectedCollection, accept: '*/*' })
+                                    .then(async ({ data: collectionStats }) => {
+
+                                        royalties = collectionStats.collections[0].royalties.bps
+                                        collectionRoyal = parseFloat(royalties / 100 + 0.5).toFixed(2) + "%"
+                                        collectionSlug = collectionStats.collections[0].slug
+                                        collectionBanner = collectionStats.collections[0].banner
+                                        collectionTwitter = collectionStats.collections[0].twitterUsername
+                                        collectionWebsite = collectionStats.collections[0].externalUrl
+
+
+
+
+
+                                        buySpent = buySpent
+                                        gasSpent = buyGasSpent
+                                        buyTotal = (buyGasSpent + buySpent)
+                                        totalDerisk = ((buyGasSpent + buySpent) / (1 - ((royalties / 100 + 0.5) / 100))).toFixed(3) + "Ξ"
+                                        avgDerisk = parseFloat(((buyGasSpent + buySpent) / (1 - ((royalties / 100 + 0.5) / 100))) / tokenBought).toFixed(3) + "Ξ"
+
+
+
+
+
+                                        const getderiskSelectedWallet = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle(name)
+                                            .setDescription(">>> Derisk data for the provided transaction")
+                                            .setImage(collectionBanner)
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .addFields(
+                                                { name: "Txn", value: "`" + txn.toLowerCase() + "`", inline: false },
+                                                { name: "Buy Spent", value: "`" + parseFloat(buySpent).toFixed(3) + "`", inline: true },
+                                                { name: "Gas Spent", value: "`" + parseFloat(gasSpent).toFixed(3) + "`", inline: true },
+                                                { name: "Total Spent", value: "`" + parseFloat(buyTotal).toFixed(3) + "`", inline: true },
+                                                { name: "Total Derisk", value: "`" + totalDerisk + "`", inline: true },
+                                                { name: "Avg. Derisk", value: "`" + avgDerisk + "`", inline: true },
+                                                { name: "Royalties", value: "`" + collectionRoyal + "`", inline: true },
+                                                { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
+
+                                            )
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+
+                                        await interaction.editReply({ embeds: [getderiskSelectedWallet] });
+
+                                    })
+
 
                             } else {
 
                                 const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
                                     .setTitle(`Derisk Txn`)
-                                    .setDescription("Aura can't analyze your transaction because it's not an Ethereum one. Bitcoin derisk data and all our other features are only available to Aura subscribers. To get a subscription, go here : <#1108757700885622784>")
+                                    .setDescription("Aura can't analyze the transaction derisk metrics because your transaction doesn't contain any NFT. Please try again with an appropriate transaction.")
                                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                     .setTimestamp()
                                     .setAuthor({ name: authorName, iconURL: userAvatar })
@@ -1833,34 +1846,29 @@ module.exports = {
                                 await interaction.editReply({ embeds: [availableInTheNearFuture] });
 
 
-
-
                             }
+
+                        } else {
+
+                            const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
+                                .setTitle(`Derisk Txn`)
+                                .setDescription("Aura can't analyze your transaction because it's not an Ethereum one. Bitcoin derisk data and all our other features are only available to Aura subscribers. To get a subscription, go here : <#1108757700885622784>")
+                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                .setTimestamp()
+                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                            await interaction.editReply({ embeds: [availableInTheNearFuture] });
+
+
+
+
                         }
-
-
-
-                    } else {
-
-
-                        const botOff = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle(`Bot Access`)
-                            .setDescription(">>> Showing the community's bot access")
-                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                            .addFields(
-                                { name: 'Access Status', value: "`Denied 🔴`", inline: true },
-                                { name: 'Commands', value: "`Not available`", inline: true },
-                                { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
-                            )
-                            .setTimestamp()
-                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-                        await interaction.editReply({ embeds: [botOff] });
-
-
-
                     }
+
+
+
+
 
 
                 } else {

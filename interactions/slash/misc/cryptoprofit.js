@@ -652,8 +652,8 @@ module.exports = {
                                                     { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(realisedProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                     { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(potentialProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                     { name: "Potential ROI", value: roiFormatted, inline: true },
-                                                    { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinAddress + ") ∙ " + '[DexTools](https://www.dextools.io/app/en/ether/pair-explorer/' + coinAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinAddress + ") ∙ " + '[DappRadar](https://dappradar.com/hub/token/eth/' + coinAddress + ")", inline: false },
-                                                )
+                                                    { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + coinAddress + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + coinAddress + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + coinAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinAddress + ")", inline: false },
+                                                    )
                                                 .setTimestamp()
                                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
@@ -1142,7 +1142,7 @@ module.exports = {
                                                     { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(realisedProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                     { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(potentialProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                     { name: "Potential ROI", value: roiFormatted, inline: true },
-                                                    { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinAddress + ") ∙ " + '[DexTools](https://www.dextools.io/app/en/ether/pair-explorer/' + coinAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinAddress + ") ∙ " + '[DappRadar](https://dappradar.com/hub/token/eth/' + coinAddress + ")", inline: true },
+                                                    { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + coinAddress + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + coinAddress + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + coinAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinAddress + ")", inline: false },
                                                 )
                                                 .setTimestamp()
                                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });

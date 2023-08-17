@@ -85,6 +85,7 @@ module.exports = {
                 .setName("coin")
                 .setDescription("The contract address (ERC20) or token symbol (BRC20) of the coin")
                 .setRequired(true)
+                .setAutocomplete(true)
         ),
 
     async execute(interaction) {
@@ -162,7 +163,7 @@ module.exports = {
 
                                 //Variable pour les options
                                 const coinTicker = interaction.options.getString("coin")
-
+console.log(coinTicker)
                                 //Récupère le prix de l'ETH
                                 const ethCallPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
                                 let ethPriceUsd = ethCallPrice.data.result.ethusd

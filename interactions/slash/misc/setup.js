@@ -142,7 +142,7 @@ module.exports = {
                                         .setStyle(3),
                                     new ButtonBuilder()
                                         .setCustomId('getaccessFFpage-button')
-                                        .setLabel('F&F')
+                                        .setLabel('F&F (Beta)')
                                         .setStyle(3),
                                     new ButtonBuilder()
                                         .setCustomId('getaccess1monthsubconfirm-button')

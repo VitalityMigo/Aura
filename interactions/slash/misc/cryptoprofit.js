@@ -163,7 +163,7 @@ module.exports = {
                                 //Capter le prix du token (Protocol 0x API)
 
                                 //Variable pour les options
-                                const coinAddress = interaction.options.getString("coin")
+                                const coinAddress = interaction.options.getString("token")
                                 const walletAddress = interaction.options.getString("wallet");
 
 

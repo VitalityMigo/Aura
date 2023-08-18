@@ -9,6 +9,7 @@ const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
+const reduceText = require("../../../functions/reducetext")
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -376,8 +377,7 @@ module.exports = {
 
                                                         console.log("c'est un ETH -> token")
 
-                                                        console.log("ici: ")
-                                                        console.log(internalLookup)
+                                                    
 
 
 
@@ -449,27 +449,47 @@ module.exports = {
 
                                                 } else if (tokenLookup.length > 0) {
 
+
                                                     console.log("C'est un token -> token")
 
-                                                    let tokenInPrice = await Moralis.EvmApi.token.getTokenPrice({
-                                                        "chain": "0x1",
-                                                        "address": tokenLookup[0].contractAddress,
-                                                        "toBlock": tokenLookup[0].blockNumber,
-                                                    });
+                                                    if (tokenLookup[0].from.toLowerCase() != from.toLowerCase()) {
 
-                                                    bisTokenOutPriceEth = parseFloat(web3.utils.fromWei((tokenInPrice.raw.nativePrice.value).toString(), 'ether'))
+                                                        let tokenInPrice = await Moralis.EvmApi.token.getTokenPrice({
+                                                            "chain": "0x1",
+                                                            "address": tokenLookup[0].contractAddress,
+                                                            "toBlock": tokenLookup[0].blockNumber,
+                                                        });
 
-                                                    tradeOutCount++
-                                                    tokenSoldCount += value
-                                                    soldValue += (bisTokenOutPriceEth) * ((tokenLookup[0].value) / (10 ** tokenInPrice.raw.tokenDecimals))
 
-                                                    if (!tradeOutHashTable.includes(hash.toLowerCase())) {
+                                                        bisTokenOutPriceEth = parseFloat(web3.utils.fromWei((tokenInPrice.raw.nativePrice.value).toString(), 'ether'))
 
-                                                        soldGasValue += gasSpent
-                                                        tradeOutHashTable.push(hash.toLowerCase())
+                                                        tradeOutCount++
+                                                        tokenSoldCount += value
+                                                        soldValue += (bisTokenOutPriceEth) * ((tokenLookup[0].value) / (10 ** tokenInPrice.raw.tokenDecimals))
+
+                                                        if (!tradeOutHashTable.includes(hash.toLowerCase())) {
+
+                                                            soldGasValue += gasSpent
+                                                            tradeOutHashTable.push(hash.toLowerCase())
+
+                                                        }
+
+                                                    } else if (internalLookup.length > 0) {
+
+
+                                                        if (!tradeOutHashTable.includes(hash.toLowerCase())) {
+
+                                                            tradeOutCount++
+                                                            soldValue += parseFloat(web3.utils.fromWei((internalLookup[0].value).toString(), 'ether'))
+                                                            tokenSoldCount += value
+
+                                                            
+                                                            soldGasValue += gasSpent
+                                                            tradeOutHashTable.push(hash.toLowerCase())
+
+                                                        }
 
                                                     }
-
 
 
                                                 } else if (internalLookup.length > 0) {
@@ -539,14 +559,14 @@ module.exports = {
 
 
                                             //ROI Variable
-                                            if (!coinActualPriceEth || !coinActualPriceUsd) {
+                                            if (!coinActualPriceEth && !coinActualPriceUsd && coinActualPriceEth != 0) {
                                                 roi = "N/A"
                                             } else {
                                                 roi = (((((coinActualPriceEth * tokenHeldCount) + totalSoldValue) - totalBuySpent) / totalBuySpent) * 100).toFixed(2)
                                             }
 
-
-                                            if (roi !== 0 && totalBuySpent !== 0) {
+                                        
+                                            if (roi !== 0 && totalBuySpent !== 0 & roi !== 0 || roi !== "NaN" || roi !== 'N/A') {
 
                                                 if (roi > 0) {
                                                     roiPrefix = "+";
@@ -556,7 +576,7 @@ module.exports = {
                                                 }
                                                 roiFormatted = "`" + roiPrefix + parseFloat(roi).toFixed(2) + "%" + "`" + roiSuffix;
 
-                                            } else if (roi === 0 || roi === "NaN") {
+                                            } else if (roi === 0 || roi === "NaN" || roi === 'N/A') {
 
                                                 roiFormatted = "`0.00%`"
 
@@ -577,61 +597,14 @@ module.exports = {
 
 
 
-                                            //On stock les data d'interaction pour le visuel
-                                            await interactionData.destroy({ where: { authorId: authorId, commandName: "cryptoprofit", serverId: serverId } })
-
-                                            await interactionData.create({
-
-                                                authorId: authorId,
-                                                authorName: authorName,
-                                                serverId: serverId,
-                                                walletAddress: walletAddress,
-                                                commandName: "cryptoprofit",
-                                                interactionId: interaction.id,
-                                                walletName: "N/A",
-                                                selecedTimestamp: actualTimestamp,
-                                                embed1: "N/A",
-                                                embed2: "N/A",
-                                                embed3: "N/A",
-                                                pageIndex: "N/A",
-                                                actualPage: "N/A",
-                                                walletCategory: "N/A",
-                                                selectedCollection: coinAddress,
-                                                collectionSlug: "N/A",
-                                                collectionBanner: "N/A",
-                                                avgDeriskPrice: "N/A",
-                                                floorPrice: coinActualPriceEth.toString(),
-                                                lowerMarketlace: "N/A",
-                                                collectionName: coinName + " (" + coinSymbol.toUpperCase() + ")",
-                                                walletCategory: "N/A",
-                                                collectionTwitter: "N/A",
-                                                collectionWebsite: "N/A",
-                                                mintCount: airdropCount.toString(),
-                                                buyCount: tokenBoughtCount.toString(),
-                                                soldCount: tokenSoldCount.toString(),
-                                                remaining: tokenHeldCount.toString(),
-                                                avgBuy: parseFloat(avgBuy).toFixed(3),
-                                                avgSold: parseFloat(avgSold).toFixed(3),
-                                                realisedProfit: parseFloat(realisedProfit).toFixed(3),
-                                                potentialProfit: parseFloat(potentialProfit).toFixed(3),
-                                                roi: roi.toString(),
-                                                visualTitle: "N/A",
-                                                userAvatar: userAvatar,
-                                                nbMembersInvolved: "N/A",
-                                                totalTradeCount: "N/A",
-
-                                            })
-
-
-
-
+                                           
 
 
 
                                             //Embed getRCprofitPrecisedAll
                                             const cryptoProfitOneWallet = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle(coinName + " (" + coinSymbol.toUpperCase() + ")")
-                                                .setDescription(">>> Displaying the profits made by the wallet `" + walletName + "` on `" + coinName + "`.")
+                                                .setTitle(reduceText(coinName, 25) + " (" + coinSymbol.toUpperCase() + ")")
+                                                .setDescription(">>> Displaying the profits made by the wallet `" + walletName + "` on `" + reduceText(coinName, 25) + "`.")
                                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                                 .setImage(chartImageLink) // INSERER TRADING VIEW
                                                 .addFields(
@@ -655,12 +628,63 @@ module.exports = {
                                                     { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(potentialProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                     { name: "Potential ROI", value: roiFormatted, inline: true },
                                                     { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + coinAddress + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + coinAddress + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + coinAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinAddress + ")", inline: false },
-                                                    )
+                                                )
                                                 .setTimestamp()
                                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
                                             await interaction.editReply({ embeds: [cryptoProfitOneWallet], components: [buttonsRow] });
 
+
+
+                                             //On stock les data d'interaction pour le visuel
+                                             await interactionData.destroy({ where: { authorId: authorId, commandName: "cryptoprofit", serverId: serverId } })
+
+                                             await interactionData.create({
+ 
+                                                 authorId: authorId,
+                                                 authorName: authorName,
+                                                 serverId: serverId,
+                                                 walletAddress: walletAddress,
+                                                 commandName: "cryptoprofit",
+                                                 interactionId: interaction.id,
+                                                 walletName: "N/A",
+                                                 selecedTimestamp: actualTimestamp,
+                                                 embed1: "N/A",
+                                                 embed2: "N/A",
+                                                 embed3: "N/A",
+                                                 pageIndex: "N/A",
+                                                 actualPage: "N/A",
+                                                 walletCategory: "N/A",
+                                                 selectedCollection: coinAddress,
+                                                 collectionSlug: "N/A",
+                                                 collectionBanner: "N/A",
+                                                 avgDeriskPrice: "N/A",
+                                                 floorPrice: coinActualPriceEth.toString(),
+                                                 lowerMarketlace: "N/A",
+                                                 collectionName: coinName + " (" + coinSymbol.toUpperCase() + ")",
+                                                 walletCategory: "N/A",
+                                                 collectionTwitter: "N/A",
+                                                 collectionWebsite: "N/A",
+                                                 mintCount: airdropCount.toString(),
+                                                 buyCount: tokenBoughtCount.toString(),
+                                                 soldCount: tokenSoldCount.toString(),
+                                                 remaining: tokenHeldCount.toString(),
+                                                 avgBuy: parseFloat(avgBuy).toFixed(3),
+                                                 avgSold: parseFloat(avgSold).toFixed(3),
+                                                 realisedProfit: parseFloat(realisedProfit).toFixed(3),
+                                                 potentialProfit: parseFloat(potentialProfit).toFixed(3),
+                                                 roi: roi.toString(),
+                                                 visualTitle: "N/A",
+                                                 userAvatar: userAvatar,
+                                                 nbMembersInvolved: "N/A",
+                                                 totalTradeCount: "N/A",
+ 
+                                             })
+ 
+ 
+ 
+
+                                             
 
                                             //On enregistre le call API dans la database
                                             let computeUnits = 10
@@ -786,7 +810,6 @@ module.exports = {
 
 
                                                 let tokenTxnWalletContractTable = tokenTxnWalletContractCall.data.result
-                                                console.log(tokenTxnWalletContractTable)
 
                                                 let tokenTxnWalletContractTableFiltered = tokenTxnWalletContractTable.filter(obj => obj.contractAddress == coinAddress.toLowerCase());
                                                 let internalTxnWalletTable = internalTxnWalletCall.data.result
@@ -908,7 +931,7 @@ module.exports = {
                                                 }
 
 
-
+                                                let tradeOutHashTable = []
                                                 //Ensuite on fait les trade out
                                                 for (const transaction of tradeOutTxn) {
 
@@ -942,26 +965,55 @@ module.exports = {
                                                         }
 
 
-                                                        soldGasValue += gasSpent
+                                                        if (!tradeOutHashTable.includes(hash.toLowerCase())) {
+    
+                                                            soldGasValue += gasSpent
+                                                            tradeOutHashTable.push(hash.toLowerCase())
 
+                                                        }
 
                                                     } else if (tokenLookup.length > 0) {
+                                                        
+                                                        
+                                                        if (tokenLookup[0].from.toLowerCase() != from.toLowerCase()) {
 
-                                                        console.log("C'est un token -> token")
-
-                                                        let tokenInPrice = await Moralis.EvmApi.token.getTokenPrice({
-                                                            "chain": "0x1",
-                                                            "address": tokenLookup[0].contractAddress,
-                                                            "toBlock": tokenLookup[0].blockNumber,
-                                                        });
-
-                                                        bisTokenOutPriceEth = parseFloat(web3.utils.fromWei((tokenInPrice.raw.nativePrice.value).toString(), 'ether'))
-
-                                                        tradeOutCount++
-                                                        tokenSoldCount += value
-                                                        soldGasValue += gasSpent
-                                                        soldValue += (bisTokenOutPriceEth) * ((tokenLookup[0].value) / (10 ** tokenInPrice.raw.tokenDecimals))
-
+                                                            let tokenInPrice = await Moralis.EvmApi.token.getTokenPrice({
+                                                                "chain": "0x1",
+                                                                "address": tokenLookup[0].contractAddress,
+                                                                "toBlock": tokenLookup[0].blockNumber,
+                                                            });
+    
+    
+                                                            bisTokenOutPriceEth = parseFloat(web3.utils.fromWei((tokenInPrice.raw.nativePrice.value).toString(), 'ether'))
+    
+                                                            tradeOutCount++
+                                                            tokenSoldCount += value
+                                                            soldValue += (bisTokenOutPriceEth) * ((tokenLookup[0].value) / (10 ** tokenInPrice.raw.tokenDecimals))
+    
+                                                            if (!tradeOutHashTable.includes(hash.toLowerCase())) {
+    
+                                                                soldGasValue += gasSpent
+                                                                tradeOutHashTable.push(hash.toLowerCase())
+    
+                                                            }
+    
+                                                        } else if (internalLookup.length > 0) {
+    
+    
+                                                            if (!tradeOutHashTable.includes(hash.toLowerCase())) {
+    
+                                                                tradeOutCount++
+                                                                soldValue += parseFloat(web3.utils.fromWei((internalLookup[0].value).toString(), 'ether'))
+                                                                tokenSoldCount += value
+    
+                                                                
+                                                                soldGasValue += gasSpent
+                                                                tradeOutHashTable.push(hash.toLowerCase())
+    
+                                                            }
+    
+                                                        }
+    
 
 
 
@@ -972,8 +1024,14 @@ module.exports = {
 
                                                         tradeOutCount++
                                                         soldValue += parseFloat(web3.utils.fromWei((internalLookup[0].value).toString(), 'ether'))
-                                                        soldGasValue += gasSpent
                                                         tokenSoldCount += value
+
+                                                        if (!tradeOutHashTable.includes(hash.toLowerCase())) {
+    
+                                                            soldGasValue += gasSpent
+                                                            tradeOutHashTable.push(hash.toLowerCase())
+
+                                                        }
                                                     }
 
 
@@ -1031,37 +1089,78 @@ module.exports = {
                                             if (totalBuySpent > 0) { avgBuy = totalBuySpent / tokenBoughtCount }
                                             if (totalSoldValue > 0) { avgSell = totalSoldValue / tokenSoldCount }
 
-                                            //ROI Variable
-                                            if (!coinActualPriceEth || !coinActualPriceUsd) {
-                                                roi = "N/A"
-                                            } else {
-                                                roi = (((((coinActualPriceEth * tokenHeldCount) + totalSoldValue) - totalBuySpent) / totalBuySpent) * 100).toFixed(2)
+                                           //ROI Variable
+                                           if (!coinActualPriceEth && !coinActualPriceUsd && coinActualPriceEth != 0) {
+                                            roi = "N/A"
+                                        } else {
+                                            roi = (((((coinActualPriceEth * tokenHeldCount) + totalSoldValue) - totalBuySpent) / totalBuySpent) * 100).toFixed(2)
+                                        }
+
+                                    
+                                        if (roi !== 0 && totalBuySpent !== 0 & roi !== 0 || roi !== "NaN" || roi !== 'N/A') {
+
+                                            if (roi > 0) {
+                                                roiPrefix = "+";
+                                                roiSuffix = " :chart_with_upwards_trend:";
+                                            } else if (roi < 0) {
+                                                roiSuffix = " :chart_with_downwards_trend:";
                                             }
+                                            roiFormatted = "`" + roiPrefix + parseFloat(roi).toFixed(2) + "%" + "`" + roiSuffix;
+
+                                        } else if (roi === 0 || roi === "NaN" || roi === 'N/A') {
+
+                                            roiFormatted = "`0.00%`"
+
+                                        } else if (!coinActualPriceEth || !coinActualPriceUsd) {
+
+                                            roiFormatted = "`0.00%`"
+
+                                        } else if (totalBuySpent == 0 && (totalSoldValue + tokenHeldCount > 0)) {
+
+                                            roiFormatted = "`INFINITY`<a:RCRich:1044762000837840926>"
+
+                                        }
 
 
-                                            if (roi !== 0 && totalBuySpent !== 0) {
 
-                                                if (roi > 0) {
-                                                    roiPrefix = "+";
-                                                    roiSuffix = " :chart_with_upwards_trend:";
-                                                } else if (roi < 0) {
-                                                    roiSuffix = " :chart_with_downwards_trend:";
-                                                }
-                                                roiFormatted = "`" + roiPrefix + parseFloat(roi).toFixed(2) + "%" + "`" + roiSuffix;
 
-                                            } else if (roi === 0 || roi === "NaN") {
 
-                                                roiFormatted = "`0.00%`"
+                                            //Embed getRCprofitPrecisedAll
+                                            const cryptoProfitOneWallet = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle(reduceText(coinName, 25) + " (" + coinSymbol.toUpperCase() + ")")
+                                                .setDescription(">>> Displaying the profits made on `" + allWalletsAuthorTable.length + "` wallets on `" + reduceText(coinName, 25) + "`.")
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setImage(chartImageLink) // INSERER TRADING VIEW
+                                                .addFields(
+                                                    { name: "Contract", value: "`" + coinAddress.toLowerCase() + "`", inline: false },
+                                                    { name: "Buy Spent", value: "`" + parseFloat(buySpent).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(buySpent * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                    { name: "Buy Gas Spent", value: "`" + parseFloat(buyGasSpent).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(buyGasSpent * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                    { name: "Total Spent", value: "`" + parseFloat(totalBuySpent).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(totalBuySpent * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                    { name: "Sold Value", value: "`" + parseFloat(soldValue).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(soldValue * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                    { name: "Sold Gas Value", value: "`" + parseFloat(soldGasValue).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(soldGasValue * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                    { name: "Total Sold Value", value: "`" + parseFloat(totalSoldValue).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(totalSoldValue * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                    { name: "Token Bought", value: "`" + new Intl.NumberFormat('en-US').format(tokenBoughtCount.toFixed(2)) + "`", inline: true },
+                                                    { name: "Token Sold", value: "`" + new Intl.NumberFormat('en-US').format(tokenSoldCount.toFixed(2)) + "`", inline: true },
+                                                    { name: "Token Held", value: "`" + new Intl.NumberFormat('en-US').format(tokenHeldCount.toFixed(2)) + "`", inline: true },
+                                                    { name: "Trades in", value: "`" + tradeInCount + "`", inline: true },
+                                                    { name: "Trades out", value: "`" + tradeOutCount + "`", inline: true },
+                                                    { name: "Airdrop/Claim", value: "`" + airdropCount + "`", inline: true },
+                                                    { name: "AVG Bought", value: "`" + parseFloat(avgBuy).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgBuy * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                    { name: "AVG Sold", value: "`" + parseFloat(avgSold).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgSold * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                    { name: "AVG Held", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgHeld * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                    { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(realisedProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                    { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(potentialProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                    { name: "Potential ROI", value: roiFormatted, inline: true },
+                                                    { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + coinAddress + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + coinAddress + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + coinAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinAddress + ")", inline: false },
+                                                )
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                                            } else if (!coinActualPriceEth || !coinActualPriceUsd) {
 
-                                                roiFormatted = "`0.00%`"
+                                            await interaction.editReply({ embeds: [cryptoProfitOneWallet], components: [buttonsRow] });
 
-                                            } else if (totalBuySpent == 0 && (totalSoldValue + tokenHeldCount > 0)) {
 
-                                                roiFormatted = "`INFINITY`<a:RCRich:1044762000837840926>"
 
-                                            }
 
 
 
@@ -1114,43 +1213,6 @@ module.exports = {
 
 
 
-
-
-
-
-                                            //Embed getRCprofitPrecisedAll
-                                            const cryptoProfitOneWallet = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle(coinName + " (" + coinSymbol.toUpperCase() + ")")
-                                                .setDescription(">>> Displaying the profits made on `" + allWalletsAuthorTable.length + "` wallets on `" + coinName + "`.")
-                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                .setImage(chartImageLink) // INSERER TRADING VIEW
-                                                .addFields(
-                                                    { name: "Contract", value: "`" + coinAddress.toLowerCase() + "`", inline: false },
-                                                    { name: "Buy Spent", value: "`" + parseFloat(buySpent).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(buySpent * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Buy Gas Spent", value: "`" + parseFloat(buyGasSpent).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(buyGasSpent * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Total Spent", value: "`" + parseFloat(totalBuySpent).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(totalBuySpent * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Sold Value", value: "`" + parseFloat(soldValue).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(soldValue * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Sold Gas Value", value: "`" + parseFloat(soldGasValue).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(soldGasValue * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Total Sold Value", value: "`" + parseFloat(totalSoldValue).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(totalSoldValue * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Token Bought", value: "`" + new Intl.NumberFormat('en-US').format(tokenBoughtCount.toFixed(2)) + "`", inline: true },
-                                                    { name: "Token Sold", value: "`" + new Intl.NumberFormat('en-US').format(tokenSoldCount.toFixed(2)) + "`", inline: true },
-                                                    { name: "Token Held", value: "`" + new Intl.NumberFormat('en-US').format(tokenHeldCount.toFixed(2)) + "`", inline: true },
-                                                    { name: "Trades in", value: "`" + tradeInCount + "`", inline: true },
-                                                    { name: "Trades out", value: "`" + tradeOutCount + "`", inline: true },
-                                                    { name: "Airdrop/Claim", value: "`" + airdropCount + "`", inline: true },
-                                                    { name: "AVG Bought", value: "`" + parseFloat(avgBuy).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgBuy * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "AVG Sold", value: "`" + parseFloat(avgSold).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgSold * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "AVG Held", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgHeld * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(realisedProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(potentialProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Potential ROI", value: roiFormatted, inline: true },
-                                                    { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + coinAddress + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + coinAddress + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + coinAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinAddress + ")", inline: false },
-                                                )
-                                                .setTimestamp()
-                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-
-                                            await interaction.editReply({ embeds: [cryptoProfitOneWallet], components: [buttonsRow] });
 
 
 
@@ -1239,10 +1301,10 @@ module.exports = {
 
 
                             if (accessTier == "") {
-								accessTier = "Free Tier"
-							}
-    
-    
+                                accessTier = "Free Tier"
+                            }
+
+
                             const botOff = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle(`Bot Access`)
                                 .setDescription(">>> Showing the community's bot access")
@@ -1256,164 +1318,164 @@ module.exports = {
                                 )
                                 .setTimestamp()
                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-    
-                            await interaction.editReply({ embeds: [botOff] });
-    
-                        }
-
-
-
-                        } else {
-
-
-                            const botOff = new EmbedBuilder().setColor("#060A8F")
-                                .setTitle(`Bot Access`)
-                                .setDescription(">>> Showing the community's bot access")
-                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                .addFields(
-                                    { name: 'Access Status', value: "`Denied 🔴`", inline: true },
-                                    { name: 'Commands', value: "`Not available`", inline: true },
-                                    { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
-                                )
-                                .setTimestamp()
-                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
                             await interaction.editReply({ embeds: [botOff] });
 
-
-
                         }
+
 
 
                     } else {
 
 
-                        console.log("// Step 2 : Unauthorized - Executed ✅")
-
-
                         const botOff = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle(`Bot status`)
-                            .setDescription(">>> Showing the bot status")
+                            .setTitle(`Bot Access`)
+                            .setDescription(">>> Showing the community's bot access")
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .addFields(
-                                { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
+                                { name: 'Access Status', value: "`Denied 🔴`", inline: true },
                                 { name: 'Commands', value: "`Not available`", inline: true },
-                                { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
+                                { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
                             )
                             .setTimestamp()
-                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
                         await interaction.editReply({ embeds: [botOff] });
 
-                        console.log("// Step 3 : Answer - Executed ✅")
 
 
                     }
 
-                } catch (error) {
+
+                } else {
 
 
-                    console.log("// Error - sent in report ❌")
-
-                    //On envoi une notif
-                    let botId = interaction.applicationId
-                    const botAdmins = await adminsql.findOne({ where: { botId: botId } })
-                    const mainServerId = botAdmins.dataValues.mainServerId
-                    const logChannelId = botAdmins.dataValues.logChannelId
-                    const guild = interaction.client.guilds.cache.get(mainServerId);
-                    const channel = guild.channels.cache.get(logChannelId);
+                    console.log("// Step 2 : Unauthorized - Executed ✅")
 
 
-                    const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
-                    let adminRoleId = adminAccessInfos.dataValues.adminRoleId
-                    let serverName = adminAccessInfos.dataValues.serverName
-                    const userRoleList = interaction.member._roles
-                    let userHighestRole = "Member"
-                    if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-                    let reportCommand = "/cryptoprofit"
-
-
-                    const timeStamp = Date.now();
-                    const date = new Date(timeStamp);
-                    const dateLisible = date.toLocaleString();
-                    const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
-                    const formattedDate = date1.format('Do [of] MMMM YYYY');
-
-
-
-                    //On enregistre le call
-                    await reportsql.create({
-                        botId: botId,
-                        authorId: "Bot",
-                        serverName: serverName,
-                        authorRole: userHighestRole,
-                        serverId: serverId,
-                        date: formattedDate,
-                        reportType: "Bug",
-                        reportCommand: reportCommand,
-                        reportDescription: "```" + error.stack + "```",
-                        reportPriority: "5",
-                        reportState: "Not treated",
-                    })
-
-
-
-                    console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
-
-                    const reduceText = require("../../../functions/reducetext")
-                    const roleTag = "1121510423687090186"
-
-
-                    const updateEmbed = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("New Report")
-                        .setDescription(">>> A new report has just been sent.")
+                    const botOff = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle(`Bot status`)
+                        .setDescription(">>> Showing the bot status")
                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
-                        .setTimestamp()
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
                         .addFields(
-                            { name: " ", value: " ", inline: false },
-                            { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
-                            { name: " ", value: " ", inline: false },
-                            { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
+                            { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
+                            { name: 'Commands', value: "`Not available`", inline: true },
+                            { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
                         )
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-
-                    await channel.send("<@&" + roleTag + ">");
-
-                    await channel.send({ embeds: [updateEmbed] });
-
-
-
-                    const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("An error occured")
-                        .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                         .setTimestamp()
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                    await interaction.editReply({ embeds: [botOff] });
 
-                    await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
+                    console.log("// Step 3 : Answer - Executed ✅")
+
 
                 }
 
-            } else if (interaction.guildId == null) {
+            } catch (error) {
+
+
+                console.log("// Error - sent in report ❌")
+
+                //On envoi une notif
+                let botId = interaction.applicationId
+                const botAdmins = await adminsql.findOne({ where: { botId: botId } })
+                const mainServerId = botAdmins.dataValues.mainServerId
+                const logChannelId = botAdmins.dataValues.logChannelId
+                const guild = interaction.client.guilds.cache.get(mainServerId);
+                const channel = guild.channels.cache.get(logChannelId);
+
+
+                const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
+                let adminRoleId = adminAccessInfos.dataValues.adminRoleId
+                let serverName = adminAccessInfos.dataValues.serverName
+                const userRoleList = interaction.member._roles
+                let userHighestRole = "Member"
+                if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
+                let reportCommand = "/cryptoprofit"
+
+
+                const timeStamp = Date.now();
+                const date = new Date(timeStamp);
+                const dateLisible = date.toLocaleString();
+                const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
+                const formattedDate = date1.format('Do [of] MMMM YYYY');
+
+
+
+                //On enregistre le call
+                await reportsql.create({
+                    botId: botId,
+                    authorId: "Bot",
+                    serverName: serverName,
+                    authorRole: userHighestRole,
+                    serverId: serverId,
+                    date: formattedDate,
+                    reportType: "Bug",
+                    reportCommand: reportCommand,
+                    reportDescription: "```" + error.stack + "```",
+                    reportPriority: "5",
+                    reportState: "Not treated",
+                })
+
+
+
+                console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
+
+                const reduceText = require("../../../functions/reducetext")
+                const roleTag = "1121510423687090186"
+
+
+                const updateEmbed = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("New Report")
+                    .setDescription(">>> A new report has just been sent.")
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+                    .setTimestamp()
+                    .addFields(
+                        { name: " ", value: " ", inline: false },
+                        { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
+                    )
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+                await channel.send("<@&" + roleTag + ">");
+
+                await channel.send({ embeds: [updateEmbed] });
+
+
 
                 const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Aura")
-                    .setDescription(`Hey ${interaction.user.username}, we hope you're doing well !\n\nAlthough this may be possible in the future, Aura cannot be used in DM at the moment. If you want to have access to the bot, go here: <#1108757700885622784>.\n\nIf you have any questions, don't hesitate to contact one of our team member, or directly on Discord here : <#1121110417368956958>.\n\nHave a nice day 👑`)
+                    .setTitle("An error occured")
+                    .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                     .setTimestamp()
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-                await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
-
-
+                await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
 
             }
+
+        } else if (interaction.guildId == null) {
+
+            const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
+                .setTitle("Aura")
+                .setDescription(`Hey ${interaction.user.username}, we hope you're doing well !\n\nAlthough this may be possible in the future, Aura cannot be used in DM at the moment. If you want to have access to the bot, go here: <#1108757700885622784>.\n\nIf you have any questions, don't hesitate to contact one of our team member, or directly on Discord here : <#1121110417368956958>.\n\nHave a nice day 👑`)
+                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                .setTimestamp()
+                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+            await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
+
+
+
+        }
 
     }
 }

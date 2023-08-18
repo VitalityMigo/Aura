@@ -166,7 +166,7 @@ module.exports = {
                                     { name: " ", value: " ", inline: false },
                                     { name: "Status", value: "`Access Denied ❌`", inline: true },
                                     { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
-                                    { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
+                                    { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. In the meantime, you have access to our free commands.", inline: false },
                                 )
                                 .setTimestamp()
                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });

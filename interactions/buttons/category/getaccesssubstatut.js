@@ -82,7 +82,7 @@ module.exports = {
 
                     const walletManager = new EmbedBuilder().setColor("#060A8F")
                         .setTitle("Get Access")
-                        .setDescription("You don't have any ongoing subscription.\n\nYou can gain access to the bot by choosing one of our plans below, simply click on a plan and follow the precised intructions.\n\nIf you need any help, feel free to open a ticket.")
+                        .setDescription("You don't have any ongoing subscription.\n\nYou can gain access to the bot by choosing one of our plans above, simply click on a plan and follow the precised intructions.\n\nIf you need any help, feel free to open a ticket.")
                         .setTimestamp()
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
@@ -96,7 +96,7 @@ module.exports = {
 
                 const walletManager = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("Get Access")
-                    .setDescription("You don't have any ongoing subscription.\n\nYou can gain access to the bot by choosing one of our plans below, simply click on a plan and follow the precised intructions.\n\nIf you need any help, feel free to open a ticket.")
+                    .setDescription("You don't have any ongoing subscription.\n\nYou can gain access to the bot by choosing one of our plans above, simply click on a plan and follow the precised intructions.\n\nIf you need any help, feel free to open a ticket.")
                     .setTimestamp()
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 

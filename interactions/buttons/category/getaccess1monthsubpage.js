@@ -40,7 +40,7 @@ module.exports = {
 
             const walletManager = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("Get Access")
-                .setDescription("Please send 0.02Ξ to the following address : 0x862284B87b774bbEC86c4f13bA6c283C4552AfAB (rollschasers.eth)\n\nOnce it's done, click on the **VERIFY** button above to verify your transaction. Mae sure to send the exact amount of fund.")
+                .setDescription("Please send 0.02Ξ to the following address : 0x862284B87b774bbEC86c4f13bA6c283C4552AfAB (rollschasers.eth)\n\nOnce it's done, click on the **VERIFY** button above to verify your transaction. Make sure to send the exact amount of fund.")
                 .setTimestamp()
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 

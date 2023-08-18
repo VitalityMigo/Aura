@@ -12,13 +12,16 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { profileData, reportsql, paymentHistory, watchlistSql, walletsgenerated, vouchData, wallets, accessSql, interactionData, adminsql, sequelize } = require('../../../events/database');
 const generateRandomString = require("../../../functions/randomkey")
+const moment = require('moment');
 
 
 //Web3 API + Cloudfare Provider
 var Web3 = require("web3")
 const web3 = new Web3("https://cloudflare-eth.com")
 
-
+function isValidEthereumAddress(address) {
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+}
 
 const buttonsRow1 = new ActionRowBuilder()
     .addComponents(
@@ -56,6 +59,8 @@ module.exports = {
 
             //Récupère le password donné par l'utilisateur
             const txnHash = interaction.fields.getTextInputValue('getaccessverifytxnmodalR1');
+
+if(isValidEthereumAddress(txnHash)) {
 
             const rcwallet = "0x862284B87b774bbEC86c4f13bA6c283C4552AfAB"
             const price = 0.02
@@ -172,6 +177,19 @@ module.exports = {
 
             }
 
+
+        } else {
+
+            const walletManager = new EmbedBuilder().setColor("#060A8F")
+            .setTitle("Get Access")
+            .setDescription("The transaction you provided isn't valid because it's not an Ethereum one. \n\nIf you need any help, feel free to open a ticket.")
+            .setTimestamp()
+            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+        await interaction.reply({ embeds: [walletManager], ephemeral: true });
+
+
+    }
             return;
 
         } catch (error) {

@@ -75,9 +75,11 @@ module.exports = {
         .setDescription("Display your profit on a specific coin")
         .addStringOption(option =>
             option
-                .setName("coin")
+                .setName("token")
                 .setDescription("The token address of the coin")
                 .setRequired(true)
+                .setAutocomplete(true)
+
         )
         .addStringOption(option =>
             option

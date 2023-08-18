@@ -17,10 +17,20 @@ const fs = require('fs');
 
 const { apimonitorsql, reportsql, adminsql, wallets, sequelize } = require('../../../events/database');
 const moment = require('moment');
+const reduceText = require("../../../functions/reducetext")
+
+const axios = require('axios')
+
+
 
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
 }
+
+function firstLetterCap(word) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
 
 module.exports = {
     name: "cryptoprofit",
@@ -32,39 +42,141 @@ module.exports = {
 
         try {
 
-            // Extract the focused value from the interaction options
-            const focusedValue = interaction.options.getFocused();
+            const focused = interaction.options.getFocused(true);
+            const focusedOption = focused.name
+            const focusedValue = focused.value
 
-            let authorId = interaction.user.id;
+            const choices = []
 
-            // Retrieve the wallets for the authorID
-            const walletsFilter = await wallets.findAll({ where: { authorId: authorId } });
 
-            const choices = [{ name: "All", value: "All" }]
-            walletsFilter.forEach(elem => {
+            if (focusedOption === "wallet") {
 
-                if (isValidEthereumAddress(elem.walletAddress)) {
 
-                choices.push({ name: elem.walletName + " (" + elem.walletAddress.substring(0, 5) + "..." + elem.walletAddress.substring(elem.walletAddress.length - 4, elem.walletAddress.length) + ")", value: elem.walletAddress })
+
+
+                let authorId = interaction.user.id;
+
+                // Retrieve the wallets for the authorID
+                const walletsFilter = await wallets.findAll({ where: { authorId: authorId } });
+
+                const choices = [{ name: "All", value: "All" }]
+                walletsFilter.forEach(elem => {
+
+                    if (isValidEthereumAddress(elem.walletAddress)) {
+
+                        choices.push({ name: elem.walletName + " (" + elem.walletAddress.substring(0, 5) + "..." + elem.walletAddress.substring(elem.walletAddress.length - 4, elem.walletAddress.length) + ")", value: elem.walletAddress })
+                    }
+                })
+
+
+                // Filter the wallet names based on the focused value
+                const filtered = choices.filter((blaze) => blaze.name.startsWith(focusedValue));
+
+                // Respond with the filtered wallet names as autocomplete choices
+                await interaction.respond(
+
+                    filtered.map((choice) => ({ name: choice.name, value: choice.value }))
+
+
+                ).catch((err) => {
+                    console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                });
+
+                return;
+
+            } else if (focusedOption == "token") {
+
+                if (focusedValue == "") {
+
+                    try {
+
+
+                    } catch (error) {
+
+                        console.log(error)
+                    }
+                } else {
+
+                    try {
+
+                        const callFocus = await axios.get("https://api.dexscreener.com/latest/dex/search?q=" + focusedValue)
+                        const pairWeth = callFocus.data.pairs.filter((item) => item.quoteToken.address === '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2');
+
+
+                        //  console.log(pairWeth)
+                        console.log(focusedValue)
+
+                        let index = 0
+
+
+                        pairWeth.forEach(element => {
+
+                            index++
+
+                            if (element && index <= 20) {
+
+                                if (isValidEthereumAddress(element.baseToken.address) && !isValidEthereumAddress(element.dexId) && element.chainId == "ethereum") {
+
+                                    let dexName = firstLetterCap(element.dexId)
+                                    console.log(element)
+                                    if (dexName.toLowerCase() == "uniswap") {
+
+                                        dexName = dexName + " " + element.labels[0].toUpperCase()
+
+
+                                    }
+
+                                    const projectName = reduceText(element.baseToken.symbol, 25) + " (" + dexName + ")"
+                                    const pjAddress = element.baseToken.address
+                                    const volume = element.volume.h24
+
+                                    choices.push({ name: projectName, value: pjAddress });
+
+
+                                    // const existingCollection = choices.find(c => c.name === element.name);
+                                    // if (existingCollection) {
+                                    //     console.log(element.name + " = " + existingCollection.name)
+                                    //     console.log(element.allTimeVolume + " = " + existingCollection.volume)
+
+                                    //     if (obj.volume > existingCollection.volume) {
+                                    //         existingCollection.name = obj.name;
+                                    //         existingCollection.id = obj.id;
+                                    //         existingCollection.volume = obj.volume;
+                                    //     }
+                                    // } else {
+                                    //     choices.push({ name: projectName, value: pjAddress });
+                                    // }
+
+                                }
+                            }
+                        });
+
+
+
+                        console.log(choices)
+
+
+                        interaction.respond(
+                            choices.map((choice) => ({ name: choice.name, value: choice.value }))
+                        ).catch((err) => {
+                            console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                        });
+
+
+
+                        //On stock le call API
+                        // const timeStamp = Date.now();
+                        // apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
+                        return;
+
+
+                    } catch (error) {
+
+                        console.log(error)
+
+                    }
+                }
             }
-            })
-
-
-            // Filter the wallet names based on the focused value
-            const filtered = choices.filter((blaze) => blaze.name.startsWith(focusedValue));
-
-            // Respond with the filtered wallet names as autocomplete choices
-            await interaction.respond(
-
-                filtered.map((choice) => ({ name: choice.name, value: choice.value }))
-
-
-            ).catch((err) => {
-                console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
-            });
-
-            return;
-
         } catch (error) {
 
 

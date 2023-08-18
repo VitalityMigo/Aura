@@ -270,9 +270,9 @@ module.exports = {
                                         if (maxSupply == "NaN") { maxSupply = "No limit." }
                                         if (circulatingSupply == "NaN") { circulatingSupply = Intl.NumberFormat('en-US').format(parseFloat(coinStats.data.data.coin.supply.total).toFixed(0)) }
 
-
+                                        
                                         //On met en forme les liens
-                                        let linksFormatted = ""
+                                        let linksFormatted = "[satswatcher](https://satswatcher.io/token/" + coinTicker.toUpperCase() + ") ∙ "
                                         for (const links of coinStats.data.data.coin.links) {
 
                                             let name = links.name
@@ -514,10 +514,11 @@ module.exports = {
 
                                             let wallet = formatWallet(holder.wallet_address)
                                             let amount = formatCoinValueSign(holder.amount, 2)
-                                            let value = new Intl.NumberFormat('en-US').format(formatCoinValueSign(holder.amount * coinActualPriceUsd, 2))
+                                            let value = formatCoinValueSign(holder.amount * coinActualPriceUsd, 2)
                                             let share = parseFloat((holder.amount / supply) * 100).toFixed(1)
 
 
+                                            
                                             //Formattage
                                             let part1 = "`" + wallet.toLowerCase()
                                             let part2 = amount
@@ -569,7 +570,7 @@ module.exports = {
                                                 { name: "Liquidity", value: "`" + liquidity + "$`", inline: true },
                                                 { name: "Pooled ETH", value: "`" + poolGrowth + "Ξ`", inline: true },
                                                 { name: "Dev. Balance", value: "`" + devBalance + "`", inline: true },
-                                                { name: "Mint Statut", value: "`" + isMintable + "`", inline: true },
+                                                { name: "Mintable", value: "`" + isMintable + "`", inline: true },
                                                 { name: "Honeypot", value: "`" + isHoneyPot + "`", inline: true },
                                                 { name: "Ownership", value: "`" + ownership + "`", inline: true },
                                                 { name: "1H Volume", value: "`" + parseFloat(volume1h / ethPriceUsd).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume1h).toFixed(0)) + "$)`", inline: true },

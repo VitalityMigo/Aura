@@ -514,7 +514,7 @@ module.exports = {
 
                                             let wallet = formatWallet(holder.wallet_address)
                                             let amount = formatCoinValueSign(holder.amount, 2)
-                                            let value = formatCoinValueSign(holder.amount * coinActualPriceUsd, 2)
+                                            let value = new Intl.NumberFormat('en-US').format(formatCoinValueSign(holder.amount * coinActualPriceUsd, 2))
                                             let share = parseFloat((holder.amount / supply) * 100).toFixed(1)
 
 

@@ -10,6 +10,7 @@ const { profileData, accessSql, reportsql, interactionData, wallets, apimonitors
 const moment = require('moment');
 const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
 const getContract = require("../../../functions/getContract")
+const reduceText = require("../../../functions/reducetext")
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -563,7 +564,7 @@ module.exports = {
                                         if (holdersFormatted == "") { holdersFormatted = "No holders found for this token" }
 
                                         const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
-                                            .setTitle(coinName + " (" + coinSymbol.toUpperCase() + ")")
+                                            .setTitle((reduceTextcoinName, 30) + " (" + coinSymbol.toUpperCase() + ")")
                                             .setDescription(">>> Displaying data for `$" + coinSymbol.toUpperCase() + "`.")
                                             .setAuthor({ name: authorName, iconURL: userAvatar })
                                             .setImage(chartImageLink)

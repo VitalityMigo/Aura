@@ -603,8 +603,8 @@ module.exports = {
 
                                             //Embed getRCprofitPrecisedAll
                                             const cryptoProfitOneWallet = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle(reduceText(coinName, 25) + " (" + coinSymbol.toUpperCase() + ")")
-                                                .setDescription(">>> Displaying the profits made by the wallet `" + walletName + "` on `" + reduceText(coinName, 25) + "`.")
+                                                .setTitle(reduceText(coinName, 35) + " (" + coinSymbol.toUpperCase() + ")")
+                                                .setDescription(">>> Displaying the profits made by the wallet `" + walletName + "` on `" + coinSymbol + "`.")
                                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                                 .setImage(chartImageLink) // INSERER TRADING VIEW
                                                 .addFields(
@@ -1127,8 +1127,8 @@ module.exports = {
 
                                             //Embed getRCprofitPrecisedAll
                                             const cryptoProfitOneWallet = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle(reduceText(coinName, 25) + " (" + coinSymbol.toUpperCase() + ")")
-                                                .setDescription(">>> Displaying the profits made on `" + allWalletsAuthorTable.length + "` wallets on `" + reduceText(coinName, 25) + "`.")
+                                                .setTitle(reduceText(coinName, 35) + " (" + coinSymbol.toUpperCase() + ")")
+                                                .setDescription(">>> Displaying the profits made on `" + allWalletsAuthorTable.length + "` wallets on `" + coinSymbol + "`.")
                                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                                 .setImage(chartImageLink) // INSERER TRADING VIEW
                                                 .addFields(

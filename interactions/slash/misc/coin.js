@@ -564,7 +564,7 @@ module.exports = {
                                         if (holdersFormatted == "") { holdersFormatted = "No holders found for this token" }
 
                                         const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
-                                            .setTitle((reduceTextcoinName, 30) + " (" + coinSymbol.toUpperCase() + ")")
+                                            .setTitle(reduceText(coinName, 40) + " (" + coinSymbol.toUpperCase() + ")")
                                             .setDescription(">>> Displaying data for `$" + coinSymbol.toUpperCase() + "`.")
                                             .setAuthor({ name: authorName, iconURL: userAvatar })
                                             .setImage(chartImageLink)

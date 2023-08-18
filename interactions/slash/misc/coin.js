@@ -403,8 +403,6 @@ module.exports = {
 
 
 
-
-
                                         const response = await Moralis.EvmApi.token.getTokenPrice({
                                             "chain": "0x1",
                                             "address": coinTicker,
@@ -460,6 +458,8 @@ module.exports = {
 
                                         if (values.length > 0) {
 
+                                            console.log(values[0])
+
                                             owner = values[0].owner_address;
                                             deployerBalance = values[0].creator_balance;
                                             ownerBalance = values[0].owner_balance
@@ -467,6 +467,12 @@ module.exports = {
                                             supply = values[0].total_supply
                                             mintable = values[0].is_mintable
                                         }
+
+                                        console.log("ici")
+                                        console.log("dep " + deployerBalance)
+                                        console.log("own " + ownerBalance)
+                                        console.log("price " + coinActualPriceUsd)
+                                        console.log("supply " + supply)
 
                                         if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dead") {
 
@@ -478,6 +484,12 @@ module.exports = {
                                             ownership = "❌ Not renounced"
                                             devBalance = parseFloat(((deployerBalance + ownerBalance) * coinActualPriceUsd) / ethPriceUsd).toFixed(3) + "Ξ (" + parseFloat(((deployerBalance + ownerBalance) / supply) * 100).toFixed(1) + "%)"
 
+                                        }
+
+
+                                        if (devBalance.startsWith("NaN")) { 
+                                            devBalance = "0.000Ξ (0.0%)"
+                                            console.log("bug dev balance") 
                                         }
 
                                         if (honeypot == "0") { isHoneyPot = "✅ No" }

@@ -501,7 +501,7 @@ module.exports = {
                         .setDescription(`>>> All the Bitcoin wallets registered in ${authorName}'s portfolio`)
                         .addFields(
                             { name: ' ', value: " ", inline: false },
-                            { name: 'ETH Wallets', value: "`" + totalWalletETH + " addresses`", inline: true },
+                            { name: 'BTC Wallets', value: "`" + totalWalletETH + " addresses`", inline: true },
                             { name: 'Total Balance', value: "`" + parseFloat(totalValueEth).toFixed(3) + "₿ (" + new Intl.NumberFormat('en-US').format(parseFloat(totalValueEth * priceETH).toFixed(2)) + "$)`", inline: true },
                         ).setTimestamp()
                         .setAuthor({ name: authorName, iconURL: userAvatar })
@@ -815,7 +815,7 @@ module.exports = {
                         .setDescription(`>>> All the Bitcoin wallets registered in ${authorName}'s portfolio`)
                         .addFields(
                             { name: ' ', value: " ", inline: false },
-                            { name: 'ETH Wallets', value: "`" + totalWalletETH + " addresses`", inline: true },
+                            { name: 'BTC Wallets', value: "`" + totalWalletETH + " addresses`", inline: true },
                             { name: 'Total Balance', value: "`" + parseFloat(totalValueEth).toFixed(3) + "₿ (" + new Intl.NumberFormat('en-US').format(parseFloat(totalValueEth * priceETH).toFixed(2)) + "$)`", inline: true },
                         ).setTimestamp()
                         .setAuthor({ name: authorName, iconURL: userAvatar })

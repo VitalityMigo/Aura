@@ -163,7 +163,7 @@ module.exports = {
 
                                 //Variable pour les options
                                 const coinTicker = interaction.options.getString("coin")
-console.log(coinTicker)
+                                console.log(coinTicker)
                                 //Récupère le prix de l'ETH
                                 const ethCallPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
                                 let ethPriceUsd = ethCallPrice.data.result.ethusd
@@ -377,10 +377,19 @@ console.log(coinTicker)
                                     let holdersFormatted = ""
                                     let holdersCount = "N/A"
 
-
+                                    let owner = "N/A"
+                                    let deployerBalance = 0
+                                    let supply = 0
+                                    let marketcap = 0
+                                    let honeypot
+                                    let isHoneyPot = "N/A"
+                                    let devBalance = 0
+                                    let mintable
+                                    let isMintable = "N/A"
 
                                     //On récupère les infos du coin
                                     const coinInfos = await alchemy.core.getTokenMetadata(coinTicker)
+
                                     if (coinInfos.symbol !== "") {
 
 
@@ -440,13 +449,55 @@ console.log(coinTicker)
 
                                         }
 
-                                        //Supply
-                                        const coinSupply = await axios.get("https://api.etherscan.io/api?module=stats&action=tokensupply&contractaddress=" + coinTicker + "&apikey=" + etherscanApiKey)
-                                        let supply = parseFloat((coinSupply.data.result) / (10 ** coinDecimal)).toFixed(0)
-
-                                        let marketcap = supply * coinActualPriceUsd
 
 
+                                        const goPlusCall = await axios.get("https://api.gopluslabs.io/api/v1/token_security/1?contract_addresses=" + coinTicker)
+                                        const contractAudit = goPlusCall.data.result
+
+
+                                        const values = Object.values(contractAudit)
+                                        console.log(values)
+
+                                        if (values.length > 0) {
+
+                                            owner = values[0].owner_address;
+                                            deployerBalance = values[0].creator_balance;
+                                            ownerBalance = values[0].owner_balance
+                                            honeypot = values[0].is_honeypot
+                                            supply = values[0].total_supply
+                                            mintable = values[0].is_mintable
+                                        }
+
+                                        if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dEaD") {
+
+                                            ownership = "✅ Renounced"
+                                            devBalance = parseFloat((deployerBalance * coinActualPriceUsd) / ethPriceUsd).toFixed(3) + "Ξ (" + parseFloat((deployerBalance / supply) * 100).toFixed(1) + "%)"
+
+                                        } else {
+
+                                            ownership = "❌ Not renounced"
+                                            devBalance = parseFloat(((deployerBalance + ownerBalance) * coinActualPriceUsd) / ethPriceUsd).toFixed(3) + "Ξ (" + parseFloat(((deployerBalance + ownerBalance) / supply) * 100).toFixed(1) + "%)"
+
+                                        }
+
+                                        if (honeypot == "0") { isHoneyPot = "✅ No" }
+                                        else if (honeypot == "1") { isHoneyPot = "❌ Yes" }
+                                        else { isHoneyPot = "⚠️ No data" }
+
+                                        if (mintable == "0") { isMintable = "✅ No" }
+                                        else if (mintable == "1") { isMintable = "❌ Yes" }
+                                        else { isMintable = "⚠️ No data" }
+
+
+
+
+
+                                        marketcap = supply * coinActualPriceUsd
+
+
+
+
+                                        // FORMAT DES HOLDERS
                                         let holdersTable
                                         await chainbase.getTopTokenHolders({ chain_id: '1', contract_address: coinTicker, page: '1', limit: '8', 'x-api-key': chainbaseApiKey })
                                             .then(async ({ data: holdersData }) => {
@@ -455,7 +506,6 @@ console.log(coinTicker)
                                                 holdersCount = holdersData.count
 
                                             })
-
 
 
 
@@ -489,16 +539,14 @@ console.log(coinTicker)
 
 
 
-                                        //On commence l'audit 
-                                        const contract = await getContract(coinTicker)
+                                        // //On commence l'audit 
+                                        // const contract = await getContract(coinTicker)
+                                        // const circulating = await contract.methods.totalSupply().call();
+                                        // currentSupply = circulating / (10 ** coinDecimal)
 
-                                        const owner = await contract.methods.owner().call();
-                                        if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dEaD") { ownership = "✅ Renounced" }
-                                        else { ownership = "❌ Not renounced" }
 
-                                        const circulating = await contract.methods.totalSupply().call();
-                                        currentSupply = circulating / (10 ** coinDecimal)
 
+                                        console.log(devBalance)
                                         if (holdersFormatted == "") { holdersFormatted = "No holders found for this token" }
 
                                         const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
@@ -513,13 +561,16 @@ console.log(coinTicker)
                                                 { name: "USD Price", value: "`" + coinActualPriceUsd + "$`", inline: true },
                                                 { name: " ", value: " ", inline: true },
                                                 { name: "Supply", value: "`" + formatCoinValueSign(supply, 2) + "`", inline: true },
-                                                { name: "Circulating Supply", value: "`" + formatCoinValueSign(currentSupply, 2) + "`", inline: true },
+                                                { name: "Circulating Supply", value: "`" + formatCoinValueSign(supply, 2) + "`", inline: true },
                                                 { name: "Buys 24h | Sells 24h", value: "`📈" + inTrades + "|📉" + outTrades + "`", inline: true },
                                                 { name: "Market Cap", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(marketcap).toFixed(0)) + "$`", inline: true },
                                                 { name: "FDV", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(fdv).toFixed(0)) + "$`", inline: true },
                                                 { name: "Holders Count", value: "`" + holdersCount + "`", inline: true },
                                                 { name: "Liquidity", value: "`" + liquidity + "$`", inline: true },
                                                 { name: "Pooled ETH", value: "`" + poolGrowth + "Ξ`", inline: true },
+                                                { name: "Dev. Balance", value: "`" + devBalance + "`", inline: true },
+                                                { name: "Mint Statut", value: "`" + isMintable + "`", inline: true },
+                                                { name: "Honeypot", value: "`" + isHoneyPot + "`", inline: true },
                                                 { name: "Ownership", value: "`" + ownership + "`", inline: true },
                                                 { name: "1H Volume", value: "`" + parseFloat(volume1h / ethPriceUsd).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume1h).toFixed(0)) + "$)`", inline: true },
                                                 { name: "6H Volume", value: "`" + parseFloat(volume6h / ethPriceUsd).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume6h).toFixed(0)) + "$)`", inline: true },
@@ -527,7 +578,7 @@ console.log(coinTicker)
                                                 { name: "1H Price Change", value: "`" + evolution1h + "%`", inline: true },
                                                 { name: "6H Price Change", value: "`" + evolution6h + "%`", inline: true },
                                                 { name: "1D Price Change", value: "`" + evolution1d + "%`", inline: true },
-                                                { name: " ", value: " ", inline: true },
+                                                //{ name: " ", value: " ", inline: true },
                                                 { name: "Holders:", value: holdersFormatted, inline: false },
                                                 { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinTicker + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + coinTicker + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + coinTicker + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + coinTicker + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinTicker + ")", inline: false },
 

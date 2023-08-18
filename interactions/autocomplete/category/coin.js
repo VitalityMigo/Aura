@@ -96,11 +96,16 @@ try {
 
                     if (element && index <= 20) {
 
-                        if (isValidEthereumAddress(element.baseToken.address) && !isValidEthereumAddress(element.dexId)) {
+                        if (isValidEthereumAddress(element.baseToken.address) && !isValidEthereumAddress(element.dexId) && element.chainId == "ethereum") {
 
                             let dexName = firstLetterCap(element.dexId)
-                            console.log(dexName)
-                            if (dexName.toLowerCase() == "uniswap") { dexName = dexName + " " + element.labels[0].toUpperCase() }
+                            console.log(element)
+                            if (dexName.toLowerCase() == "uniswap") { 
+                                
+                                dexName = dexName + " " + element.labels[0].toUpperCase() 
+                            
+                            
+                            }
 
                             const projectName = reduceText(element.baseToken.symbol, 25) + " (" + dexName + ")"
                             const pjAddress = element.baseToken.address

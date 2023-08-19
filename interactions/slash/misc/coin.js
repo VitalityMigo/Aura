@@ -182,7 +182,7 @@ module.exports = {
 
                                     const symbolLookup = await axios.get(" https://api.coinranking.com/v2/coins?search=" + coinTicker + "&referenceCurrencyUuid=razxDUgYGNAdQ")
 
-
+console.log(symbolLookup.data.data)
 
                                     if (symbolLookup.data.data.coins.length > 0) {
 

@@ -97,6 +97,8 @@ async function intervalalerts(client) {
                                     Marketplace = '[<:blur:1062318577782378516> Blur](https://blur.io/collection/' + elem.collection + ')'
                                 }
 
+                                let linksFormatted = ""
+
                                 getfpEmbedUp.setTitle(`${elem.collectionName}`)
                                     .setAuthor({ name: "RC-Bot", iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png', url: 'https://twitter.com/jayzhvj_eth' })
                                     .setDescription("The upward alert for **" + elem.collectionName + "** has been triggered <a:ol_gifsc_PepeMoneyRain87:1039923196163526676>")

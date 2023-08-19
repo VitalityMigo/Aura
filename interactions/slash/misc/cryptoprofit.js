@@ -560,7 +560,7 @@ module.exports = {
                                             if (tokenHeldCount > 0) { avgHeld = coinActualPriceEth * tokenHeldCount }
                                             if (totalBuySpent > 0) { avgBuy = (totalBuySpent / tokenBoughtCount) * coinSupply }
                                             if (totalSoldValue > 0) { avgSell = (totalSoldValue / tokenSoldCount) * coinSupply }
-console.log(totalSoldValue)
+                                            console.log(totalSoldValue)
 
                                             //ROI Variable
                                             if (!coinActualPriceEth && !coinActualPriceUsd && coinActualPriceEth != 0) {
@@ -625,8 +625,8 @@ console.log(totalSoldValue)
                                                     { name: "Trades in", value: "`" + tradeInCount + "`", inline: true },
                                                     { name: "Trades out", value: "`" + tradeOutCount + "`", inline: true },
                                                     { name: "Airdrop/Claim", value: "`" + airdropCount + "`", inline: true },
-                                                    { name: "AVG MC Bought", value: "`" + formatCoinValueSign(avgBuy * ethUsdPrice) + "$`", inline: true },
-                                                    { name: "AVG MC Sold", value: "`" + formatCoinValueSign(avgSell * ethUsdPrice) + "$`", inline: true },
+                                                    { name: "AVG MC Bought", value: "`" + parseFloat(avgBuy).toFixed(3) + "Ξ (" + formatCoinValueSign(avgBuy * ethUsdPrice) + "$)`", inline: true },
+                                                    { name: "AVG MC Sold", value: "`" + parseFloat(avgSell).toFixed(3) + "Ξ (" + formatCoinValueSign(avgSell * ethUsdPrice) + "$)`", inline: true },
                                                     { name: "Held Value", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgHeld * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                     { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(realisedProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                     { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(potentialProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
@@ -1153,8 +1153,8 @@ console.log(totalSoldValue)
                                                     { name: "Trades in", value: "`" + tradeInCount + "`", inline: true },
                                                     { name: "Trades out", value: "`" + tradeOutCount + "`", inline: true },
                                                     { name: "Airdrop/Claim", value: "`" + airdropCount + "`", inline: true },
-                                                    { name: "AVG MC Bought", value: "`" + formatCoinValueSign(avgBuy * ethUsdPrice) + "$`", inline: true },
-                                                    { name: "AVG MC Sold", value: "`" + formatCoinValueSign(avgSell * ethUsdPrice) + "$`", inline: true },
+                                                    { name: "AVG MC Bought", value: "`" + parseFloat(avgBuy).toFixed(3) + "Ξ (" + formatCoinValueSign(avgBuy * ethUsdPrice) + "$)`", inline: true },
+                                                    { name: "AVG MC Sold", value: "`" + parseFloat(avgSell).toFixed(3) + "Ξ (" + formatCoinValueSign(avgSell * ethUsdPrice) + "$)`", inline: true },
                                                     { name: "Held Value", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgHeld * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                     { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(realisedProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                     { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(potentialProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },

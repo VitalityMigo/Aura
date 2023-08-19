@@ -182,7 +182,6 @@ module.exports = {
 
                                     const symbolLookup = await axios.get(" https://api.coinranking.com/v2/coins?search=" + coinTicker + "&referenceCurrencyUuid=razxDUgYGNAdQ")
 
-console.log(symbolLookup.data.data)
 
                                     if (symbolLookup.data.data.coins.length > 0) {
 
@@ -200,6 +199,8 @@ console.log(symbolLookup.data.data)
 
 
                                         const coinStats = await axios.get("https://api.coinranking.com/v2/coin/" + coinId)
+
+                                        if (coinStats.data.data.coin.tags.includes("brc-20")) {
 
                                         let actualSupply = coinStats.data.data.coin.supply.total
                                         let circulatingSupply = Intl.NumberFormat('en-US').format(parseFloat(coinStats.data.data.coin.supply.circulating).toFixed(0))
@@ -263,7 +264,7 @@ console.log(symbolLookup.data.data)
 
 
 
-
+   
 
 
 
@@ -340,6 +341,25 @@ console.log(symbolLookup.data.data)
                                         await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinInfo", apiProvider: "coinranking", timestamp: timeStamp.toString() })
                                         await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinStats", apiProvider: "coinranking", timestamp: timeStamp.toString() })
                                         await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinPriceHistory", apiProvider: "coinranking", timestamp: timeStamp.toString() })
+
+
+                                    } else {
+
+                                        const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle("Coin")
+                                            .setDescription("The token symbol you entered `" + coinTicker + "` isn't a valid BRC20 token symbol. If the token you'd like to analyze is an ERC20 token, please enter the Ethereum token address instead. If it's a BRC20 token, please enter a valid token symbol.")
+                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                        await interaction.editReply({ embeds: [getDataCollectionAddress] });
+
+
+
+                                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinInfo", apiProvider: "coinranking", timestamp: timeStamp.toString() })
+
+                                    }
 
                                     } else {
 

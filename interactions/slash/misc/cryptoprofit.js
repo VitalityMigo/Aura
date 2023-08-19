@@ -10,6 +10,7 @@ const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 const reduceText = require("../../../functions/reducetext")
+const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -198,7 +199,7 @@ module.exports = {
                                 let realisedProfit = 0
                                 let potentialProfit = 0
                                 let avgBuy = 0
-                                let avgSold = 0
+                                let avgSell = 0
                                 let avgHeld = 0
 
                                 let coinName = "Ethereum"
@@ -248,10 +249,13 @@ module.exports = {
 
                                             //On récupère les infos du coin
                                             const coinInfos = await alchemy.core.getTokenMetadata(coinAddress)
+                                            const callSupply = await axios.get("https://api.etherscan.io/api?module=stats&action=tokensupply&contractaddress=" + coinAddress + "&apikey=" + etherscanApiKey)
+
 
                                             coinName = coinInfos.name
                                             coinSymbol = coinInfos.symbol
                                             coinDecimal = coinInfos.decimals
+                                            coinSupply = callSupply.data.result / (10 ** coinDecimal)
 
                                             //On load l'image
                                             chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
@@ -377,7 +381,7 @@ module.exports = {
 
                                                         console.log("c'est un ETH -> token")
 
-                                                    
+
 
 
 
@@ -483,7 +487,7 @@ module.exports = {
                                                             soldValue += parseFloat(web3.utils.fromWei((internalLookup[0].value).toString(), 'ether'))
                                                             tokenSoldCount += value
 
-                                                            
+
                                                             soldGasValue += gasSpent
                                                             tradeOutHashTable.push(hash.toLowerCase())
 
@@ -553,10 +557,10 @@ module.exports = {
                                             realisedProfit = totalSoldValue - totalBuySpent
                                             potentialProfit = realisedProfit + (coinActualPriceEth * tokenHeldCount)
 
-                                            if (tokenHeldCount > 0) { heldValue = (coinActualPriceEth * tokenHeldCount) / tokenHeldCount }
-                                            if (totalBuySpent > 0) { avgBuy = totalBuySpent / tokenBoughtCount }
-                                            if (totalSoldValue > 0) { avgSell = totalSoldValue / tokenSoldCount }
-
+                                            if (tokenHeldCount > 0) { avgHeld = coinActualPriceEth * tokenHeldCount }
+                                            if (totalBuySpent > 0) { avgBuy = (totalBuySpent / tokenBoughtCount) * coinSupply }
+                                            if (totalSoldValue > 0) { avgSell = (totalSoldValue / tokenSoldCount) * coinSupply }
+console.log(totalSoldValue)
 
                                             //ROI Variable
                                             if (!coinActualPriceEth && !coinActualPriceUsd && coinActualPriceEth != 0) {
@@ -565,7 +569,7 @@ module.exports = {
                                                 roi = (((((coinActualPriceEth * tokenHeldCount) + totalSoldValue) - totalBuySpent) / totalBuySpent) * 100).toFixed(2)
                                             }
 
-                                        
+
                                             if (roi !== 0 && totalBuySpent !== 0 & roi !== 0 || roi !== "NaN" || roi !== 'N/A') {
 
                                                 if (roi > 0) {
@@ -597,7 +601,7 @@ module.exports = {
 
 
 
-                                           
+
 
 
 
@@ -621,9 +625,9 @@ module.exports = {
                                                     { name: "Trades in", value: "`" + tradeInCount + "`", inline: true },
                                                     { name: "Trades out", value: "`" + tradeOutCount + "`", inline: true },
                                                     { name: "Airdrop/Claim", value: "`" + airdropCount + "`", inline: true },
-                                                    { name: "AVG Bought", value: "`" + parseFloat(avgBuy).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgBuy * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "AVG Sold", value: "`" + parseFloat(avgSold).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgSold * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "AVG Held", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgHeld * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                    { name: "AVG MC Bought", value: "`" + formatCoinValueSign(avgBuy * ethUsdPrice) + "$`", inline: true },
+                                                    { name: "AVG MC Sold", value: "`" + formatCoinValueSign(avgSell * ethUsdPrice) + "$`", inline: true },
+                                                    { name: "Held Value", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgHeld * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                     { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(realisedProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                     { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(potentialProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                     { name: "Potential ROI", value: roiFormatted, inline: true },
@@ -636,55 +640,55 @@ module.exports = {
 
 
 
-                                             //On stock les data d'interaction pour le visuel
-                                             await interactionData.destroy({ where: { authorId: authorId, commandName: "cryptoprofit", serverId: serverId } })
+                                            //On stock les data d'interaction pour le visuel
+                                            await interactionData.destroy({ where: { authorId: authorId, commandName: "cryptoprofit", serverId: serverId } })
 
-                                             await interactionData.create({
- 
-                                                 authorId: authorId,
-                                                 authorName: authorName,
-                                                 serverId: serverId,
-                                                 walletAddress: walletAddress,
-                                                 commandName: "cryptoprofit",
-                                                 interactionId: interaction.id,
-                                                 walletName: "N/A",
-                                                 selecedTimestamp: actualTimestamp,
-                                                 embed1: "N/A",
-                                                 embed2: "N/A",
-                                                 embed3: "N/A",
-                                                 pageIndex: "N/A",
-                                                 actualPage: "N/A",
-                                                 walletCategory: "N/A",
-                                                 selectedCollection: coinAddress,
-                                                 collectionSlug: "N/A",
-                                                 collectionBanner: "N/A",
-                                                 avgDeriskPrice: "N/A",
-                                                 floorPrice: coinActualPriceEth.toString(),
-                                                 lowerMarketlace: "N/A",
-                                                 collectionName: coinName + " (" + coinSymbol.toUpperCase() + ")",
-                                                 walletCategory: "N/A",
-                                                 collectionTwitter: "N/A",
-                                                 collectionWebsite: "N/A",
-                                                 mintCount: airdropCount.toString(),
-                                                 buyCount: tokenBoughtCount.toString(),
-                                                 soldCount: tokenSoldCount.toString(),
-                                                 remaining: tokenHeldCount.toString(),
-                                                 avgBuy: parseFloat(avgBuy).toFixed(3),
-                                                 avgSold: parseFloat(avgSold).toFixed(3),
-                                                 realisedProfit: parseFloat(realisedProfit).toFixed(3),
-                                                 potentialProfit: parseFloat(potentialProfit).toFixed(3),
-                                                 roi: roi.toString(),
-                                                 visualTitle: "N/A",
-                                                 userAvatar: userAvatar,
-                                                 nbMembersInvolved: "N/A",
-                                                 totalTradeCount: "N/A",
- 
-                                             })
- 
- 
- 
+                                            await interactionData.create({
 
-                                             
+                                                authorId: authorId,
+                                                authorName: authorName,
+                                                serverId: serverId,
+                                                walletAddress: walletAddress,
+                                                commandName: "cryptoprofit",
+                                                interactionId: interaction.id,
+                                                walletName: "N/A",
+                                                selecedTimestamp: actualTimestamp,
+                                                embed1: "N/A",
+                                                embed2: "N/A",
+                                                embed3: "N/A",
+                                                pageIndex: "N/A",
+                                                actualPage: "N/A",
+                                                walletCategory: "N/A",
+                                                selectedCollection: coinAddress,
+                                                collectionSlug: "N/A",
+                                                collectionBanner: "N/A",
+                                                avgDeriskPrice: "N/A",
+                                                floorPrice: coinActualPriceEth.toString(),
+                                                lowerMarketlace: "N/A",
+                                                collectionName: coinName + " (" + coinSymbol.toUpperCase() + ")",
+                                                walletCategory: "N/A",
+                                                collectionTwitter: "N/A",
+                                                collectionWebsite: "N/A",
+                                                mintCount: airdropCount.toString(),
+                                                buyCount: tokenBoughtCount.toString(),
+                                                soldCount: tokenSoldCount.toString(),
+                                                remaining: tokenHeldCount.toString(),
+                                                avgBuy: parseFloat(avgBuy).toFixed(3),
+                                                avgSold: parseFloat(avgSell).toFixed(3),
+                                                realisedProfit: parseFloat(realisedProfit).toFixed(3),
+                                                potentialProfit: parseFloat(potentialProfit).toFixed(3),
+                                                roi: roi.toString(),
+                                                visualTitle: "N/A",
+                                                userAvatar: userAvatar,
+                                                nbMembersInvolved: "N/A",
+                                                totalTradeCount: "N/A",
+
+                                            })
+
+
+
+
+
 
                                             //On enregistre le call API dans la database
                                             let computeUnits = 10
@@ -760,9 +764,13 @@ module.exports = {
 
                                             //On récupère les infos du coin
                                             const coinInfos = await alchemy.core.getTokenMetadata(coinAddress)
+                                            const callSupply = await axios.get("https://api.etherscan.io/api?module=stats&action=tokensupply&contractaddress=" + coinAddress + "&apikey=" + etherscanApiKey)
+
+
                                             coinName = coinInfos.name
                                             coinSymbol = coinInfos.symbol
                                             coinDecimal = coinInfos.decimals
+                                            coinSupply = callSupply.data.result / (10 ** coinDecimal)
 
                                             //On load l'image
                                             chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
@@ -966,15 +974,15 @@ module.exports = {
 
 
                                                         if (!tradeOutHashTable.includes(hash.toLowerCase())) {
-    
+
                                                             soldGasValue += gasSpent
                                                             tradeOutHashTable.push(hash.toLowerCase())
 
                                                         }
 
                                                     } else if (tokenLookup.length > 0) {
-                                                        
-                                                        
+
+
                                                         if (tokenLookup[0].from.toLowerCase() != from.toLowerCase()) {
 
                                                             let tokenInPrice = await Moralis.EvmApi.token.getTokenPrice({
@@ -982,38 +990,38 @@ module.exports = {
                                                                 "address": tokenLookup[0].contractAddress,
                                                                 "toBlock": tokenLookup[0].blockNumber,
                                                             });
-    
-    
+
+
                                                             bisTokenOutPriceEth = parseFloat(web3.utils.fromWei((tokenInPrice.raw.nativePrice.value).toString(), 'ether'))
-    
+
                                                             tradeOutCount++
                                                             tokenSoldCount += value
                                                             soldValue += (bisTokenOutPriceEth) * ((tokenLookup[0].value) / (10 ** tokenInPrice.raw.tokenDecimals))
-    
+
                                                             if (!tradeOutHashTable.includes(hash.toLowerCase())) {
-    
+
                                                                 soldGasValue += gasSpent
                                                                 tradeOutHashTable.push(hash.toLowerCase())
-    
+
                                                             }
-    
+
                                                         } else if (internalLookup.length > 0) {
-    
-    
+
+
                                                             if (!tradeOutHashTable.includes(hash.toLowerCase())) {
-    
+
                                                                 tradeOutCount++
                                                                 soldValue += parseFloat(web3.utils.fromWei((internalLookup[0].value).toString(), 'ether'))
                                                                 tokenSoldCount += value
-    
-                                                                
+
+
                                                                 soldGasValue += gasSpent
                                                                 tradeOutHashTable.push(hash.toLowerCase())
-    
+
                                                             }
-    
+
                                                         }
-    
+
 
 
 
@@ -1027,7 +1035,7 @@ module.exports = {
                                                         tokenSoldCount += value
 
                                                         if (!tradeOutHashTable.includes(hash.toLowerCase())) {
-    
+
                                                             soldGasValue += gasSpent
                                                             tradeOutHashTable.push(hash.toLowerCase())
 
@@ -1085,41 +1093,41 @@ module.exports = {
                                             realisedProfit = totalSoldValue - totalBuySpent
                                             potentialProfit = realisedProfit + (coinActualPriceEth * tokenHeldCount)
 
-                                            if (tokenHeldCount > 0) { heldValue = (coinActualPriceEth * tokenHeldCount) / tokenHeldCount }
-                                            if (totalBuySpent > 0) { avgBuy = totalBuySpent / tokenBoughtCount }
-                                            if (totalSoldValue > 0) { avgSell = totalSoldValue / tokenSoldCount }
+                                            if (tokenHeldCount > 0) { avgHeld = (coinActualPriceEth * tokenHeldCount) }
+                                            if (totalBuySpent > 0) { avgBuy = (totalBuySpent / tokenBoughtCount) * coinSupply }
+                                            if (totalSoldValue > 0) { avgSell = (totalSoldValue / tokenSoldCount) * coinSupply }
 
-                                           //ROI Variable
-                                           if (!coinActualPriceEth && !coinActualPriceUsd && coinActualPriceEth != 0) {
-                                            roi = "N/A"
-                                        } else {
-                                            roi = (((((coinActualPriceEth * tokenHeldCount) + totalSoldValue) - totalBuySpent) / totalBuySpent) * 100).toFixed(2)
-                                        }
-
-                                    
-                                        if (roi !== 0 && totalBuySpent !== 0 & roi !== 0 || roi !== "NaN" || roi !== 'N/A') {
-
-                                            if (roi > 0) {
-                                                roiPrefix = "+";
-                                                roiSuffix = " :chart_with_upwards_trend:";
-                                            } else if (roi < 0) {
-                                                roiSuffix = " :chart_with_downwards_trend:";
+                                            //ROI Variable
+                                            if (!coinActualPriceEth && !coinActualPriceUsd && coinActualPriceEth != 0) {
+                                                roi = "N/A"
+                                            } else {
+                                                roi = (((((coinActualPriceEth * tokenHeldCount) + totalSoldValue) - totalBuySpent) / totalBuySpent) * 100).toFixed(2)
                                             }
-                                            roiFormatted = "`" + roiPrefix + parseFloat(roi).toFixed(2) + "%" + "`" + roiSuffix;
 
-                                        } else if (roi === 0 || roi === "NaN" || roi === 'N/A') {
 
-                                            roiFormatted = "`0.00%`"
+                                            if (roi !== 0 && totalBuySpent !== 0 & roi !== 0 || roi !== "NaN" || roi !== 'N/A') {
 
-                                        } else if (!coinActualPriceEth || !coinActualPriceUsd) {
+                                                if (roi > 0) {
+                                                    roiPrefix = "+";
+                                                    roiSuffix = " :chart_with_upwards_trend:";
+                                                } else if (roi < 0) {
+                                                    roiSuffix = " :chart_with_downwards_trend:";
+                                                }
+                                                roiFormatted = "`" + roiPrefix + parseFloat(roi).toFixed(2) + "%" + "`" + roiSuffix;
 
-                                            roiFormatted = "`0.00%`"
+                                            } else if (roi === 0 || roi === "NaN" || roi === 'N/A') {
 
-                                        } else if (totalBuySpent == 0 && (totalSoldValue + tokenHeldCount > 0)) {
+                                                roiFormatted = "`0.00%`"
 
-                                            roiFormatted = "`INFINITY`<a:RCRich:1044762000837840926>"
+                                            } else if (!coinActualPriceEth || !coinActualPriceUsd) {
 
-                                        }
+                                                roiFormatted = "`0.00%`"
+
+                                            } else if (totalBuySpent == 0 && (totalSoldValue + tokenHeldCount > 0)) {
+
+                                                roiFormatted = "`INFINITY`<a:RCRich:1044762000837840926>"
+
+                                            }
 
 
 
@@ -1145,9 +1153,9 @@ module.exports = {
                                                     { name: "Trades in", value: "`" + tradeInCount + "`", inline: true },
                                                     { name: "Trades out", value: "`" + tradeOutCount + "`", inline: true },
                                                     { name: "Airdrop/Claim", value: "`" + airdropCount + "`", inline: true },
-                                                    { name: "AVG Bought", value: "`" + parseFloat(avgBuy).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgBuy * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "AVG Sold", value: "`" + parseFloat(avgSold).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgSold * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "AVG Held", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgHeld * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                    { name: "AVG MC Bought", value: "`" + formatCoinValueSign(avgBuy * ethUsdPrice) + "$`", inline: true },
+                                                    { name: "AVG MC Sold", value: "`" + formatCoinValueSign(avgSell * ethUsdPrice) + "$`", inline: true },
+                                                    { name: "Held Value", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgHeld * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                     { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(realisedProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                     { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(potentialProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                     { name: "Potential ROI", value: roiFormatted, inline: true },
@@ -1200,7 +1208,7 @@ module.exports = {
                                                 soldCount: tokenSoldCount.toString(),
                                                 remaining: tokenHeldCount.toString(),
                                                 avgBuy: parseFloat(avgBuy).toFixed(3),
-                                                avgSold: parseFloat(avgSold).toFixed(3),
+                                                avgSold: parseFloat(avgSell).toFixed(3),
                                                 realisedProfit: parseFloat(realisedProfit).toFixed(3),
                                                 potentialProfit: parseFloat(potentialProfit).toFixed(3),
                                                 roi: roi.toString(),

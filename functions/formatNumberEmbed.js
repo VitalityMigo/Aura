@@ -19,7 +19,7 @@ function formatCoinValueSign(number, decimal) {
         formattedNumber = parseFloat(number).toFixed(decimal);
         suffix = "M";
     } else {
-        formattedNumber = parseFloat(number).toFixed(decimal);
+        formattedNumber = new Intl.NumberFormat('en-US').format(parseFloat(number).toFixed(decimal));
         suffix = "";
     }
 

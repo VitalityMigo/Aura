@@ -8,6 +8,7 @@
 const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { profileData, accessSql, wallets, apimonitorsql, adminsql, reportsql, usersql, interactionData, sequelize } = require('../../../events/database');
 const moment = require('moment');
+const isHttps = require('../../../functions/isHttps')
 
 
 
@@ -27,6 +28,7 @@ var Web3 = require("web3")
 const web3 = new Web3("https://cloudflare-eth.com")
 
 var Contract = require('web3-eth-contract');
+const { link } = require("fs");
 //const contract = new Contract.setProvider("https://cloudflare-eth.com")
 
 const alchemy2 = require('api')('@alchemy-docs/v1.0#24zcsa23lfbpdnv5');
@@ -626,6 +628,14 @@ module.exports = {
                                                                 if (bidTable.length <= 0) { bidsFormatted = "No bids found for this collection." }
 
 
+                                                                let linksFormatted = ""
+                                                                if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                                else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                                                else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                                else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
+                                            
+
+
                                                                 const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
                                                                     .setTitle(collectionName + "'s bids")
                                                                     .setDescription(">>> Displaying the Blur bid metrics of `" + collectionName + "`.")
@@ -638,7 +648,7 @@ module.exports = {
                                                                         { name: "Bid Count", value: "`" + totalBid + "`", inline: true },
                                                                         { name: "Unique Bidders", value: "`" + totalBidders + "`", inline: true },
                                                                         { name: "Bids", value: "```" + bidsFormatted + "```", inline: true },
-                                                                        { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
+                                                                        { name: "Links", value: linksFormatted, inline: false },
                                                                         { name: "Page", value: "`[1/" + pageIndex + "]`", inline: true },
 
                                                                     )
@@ -662,7 +672,7 @@ module.exports = {
                                                                 obj.totalBdidValue = totalBdidValue
                                                                 obj.totalBid = totalBid
                                                                 obj.totalBidders = totalBidders
-                                                                obj.links = '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")"
+                                                                obj.links = linksFormatted
                                                                 bidUserDataTable.push(obj)
 
 
@@ -712,6 +722,13 @@ module.exports = {
                                                                 let bidsFormatted = "No bids found for this collection                       "
                                                                 let pageIndex = '1'
 
+                                                                let linksFormatted = ""
+                                                                if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                                else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                                                else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                                else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
+                                            
+
                                                                 const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
                                                                     .setTitle(collectionName + "'s bids")
                                                                     .setDescription(">>> Displaying the Blur bid metrics of `" + collectionName + "`.")
@@ -724,7 +741,7 @@ module.exports = {
                                                                         { name: "Bid Count", value: "`0`", inline: true },
                                                                         { name: "Unique Bidders", value: "0`", inline: true },
                                                                         { name: "Bids", value: "```" + bidsFormatted + "```", inline: true },
-                                                                        { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
+                                                                        { name: "Links", value: linksFormatted, inline: false },
                                                                         { name: "Page", value: "`[1/" + pageIndex + "]`", inline: true },
 
                                                                     )
@@ -1421,6 +1438,12 @@ module.exports = {
                                                             }
 
 
+                                                            let linksFormatted = ""
+                                                            if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                            else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                                            else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                            else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
+                                        
 
                                                             const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
                                                                 .setTitle(collectionName + "'s bids")
@@ -1432,7 +1455,7 @@ module.exports = {
                                                                     { name: "Bid Count", value: "`" + bidCount + "`", inline: true },
                                                                     { name: "Rank", value: "`" + rank + "`", inline: true },
                                                                     { name: "Bids", value: "```" + bidsFormatted + "```", inline: false },
-                                                                    { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
+                                                                    { name: "Links", value: linksFormatted, inline: false },
                                                                     { name: "Page", value: "`[1/" + pageIndex + "]`", inline: true },
 
                                                                 )
@@ -1453,7 +1476,7 @@ module.exports = {
                                                             obj.totalValue = totalValue
                                                             obj.availableLiquidity = availableLiquidity
                                                             obj.bidCount = bidCount
-                                                            obj.links = "[opensea](https://opensea.io/" + selectedWallet + ") ∙ " + '[blur](https://blur.io/' + selectedWallet + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedWallet + ") ∙ " + '[magically](https://magically.gg/portfolio/wallet/' + selectedWallet + ") ∙ " + '[nansen](https://portfolio.nansen.ai/dashboard/' + selectedWallet + ")"
+                                                            obj.links = linksFormatted
                                                             obj.collectionName = collectionName
                                                             bidUserDataTable.push(obj)
 
@@ -1656,6 +1679,14 @@ module.exports = {
 
                                                             if (pageIndex) { pageIndex = "1" }
 
+
+                                                            let linksFormatted = ""
+                                                            if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                            else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                                            else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                            else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
+                                        
+
                                                             const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
                                                                 .setTitle(collectionName + "'s bids")
                                                                 .setDescription(">>> Displaying the Blur bid metrics of all your wallets`(" + walletCount + ")` on `" + collectionName + "`.")
@@ -1666,7 +1697,7 @@ module.exports = {
                                                                     { name: "Bid Count", value: "`" + bidCount + "`", inline: true },
                                                                     { name: "Rank", value: "`" + rank + "`", inline: true },
                                                                     { name: "Bids", value: "```" + bidsFormatted + "```", inline: false },
-                                                                    { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
+                                                                    { name: "Links", value: linksFormatted, inline: false },
                                                                     { name: "Page", value: "`[1/" + pageIndex + "]`", inline: true },
 
                                                                 )
@@ -1688,7 +1719,7 @@ module.exports = {
                                                             obj.totalValue = totalValue
                                                             obj.availableLiquidity = availableLiquidity
                                                             obj.bidCount = bidCount
-                                                            obj.links = "[opensea](https://opensea.io/" + selectedWallet + ") ∙ " + '[blur](https://blur.io/' + selectedWallet + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedWallet + ") ∙ " + '[magically](https://magically.gg/portfolio/wallet/' + selectedWallet + ") ∙ " + '[nansen](https://portfolio.nansen.ai/dashboard/' + selectedWallet + ")"
+                                                            obj.links = linksFormatted
                                                             bidUserDataTable.push(obj)
 
 
@@ -1930,7 +1961,12 @@ module.exports = {
                                                 const itemsPerPage = 16; // Nombre d'objets par page
                                                 pageIndex = Math.ceil(bidRowCount / itemsPerPage);
 
-
+                                                let linksFormatted = ""
+                                                if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                                else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
+                            
 
                                                 const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
                                                     .setTitle(collectionName + "'s holders")
@@ -1943,7 +1979,7 @@ module.exports = {
                                                         { name: "Top 25 Holders", value: "`" + top25Holders + " (" + parseFloat((top25Holders / supply) * 100).toFixed(2) + "%)`", inline: true },
                                                         { name: "Top 50 Holders", value: "`" + top50Holders + " (" + parseFloat((top50Holders / supply) * 100).toFixed(2) + "%)`", inline: true },
                                                         { name: "Holders:", value: "```" + holdersFormatted + "```", inline: false },
-                                                        { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
+                                                        { name: "Links", value: linksFormatted, inline: false },
                                                         { name: "Page", value: "`[1/" + pageIndex + "]`", inline: true },
 
                                                     )
@@ -1963,7 +1999,7 @@ module.exports = {
                                                 obj.top10Holders = top10Holders + " (" + parseFloat((top10Holders / supply) * 100).toFixed(2) + "%)"
                                                 obj.top25Holders = top25Holders + " (" + parseFloat((top25Holders / supply) * 100).toFixed(2) + "%)"
                                                 obj.top50Holders = top50Holders + " (" + parseFloat((top50Holders / supply) * 100).toFixed(2) + "%)"
-                                                obj.links = '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")"
+                                                obj.links = linksFormatted
                                                 holderDataTable.push(obj)
 
 
@@ -2133,8 +2169,8 @@ module.exports = {
                         } else {
 
                             if (accessTier == "") {
-								accessTier = "Free Tier"
-							}
+                                accessTier = "Free Tier"
+                            }
 
                             const botOff = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle(`Bot Access`)

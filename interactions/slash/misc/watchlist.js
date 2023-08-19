@@ -7,7 +7,7 @@
 const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const moment = require('moment');
 const csv = require('fast-csv');
-
+const isHttps = require('../../../functions/isHttps')
 
 const { profileData, accessSql, apimonitorsql, wallets, reportsql, adminsql, usersql, interactionData, watchlistSql, sequelize } = require('../../../events/database');
 const fs = require('fs');
@@ -39,7 +39,8 @@ const headers = {
 };
 
 
-const axios = require('axios')
+const axios = require('axios');
+const { LinearScale } = require("chart.js");
 
 
 function formatString(input) {
@@ -239,13 +240,14 @@ module.exports = {
 
 
 
-                                                        await watchlistSql.create({
-                                                            authorId: authorId,
-                                                            selectedCollection: selectedCollection,
-                                                            collectionName: collectionName,
-                                                            collectionChain: "eth"
 
-                                                        })
+                                                        let linksFormatted = ""
+                                                        if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                        else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                                        else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                        else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
+                                    
+
 
 
                                                         const setWatchlist = new EmbedBuilder().setColor("#060A8F")
@@ -257,13 +259,22 @@ module.exports = {
                                                                 { name: "Watchlist", value: "`Active`", inline: true },
                                                                 { name: "Collection Count", value: "`" + authorWatchlistCountFormatted + " collections`", inline: true },
                                                                 { name: " ", value: " ", inline: true },
-                                                                { name: collectionName, value: "`Floor: " + collectionFloor.toFixed(3) + "Ξ ∙ 1D Vol: " + totalVolume1D.toFixed(2) + "Ξ ∙ Owners: " + Intl.NumberFormat('en-US').format(parseFloat(collectionOwners).toFixed(0)) + " ∙ Listed: " + collectionListingRatio + "%`\n[magically](https://magically.gg/collection/" + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
+                                                                { name: collectionName, value: "`Floor: " + collectionFloor.toFixed(3) + "Ξ ∙ 1D Vol: " + totalVolume1D.toFixed(2) + "Ξ ∙ Owners: " + Intl.NumberFormat('en-US').format(parseFloat(collectionOwners).toFixed(0)) + " ∙ Listed: " + collectionListingRatio + "%`\n" + linksFormatted, inline: false },
                                                             )
                                                             .setTimestamp()
                                                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
                                                         await interaction.editReply({ embeds: [setWatchlist] });
 
+
+
+                                                        await watchlistSql.create({
+                                                            authorId: authorId,
+                                                            selectedCollection: selectedCollection,
+                                                            collectionName: collectionName,
+                                                            collectionChain: "eth"
+
+                                                        })
 
 
 
@@ -576,8 +587,16 @@ module.exports = {
                                             let collectionListingRatio = collection.collectionListingRatio
                                             let collectionBanner = collection.collectionBanner
 
+
+                                            let linksFormatted = ""
+                                            if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                            else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                            else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                            else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
+                        
+
                                             setWatchlist.addFields(
-                                                { name: collectionName + " (" + collectionSlug + ") ", value: "`Floor: " + collectionFloor.toFixed(3) + "Ξ ∙ 1D Vol: " + totalVolume1D.toFixed(2) + "Ξ ∙ Owners: " + Intl.NumberFormat('en-US').format(parseFloat(collectionOwners).toFixed(0)) + " ∙ Listed: " + collectionListingRatio + "%`\n[magically](https://magically.gg/collection/" + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false },
+                                                { name: collectionName + " (" + collectionSlug + ") ", value: "`Floor: " + collectionFloor.toFixed(3) + "Ξ ∙ 1D Vol: " + totalVolume1D.toFixed(2) + "Ξ ∙ Owners: " + Intl.NumberFormat('en-US').format(parseFloat(collectionOwners).toFixed(0)) + " ∙ Listed: " + collectionListingRatio + "%`\n" + linksFormatted, inline: false },
                                             )
 
 

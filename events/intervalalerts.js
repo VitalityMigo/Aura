@@ -14,6 +14,7 @@ const sdk = require('api')('@reservoirprotocol/v1.0#wt5eflddacli0');
 sdk.auth(reservoirApiKey2);
 
 const moment = require('moment');
+const isHttps = require("../functions/isHttps")
 
 
 let channel
@@ -97,7 +98,14 @@ async function intervalalerts(client) {
                                     Marketplace = '[<:blur:1062318577782378516> Blur](https://blur.io/collection/' + elem.collection + ')'
                                 }
 
+
+
                                 let linksFormatted = ""
+                                if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted =  '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ")" }
+
 
                                 getfpEmbedUp.setTitle(`${elem.collectionName}`)
                                     .setAuthor({ name: "RC-Bot", iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png', url: 'https://twitter.com/jayzhvj_eth' })
@@ -107,7 +115,7 @@ async function intervalalerts(client) {
                                         { name: 'Floor Price', value: "`" + newFp + ' ETH`', inline: true },
                                         { name: 'Alert :chart_with_upwards_trend:', value: "`" + elem.fp + ' ETH`', inline: true },
                                         { name: 'Marketplace', value: Marketplace, inline: true },
-                                        { name: "Links", value: '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+                                        { name: "Links", value: linksFormatted, inline: false }
 
 
                                     ).setTimestamp()
@@ -157,6 +165,14 @@ async function intervalalerts(client) {
                                     Marketplace = '[<:blur:1062318577782378516> Blur](https://blur.io/collection/' + elem.collection + ')'
                                 }
 
+
+                                let linksFormatted = ""
+                                if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted =  '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ")" }
+
+
                                 getfp2EmbedUp.setTitle(`${elem.collectionName}`)
                                     .setURL('https://magically.gg/collection/' + elem.collection)
                                     .setAuthor({ name: "RC-Bot", iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png', url: 'https://twitter.com/jayzhvj_eth' })
@@ -166,7 +182,7 @@ async function intervalalerts(client) {
                                         { name: 'Marketplace', value: Marketplace, inline: true },
                                         { name: 'Floor Price', value: "`" + newFp + ' ETH`', inline: true },
                                         { name: 'Alert :chart_with_upwards_trend:', value: "`" + elem.fp2 + ' ETH`', inline: true },
-                                        { name: "Links", value: '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+                                        { name: "Links", value: linksFormatted, inline: false }
 
                                     ).setTimestamp()
                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -305,6 +321,14 @@ async function intervalalerts(client) {
                                     Marketplace = '<:blur:1062318577782378516> [Blur](https://blur.io/collection/' + elem.collection + ')'
                                 }
 
+
+                                let linksFormatted = ""
+                                if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted =  '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ")" }
+
+
                                 getfpEmbedDown.setTitle(`${elem.collectionName}`)
                                     .setAuthor({ name: "RC-Bot", iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png', url: 'https://twitter.com/jayzhvj_eth' })
                                     .setURL('https://magically.gg/collection/' + elem.collection)
@@ -314,7 +338,7 @@ async function intervalalerts(client) {
                                         { name: 'Marketplace', value: Marketplace, inline: true },
                                         { name: 'Floor Price', value: "`" + newFp + ' ETH`', inline: true },
                                         { name: 'Alert :chart_with_downwards_trend:', value: "`" + elem.fp + ' ETH`', inline: true },
-                                        { name: "Links", value: '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+                                        { name: "Links", value: linksFormatted, inline: false }
 
                                     ).setTimestamp()
                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -357,6 +381,13 @@ async function intervalalerts(client) {
                                     Marketplace = '[<:blur:1062318577782378516> Blur](https://blur.io/collection/' + elem.collection + ')'
                                 }
 
+                                let linksFormatted = ""
+                                if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted =  '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ")" }
+
+
                                 getfp2EmbedDown.setTitle(`${elem.collectionName}`)
                                     .setAuthor({ name: "RC-Bot", iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png', url: 'https://twitter.com/jayzhvj_eth' })
                                     .setURL('https://magically.gg/collection/' + elem.collection)
@@ -366,7 +397,7 @@ async function intervalalerts(client) {
                                         { name: 'Marketplace', value: Marketplace, inline: true },
                                         { name: 'Floor Price', value: "`" + newFp + ' ETH`', inline: true },
                                         { name: 'Alert :chart_with_downwards_trend:', value: "`" + elem.fp2 + ' ETH`', inline: true },
-                                        { name: "Links", value: '[magically](https://magically.gg/collection/' + elem.collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + elem.collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + elem.collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+                                        { name: "Links", value: linksFormatted, inline: false }
 
                                     ).setTimestamp()
                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })

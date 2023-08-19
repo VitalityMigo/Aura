@@ -7,6 +7,7 @@ const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { profileData, accessSql, apimonitorsql, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
+const isHttps = require('../../../functions/isHttps')
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -376,6 +377,14 @@ module.exports = {
                                                             });
 
 
+                                                            let linksFormatted = ""
+                                                            if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                            else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                                            else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                            else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
+                                        
+
+
                                                             const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
                                                                 .setTitle(collectionName)
                                                                 .setDescription(collectionDescription)
@@ -406,7 +415,7 @@ module.exports = {
                                                                     { name: "Market Cap", value: "`" + collectionMarketCap.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * collectionMarketCap).toFixed(0)) + "$)`", inline: true },
                                                                     { name: "Creation Date", value: "`" + dateLisible + "`", inline: true },
                                                                     { name: "Royalties", value: "`" + collectionRoyaltiesFormatted + "`", inline: true },
-                                                                    { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
+                                                                    { name: "Links", value: linksFormatted, inline: true },
 
 
                                                                 )

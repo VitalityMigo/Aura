@@ -7,6 +7,7 @@
 const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { profileData, accessSql, wallets, interactionData, apimonitorsql, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
+const isHttps = require('../../../functions/isHttps')
 
 const dotenv = require("dotenv")
 dotenv.config()
@@ -458,6 +459,42 @@ module.exports = {
 
                                                             }
 
+
+
+                                                            let linksFormatted = ""
+                                                            if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                            else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                                            else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                            else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
+
+
+
+                                                            const getderiskAllWallet = new EmbedBuilder().setColor("#060A8F")
+                                                                .setTitle(`${authorName}'s derisk price on ${collectionName}`)
+                                                                .setDescription(">>> Derisk data for all your wallets `(" + walletCount + ")` on " + collectionName + ".")
+                                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                                .setImage(collectionBanner)
+                                                                .addFields(
+                                                                    { name: "Buy Spent", value: "`" + parseFloat(buySpentEth).toFixed(3) + "Ξ`", inline: true },
+                                                                    { name: "Gas Spent", value: "`" + parseFloat(gasSpent).toFixed(3) + "Ξ`", inline: true },
+                                                                    { name: "Total Spent", value: "`" + parseFloat(totalSpent).toFixed(3) + "Ξ`", inline: true },
+                                                                    { name: "AVG Buy", value: "`" + `${avgBuy}` + "`", inline: true },
+                                                                    { name: "AVG Gas", value: "`" + `${avgGas}` + "`", inline: true },
+                                                                    { name: "AVG Total", value: "`" + `${avgTotal}` + "`", inline: true },
+                                                                    { name: "Floor Price", value: "`" + `${collectionFp}` + "`", inline: true },
+                                                                    { name: "Royalties", value: "`" + `${collectionRoyal}` + "`", inline: true },
+                                                                    { name: "NFTs Hold", value: "`" + `${holdCount}` + "`", inline: true },
+                                                                    { name: "Total Derisk", value: "`" + `${totalDerisk}` + "`", inline: true },
+                                                                    { name: "AVG Derisk", value: "`" + `${avgDerisk}` + "`", inline: true },
+                                                                    { name: "ROI", value: `${roiFormatted}`, inline: true },
+                                                                    { name: "Links", value: linksFormatted, inline: true },
+                                                                )
+                                                                .setTimestamp()
+                                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                                            await interaction.editReply({ embeds: [getderiskAllWallet], components: [buttonsRow] });
+
+
                                                             //Détruire dernière intéraction dans la base SQL dédié et crée la nouvelle pour derisk
                                                             await interactionData.destroy({ where: { authorId: authorId, commandName: "derisk", serverId: serverId } })
 
@@ -505,35 +542,6 @@ module.exports = {
 
 
 
-
-
-                                                            const getderiskAllWallet = new EmbedBuilder().setColor("#060A8F")
-                                                                .setTitle(`${authorName}'s derisk price on ${collectionName}`)
-                                                                .setDescription(">>> Derisk data for all your wallets `(" + walletCount + ")` on " + collectionName + ".")
-                                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                                .setImage(collectionBanner)
-                                                                .addFields(
-                                                                    { name: "Buy Spent", value: "`" + parseFloat(buySpentEth).toFixed(3) + "Ξ`", inline: true },
-                                                                    { name: "Gas Spent", value: "`" + parseFloat(gasSpent).toFixed(3) + "Ξ`", inline: true },
-                                                                    { name: "Total Spent", value: "`" + parseFloat(totalSpent).toFixed(3) + "Ξ`", inline: true },
-                                                                    { name: "AVG Buy", value: "`" + `${avgBuy}` + "`", inline: true },
-                                                                    { name: "AVG Gas", value: "`" + `${avgGas}` + "`", inline: true },
-                                                                    { name: "AVG Total", value: "`" + `${avgTotal}` + "`", inline: true },
-                                                                    { name: "Floor Price", value: "`" + `${collectionFp}` + "`", inline: true },
-                                                                    { name: "Royalties", value: "`" + `${collectionRoyal}` + "`", inline: true },
-                                                                    { name: "NFTs Hold", value: "`" + `${holdCount}` + "`", inline: true },
-                                                                    { name: "Total Derisk", value: "`" + `${totalDerisk}` + "`", inline: true },
-                                                                    { name: "AVG Derisk", value: "`" + `${avgDerisk}` + "`", inline: true },
-                                                                    { name: "ROI", value: `${roiFormatted}`, inline: true },
-                                                                    { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
-                                                                )
-                                                                .setTimestamp()
-                                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                                            await interaction.editReply({ embeds: [getderiskAllWallet], components: [buttonsRow] });
-
-
-
                                                             //On enregistre le call API dans la database
                                                             const timeStamp = Date.now();
                                                             for (let i = 0; i < apiObj.getCollectionsV5; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/derisk", apiCallName: "getCollectionsV5", apiProvider: "reservoir", timestamp: timeStamp.toString() }) }
@@ -547,6 +555,14 @@ module.exports = {
 
 
                                                         } else if (walletsAuthorTableWithCollection.length <= 0) {
+
+
+                                                            let linksFormatted = ""
+                                                            if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                            else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                                            else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                            else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
+
 
 
 
@@ -567,9 +583,7 @@ module.exports = {
                                                                     { name: "Total Derisk", value: "`" + `${totalDerisk}` + "`", inline: true },
                                                                     { name: "AVG Derisk", value: "`" + `${avgDerisk}` + "`", inline: true },
                                                                     { name: "ROI", value: `${roiFormatted}`, inline: true },
-                                                                    { name: ' ', value: '[<:ASxRCPNG:1070385409080696902> Magically](https://magically.gg/collection/' + selectedCollection + ")", inline: true },
-                                                                    { name: ' ', value: '[<:opensea:1062318570761101352> OpenSea](https://opensea.io/collection/' + collectionSlug + ")", inline: true },
-                                                                    { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
+                                                                    { name: "Links", value: linksFormatted, inline: true },
                                                                 )
                                                                 .setTimestamp()
                                                                 .setAuthor({ name: authorName, iconURL: userAvatar })
@@ -1202,6 +1216,13 @@ module.exports = {
                                                                             })
 
 
+                                                                            let linksFormatted = ""
+                                                                            if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                                            else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                                                            else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                                            else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
+
+
 
 
                                                                             const getderiskSelectedWallet = new EmbedBuilder().setColor("#060A8F")
@@ -1222,7 +1243,7 @@ module.exports = {
                                                                                     { name: "Total Derisk", value: "`" + `${totalDerisk}` + "`", inline: true },
                                                                                     { name: "AVG Derisk", value: "`" + `${avgDerisk}` + "`", inline: true },
                                                                                     { name: "ROI", value: `${roiFormatted}`, inline: true },
-                                                                                    { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
+                                                                                    { name: "Links", value: linksFormatted, inline: true },
                                                                                 )
                                                                                 .setTimestamp()
                                                                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
@@ -1250,6 +1271,14 @@ module.exports = {
                                                                 } else if (userData.collections.length <= 0) {
 
 
+                                                                    let linksFormatted = ""
+                                                                    if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                                    else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                                                    else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                                                    else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
+
+
+
 
                                                                     const getderiskZeroSelectedWallet = new EmbedBuilder().setColor("#060A8F")
                                                                         .setTitle(`${authorName}'s derisk price on ${collectionName}`)
@@ -1269,7 +1298,7 @@ module.exports = {
                                                                             { name: "Total Derisk", value: "`" + `${totalDerisk}` + "`", inline: true },
                                                                             { name: "AVG Derisk", value: "`" + `${avgDerisk}` + "`", inline: true },
                                                                             { name: "ROI", value: `${roiFormatted}`, inline: true },
-                                                                            { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
+                                                                            { name: "Links", value: linksFormatted, inline: true },
                                                                         )
                                                                         .setTimestamp()
                                                                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
@@ -1805,6 +1834,12 @@ module.exports = {
                                         avgDerisk = parseFloat(((buyGasSpent + buySpent) / (1 - ((royalties / 100 + 0.5) / 100))) / tokenBought).toFixed(3) + "Ξ"
 
 
+                                        let linksFormatted = ""
+                                        if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                        else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                                        else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                                        else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
+                    
 
 
 
@@ -1821,7 +1856,7 @@ module.exports = {
                                                 { name: "Total Derisk", value: "`" + totalDerisk + "`", inline: true },
                                                 { name: "Avg. Derisk", value: "`" + avgDerisk + "`", inline: true },
                                                 { name: "Royalties", value: "`" + collectionRoyal + "`", inline: true },
-                                                { name: "Links", value: '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: true },
+                                                { name: "Links", value: linksFormatted, inline: true },
 
                                             )
                                             .setTimestamp()

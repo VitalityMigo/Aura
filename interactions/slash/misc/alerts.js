@@ -10,6 +10,7 @@ const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = r
 
 const { profileData, accessSql, apimonitorsql, reportsql, adminsql, alertsDown, alertsUp, usersql, Op, sequelize } = require('../../../events/database');
 const fs = require('fs');
+const isHttps = require('../../../functions/isHttps')
 
 
 
@@ -275,6 +276,17 @@ module.exports = {
 															const updatedAlert = await alertsUp.update({
 																fp: fp,
 															}, { where: { collection: collection, authorId: authorId } })
+
+
+															let linksFormatted = ""
+															if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+															else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+															else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+															else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ")" }
+
+
+
+
 															setfpEmbed.setTitle(`${collectionName}`)
 																.setAuthor({ name: authorName, iconURL: userAvatar })
 																.setDescription(">>> A new alert has been set on `" + collectionName + "`.")
@@ -284,7 +296,7 @@ module.exports = {
 																	{ name: 'Alerts', value: "`" + fpvalue + "Ξ`:chart_with_upwards_trend:", inline: true },
 																	{ name: 'Marketplace', value: Marketplace, inline: true },
 																	//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-																	{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+																	{ name: "Links", value: linksFormatted, inline: false }
 
 																)
 																.setTimestamp()
@@ -302,6 +314,15 @@ module.exports = {
 															const updatedAlert = await alertsUp.update({
 																fp2: fp,
 															}, { where: { collection: collection, authorId: authorId } })
+
+
+															let linksFormatted = ""
+															if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+															else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+															else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+															else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ")" }
+
+
 															setfpEmbed.setTitle(`${collectionName}`)
 																.setAuthor({ name: authorName, iconURL: userAvatar })
 																.setDescription(">>> A new alert has been set on `" + collectionName + "`.")
@@ -311,7 +332,7 @@ module.exports = {
 																	{ name: 'Alerts', value: "`" + fpvalue + "Ξ`:chart_with_upwards_trend:", inline: true },
 																	{ name: 'Marketplace', value: Marketplace, inline: true },
 																	//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-																	{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+																	{ name: "Links", value: linksFormatted, inline: false }
 
 																)
 																.setTimestamp()
@@ -334,6 +355,14 @@ module.exports = {
 
 														fpvalue = "`" + parseFloat(fp).toFixed(3) + "Ξ`:chart_with_upwards_trend:\n`" + parseFloat(fp2).toFixed(3) + "Ξ`:chart_with_upwards_trend:"
 
+
+														let linksFormatted = ""
+														if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+														else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+														else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+														else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ")" }
+
+
 														setfpEmbed.setTitle(`${collectionName}`)
 															.setAuthor({ name: authorName, iconURL: userAvatar })
 															.setDescription(">>> A new alert has been set on `" + collectionName + "`.")
@@ -343,7 +372,7 @@ module.exports = {
 																{ name: 'Alerts', value: fpvalue, inline: true },
 																{ name: 'Marketplace', value: Marketplace, inline: true },
 																//	{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-																{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+																{ name: "Links", value: linksFormatted, inline: false }
 															)
 															.setTimestamp()
 															.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -366,6 +395,14 @@ module.exports = {
 													})
 
 													fpvalue = "`" + parseFloat(fp).toFixed(3) + "Ξ`:chart_with_upwards_trend:\n `" + parseFloat(fp2).toFixed(3) + "Ξ`:chart_with_upwards_trend:"
+
+													let linksFormatted = ""
+													if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+													else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+													else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+													else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ")" }
+
+
 													setfpEmbed.setTitle(`${collectionName}`)
 														.setAuthor({ name: authorName, iconURL: userAvatar })
 														.setDescription(">>> A new alert has been set on `" + collectionName + "`.")
@@ -375,7 +412,7 @@ module.exports = {
 															{ name: 'Alerts', value: fpvalue, inline: true },
 															{ name: 'Marketplace', value: Marketplace, inline: true },
 															//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-															{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+															{ name: "Links", value: linksFormatted, inline: false }
 														)
 														.setTimestamp()
 														.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -402,6 +439,15 @@ module.exports = {
 
 													fpvalue = "`" + parseFloat(fp).toFixed(3) + "Ξ`:chart_with_downwards_trend:\n `" + parseFloat(fp2).toFixed(3) + "Ξ`:chart_with_downwards_trend:"
 
+
+													let linksFormatted = ""
+													if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+													else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+													else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+													else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ")" }
+
+
+
 													setfpEmbed.setTitle(`${collectionName}`)
 														.setAuthor({ name: authorName, iconURL: userAvatar })
 														.setDescription(">>> A new alert has been set on `" + collectionName + "`.")
@@ -411,7 +457,7 @@ module.exports = {
 															{ name: 'Alerts', value: fpvalue, inline: true },
 															{ name: 'Marketplace', value: Marketplace, inline: true },
 															//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-															{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+															{ name: "Links", value: linksFormatted, inline: false }
 														)
 														.setTimestamp()
 														.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -437,6 +483,15 @@ module.exports = {
 
 													fpvalue = "`" + parseFloat(fp).toFixed(3) + "Ξ`:chart_with_downwards_trend:\n`" + parseFloat(fp2).toFixed(3) + "Ξ`:chart_with_downwards_trend:"
 
+
+													let linksFormatted = ""
+													if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+													else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+													else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+													else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ")" }
+
+
+
 													setfpEmbed.setTitle(`${collectionName}`)
 														.setAuthor({ name: authorName, iconURL: userAvatar })
 														.setDescription(">>> A new alert has been set on `" + collectionName + "`.")
@@ -446,7 +501,7 @@ module.exports = {
 															{ name: 'Alerts', value: fpvalue, inline: true },
 															{ name: 'Marketplace', value: Marketplace, inline: true },
 															//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-															{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+															{ name: "Links", value: linksFormatted, inline: false }
 														)
 														.setTimestamp()
 														.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -513,6 +568,13 @@ module.exports = {
 
 												fpvalue = parseFloat(fp2).toFixed(3) + "Ξ`:chart_with_upwards_trend:\n`" + parseFloat(fp).toFixed(3) + "Ξ`:chart_with_downwards_trend:"
 
+												let linksFormatted = ""
+												if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+												else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+												else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+												else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ")" }
+
+
 												setfpEmbed.setTitle(`${collectionName}`)
 													.setAuthor({ name: authorName, iconURL: userAvatar })
 													.setDescription(">>> A new alert has been set on `" + collectionName + "`.")
@@ -522,7 +584,7 @@ module.exports = {
 														{ name: 'Alerts', value: "`" + fpvalue, inline: true },
 														{ name: 'Marketplace', value: Marketplace, inline: true },
 														//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-														{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+														{ name: "Links", value: linksFormatted, inline: false }
 													)
 													.setTimestamp()
 													.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -591,6 +653,14 @@ module.exports = {
 												}
 
 												fpvalue = parseFloat(fp).toFixed(3) + "Ξ`:chart_with_upwards_trend:\n`" + parseFloat(fp2).toFixed(3) + "Ξ`:chart_with_downwards_trend:"
+
+												let linksFormatted = ""
+												if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+												else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+												else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+												else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ")" }
+
+
 												setfpEmbed.setTitle(`${collectionName}`)
 													.setAuthor({ name: authorName, iconURL: userAvatar })
 													.setDescription(">>> A new alert has been set on `" + collectionName + "`.")
@@ -600,7 +670,7 @@ module.exports = {
 														{ name: 'Alerts', value: "`" + fpvalue, inline: true },
 														{ name: 'Marketplace', value: Marketplace, inline: true },
 														//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-														{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+														{ name: "Links", value: linksFormatted, inline: false }
 													)
 													.setTimestamp()
 													.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -645,6 +715,14 @@ module.exports = {
 												}
 
 												fpvalue = parseFloat(fp).toFixed(3) + "Ξ`:chart_with_upwards_trend:"
+
+												let linksFormatted = ""
+												if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+												else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+												else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+												else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ")" }
+
+
 												setfpEmbed.setTitle(`${collectionName}`)
 													.setAuthor({ name: authorName, iconURL: userAvatar })
 													.setDescription(">>> A new alert has been set on `" + collectionName + "`.")
@@ -654,7 +732,7 @@ module.exports = {
 														{ name: 'Alert', value: "`" + fpvalue, inline: true },
 														{ name: 'Marketplace', value: Marketplace, inline: true },
 														//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-														{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+														{ name: "Links", value: linksFormatted, inline: false }
 													)
 													.setTimestamp()
 													.setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -700,6 +778,15 @@ module.exports = {
 												}
 
 												fpvalue = parseFloat(fp).toFixed(3) + "Ξ`:chart_with_downwards_trend:"
+
+												let linksFormatted = ""
+												if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+												else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+												else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+												else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ")" }
+
+
+
 												setfpEmbed.setTitle(`${collectionName}`)
 													.setAuthor({ name: authorName, iconURL: userAvatar })
 													.setDescription(">>> A new alert has been set on `" + collectionName + "`.")
@@ -709,7 +796,7 @@ module.exports = {
 														{ name: 'Alert', value: "`" + fpvalue, inline: true },
 														{ name: 'Marketplace', value: Marketplace, inline: true },
 														//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-														{ name: "Links", value: '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")", inline: false }
+														{ name: linksFormatted, inline: false }
 
 													)
 													.setTimestamp()
@@ -1235,7 +1322,7 @@ module.exports = {
 
 							if (accessTier == "") {
 								accessTier = "Free Tier"
-							
+
 							}
 
 							const botOff = new EmbedBuilder().setColor("#060A8F")

@@ -262,16 +262,13 @@ module.exports = {
 
 
 
-                                            const response = await Moralis.EvmApi.token.getTokenPrice({
-                                                "chain": "0x1",
-                                                "address": coinAddress,
+                                            const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinTicker.toLowerCase())
 
-                                            });
+                                            const pairWeth = coinPriceHistory.data.pairs.filter((item) => item.quoteToken.address !== '0');
+    
 
-
-
-                                            coinActualPriceUsd = response.raw.usdPrice
-                                            coinActualPriceEth = 1 / (ethUsdPrice / coinActualPriceUsd)
+                                            coinActualPriceUsd = pairWeth[0].priceUsd
+                                            coinActualPriceEth = 1 / (ethPriceUsd / coinActualPriceUsd)
 
 
                                             const walletBalance = await axios.get('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=' + coinAddress + '&address=' + walletAddress + '&tag=latest&apikey=' + etherscanApiKey)
@@ -777,11 +774,14 @@ module.exports = {
 
 
 
-                                            const response = await Moralis.EvmApi.token.getTokenPrice({
-                                                "chain": "0x1",
-                                                "address": coinAddress,
+                                            const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinTicker.toLowerCase())
 
-                                            });
+                                            const pairWeth = coinPriceHistory.data.pairs.filter((item) => item.quoteToken.address !== '0');
+    
+
+                                            coinActualPriceUsd = pairWeth[0].priceUsd
+                                            coinActualPriceEth = 1 / (ethPriceUsd / coinActualPriceUsd)
+
 
 
                                             apiObj.getTokenMetadata++
@@ -789,9 +789,6 @@ module.exports = {
                                             apiObj.getTokenPrice += computeUnits
 
 
-
-                                            coinActualPriceUsd = response.raw.usdPrice
-                                            coinActualPriceEth = 1 / (ethUsdPrice / coinActualPriceUsd)
 
 
 

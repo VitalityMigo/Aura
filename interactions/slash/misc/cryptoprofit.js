@@ -262,7 +262,7 @@ module.exports = {
 
 
 
-                                            const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinTicker.toLowerCase())
+                                            const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinAddress.toLowerCase())
 
                                             const pairWeth = coinPriceHistory.data.pairs.filter((item) => item.quoteToken.address !== '0');
     
@@ -774,7 +774,7 @@ module.exports = {
 
 
 
-                                            const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinTicker.toLowerCase())
+                                            const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinAddress.toLowerCase())
 
                                             const pairWeth = coinPriceHistory.data.pairs.filter((item) => item.quoteToken.address !== '0');
     

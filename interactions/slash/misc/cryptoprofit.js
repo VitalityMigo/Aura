@@ -268,7 +268,7 @@ module.exports = {
     
 
                                             coinActualPriceUsd = pairWeth[0].priceUsd
-                                            coinActualPriceEth = 1 / (ethPriceUsd / coinActualPriceUsd)
+                                            coinActualPriceEth = 1 / (ethUsdPrice / coinActualPriceUsd)
 
 
                                             const walletBalance = await axios.get('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=' + coinAddress + '&address=' + walletAddress + '&tag=latest&apikey=' + etherscanApiKey)
@@ -780,7 +780,7 @@ module.exports = {
     
 
                                             coinActualPriceUsd = pairWeth[0].priceUsd
-                                            coinActualPriceEth = 1 / (ethPriceUsd / coinActualPriceUsd)
+                                            coinActualPriceEth = 1 / (ethUsdPrice / coinActualPriceUsd)
 
 
 

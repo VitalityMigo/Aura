@@ -263,8 +263,8 @@ module.exports = {
 
 
                                             const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinAddress.toLowerCase())
-
-                                            if (coinPriceHistory.data.paris.length > 0) {
+console.log(coinPriceHistory.data.pairs)
+                                            if (coinPriceHistory.data.pairs.length > 0) {
 
 
                                                 const pairWeth = coinPriceHistory.data.pairs.filter((item) => item.quoteToken.address !== '0');
@@ -568,9 +568,9 @@ module.exports = {
                                                 } else {
                                                     roi = (((((coinActualPriceEth * tokenHeldCount) + totalSoldValue) - totalBuySpent) / totalBuySpent) * 100).toFixed(2)
                                                 }
+console.log(roi)
 
-
-                                                if (roi !== 0 && totalBuySpent !== 0 & roi !== 0 || roi !== "NaN" || roi !== 'N/A') {
+                                                if (roi !== 0 && totalBuySpent !== 0 && roi !== 0 || roi !== "NaN" && roi !== 'N/A') {
 
                                                     if (roi > 0) {
                                                         roiPrefix = "+";
@@ -584,7 +584,7 @@ module.exports = {
 
                                                     roiFormatted = "`0.00%`"
 
-                                                } else if (!coinActualPriceEth || !coinActualPriceUsd) {
+                                                } else if (!coinActualPriceUsd) {
 
                                                     roiFormatted = "`0.00%`"
 
@@ -593,7 +593,6 @@ module.exports = {
                                                     roiFormatted = "`INFINITY`<a:RCRich:1044762000837840926>"
 
                                                 }
-
 
 
 
@@ -796,7 +795,7 @@ module.exports = {
 
                                             const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinAddress.toLowerCase())
 
-                                            if (coinPriceHistory.data.paris.length > 0) {
+                                            if (coinPriceHistory.data.pairs.length > 0) {
 
                                                 const pairWeth = coinPriceHistory.data.pairs.filter((item) => item.quoteToken.address !== '0');
 
@@ -1124,7 +1123,8 @@ module.exports = {
                                                 }
 
 
-                                                if (roi !== 0 && totalBuySpent !== 0 & roi !== 0 || roi !== "NaN" || roi !== 'N/A') {
+                                               
+                                                if (roi !== 0 && totalBuySpent !== 0 && roi !== 0 || roi !== "NaN" && roi !== 'N/A') {
 
                                                     if (roi > 0) {
                                                         roiPrefix = "+";
@@ -1138,7 +1138,7 @@ module.exports = {
 
                                                     roiFormatted = "`0.00%`"
 
-                                                } else if (!coinActualPriceEth || !coinActualPriceUsd) {
+                                                } else if (!coinActualPriceUsd) {
 
                                                     roiFormatted = "`0.00%`"
 

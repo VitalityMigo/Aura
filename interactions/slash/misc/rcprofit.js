@@ -549,6 +549,43 @@ module.exports = {
                                             }
 
 
+
+                                            const getRCprofitAllPrecised = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle(`Global group profits`)
+                                                .setDescription(">>> Global profits made by the group during the last `" + selectedTime + "`.")
+                                                .setImage('https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png')
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .addFields(
+                                                    { name: "Buy Spent", value: "`" + parseFloat(buySpentAll).toFixed(3) + "Ξ (" + parseFloat(buySpentAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "Buy Gas Spent", value: "`" + parseFloat(buyGasSpentAll).toFixed(3) + "Ξ (" + parseFloat(buyGasSpentAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "Total Buy Spent", value: "`" + parseFloat(totalBuySpentAll).toFixed(3) + "Ξ (" + parseFloat(totalBuySpentAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "Sold Value", value: "`" + parseFloat(soldValueAll).toFixed(3) + "Ξ (" + parseFloat(soldValueAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "Sold Gas Value", value: "`" + parseFloat(soldGasValueAll).toFixed(3) + "Ξ (" + parseFloat(soldGasValueAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "Total Sold Value", value: "`" + parseFloat(totalSoldValueAll).toFixed(3) + "Ξ (" + parseFloat(soldValueAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "Buy Trade Count", value: "`" + BuyTradeCountAll + "`", inline: true },
+                                                    { name: "Sold Trade Count", value: "`" + SoldTradeCountAll + "`", inline: true },
+                                                    { name: "Total Trade Count", value: "`" + totalTradeCountAll + "`", inline: true },
+                                                    { name: "Mint Count", value: "`" + mintCountAll + "`", inline: true },
+                                                    { name: "Approval Count", value: "`" + approvalCountAll + "`", inline: true },
+                                                    { name: "Failed Count", value: "`" + failedCountAll + "`", inline: true },
+                                                    { name: "AVG Spent Value", value: "`" + parseFloat(averageSpentValueAll).toFixed(3) + "Ξ (" + parseFloat(averageSpentValueAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "AVG Sold Value", value: "`" + parseFloat(averageSoldValueAll).toFixed(3) + "Ξ (" + parseFloat(averageSoldValueAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "AVG Profit Value", value: "`" + parseFloat(averageProfitValueAll).toFixed(3) + "Ξ (" + parseFloat(averageProfitValueAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "Realised Profit", value: "`" + (parseFloat(realisedProfitAll).toFixed(3)).toString() + "Ξ (" + parseFloat(realisedProfitAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "Realised PNL", value: realisedPnlAll, inline: true },
+                                                    { name: "Win/Loss Ratio", value: "`" + parseFloat(closedTradeProfit).toFixed(3) + "Ξ (" + parseFloat(closedTradeProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
+                                                    { name: "Top Trader", value: "`" + topProfitMemberAll + "`", inline: true },
+                                                    { name: "Top Profit Wallet", value: "`" + topProfitWalletAll + "`", inline: true },
+                                                    { name: "Members Involved", value: "`" + nbMemberInvolvedAll + "`", inline: true },
+
+                                                )
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                            await interaction.editReply({ embeds: [getRCprofitAllPrecised] });
+
+
+
                                             /////////// CALL BASE SQL -----> REVOIR EMBED + VALEUR STOCKE + GENERATION VISUEL
 
                                             await interactionData.destroy({ where: { authorId: authorId, commandName: "rcprofit", serverId: serverId } })
@@ -597,41 +634,6 @@ module.exports = {
 
                                             //////////// CALL BASE SQL : FIN
 
-
-
-                                            const getRCprofitAllPrecised = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle(`Global group profits`)
-                                                .setDescription(">>> Global profits made by the group during the last `" + selectedTime + "`.")
-                                                .setImage('https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png')
-                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                .addFields(
-                                                    { name: "Buy Spent", value: "`" + parseFloat(buySpentAll).toFixed(3) + "Ξ (" + parseFloat(buySpentAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                    { name: "Buy Gas Spent", value: "`" + parseFloat(buyGasSpentAll).toFixed(3) + "Ξ (" + parseFloat(buyGasSpentAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                    { name: "Total Buy Spent", value: "`" + parseFloat(totalBuySpentAll).toFixed(3) + "Ξ (" + parseFloat(totalBuySpentAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                    { name: "Sold Value", value: "`" + parseFloat(soldValueAll).toFixed(3) + "Ξ (" + parseFloat(soldValueAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                    { name: "Sold Gas Value", value: "`" + parseFloat(soldGasValueAll).toFixed(3) + "Ξ (" + parseFloat(soldGasValueAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                    { name: "Total Sold Value", value: "`" + parseFloat(totalSoldValueAll).toFixed(3) + "Ξ (" + parseFloat(soldValueAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                    { name: "Buy Trade Count", value: "`" + BuyTradeCountAll + "`", inline: true },
-                                                    { name: "Sold Trade Count", value: "`" + SoldTradeCountAll + "`", inline: true },
-                                                    { name: "Total Trade Count", value: "`" + totalTradeCountAll + "`", inline: true },
-                                                    { name: "Mint Count", value: "`" + mintCountAll + "`", inline: true },
-                                                    { name: "Approval Count", value: "`" + approvalCountAll + "`", inline: true },
-                                                    { name: "Failed Count", value: "`" + failedCountAll + "`", inline: true },
-                                                    { name: "AVG Spent Value", value: "`" + parseFloat(averageSpentValueAll).toFixed(3) + "Ξ (" + parseFloat(averageSpentValueAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                    { name: "AVG Sold Value", value: "`" + parseFloat(averageSoldValueAll).toFixed(3) + "Ξ (" + parseFloat(averageSoldValueAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                    { name: "AVG Profit Value", value: "`" + parseFloat(averageProfitValueAll).toFixed(3) + "Ξ (" + parseFloat(averageProfitValueAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                    { name: "Realised Profit", value: "`" + (parseFloat(realisedProfitAll).toFixed(3)).toString() + "Ξ (" + parseFloat(realisedProfitAll * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                    { name: "Realised PNL", value: realisedPnlAll, inline: true },
-                                                    { name: "Win/Loss Ratio", value: "`" + parseFloat(closedTradeProfit).toFixed(3) + "Ξ (" + parseFloat(closedTradeProfit * ethUsdPrice).toFixed(0) + "$)`", inline: true },
-                                                    { name: "Top Trader", value: "`" + topProfitMemberAll + "`", inline: true },
-                                                    { name: "Top Profit Wallet", value: "`" + topProfitWalletAll + "`", inline: true },
-                                                    { name: "Members Involved", value: "`" + nbMemberInvolvedAll + "`", inline: true },
-
-                                                )
-                                                .setTimestamp()
-                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                            await interaction.editReply({ embeds: [getRCprofitAllPrecised] });
 
 
 
@@ -1084,56 +1086,7 @@ module.exports = {
                                                         }
 
 
-                                                        ///CALL BASE SQL
-
-                                                        await interactionData.destroy({ where: { authorId: authorId, commandName: "rcprofit", serverId: serverId, } })
-
-                                                        await interactionData.create({
-
-                                                            authorId: authorId,
-                                                            authorName: authorName,
-                                                            serverId: serverId,
-                                                            walletAddress: "N/A",
-                                                            commandName: "rcprofit",
-                                                            interactionId: interaction.id,
-                                                            walletName: "N/A",
-                                                            selecedTimestamp: selectedTime,
-                                                            embed1: "N/A",
-                                                            embed2: "N/A",
-                                                            embed3: "N/A",
-                                                            pageIndex: "N/A",
-                                                            actualPage: "N/A",
-                                                            walletCategory: "N/A",
-                                                            selectedCollection: selectedCollection,
-                                                            collectionSlug: "N/A",
-                                                            collectionBanner: "N/A",
-                                                            avgDeriskPrice: "N/A",
-                                                            floorPrice: collectionFp.toString(),
-                                                            lowerMarketlace: "N/A",
-                                                            collectionName: collectionName,
-                                                            walletCategory: "N/A",
-                                                            collectionTwitter: "N/A",
-                                                            collectionWebsite: "N/A",
-                                                            buyCount: totalBuyCount.toString(),
-                                                            mintCount: mintCount.toString(),
-                                                            soldCount: soldCount.toString(),
-                                                            remaining: holdCount.toString(),
-                                                            avgBuy: parseFloat(averageSpentValue).toFixed(3),
-                                                            avgSold: parseFloat(averageSoldValue).toFixed(3),
-                                                            realisedProfit: parseFloat(realisedProfit).toFixed(3),
-                                                            potentialProfit: parseFloat(potentialProfit).toFixed(3),
-                                                            roi: roi.toString(),
-                                                            visualTitle: "N/A",
-                                                            userAvatar: userAvatar,
-                                                            nbMembersInvolved: "N/A",
-                                                            totalTradeCount: "N/A",
-
-                                                        })
-
-
-                                                        /// CALL BASE SQL : FIN
-
-
+                                                   
 
 
                                                         //Embed getRCprofitPrecisedAll
@@ -1174,6 +1127,57 @@ module.exports = {
 
                                                         await interaction.editReply({ embeds: [getRCprofitPrecisedAll], components: [buttonVisual] });
 
+
+                                                             ///CALL BASE SQL
+
+                                                             await interactionData.destroy({ where: { authorId: authorId, commandName: "rcprofit", serverId: serverId, } })
+
+                                                             await interactionData.create({
+     
+                                                                 authorId: authorId,
+                                                                 authorName: authorName,
+                                                                 serverId: serverId,
+                                                                 walletAddress: "N/A",
+                                                                 commandName: "rcprofit",
+                                                                 interactionId: interaction.id,
+                                                                 walletName: "N/A",
+                                                                 selecedTimestamp: selectedTime,
+                                                                 embed1: "N/A",
+                                                                 embed2: "N/A",
+                                                                 embed3: "N/A",
+                                                                 pageIndex: "N/A",
+                                                                 actualPage: "N/A",
+                                                                 walletCategory: "N/A",
+                                                                 selectedCollection: selectedCollection,
+                                                                 collectionSlug: "N/A",
+                                                                 collectionBanner: "N/A",
+                                                                 avgDeriskPrice: "N/A",
+                                                                 floorPrice: collectionFp.toString(),
+                                                                 lowerMarketlace: "N/A",
+                                                                 collectionName: collectionName,
+                                                                 walletCategory: "N/A",
+                                                                 collectionTwitter: "N/A",
+                                                                 collectionWebsite: "N/A",
+                                                                 buyCount: totalBuyCount.toString(),
+                                                                 mintCount: mintCount.toString(),
+                                                                 soldCount: soldCount.toString(),
+                                                                 remaining: holdCount.toString(),
+                                                                 avgBuy: parseFloat(averageSpentValue).toFixed(3),
+                                                                 avgSold: parseFloat(averageSoldValue).toFixed(3),
+                                                                 realisedProfit: parseFloat(realisedProfit).toFixed(3),
+                                                                 potentialProfit: parseFloat(potentialProfit).toFixed(3),
+                                                                 roi: roi.toString(),
+                                                                 visualTitle: "N/A",
+                                                                 userAvatar: userAvatar,
+                                                                 nbMembersInvolved: "N/A",
+                                                                 totalTradeCount: "N/A",
+     
+                                                             })
+     
+     
+                                                             /// CALL BASE SQL : FIN
+     
+     
 
 
                                                         //On enregistre le call API dans la database
@@ -1600,55 +1604,7 @@ module.exports = {
 
 
 
-                                                        /////////// CALL BASE SQL
-
-                                                        await interactionData.destroy({ where: { authorId: authorId, commandName: "rcprofit", serverId: serverId } })
-
-                                                        await interactionData.create({
-
-                                                            authorId: authorId,
-                                                            authorName: authorName,
-                                                            serverId: serverId,
-                                                            walletAddress: "N/A",
-                                                            commandName: "rcprofit",
-                                                            interactionId: interaction.id,
-                                                            walletName: "N/A",
-                                                            selecedTimestamp: selectedTime,
-                                                            embed1: "N/A",
-                                                            embed2: "N/A",
-                                                            embed3: "N/A",
-                                                            pageIndex: "N/A",
-                                                            actualPage: "N/A",
-                                                            walletCategory: "N/A",
-                                                            selectedCollection: selectedCollection,
-                                                            collectionSlug: "N/A",
-                                                            collectionBanner: "N/A",
-                                                            avgDeriskPrice: "N/A",
-                                                            floorPrice: collectionFp.toString(),
-                                                            lowerMarketlace: "N/A",
-                                                            collectionName: collectionName,
-                                                            walletCategory: "N/A",
-                                                            collectionTwitter: "N/A",
-                                                            collectionWebsite: "N/A",
-                                                            buyCount: totalBuyCount.toString(),
-                                                            mintCount: mintCount.toString(),
-                                                            soldCount: soldCount.toString(),
-                                                            remaining: holdCount.toString(),
-                                                            avgBuy: parseFloat(averageSpentValue).toFixed(3),
-                                                            avgSold: parseFloat(averageSoldValue).toFixed(3),
-                                                            realisedProfit: parseFloat(realisedProfit).toFixed(3),
-                                                            potentialProfit: parseFloat(potentialProfit).toFixed(3),
-                                                            roi: roi.toString(),
-                                                            visualTitle: "N/A",
-                                                            userAvatar: userAvatar,
-                                                            nbMembersInvolved: "N/A",
-                                                            totalTradeCount: "N/A",
-
-                                                        })
-
-
-                                                        //////////// CALL BASE SQL : FIN
-
+                                                       
 
 
 
@@ -1697,6 +1653,56 @@ module.exports = {
 
                                                         await interaction.editReply({ embeds: [getRCprofitPrecisedPrecised], components: [buttonVisual] });
 
+
+                                                         /////////// CALL BASE SQL
+
+                                                         await interactionData.destroy({ where: { authorId: authorId, commandName: "rcprofit", serverId: serverId } })
+
+                                                         await interactionData.create({
+ 
+                                                             authorId: authorId,
+                                                             authorName: authorName,
+                                                             serverId: serverId,
+                                                             walletAddress: "N/A",
+                                                             commandName: "rcprofit",
+                                                             interactionId: interaction.id,
+                                                             walletName: "N/A",
+                                                             selecedTimestamp: selectedTime,
+                                                             embed1: "N/A",
+                                                             embed2: "N/A",
+                                                             embed3: "N/A",
+                                                             pageIndex: "N/A",
+                                                             actualPage: "N/A",
+                                                             walletCategory: "N/A",
+                                                             selectedCollection: selectedCollection,
+                                                             collectionSlug: "N/A",
+                                                             collectionBanner: "N/A",
+                                                             avgDeriskPrice: "N/A",
+                                                             floorPrice: collectionFp.toString(),
+                                                             lowerMarketlace: "N/A",
+                                                             collectionName: collectionName,
+                                                             walletCategory: "N/A",
+                                                             collectionTwitter: "N/A",
+                                                             collectionWebsite: "N/A",
+                                                             buyCount: totalBuyCount.toString(),
+                                                             mintCount: mintCount.toString(),
+                                                             soldCount: soldCount.toString(),
+                                                             remaining: holdCount.toString(),
+                                                             avgBuy: parseFloat(averageSpentValue).toFixed(3),
+                                                             avgSold: parseFloat(averageSoldValue).toFixed(3),
+                                                             realisedProfit: parseFloat(realisedProfit).toFixed(3),
+                                                             potentialProfit: parseFloat(potentialProfit).toFixed(3),
+                                                             roi: roi.toString(),
+                                                             visualTitle: "N/A",
+                                                             userAvatar: userAvatar,
+                                                             nbMembersInvolved: "N/A",
+                                                             totalTradeCount: "N/A",
+ 
+                                                         })
+ 
+ 
+                                                         //////////// CALL BASE SQL : FIN
+ 
 
 
                                                         //On enregistre le call API dans la database

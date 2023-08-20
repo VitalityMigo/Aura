@@ -180,6 +180,9 @@ module.exports = {
                     }
 
 
+                    await interaction.update({ embeds: [setWatchlist], components: [buttonRowGetWatchlist] });
+
+
 
                     //On fait le call à la base SQL
                     await interactionData.destroy({ where: { authorId: authorId, commandName: "getwatchlist-btc", serverId: serverId } })
@@ -223,7 +226,6 @@ module.exports = {
 
 
 
-                    await interaction.update({ embeds: [setWatchlist], components: [buttonRowGetWatchlist] });
 
 
                 } else if (authorWatchlist.length <= 0) {

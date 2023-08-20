@@ -605,6 +605,11 @@ module.exports = {
                                         console.log(watchlistBaseTable)
 
 
+
+                                        await interaction.editReply({ embeds: [setWatchlist], components: [buttonRowGetWatchlist] });
+
+
+
                                         //On fait le call à la base SQL
                                         await interactionData.destroy({ where: { authorId: authorId, commandName: "getwatchlist-eth", serverId: serverId } })
 
@@ -647,7 +652,6 @@ module.exports = {
 
 
 
-                                        await interaction.editReply({ embeds: [setWatchlist], components: [buttonRowGetWatchlist] });
 
 
                                         //On enregistre le call API dans la database

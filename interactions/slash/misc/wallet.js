@@ -1222,7 +1222,7 @@ module.exports = {
 
                                         const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
                                             .setTitle(`${authorName}'s wallet`)
-                                            .setDescription("The command you try to use is currently being built and will be available in the near future. You can still use all the other commands in the meantime.")
+                                            .setDescription("The google sheet option you try to use is currently being built and will be available in the near future. You can still use all the other commands in the meantime, as well as the other options of `wallet raw`.")
                                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                             .setTimestamp()
                                             .setAuthor({ name: authorName, iconURL: userAvatar })

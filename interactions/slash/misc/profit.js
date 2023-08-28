@@ -1457,7 +1457,10 @@ module.exports = {
                                     if (WalletofAuthor !== null) {
                                         precisedWalletofAuthorTable.push(WalletofAuthor.dataValues.walletAddress)
                                         precisedWalletNameofAuthor = WalletofAuthor.dataValues.walletName
-                                    } else { precisedWalletNameofAuthor = walletAddress.substring(0, 5) + "..." + walletAddress.substring(walletAddress.length - 4, walletAddress.length) }
+                                    } else { 
+                                        precisedWalletofAuthorTable.push(walletAddress)
+                                        precisedWalletNameofAuthor = walletAddress.substring(0, 5) + "..." + walletAddress.substring(walletAddress.length - 4, walletAddress.length)
+                                 }
 
 
                                     //Ajustement du Timestamp
@@ -1729,7 +1732,7 @@ module.exports = {
                                                             apiObj.getUsersUserTokensV6++
                                                         }
 
-
+console.log(precisedWalletofAuthorTable)
 
 
                                                         // Récuperer les ID des tokens sell 
@@ -1743,6 +1746,7 @@ module.exports = {
                                                                 limit: '1000',
                                                                 apiKey: alchemyApiKey
                                                             })
+                                                            console.log(userSoldTokens)
 
                                                             for (let i = 0; i < userSoldTokens.nftSales.length; i++) { tokenSoldTable.push(userSoldTokens.nftSales[i].tokenId); }
 
@@ -1755,6 +1759,7 @@ module.exports = {
 
                                                         console.log(tokenHoldTable)
                                                         console.log(tokenSoldTable)
+
 
 
 

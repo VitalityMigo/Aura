@@ -105,14 +105,14 @@ module.exports = {
                 .setName("collection")
                 .setDescription("The category you want to set up your wallet in")
                 .setRequired(true)
-            // .setAutocomplete(true)
+             .setAutocomplete(true)
         )
         .addStringOption(option =>
             option
                 .setName("wallet")
                 .setDescription("The category you want to set up your wallet in")
                 .setRequired(true)
-            //.setAutocomplete(true)
+            .setAutocomplete(true)
         )
         .addStringOption(option =>
             option

@@ -778,7 +778,6 @@ module.exports = {
 												}
 
 												fpvalue = parseFloat(fp).toFixed(3) + "Ξ`:chart_with_downwards_trend:"
-
 												let linksFormatted = ""
 												if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
 												else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + collection + ") ∙ " + '[magically](https://magically.gg/collection/' + collection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + collection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
@@ -795,8 +794,7 @@ module.exports = {
 														{ name: 'Floor Price', value: "`" + lowestfp + 'Ξ`', inline: true },
 														{ name: 'Alert', value: "`" + fpvalue, inline: true },
 														{ name: 'Marketplace', value: Marketplace, inline: true },
-														//{ name: 'Creation Date', value: "`" + formattedDate + "`", inline: false },
-														{ name: linksFormatted, inline: false }
+														{ name: "Links", value: linksFormatted, inline: false }
 
 													)
 													.setTimestamp()
@@ -834,7 +832,8 @@ module.exports = {
 
 
 
-									}).catch(err => console.error(err + "1erCATCH\nCollection-->" + collection + "\nFP-->" + fp));
+									})
+									//.catch(err => console.log(err + "1erCATCH\nCollection-->" + collection + "\nFP-->" + fp));
 
 
 

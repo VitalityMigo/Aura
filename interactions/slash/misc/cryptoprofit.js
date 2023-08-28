@@ -818,7 +818,7 @@ console.log(roi)
 
                                                     setTimeout(() => {
 
-                                                    }, 5000);
+                                                    }, 6500);
 
                                                     const walletBalance = await axios.get('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=' + coinAddress + '&address=' + wallet + '&tag=latest&apikey=' + etherscanApiKey)
                                                     tokenHeldCount += (walletBalance.data.result) / (10 ** coinDecimal)

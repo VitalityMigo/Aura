@@ -232,7 +232,7 @@ module.exports = {
 
 
                                 //Variable pour les options
-                                const walletAddress = interaction.options.getString("wallet");
+                                const walletAddress = interaction.options.getString("wallet").toLowerCase()
                                 const selectedCollection = interaction.options.getString("collection");
                                 const selectedTime = interaction.options.getString("timelapse");
 

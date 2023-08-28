@@ -25,6 +25,11 @@ const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
 sdk.auth(reservoirApiKey);
 //;
 
+//Reservoir API
+const sdk2 = require('api')('@reservoirprotocol/v3.0#14qr79bllr5y839');
+sdk2.auth(reservoirApiKey);
+//;
+
 //Block Span API
 const bsp = require('api')('@blockspan/v1.0#9zxl2sledru983');
 bsp.auth(blockspanApiKey);
@@ -100,14 +105,14 @@ module.exports = {
                 .setName("collection")
                 .setDescription("The category you want to set up your wallet in")
                 .setRequired(true)
-                .setAutocomplete(true)
+            // .setAutocomplete(true)
         )
         .addStringOption(option =>
             option
                 .setName("wallet")
                 .setDescription("The category you want to set up your wallet in")
                 .setRequired(true)
-                .setAutocomplete(true)
+            //.setAutocomplete(true)
         )
         .addStringOption(option =>
             option
@@ -635,10 +640,59 @@ module.exports = {
                                                                 if (filteredSales.length <= 0) {
 
 
+                                                                    const { data: isMintCall } = await
+                                                                    sdk2.getTokensTokenActivityV5({
+                                                                        token: selectedCollection + ':' + tokenId,
+                                                                        types: 'mint',
+                                                                        accept: '*/*'
+                                                                    })
+
+                                                                if (isMintCall.activities.length > 0) {
+
+
+
+                                                                    let tokenHashTxn = isMintCall.activities[0].txHash
+
+                                                                    const hashValueReader = await web3.eth.getTransaction(tokenHashTxn)
+                                                                    const hashGasReader = await web3.eth.getTransactionReceipt(tokenHashTxn)
+                                                                    const { data: hashTransferReader } = await bsp.getAllTransfers({ chain: 'eth-main', hash: tokenHashTxn, page_size: '100' })
+    
+                                                                    //On incrément le compteur de call API
+                                                                    apiObj.getTransaction++
+                                                                    apiObj.getTransactionReceipt++
+                                                                    apiObj.getAllTransfers++
+    
+    
+                                                                    const hashTransferReaderObject = hashTransferReader.results;
+                                                                    const uniqueIds = {}; // stockage temporaire des ids uniques
+                                                                    let uniqueIdCount = 0; // compteur d'ids uniques
+    
+                                                                    for (let i = 0; i < hashTransferReaderObject.length; i++) {
+                                                                        const objectId = hashTransferReaderObject[i].id;
+                                                                        if (!uniqueIds[objectId]) { // si cet id n'a pas été vu auparavant
+                                                                            uniqueIds[objectId] = true; // marquer l'id comme vu
+                                                                            uniqueIdCount++; // incrémenter le compteur d'ids uniques
+                                                                        }
+                                                                    }
+
+
+                                                                    mintSpent += parseFloat(isMintCall.activities[0].price.amount.native);
+                                                                    mintGasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
+                                                                    mintCount += 1
+                                                                  
+
+
+                                                                } else {
+
+
                                                                     buyMarketplaceSpent += 0;
                                                                     buyMarketplaceGasSpent += 0;
                                                                     incomingTransferCount += 1
                                                                     outgoingTransferCount += 0
+
+
+
+                                                                }
 
                                                                 } else if (filteredSales[0].orderSide === "bid") {
 
@@ -1457,10 +1511,10 @@ module.exports = {
                                     if (WalletofAuthor !== null) {
                                         precisedWalletofAuthorTable.push(WalletofAuthor.dataValues.walletAddress)
                                         precisedWalletNameofAuthor = WalletofAuthor.dataValues.walletName
-                                    } else { 
+                                    } else {
                                         precisedWalletofAuthorTable.push(walletAddress)
                                         precisedWalletNameofAuthor = walletAddress.substring(0, 5) + "..." + walletAddress.substring(walletAddress.length - 4, walletAddress.length)
-                                 }
+                                    }
 
 
                                     //Ajustement du Timestamp
@@ -1613,14 +1667,14 @@ module.exports = {
                                         } else {
 
                                             const notMember = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle("Profit")
-                                                    .setDescription("Aura can't analyze your wallet metrics. The filter `all collection` of this command is only available with Ethereum wallets. Please try again selecting an Ethereum wallet.")
-                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                    .setTimestamp()
-                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+                                                .setTitle("Profit")
+                                                .setDescription("Aura can't analyze your wallet metrics. The filter `all collection` of this command is only available with Ethereum wallets. Please try again selecting an Ethereum wallet.")
+                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                                                await interaction.editReply({ embeds: [notMember] });
+                                            await interaction.editReply({ embeds: [notMember] });
 
 
                                         }
@@ -1732,7 +1786,7 @@ module.exports = {
                                                             apiObj.getUsersUserTokensV6++
                                                         }
 
-console.log(precisedWalletofAuthorTable)
+                                                        console.log(precisedWalletofAuthorTable)
 
 
                                                         // Récuperer les ID des tokens sell 
@@ -1746,7 +1800,7 @@ console.log(precisedWalletofAuthorTable)
                                                                 limit: '1000',
                                                                 apiKey: alchemyApiKey
                                                             })
-                                                            console.log(userSoldTokens)
+
 
                                                             for (let i = 0; i < userSoldTokens.nftSales.length; i++) { tokenSoldTable.push(userSoldTokens.nftSales[i].tokenId); }
 
@@ -1772,6 +1826,7 @@ console.log(precisedWalletofAuthorTable)
                                                                     limit: '100',
                                                                     accept: '*/*'
                                                                 })
+
 
                                                             //On incrément le compteur de call API
                                                             apiObj.getSalesV4++
@@ -1857,15 +1912,65 @@ console.log(precisedWalletofAuthorTable)
                                                             apiObj.getSalesV4++
 
 
-                                                            const filteredSales = userPriceToken.sales.filter(sale => precisedWalletofAuthorTable.includes(sale.to));
+                                                            const filteredSales = userPriceToken.sales.filter(sale => precisedWalletofAuthorTable.includes(sale.to.toLowerCase()));
+                                                            console.log("la")
+                                                            console.log(filteredSales)
 
                                                             if (filteredSales.length <= 0) {
 
+                                                                const { data: isMintCall } = await
+                                                                    sdk2.getTokensTokenActivityV5({
+                                                                        token: selectedCollection + ':' + tokenId,
+                                                                        types: 'mint',
+                                                                        accept: '*/*'
+                                                                    })
 
-                                                                buyMarketplaceSpent += 0;
-                                                                buyMarketplaceGasSpent += 0;
-                                                                incomingTransferCount += 1
-                                                                outgoingTransferCount += 0
+                                                                if (isMintCall.activities.length > 0) {
+
+
+
+                                                                    let tokenHashTxn = isMintCall.activities[0].txHash
+
+                                                                    const hashValueReader = await web3.eth.getTransaction(tokenHashTxn)
+                                                                    const hashGasReader = await web3.eth.getTransactionReceipt(tokenHashTxn)
+                                                                    const { data: hashTransferReader } = await bsp.getAllTransfers({ chain: 'eth-main', hash: tokenHashTxn, page_size: '100' })
+    
+                                                                    //On incrément le compteur de call API
+                                                                    apiObj.getTransaction++
+                                                                    apiObj.getTransactionReceipt++
+                                                                    apiObj.getAllTransfers++
+    
+    
+                                                                    const hashTransferReaderObject = hashTransferReader.results;
+                                                                    const uniqueIds = {}; // stockage temporaire des ids uniques
+                                                                    let uniqueIdCount = 0; // compteur d'ids uniques
+    
+                                                                    for (let i = 0; i < hashTransferReaderObject.length; i++) {
+                                                                        const objectId = hashTransferReaderObject[i].id;
+                                                                        if (!uniqueIds[objectId]) { // si cet id n'a pas été vu auparavant
+                                                                            uniqueIds[objectId] = true; // marquer l'id comme vu
+                                                                            uniqueIdCount++; // incrémenter le compteur d'ids uniques
+                                                                        }
+                                                                    }
+
+
+                                                                    mintSpent += parseFloat(isMintCall.activities[0].price.amount.native);
+                                                                    mintGasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
+                                                                    mintCount += 1
+                                                                  
+
+
+                                                                } else {
+
+
+                                                                    buyMarketplaceSpent += 0;
+                                                                    buyMarketplaceGasSpent += 0;
+                                                                    incomingTransferCount += 1
+                                                                    outgoingTransferCount += 0
+
+
+
+                                                                }
 
                                                             } else if (filteredSales[0].orderSide === "bid") {
 
@@ -1905,6 +2010,8 @@ console.log(precisedWalletofAuthorTable)
                                                                     mintSpent += parseFloat(filteredSales[0].price.amount.native);
                                                                     mintGasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
                                                                     mintCount += 1
+
+
 
                                                                 } else {
 

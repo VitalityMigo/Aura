@@ -70,7 +70,7 @@ module.exports = {
 
             const walletManager = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("Get Access")
-                .setDescription("Sorry, you are not part of the Friends & Familly list.\n\n You can still access the bot buy taking our monthly subscription.\n\nIf you encounter any problem or need help, feel free to open a ticket.")
+                .setDescription("Sorry, you are not part of the Friends & Family list.\n\nYou can still access the bot by taking our monthly subscription.\n\nIf you encounter any problem or need help, feel free to open a ticket.")
                 .setTimestamp()
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 

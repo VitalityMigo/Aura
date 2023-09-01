@@ -25,7 +25,6 @@ const axios = require('axios')
 
 // On définit le client et charge les channels
 const client = require('../bot'); // Chemin vers le fichier client.js
-const botId = client.user.id;
 
 let serverId = ""
 let channelNewPairId = ""
@@ -33,20 +32,23 @@ let channelFilteredPairId = ""
 
 let channelNewPair = ""
 
-if (botId == "1074328639165964368") {
-  // PROD
-  serverId = "1108754348818845729"
-  channelNewPairId = "1147118393355411467"
-  channelFilteredPairId = "1147118992822116382"
-
-} else if (botId == "1119666128411709552") {
-  // DEV
-  serverId = "1071576735298113667"
-  channelNewPairId = "1104225853023461388"
-  channelFilteredPairId = "1104225853023461388"
-} else
 
   setTimeout(() => {
+
+    const botId = client.user.id;
+
+    if (botId == "1074328639165964368") {
+      // PROD
+      serverId = "1108754348818845729"
+      channelNewPairId = "1147118393355411467"
+      channelFilteredPairId = "1147118992822116382"
+    
+    } else if (botId == "1119666128411709552") {
+      // DEV
+      serverId = "1071576735298113667"
+      channelNewPairId = "1104225853023461388"
+      channelFilteredPairId = "1104225853023461388"
+    } 
 
     const botGuild = client.guilds.cache.get(serverId);
     channelNewPair = botGuild.channels.cache.get(channelNewPairId);

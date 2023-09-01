@@ -44,6 +44,7 @@ const client = new Client({
 	],
 	partials: [Partials.Channel],
 });
+module.exports = client;
 
 
 /**********************************************************************/
@@ -313,7 +314,6 @@ for (const folder of triggerFolders) {
 		client.triggers.set(trigger.name, trigger);
 	}
 }
-module.exports = client;
 
 
 // Login into your client application with bot's token.

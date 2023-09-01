@@ -31,29 +31,30 @@ let channelNewPairId = ""
 let channelFilteredPairId = ""
 
 let channelNewPair = ""
+let channelFilteredPair = ""
 
+setTimeout(() => {
 
-  setTimeout(() => {
+  const botId = client.user.id;
 
-    const botId = client.user.id;
+  if (botId == "1074328639165964368") {
+    // PROD
+    serverId = "1108754348818845729"
+    channelNewPairId = "1147118393355411467"
+    channelFilteredPairId = "1147118992822116382"
 
-    if (botId == "1074328639165964368") {
-      // PROD
-      serverId = "1108754348818845729"
-      channelNewPairId = "1147118393355411467"
-      channelFilteredPairId = "1147118992822116382"
-    
-    } else if (botId == "1119666128411709552") {
-      // DEV
-      serverId = "1071576735298113667"
-      channelNewPairId = "1104225853023461388"
-      channelFilteredPairId = "1104225853023461388"
-    } 
+  } else if (botId == "1119666128411709552") {
+    // DEV
+    serverId = "1071576735298113667"
+    channelNewPairId = "1104225853023461388"
+    channelFilteredPairId = "1104225853023461388"
+  }
 
-    const botGuild = client.guilds.cache.get(serverId);
-    channelNewPair = botGuild.channels.cache.get(channelNewPairId);
+  const botGuild = client.guilds.cache.get(serverId);
+  channelNewPair = botGuild.channels.cache.get(channelNewPairId);
+  channelFilteredPair = botGuild.channels.cache.get(channelFilteredPairId);
 
-  }, 3000);
+}, 3000);
 
 
 
@@ -288,8 +289,13 @@ factoryContract.events.PairCreated()
         await channelNewPair.send({ embeds: [newPair] });
 
 
+        if (ownership == "✅ Renounced" && liquidity >= "10" && devBalance <= 0) {
 
 
+          await channelFilteredPair.send({ embeds: [newPair] });
+
+
+        }
       }
 
     } catch (error) {

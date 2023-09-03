@@ -294,6 +294,9 @@ factoryContract.events.PairCreated()
         if (ownership == "✅ Renounced" && liquidity >= 10 && (deployerBalance + ownerBalance) <= 0) {
           console.log("ici")
 
+          newPair.setDescription(">>> A new filtered pair has been created. Filtered pairs have : ownership renounced, no balance owns by contract owner or deployer, and at least 10k of liquidity.")
+
+
           await channelFilteredPair.send({ embeds: [newPair] });
 
 

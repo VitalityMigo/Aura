@@ -250,7 +250,7 @@ factoryContract.events.PairCreated()
           }
 
           ownership = "❌ Not renounced"
-          devBalance = parseFloat(((deployerBalance + ownerBalance / 2) * priceUsd) / ethPriceUsd).toFixed(3) + "Ξ (" + parseFloat(((deployerBalance + ownerBalance) / totalSupply) * 100).toFixed(1) + "%)"
+          devBalance = parseFloat(((deployerBalance + ownerBalance / 2) * priceUsd) / ethPriceUsd).toFixed(3) + "Ξ (" + parseFloat((((deployerBalance + ownerBalance) / 2) / totalSupply) * 100).toFixed(1) + "%)"
 
         }
 
@@ -289,8 +289,10 @@ factoryContract.events.PairCreated()
         await channelNewPair.send({ embeds: [newPair] });
 
 
-        if (ownership == "✅ Renounced" && liquidity >= "10" && devBalance <= 0) {
+        
 
+        if (ownership == "✅ Renounced" && liquidity >= 10 && (deployerBalance + ownerBalance) <= 0) {
+          console.log("ici")
 
           await channelFilteredPair.send({ embeds: [newPair] });
 

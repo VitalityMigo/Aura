@@ -17,7 +17,13 @@ const etherscanApiKey = process.env.etherscanApiKey
 
 
 const Web3 = require('web3');
-const web3 = new Web3('wss://mainnet.infura.io/ws/v3/' + infuraApiKey);
+const web3 = new Web3(new Web3.providers.WebsocketProvider(`wss://mainnet.infura.io/ws/v3/${infuraApiKey}`, {
+  clientConfig: {
+    // Ajustez la taille maximale des trames et des messages selon vos besoins.
+    maxReceivedFrameSize: 10000000000, // Taille maximale des trames reçues en octets.
+    maxReceivedMessageSize: 10000000000, // Taille maximale des messages reçus en octets.
+  }
+}));
 
 const axios = require('axios')
 
@@ -270,9 +276,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
 
 
-                            } else {
-                                console.log(`⚠️ Pas contrat : ` + transaction.hash);
-                            }
+                            } 
 
                         }
                     })
@@ -289,6 +293,10 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                 // Faites quelque chose avec l'adresse du nouveau contrat, par exemple, enregistrez-la dans une base de données.
             }
 
+
+        }).catch(error => {
+
+console.log("ici")
 
         });
     });

@@ -294,11 +294,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
             }
 
 
-        }).catch(error => {
-
-console.log("ici")
-
-        });
+        })
     });
 
 } catch (error) {

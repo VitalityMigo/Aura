@@ -407,6 +407,7 @@ module.exports = {
                                     let devBalance = 0
                                     let mintable
                                     let isMintable = "N/A"
+                                    let pairAddress = ""
 
                                     //On récupère les infos du coin
                                     const coinInfos = await alchemy.core.getTokenMetadata(coinTicker)
@@ -443,6 +444,7 @@ module.exports = {
                                             volume1h = pairWeth[0].volume.h1
                                             volume6h = pairWeth[0].volume.h6
                                             volume1d = pairWeth[0].volume.h24
+                                            pairAddress = pairWeth[0].pairAddress
 
                                             evolution1h = pairWeth[0].priceChange.h1
                                             evolution6h = pairWeth[0].priceChange.h6
@@ -586,7 +588,6 @@ module.exports = {
                                             .setAuthor({ name: authorName, iconURL: userAvatar })
                                             .setImage(chartImageLink)
                                             .addFields(
-                                                { name: " ", value: " ", inline: false },
                                                 { name: "Contract", value: "`" + coinTicker.toLowerCase() + "`", inline: false },
                                                 { name: "ETH Price", value: "`" + parseFloat(coinActualPriceEth).toFixed(5) + "Ξ`", inline: true },
                                                 { name: "USD Price", value: "`" + coinActualPriceUsd + "$`", inline: true },
@@ -611,7 +612,8 @@ module.exports = {
                                                 { name: "1D Price Change", value: "`" + evolution1d + "%`", inline: true },
                                                 //{ name: " ", value: " ", inline: true },
                                                 { name: "Holders:", value: holdersFormatted, inline: false },
-                                                { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinTicker + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + coinTicker + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + coinTicker + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + coinTicker + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinTicker + ")", inline: false },
+                                                { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinTicker + ") ∙ " + '[Etherscan LP](https://etherscan.io/address/' + pairAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + coinTicker + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + coinTicker + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + coinTicker + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + coinTicker + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + coinTicker + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinTicker + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + coinTicker + ")", inline: false },
+                                                { name: "Quicktasks", value: '[Thunder](http://localhost:7777/quickTask?module=defi&contract=' + coinTicker + "&action=buy&blockchain=ethereum&platform=uniswapv2) ∙ " + '[Maestro]( https://t.me/MaestroSniperBot?start=' + coinTicker + ") ∙ " + '[Sensei](https://app.thornhill.fun/defi?token=' + coinTicker + "&venue=UNISWAP_V2&valueEth=0.05) ∙ " + '[Waifu]( http://localhost:7780/uniswapqt?contractAddress=' + coinTicker + "&group=Default)", inline: false },
 
 
                                             )

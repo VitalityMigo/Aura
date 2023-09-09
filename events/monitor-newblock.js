@@ -113,7 +113,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
     }
 
     const blockNumber = header.number;
-    console.log("New Block " + blockNumber + "[ ")
+    console.log("New Block " + parseInt(blockNumber) + "[ ")
 
     await web3Call.eth.getBlock(blockNumber, true, async (error, block) => {
         if (error) {
@@ -307,7 +307,6 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
         })
     });
 
-    console.log("] End " + blockNumber)
 
 
 } catch (error) {

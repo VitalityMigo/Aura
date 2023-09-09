@@ -408,6 +408,8 @@ module.exports = {
                                     let mintable
                                     let isMintable = "N/A"
                                     let pairAddress = ""
+                                    let coinActualPriceUsd = 0
+                                    let coinActualPriceEth = 0
 
                                     //On récupère les infos du coin
                                     const coinInfos = await alchemy.core.getTokenMetadata(coinTicker)

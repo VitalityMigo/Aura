@@ -17,6 +17,7 @@ const etherscanApiKey = process.env.etherscanApiKey
 
 
 const Web3 = require('web3');
+const web3Call = new Web3("https://cloudflare-eth.com")
 const web3 = new Web3(new Web3.providers.WebsocketProvider(`wss://mainnet.infura.io/ws/v3/${infuraApiKey}`, {
   clientConfig: {
     // Ajustez la taille maximale des trames et des messages selon vos besoins.
@@ -112,8 +113,9 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
     }
 
     const blockNumber = header.number;
+    console.log("New Block " + blockNumber + "[ ")
 
-    await web3.eth.getBlock(blockNumber, true, async (error, block) => {
+    await web3Call.eth.getBlock(blockNumber, true, async (error, block) => {
         if (error) {
             console.error('Erreur lors de la récupération du bloc :', error);
             return;
@@ -126,7 +128,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
             if (transaction.to == null && transaction.input !== '0x' && transaction.value == 0) {
 
-                await web3.eth.getTransactionReceipt(transaction.hash)
+                await web3Call.eth.getTransactionReceipt(transaction.hash)
                     .then(async receipt => {
 
 
@@ -147,7 +149,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
                                 if (type == "ERC20") {
 
-                                    const tokenContract = new web3.eth.Contract(erc20Standard, contract);
+                                    const tokenContract = await new web3Call.eth.Contract(erc20Standard, contract);
                                     decimals = await tokenContract.methods.decimals().call();
                                     owner = await tokenContract.methods.owner().call();
                                     name = await tokenContract.methods.name().call();
@@ -194,7 +196,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                                             { name: "Dev. Balance", value: "`" + devBalance + "`", inline: true },
                                             { name: "Ownership", value: "`" + ownership + "`", inline: true },
                                             { name: "Pair Created", value: createdSince, inline: true },
-                                            { name: "Contract", value: '[Etherscan](https://etherscan.io/address/' + contract + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + contract + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + contract + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + contract + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + contract + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + contract + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + contract + ")", inline: false },
+                                            { name: "Contract", value: '[Etherscan](https://etherscan.io/address/' + contract + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + contract + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + contract + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + contract + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + contract + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + contract + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + contract + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + contract + ")", inline: false },
 
 
                                         )
@@ -213,7 +215,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
 
 
-                                    const tokenContract = new web3.eth.Contract(erc721Standard, contract);
+                                    const tokenContract = await new web3Call.eth.Contract(erc721Standard, contract);
                                     owner = await tokenContract.methods.owner().call();
                                     name = await tokenContract.methods.name().call();
                                     symbol = await tokenContract.methods.symbol().call();
@@ -246,7 +248,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
 
 
-                                    const newERC20 = new EmbedBuilder().setColor("#060A8F")
+                                    const newERC721 = new EmbedBuilder().setColor("#060A8F")
                                         .setTitle(name)
                                         .setDescription(">>> A new ERC721 contract has been created")
                                         .addFields(
@@ -267,7 +269,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
 
 
-                                    await channelNewERC721Contract.send({ embeds: [newERC20] });
+                                    await channelNewERC721Contract.send({ embeds: [newERC721] });
 
 
 
@@ -285,17 +287,28 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                     });
 
 
+            } 
+            
+            ////////////
 
-                // Faites quelque chose avec l'adresse du nouveau contrat, par exemple, enregistrez-la dans une base de données.
-            } else {
-                console.log(`🔴 Pas contrat : ` + transaction.hash);
+            // Code de wallet tracker pour txn normal
+            // else {
 
-                // Faites quelque chose avec l'adresse du nouveau contrat, par exemple, enregistrez-la dans une base de données.
-            }
+
+
+                
+            //     console.log("txn");
+
+            // }
+
+            ////////////
 
 
         })
     });
+
+    console.log("] End " + blockNumber)
+
 
 } catch (error) {
     console.log(error);

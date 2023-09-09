@@ -17,6 +17,7 @@ const etherscanApiKey = process.env.etherscanApiKey
 
 
 const Web3 = require('web3');
+const web3Call = new Web3("https://cloudflare-eth.com")
 const web3 = new Web3('wss://mainnet.infura.io/ws/v3/' + infuraApiKey);
 
 const axios = require('axios')
@@ -149,13 +150,13 @@ factoryContract.events.PairCreated()
         //const tokenABI = await axios.get(`https://api.etherscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=${etherscanApiKey}`)
 
 
-        const pairContract = new web3.eth.Contract(pairContractAbi, pairAddress);
+        const pairContract = new web3Call.eth.Contract(pairContractAbi, pairAddress);
 
         const reserves = await pairContract.methods.getReserves().call();
         //const circulatingSupplyCall = await pairContract.methods.totalSupply().call();
 
         console.log("step 1")
-        const tokenContract = new web3.eth.Contract(erc20Standard, tokenAddress.toLowerCase());
+        const tokenContract = new web3Call.eth.Contract(erc20Standard, tokenAddress.toLowerCase());
         console.log("step 2 complete")
 
         const symbol = await tokenContract.methods.symbol().call();
@@ -220,7 +221,7 @@ factoryContract.events.PairCreated()
 
 
         // Utilisez web3 pour obtenir les détails de la transaction
-        const creationTxnCall = await web3.eth.getTransaction(txnHash)
+        const creationTxnCall = await web3Call.eth.getTransaction(txnHash)
 
         const devAddress = creationTxnCall.from; // Adresse de l'expéditeur (owner) de la transaction
         console.log('Adresse de l\'expéditeur :', devAddress);
@@ -277,7 +278,7 @@ factoryContract.events.PairCreated()
             { name: "Dev. Balance", value: "`" + devBalance + "`", inline: true },
             { name: "Ownership", value: "`" + ownership + "`", inline: true },
             { name: "Pair Created", value: createdSince, inline: true },
-            { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + tokenAddress + ") ∙ " + '[Etherscan LP](https://etherscan.io/address/' + pairAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + tokenAddress + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + tokenAddress + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + tokenAddress + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + tokenAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + tokenAddress + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + tokenAddress + ")", inline: false },
+            { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + tokenAddress + ") ∙ " + '[Etherscan LP](https://etherscan.io/address/' + pairAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + tokenAddress + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + tokenAddress + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + tokenAddress + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + tokenAddress + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + tokenAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + tokenAddress + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + tokenAddress + ")", inline: false },
 
 
           )

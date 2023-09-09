@@ -197,6 +197,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                                             { name: "Ownership", value: "`" + ownership + "`", inline: true },
                                             { name: "Contract Created", value: createdSince, inline: true },
                                             { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + contract + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + contract + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + contract + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + contract + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + contract + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + contract + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + contract + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + contract + ")", inline: false },
+                                            { name: "Quicktasks", value: '[Thunder](http://localhost:7777/quickTask?module=defi&contract=' + contract + "&action=buy&blockchain=ethereum&platform=uniswapv2) ∙ " + '[Maestro]( https://t.me/MaestroSniperBot?start=' + contract + ") ∙ " + '[Sensei](https://app.thornhill.fun/defi?token=' + contract + "&venue=UNISWAP_V2&valueEth=0.05) ∙ " + '[Waifu]( http://localhost:7780/uniswapqt?contractAddress=' + contract + "&group=Default)", inline: false },
 
 
                                         )

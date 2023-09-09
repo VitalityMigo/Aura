@@ -543,6 +543,9 @@ module.exports = {
 
                                         for (const holder of holdersTable) {
 
+                                            let sign = ""
+                                            if ((holder.wallet_address).toLowerCase() == pairAddress.toLowerCase()) { sign = " 🦄" }
+
 
                                             let wallet = formatWallet(holder.wallet_address)
                                             let amount = formatCoinValueSign(holder.amount, 2)
@@ -610,7 +613,6 @@ module.exports = {
                                                 { name: "1H Price Change", value: "`" + evolution1h + "%`", inline: true },
                                                 { name: "6H Price Change", value: "`" + evolution6h + "%`", inline: true },
                                                 { name: "1D Price Change", value: "`" + evolution1d + "%`", inline: true },
-                                                //{ name: " ", value: " ", inline: true },
                                                 { name: "Holders:", value: holdersFormatted, inline: false },
                                                 { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinTicker + ") ∙ " + '[Etherscan LP](https://etherscan.io/address/' + pairAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + coinTicker + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + coinTicker + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + coinTicker + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + coinTicker + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + coinTicker + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinTicker + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + coinTicker + ")", inline: false },
                                                 { name: "Quicktasks", value: '[Thunder](http://localhost:7777/quickTask?module=defi&contract=' + coinTicker + "&action=buy&blockchain=ethereum&platform=uniswapv2) ∙ " + '[Maestro]( https://t.me/MaestroSniperBot?start=' + coinTicker + ") ∙ " + '[Sensei](https://app.thornhill.fun/defi?token=' + coinTicker + "&venue=UNISWAP_V2&valueEth=0.05) ∙ " + '[Waifu]( http://localhost:7780/uniswapqt?contractAddress=' + coinTicker + "&group=Default)", inline: false },

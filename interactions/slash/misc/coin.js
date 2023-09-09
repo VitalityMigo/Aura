@@ -554,7 +554,7 @@ module.exports = {
                                             else if ((holder.wallet_address).toLowerCase() == owner.toLowerCase() || (holder.wallet_address).toLowerCase() == deployer.toLowerCase()) { sign = " 💻" }
 
 
-                                            let wallet = formatWallet(holder.wallet_address)
+                                            let wallet = formatWallet(holder.wallet_address) + sign
                                             let amount = formatCoinValueSign(holder.amount, 2)
                                             let value = formatCoinValueSign(holder.amount * coinActualPriceUsd, 2)
                                             let share = parseFloat((holder.amount / supply) * 100).toFixed(1)

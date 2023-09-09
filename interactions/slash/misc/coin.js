@@ -399,6 +399,7 @@ module.exports = {
                                     let holdersCount = "N/A"
 
                                     let owner = "N/A"
+                                    let deployer = "N/A"
                                     let deployerBalance = 0
                                     let supply = 0
                                     let marketcap = 0
@@ -427,7 +428,7 @@ module.exports = {
 
 
 
-                                      
+
 
 
                                         const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinTicker.toLowerCase())
@@ -486,6 +487,7 @@ module.exports = {
 
                                             owner = values[0].owner_address;
                                             deployerBalance = values[0].creator_balance;
+                                            deployer = values[0].creator_address
                                             ownerBalance = values[0].owner_balance
                                             honeypot = values[0].is_honeypot
                                             supply = values[0].total_supply
@@ -549,6 +551,7 @@ module.exports = {
 
                                             let sign = ""
                                             if ((holder.wallet_address).toLowerCase() == pairAddress.toLowerCase()) { sign = " 🦄" }
+                                            else if ((holder.wallet_address).toLowerCase() == owner.toLowerCase() || (holder.wallet_address).toLowerCase() == deployer.toLowerCase()) { sign = " 💻" }
 
 
                                             let wallet = formatWallet(holder.wallet_address)

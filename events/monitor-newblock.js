@@ -195,8 +195,8 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                                             { name: "Dev. Txn Count", value: "`" + deployerTxnCount + "`", inline: true },
                                             { name: "Dev. Balance", value: "`" + devBalance + "`", inline: true },
                                             { name: "Ownership", value: "`" + ownership + "`", inline: true },
-                                            { name: "Pair Created", value: createdSince, inline: true },
-                                            { name: "Contract", value: '[Etherscan](https://etherscan.io/address/' + contract + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + contract + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + contract + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + contract + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + contract + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + contract + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + contract + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + contract + ")", inline: false },
+                                            { name: "Contract Created", value: createdSince, inline: true },
+                                            { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + contract + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + contract + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + contract + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + contract + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + contract + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + contract + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + contract + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + contract + ")", inline: false },
 
 
                                         )

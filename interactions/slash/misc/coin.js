@@ -567,7 +567,7 @@ module.exports = {
                                             let part3 = value + "$ (" + share + "%)`\n"
 
                                             let spaceSize = 16 - ((part2.toString()).length)
-                                            if (sign !== "")  { spaceSize = 14 - ((part2.toString()).length) }
+                                            if (sign !== "")  { spaceSize = 13 - ((part2.toString()).length) }
                                             let spaceLenght = ""
                                             for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
 

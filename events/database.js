@@ -691,6 +691,67 @@ const data = sequelize.define('data', {
 
 });
 
+//Alert up
+const erc20 = sequelize.define('erc20', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    interactionId: {
+        type: Sequelize.STRING,
+    },
+    contractAddress: {
+        type: Sequelize.STRING,
+    },
+    name: {
+        type: Sequelize.STRING,
+    },
+    symbol: {
+        type: Sequelize.STRING,
+    },
+    table1: {
+        type: Sequelize.STRING,
+    },
+    table2: {
+        type: Sequelize.STRING,
+    },
+    table3: {
+        type: Sequelize.STRING,
+    },
+    abi: {
+        type: Sequelize.STRING,
+    },
+    sourceCode: {
+        type: Sequelize.STRING,
+    },
+    embed1: {
+        type: Sequelize.STRING,
+    },
+    embed2: {
+        type: Sequelize.STRING,
+    },
+    embed3: {
+        type: Sequelize.STRING,
+    },
+    components1: {
+        type: Sequelize.STRING,
+    },
+    components2: {
+        type: Sequelize.STRING,
+    },
+    components3: {
+        type: Sequelize.STRING,
+    },
+    created: {
+        type: Sequelize.STRING,
+    },
+
+
+});
+
 
 
 //Synching the tables
@@ -712,6 +773,7 @@ alertsUp.sync();
 walletManager.sync()
 paymentHistory.sync()
 data.sync()
+erc20.sync()
 
 
 //Export the tables informations
@@ -734,6 +796,7 @@ module.exports = {
     walletManager,
     paymentHistory,
     data,
+    erc20,
     Op,
 }
 

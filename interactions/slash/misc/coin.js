@@ -430,11 +430,13 @@ module.exports = {
 
                                         const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinTicker.toLowerCase())
 
-                                        const pairWeth = coinPriceHistory.data.pairs.filter((item) => item.quoteToken.address === '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2');
 
 
 
                                         if (coinPriceHistory.data.pairs !== null) {
+
+                                            const pairWeth = coinPriceHistory.data.pairs.filter((item) => item.quoteToken.address === '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2');
+
 
                                             coinActualPriceUsd = pairWeth[0].priceUsd
                                             coinActualPriceEth = 1 / (ethPriceUsd / coinActualPriceUsd)

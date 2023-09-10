@@ -25,7 +25,7 @@ setTimeout(() => {
         // PROD
 
         serverId = "1108754348818845729"
-        channelNewBlockId = "1148045555667304528"
+        channelNewBlockId = "1150386664699600916"
 
     } else if (botId == "1119666128411709552") {
         // DEV

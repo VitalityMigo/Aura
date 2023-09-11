@@ -712,6 +712,9 @@ const erc20 = sequelize.define('erc20', {
     symbol: {
         type: Sequelize.STRING,
     },
+    type: {
+        type: Sequelize.STRING,
+    },
     table1: {
         type: Sequelize.STRING,
     },
@@ -722,6 +725,9 @@ const erc20 = sequelize.define('erc20', {
         type: Sequelize.STRING,
     },
     abi: {
+        type: Sequelize.STRING,
+    },
+    notableFunctions: {
         type: Sequelize.STRING,
     },
     sourceCode: {
@@ -746,6 +752,9 @@ const erc20 = sequelize.define('erc20', {
         type: Sequelize.STRING,
     },
     created: {
+        type: Sequelize.STRING,
+    },
+    verified: {
         type: Sequelize.STRING,
     },
 

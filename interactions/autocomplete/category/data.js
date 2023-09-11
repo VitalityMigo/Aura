@@ -62,43 +62,44 @@ module.exports = {
             const collectionTable = []
 
 
-            const popularCollectionsLink = "https://api-mainnet.magiceden.dev/v2/ord/btc/popular_collections?window=7d&limit=600"
-            const popularCollectionsCall = await axios.get(popularCollectionsLink, { headers });
-            const result = await popularCollectionsCall.data;
-
+            // //BUG FIX 11/09/2023 - API ME BUG
+            //const popularCollectionsLink = "https://api-mainnet.magiceden.dev/v2/ord/btc/popular_collections?window=7d&limit=600"
+            //const popularCollectionsCall = await axios.get(popularCollectionsLink, { headers });
+            // const result = await popularCollectionsCall.data;
+            const result = []
 
             if (focusedValue == "") {
 
 
-                sdk2.getCollectionsTopsellingV1({fillType: 'sale', limit: '20', accept: '*/*'})
-                .then(({ data }) => {
-                    data.collections.forEach(element => {
-                        //console.log(element.name)
-                        if (element) {
-                            const projectName = element.name
-                            const pjAddress = element.id
-                            choices.push({ name: projectName, value: pjAddress });
-                        }
-                    });
-                    
-                    
-                    interaction.respond(
-                        choices.map((choice) => ({ name: choice.name, value: choice.value }))
-                    ).catch((err) => {
-                        console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
-                    });
-    
-    
-                    //On stock le call API
-                    const timeStamp = Date.now();
-                    apimonitorsql.create({ serverId: serverId.toString(), commandName: "/rcprofit-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
-    
-    
-                    return;
-    
-                }).catch(err => console.error(err));
-    
-    
+                sdk2.getCollectionsTopsellingV1({ fillType: 'sale', limit: '20', accept: '*/*' })
+                    .then(({ data }) => {
+                        data.collections.forEach(element => {
+                            //console.log(element.name)
+                            if (element) {
+                                const projectName = element.name
+                                const pjAddress = element.id
+                                choices.push({ name: projectName, value: pjAddress });
+                            }
+                        });
+
+
+                        interaction.respond(
+                            choices.map((choice) => ({ name: choice.name, value: choice.value }))
+                        ).catch((err) => {
+                            console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                        });
+
+
+                        //On stock le call API
+                        const timeStamp = Date.now();
+                        apimonitorsql.create({ serverId: serverId.toString(), commandName: "/rcprofit-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
+
+
+                        return;
+
+                    }).catch(err => console.error(err));
+
+
             } else {
 
                 let index = 0
@@ -219,7 +220,7 @@ module.exports = {
                     }).catch(err => console.error(err));
 
             }
-        
+
         } catch (error) {
 
 

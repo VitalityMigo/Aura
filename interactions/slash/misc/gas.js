@@ -405,7 +405,6 @@ module.exports = {
                                         // On enregistre l'ABI ainsi que la version filtré
                                         contractAbi = JSON.parse(contractAbi)
                                         const filteredAbi = contractAbi.filter(item => item.stateMutability !== 'pure' && item.stateMutability !== 'view' && item.type == 'function');
-                                        console.log(filteredAbi)
                                         const notableAbi = filteredAbi.filter(item => (item.name.toLowerCase()).includes("mint") || (item.name.toLowerCase()).includes("swap") || (item.name.toLowerCase()).includes("approve") || (item.name.toLowerCase()).includes("claim"));
 
                                         functionCount = (contractAbi.filter(item => item.type == 'function')).length

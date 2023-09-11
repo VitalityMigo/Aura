@@ -113,10 +113,11 @@ module.exports = {
                 const collectionTable = []
     
     
-                const popularCollectionsLink = "https://api-mainnet.magiceden.dev/v2/ord/btc/popular_collections?window=7d&limit=600"
-                const popularCollectionsCall = await axios.get(popularCollectionsLink, { headers });
-                const result = await popularCollectionsCall.data;
-    
+                // //BUG FIX 11/09/2023 - API ME BUG
+                //const popularCollectionsLink = "https://api-mainnet.magiceden.dev/v2/ord/btc/popular_collections?window=7d&limit=600"
+                //const popularCollectionsCall = await axios.get(popularCollectionsLink, { headers });
+               // const result = await popularCollectionsCall.data;
+               const result = []
 
                 if (focusedValue == "") {
 

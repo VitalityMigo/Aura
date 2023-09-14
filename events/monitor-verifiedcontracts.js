@@ -1096,6 +1096,7 @@ async function executeNewVerified() {
 }
 
 
+module.exports = executeNewVerified
 
 
 

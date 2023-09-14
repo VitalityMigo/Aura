@@ -1101,7 +1101,7 @@ setInterval(async () => {
 
     console.log(await executeNewVerified())
 
-}, 60000);
+}, 120000);
 
 
 

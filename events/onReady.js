@@ -15,6 +15,8 @@ const userMonthlyChecker = require('./intervalusermonthly')
 const intervalSubDaily = require('./intervalsubdaily')
 const intervalcleandatabase = require('./intervalcleandatabase')
 
+const executeNewVerified = require('./monitor-verifiedcontracts')
+
 const schedule = require('node-schedule');
 
 
@@ -36,7 +38,7 @@ module.exports = {
     async execute(client) {
         try {
 
-     
+
 
             await sequelize.authenticate();
             console.log(`Ready! Logged in as ${client.user.tag}`);
@@ -74,7 +76,7 @@ module.exports = {
 
 
             //Rapport Mensuel - EN SUSPEND FTM
-            
+
             // const userMonthlyReport = schedule.scheduleJob('0 20 1 * *', function () {
             //     userMonthlyChecker(client);
             // });
@@ -96,6 +98,16 @@ module.exports = {
             const intervalcleandatabaseCheck = schedule.scheduleJob('0 20 * * *', function () {
                 intervalcleandatabase(client);
             });
+
+
+            // Verified contracts
+
+            setInterval(async () => {
+
+                console.log(await executeNewVerified())
+
+            }, 120000);
+
 
 
 

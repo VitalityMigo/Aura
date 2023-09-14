@@ -74,7 +74,7 @@ const factoryContract = new web3.eth.Contract(factoryContractAbi, factoryContrac
 
 
 // STEP 1
-function headerGenerator() {
+async function headerGenerator() {
     const userAgents = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
         "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
@@ -110,7 +110,7 @@ function headerGenerator() {
         "User-Agent": userAgents[Math.floor(Math.random() * userAgents.length)],
     };
 
-    return header;
+     return header;
 }
 
 // STEP 2
@@ -133,7 +133,7 @@ async function getSourceCode() {
                 const content = await response.text();
                 return content;
             } else {
-                console.log("Retrying...");
+                console.log("Retrying... " + response.status);
                 headers = pickRandomUserAgent();
             }
 
@@ -1095,13 +1095,6 @@ async function executeNewVerified() {
     }
 }
 
-
-
-setInterval(async () => {
-
-    console.log(await executeNewVerified())
-
-}, 120000);
 
 
 

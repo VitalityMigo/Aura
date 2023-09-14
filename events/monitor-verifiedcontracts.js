@@ -134,7 +134,7 @@ async function getSourceCode() {
                 return content;
             } else {
                 console.log("Retrying... " + response.status);
-                headers = pickRandomUserAgent();
+                headers = headerGenerator();
             }
 
 

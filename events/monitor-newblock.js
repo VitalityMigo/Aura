@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const { apimonitorsql, apiproviderssql, adminsql, paymentHistory, accessSql, interactionData, reportsql, sequelize } = require('./database')
+const { apimonitorsql, apiproviderssql, adminsql, paymentHistory, accessSql, interactionData, reportsql, erc20, sequelize } = require('./database')
 
 const erc20Standard = require("../contracts/uniswap/erc20standart.json")
 const erc721Standard = require("../contracts/blur/erc721standard.json")
@@ -309,7 +309,61 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                                     }
 
 
+                                    // //On vérifie qu'aucun token similaire n'est dispo
+                                    // const tokenDB = erc20.findOne({ where: { contractAddress: contract.toLowerCase() } })
 
+
+                                    // // Il existe pas, on le crée
+                                    // if (tokenDB == null) {
+
+                                    //     let infoTable = []
+                                    //     let obj = {}
+                                    //     obj.supply = totalSupply
+                                    //     obj.deployer = deployer.toLowerCase()
+                                    //     obj.deploymentTxn = deploymentTxn
+                                    //     obj.deployerBalance = deployerBalance
+                                    //     obj.owner = owner.toLowerCase()
+                                    //     obj.ownerBalance = ownerBalance
+                                    //     obj.decimals = decimals
+                                    //     obj.block = blockNumber.toString()
+                                    //     infoTable.push(obj)
+
+                                    //     //On enregistre le call
+                                    //     erc20.create({
+                                    //         interactionId: "1",
+                                    //         contractAddress: contract.toLowerCase(),
+                                    //         name: name.toString(),
+                                    //         symbol: symbol.toString(),
+                                    //         type: type,
+                                    //         table1: JSON.stringify(infoTable),
+                                    //         created: actualTimestamp.toString()
+
+                                    //     })
+
+                                    // } else if (tokenDB != null) {
+
+                                    //     let infoTable = JSON.parse(tokenDB.dataValues.table1)
+
+                                    //     infoTable[0].supply = totalSupply
+                                    //     infoTable[0].deployer = deployer.toLowerCase()
+                                    //     infoTable[0].deploymentTxn = deploymentTxn
+                                    //     infoTable[0].deployerBalance = deployerBalance
+                                    //     infoTable[0].owner = owner.toLowerCase()
+                                    //     infoTable[0].ownerBalance = ownerBalance
+                                    //     infoTable[0].decimals = decimals
+                                    //     infoTable[0].block = blockNumber.toString()
+
+
+                                    //     await erc20.update({
+                                    //         table1: JSON.stringify(infoTable),
+                                    //         created: actualTimestamp.toString()
+                                    //     }, { where: { contractAddress: contract.toLowerCase() } })
+
+
+
+
+
+                                    // }
 
 
 
@@ -364,6 +418,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
         console.log("Lancement de la fonction")
         blockInfosTreatment(blockInfos, contractList)
+
 
 
 

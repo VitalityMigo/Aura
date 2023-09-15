@@ -102,11 +102,11 @@ module.exports = {
 
             // Verified contracts
 
-            // setInterval(async () => {
+            setInterval(async () => {
 
-            //     console.log(await executeNewVerified())
+                console.log(await executeNewVerified())
 
-            // }, 120000);
+            }, 120000);
 
 
 

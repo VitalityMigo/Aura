@@ -18,6 +18,8 @@ const infuraApiKey = process.env.infuraApiKey
 const etherscanApiKey = process.env.etherscanApiKey
 
 
+const { HttpsProxyAgent} = require('https-proxy-agent');
+
 
 const Web3 = require('web3');
 const web3 = new Web3("https://cloudflare-eth.com")
@@ -90,6 +92,32 @@ async function headerGenerator() {
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 OPR/83.0.4254.27"
     ];
 
+    const proxies = [
+        'http://172.246.141.160:8800',
+        'http://198.71.82.121:8800',
+        'http://172.246.126.242:8800',
+        'http://23.88.216.33:8800',
+        'http://198.56.248.132:8800',
+        'http://23.88.194.127:8800',
+        'http://23.89.52.163:8800',
+        'http://23.89.192.241:8800',
+        'http://198.56.193.210:8800',
+        'http://23.88.134.45:8800',
+        'http://104.151.185.230:8800',
+        'http://108.62.82.137:8800',
+        'http://172.245.85.57:8800',
+        'http://23.88.23.21:8800',
+        'http://23.88.23.192:8800',
+        'http://198.98.124.245:8800',
+        'http://23.89.52.25:8800',
+        'http://192.157.245.41:8800',
+        'http://192.157.245.173:8800',
+        'http://23.89.41.223:8800'
+    ];
+
+    const proxy = proxies[Math.floor(Math.random() * proxies.length)]
+
+
 
 
     const header = {
@@ -97,7 +125,7 @@ async function headerGenerator() {
         'Accept-Encoding': 'gzip, deflate, br',
         'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
         'Cache-Control': 'no-cache',
-        'Cookie': '__stripe_mid=91e56e36-e45d-42f5-aab8-5537715bdee0163d98; etherscan_cookieconsent=True; bitmedia_fid=eyJmaWQiOiJmMjg5ZTAzZGM1NTBhMmVjMzgwNTRmMGRlMzIyZGNlOSIsImZpZG5vdWEiOiJkYTdhM2C1mknfrm; displaymode=dark; _gid=GA1.2.1657669023.1693735988; _ga_NHZNQE2B8K=GS1.1.1693954828.1.0.1693954837.0.0.0; etherscan_offset_datetime=+2; etherscan_switch_age_datetime=Age; ASP.NET_SessionId=odrreimxzb43gig1x3mknfrm; __cflb=02DiuFnsSsHWYH8WqVXcJWaecAw5gpnmePmY7x43F4dvU; __cuid=0516ae0c242b4a7ca7cc569625b39a65; amp_fef1e8=f08cf647-d966-40f8-a5cf-b26f8a15f015R...1ha0i4mmr.1ha0issio.aq.24.cu; _ga_T1JC9RNQXV=GS1.1.1694398639.212.0.1694398639.0.0.0; _ga=GA1.2.2080887961.1669430908; _gat_gtag_UA_46998878_6=1; cf_clearance=7L_quizT2.146KQLYNbFH64aeJLivDlESIGCUqojOF0-1694398640-0-1-1f2de22f.b0c0dfb0.139b2313-0.2.1694398640',
+        'Cookie': '__stripe_mid=91e56e36-e45d-42f5-aab8-5537715bdee0163d98; etherscan_cookieconsent=True; bitmedia_fid=eyJmaWQiOiJmMjg5ZTAzZGM1NTBhMmVjMzgwNTRmMGRlMzIyZGNlOSIsImZpZG5vdWEiOiJkYTdhM2C1mknfrm; displaymode=light; _gid=GA1.2.1657669023.1693735988; _ga_NHZNQE2B8K=GS1.1.1693954828.1.0.1693954837.0.0.0; etherscan_offset_datetime=+2; etherscan_switch_age_datetime=Age; ASP.NET_SessionId=odrreimxzb43gig1x3mknfrm; __cflb=02DiuFnsSsHWYH8WqVXcJWaecAw5gpnmePmY7x43F4dvU; __cuid=0516ae0c242b4a7ca7cc569625b39a65; amp_fef1e8=f08cf647-d966-40f8-a5cf-b26f8a15f015R...1ha0i4mmr.1ha0issio.aq.24.cu; _ga_T1JC9RNQXV=GS1.1.1694398639.212.0.1694398639.0.0.0; _ga=GA1.2.2080887961.1669430908; _gat_gtag_UA_46998878_6=1; cf_clearance=7L_quizT2.146KQLYNbFH64aeJLivDlESIGCUqojOF0-1694398640-0-1-1f2de22f.b0c0dfb0.139b2313-0.2.1694398640',
         'Pragma': 'no-cache',
         'Sec-Ch-Ua': '"Chromium";v="116", "Not)A;Brand";v="24", "Google Chrome";v="116"',
         'Sec-Ch-Ua-Mobile': '?1',
@@ -110,31 +138,40 @@ async function headerGenerator() {
         "User-Agent": userAgents[Math.floor(Math.random() * userAgents.length)],
     };
 
-     return header;
+    return { headers: header, proxy: proxy };
 }
 
 // STEP 2
 async function getSourceCode() {
 
 
+    let generator = await headerGenerator();
 
-    let headers = headerGenerator();
+    let headers = generator.headers
+    let proxy = generator.proxy
+
+   let agentProxy = await new HttpsProxyAgent(proxy);
+   console.log(proxy)
 
     async function fetchDataWithRetries() {
 
         while (true) {
             const response = await fetch('https://etherscan.io/contractsVerified', {
                 headers: headers,
-                timeout: 5000
+                timeout: 5000,
+                agent: agentProxy
                 // Utilisez l'en-tête généré ici
             })
-
             if (response.status === 200) {
                 const content = await response.text();
                 return content;
             } else {
                 console.log("Retrying... " + response.status);
-                headers = await headerGenerator();
+
+                generator = await headerGenerator();
+                headers = generator.headers
+                proxy = generator.proxy
+                agentProxy = new HttpsProxyAgent(proxy);
             }
 
 
@@ -166,8 +203,8 @@ async function getVerifiedContracts() {
 
                 const item2 = txnCountIdentify[index]
                 const match2 = item2.match(/ETH<\/td><td>(\d+)<\/td><td>/);
-                console.log(item2)
-                console.log(match2[1])
+
+
                 if (match) {
 
                     let obj = {}
@@ -185,7 +222,7 @@ async function getVerifiedContracts() {
                         obj.txn = 1
 
                     }
-                     ethereumAddresses.push(obj)
+                    ethereumAddresses.push(obj)
 
                 }
                 index++
@@ -193,8 +230,9 @@ async function getVerifiedContracts() {
 
             ethereumAddresses.reverse();
 
-           // console.log(ethereumAddresses)
+            // console.log(ethereumAddresses)
             console.log("nouveaux contrats retourné")
+            console.log(ethereumAddresses)
 
 
 
@@ -211,6 +249,7 @@ async function getVerifiedContracts() {
     return ethereumAddresses
 
 }
+
 
 
 // STEP 4
@@ -468,11 +507,11 @@ async function executeNewVerified() {
                         .setTimestamp()
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                    
+
                     await channelNewVerified.send({ embeds: [verifiedERC20] });
 
 
-                    
+
 
                     // //On enregistre les infos du token
                     // let infoTable = []
@@ -491,13 +530,13 @@ async function executeNewVerified() {
                     erc20.create({
                         interactionId: "1",
                         contractAddress: contract,
-                       // name: name.toString(),
-                       // symbol: symbol.toString(),
-                       // type: contractType,
-                       // table1: JSON.stringify(infoTable),
-                      //  abi: JSON.stringify(ABI),
-                       // notableFunctions: JSON.stringify(notableAbi),
-                       // sourceCode: sourceCode,
+                        // name: name.toString(),
+                        // symbol: symbol.toString(),
+                        // type: contractType,
+                        // table1: JSON.stringify(infoTable),
+                        //  abi: JSON.stringify(ABI),
+                        // notableFunctions: JSON.stringify(notableAbi),
+                        // sourceCode: sourceCode,
                         verified: actualTimestamp
 
                     })
@@ -619,7 +658,7 @@ async function executeNewVerified() {
                         .setTimestamp()
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                    
+
                     await channelNewVerified.send({ embeds: [verifiedERC20] });
 
 
@@ -643,13 +682,13 @@ async function executeNewVerified() {
                     erc20.create({
                         interactionId: "1",
                         contractAddress: contract,
-                       // name: name.toString(),
-                       // symbol: symbol.toString(),
-                       // type: contractType,
-                       // table1: JSON.stringify(infoTable),
-                      //  abi: JSON.stringify(ABI),
-                       // notableFunctions: JSON.stringify(notableAbi),
-                       // sourceCode: sourceCode,
+                        // name: name.toString(),
+                        // symbol: symbol.toString(),
+                        // type: contractType,
+                        // table1: JSON.stringify(infoTable),
+                        //  abi: JSON.stringify(ABI),
+                        // notableFunctions: JSON.stringify(notableAbi),
+                        // sourceCode: sourceCode,
                         verified: actualTimestamp
 
                     })
@@ -906,7 +945,7 @@ async function executeNewVerified() {
                         .setTimestamp()
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                    
+
                     await channelNewVerified.send({ embeds: [verifiedERC20] });
 
 
@@ -956,7 +995,7 @@ async function executeNewVerified() {
 
 
                     const balanceOfDeployer = await contractInstance.methods.balanceOf(deployer).call();
-                    deployerBalance = balanceOfDeployer 
+                    deployerBalance = balanceOfDeployer
 
                     if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dead") {
 
@@ -973,7 +1012,7 @@ async function executeNewVerified() {
                         if (owner.toLowerCase() != deployer.toLowerCase()) {
 
                             const balanceOfOwner = await contractInstance.methods.balanceOf(owner).call();
-                            ownerBalance = balanceOfOwner 
+                            ownerBalance = balanceOfOwner
 
                         }
 
@@ -1046,7 +1085,7 @@ async function executeNewVerified() {
                         .setTimestamp()
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                    
+
                     await channelNewVerified.send({ embeds: [verifiedERC20] });
 
 
@@ -1094,7 +1133,6 @@ async function executeNewVerified() {
 
     }
 }
-
 
 module.exports = executeNewVerified
 

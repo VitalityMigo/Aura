@@ -71,6 +71,7 @@
 		"giflib": "^0.1.7-beta",
 		"googleapis": "^120.0.0",
 		"https": "^1.0.0",
+		"https-proxy-agent": "^7.0.2",
 		"install": "^0.13.0",
 		"json2csv": "^6.0.0-alpha.2",
 		"moment": "^2.29.4",

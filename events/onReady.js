@@ -100,7 +100,10 @@ module.exports = {
             });
 
 
-            // Verified contracts
+            ////////////////////////////////////////////////////////////////////////////////////
+
+
+            ////// VERIFIED CONTRACTS (NOT WORKING) //////
 
             // setInterval(async () => {
 

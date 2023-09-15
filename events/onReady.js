@@ -104,7 +104,7 @@ module.exports = {
 
             setInterval(async () => {
 
-                console.log(await executeNewVerified())
+                await executeNewVerified()
 
             }, 120000);
 

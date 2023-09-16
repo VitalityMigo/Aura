@@ -254,7 +254,6 @@ pinklockContract.events.LockAdded()
 
             }
 
-            createdSince = "<t:" + actualTimestamp + ":R>"
 
 
 
@@ -486,7 +485,6 @@ unxcContract.events.onDeposit()
 
             }
 
-            createdSince = "<t:" + actualTimestamp + ":R>"
 
 
 

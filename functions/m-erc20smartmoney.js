@@ -19,6 +19,7 @@ const colors = require('colors');
 
 
 const reduceText = require("./reducetext")
+const addTimeout = require("./addtimeout")
 
 
 
@@ -57,10 +58,16 @@ let isBot = "✅"
 let isQT = "✅"
 
 
-async function erc20smartTreatment(rawInfos) {
+async function erc20smartTreatment(monitorInfos) {
+
 
 
     try {
+
+        await addTimeout(1.5)
+
+
+        const rawInfos = monitorInfos
 
 
         const sender = rawInfos.from
@@ -138,8 +145,8 @@ async function erc20smartTreatment(rawInfos) {
             } else {
 
                 const receipt = await web3.eth.getTransactionReceipt(hash)
-                console.log(receipt)
 
+                
                 const gasUsed = receipt.gasUsed
                 const gasPrice = receipt.effectiveGasPrice / 10 ** 18
                 const gasPaid = gasPrice * gasUsed

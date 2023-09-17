@@ -97,11 +97,15 @@ async function erc20smartTreatment(monitorInfos) {
 
                 const receipt = await web3.eth.getTransactionReceipt(hash)
 
+                let gasPaid = 0
 
-                const gasUsed = receipt.gasUsed
-                const gasPrice = receipt.effectiveGasPrice / 10 ** 18
-                const gasPaid = gasPrice * gasUsed
+                if (receipt != null) {
 
+                    const gasUsed = receipt.gasUsed
+                    const gasPrice = receipt.effectiveGasPrice / 10 ** 18
+                    gasPaid = gasPrice * gasUsed
+
+                }
 
                 const signature = input.substring(0, 10);
 
@@ -146,11 +150,16 @@ async function erc20smartTreatment(monitorInfos) {
 
                 const receipt = await web3.eth.getTransactionReceipt(hash)
 
-                
-                const gasUsed = receipt.gasUsed
-                const gasPrice = receipt.effectiveGasPrice / 10 ** 18
-                const gasPaid = gasPrice * gasUsed
 
+                let gasPaid = 0
+
+                if (receipt != null) {
+
+                    const gasUsed = receipt.gasUsed
+                    const gasPrice = receipt.effectiveGasPrice / 10 ** 18
+                    gasPaid = gasPrice * gasUsed
+
+                }
 
                 const signature = input.substring(0, 10);
 

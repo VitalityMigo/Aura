@@ -83,10 +83,11 @@ async function erc20smartTreatment(monitorInfos) {
 
         const platformInfos = erc20Router.find(objet => objet.contract === contract.toLowerCase());
         if (platformInfos) {
+            console.log(platformInfos.type)
             if (platformInfos.type != "Bot") { isBot = "❌"; isQT = "❌" }
             platformName = platformInfos.tag
         }
-
+console.log(isBot)
 
 
         if (input != "0x") {

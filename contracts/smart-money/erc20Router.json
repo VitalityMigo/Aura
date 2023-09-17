@@ -53,31 +53,31 @@
     {
         "contract": "0x00000000a991c429ee2ec6df19d40fe0c80088b8",
         "name": "MEV Bot",
-        "tag": "MEV Bot [Jared]",
+        "tag": "MEV Bot",
         "type": "Bot"
     },
     {
         "contract": "0xd249942f6d417cbfdcb792b1229353b66c790726",
         "name": "MEV Bot",
-        "tag": "MEV Bot [Jared]",
+        "tag": "MEV Bot",
         "type": "Bot"
     },
     {
         "contract": "0x8385c093657503aebd55bac4a9bb0df5d3528835",
         "name": "MEV Bot",
-        "tag": "MEV Bot [Jared]",
+        "tag": "MEV Bot",
         "type": "Bot"
     },
     {
         "contract": "0x63756a3c3bf677baab9d9e06457402ed05be8570",
         "name": "MEV Bot",
-        "tag": "MEV Bot [Jared]",
+        "tag": "MEV Bot",
         "type": "Bot"
     },
     {
         "contract": "0x445947140f5e1b742439f6ee24a7690d077bbb89",
         "name": "MEV Bot",
-        "tag": "MEV Bot [Jared]",
+        "tag": "MEV Bot",
         "type": "Bot"
     }
     

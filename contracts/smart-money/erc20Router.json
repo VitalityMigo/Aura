@@ -1,0 +1,88 @@
+[
+    {
+        "contract": "0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad",
+        "name": "Uniswap Universal Router",
+        "tag": "Uniswap",
+        "type": "Router"
+    },
+    {
+        "contract": "0x7a250d5630b4cf539739df2c5dacb4c659f2488d",
+        "name": "Uniswap V2 Router",
+        "tag": "Uniswap",
+        "type": "Router"
+    },
+    {
+        "contract": "0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45",
+        "name": "Uniswap V3 Router",
+        "tag": "Uniswap",
+        "type": "Router"
+    },
+    {
+        "contract": "0x1111111254eeb25477b68fb85ed929f73a960582",
+        "name": "1inch Router V5",
+        "tag": "1inch",
+        "type": "Router"
+    },
+    {
+        "contract": "0xdb5889e35e379ef0498aae126fc2cce1fbd23216",
+        "name": "Banana Gun Bot",
+        "tag": "Banana Gun",
+        "type": "Bot"
+    },
+    {
+        "contract": "0x6b75d8af000000e20b7a7ddf000ba900b4009a80",
+        "name": "MEV Bot : jaredfromsubway",
+        "tag": "MEV Bot [Jared]",
+        "type": "Bot"
+    },
+    {
+        "contract": "0x3999D2c5207C06BBC5cf8A6bEa52966cabB76d41",
+        "name": "Unibot Router",
+        "tag": "Unibot",
+        "type": "Bot"
+    },
+    
+
+    
+    {
+        "contract": "0x000000d40b595b94918a28b27d1e2c66f43a51d3",
+        "name": "MEV Bot",
+        "tag": "MEV Bot",
+        "type": "Bot"
+    },
+    {
+        "contract": "0x00000000a991c429ee2ec6df19d40fe0c80088b8",
+        "name": "MEV Bot",
+        "tag": "MEV Bot [Jared]",
+        "type": "Bot"
+    },
+    {
+        "contract": "0xd249942f6d417cbfdcb792b1229353b66c790726",
+        "name": "MEV Bot",
+        "tag": "MEV Bot [Jared]",
+        "type": "Bot"
+    },
+    {
+        "contract": "0x8385c093657503aebd55bac4a9bb0df5d3528835",
+        "name": "MEV Bot",
+        "tag": "MEV Bot [Jared]",
+        "type": "Bot"
+    },
+    {
+        "contract": "0x63756a3c3bf677baab9d9e06457402ed05be8570",
+        "name": "MEV Bot",
+        "tag": "MEV Bot [Jared]",
+        "type": "Bot"
+    },
+    {
+        "contract": "0x445947140f5e1b742439f6ee24a7690d077bbb89",
+        "name": "MEV Bot",
+        "tag": "MEV Bot [Jared]",
+        "type": "Bot"
+    }
+    
+]
+
+
+
+

@@ -51,6 +51,7 @@
 		"canvas": "^2.11.2",
 		"chart.js": "^3.9.1",
 		"chartjs-node-canvas": "^4.1.6",
+		"colors": "^1.4.0",
 		"convert-array-to-csv": "^2.0.0",
 		"convert-svg-to-png": "^0.6.4",
 		"cron": "^2.3.0",

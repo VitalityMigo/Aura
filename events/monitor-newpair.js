@@ -21,6 +21,7 @@ const web3Call = new Web3("https://cloudflare-eth.com")
 const web3 = new Web3('wss://mainnet.infura.io/ws/v3/' + infuraApiKey);
 
 const axios = require('axios')
+const colors = require('colors');
 
 
 
@@ -107,6 +108,8 @@ factoryContract.events.PairCreated()
 
         try {
 
+            console.log(colors.magenta("🦄 Nouvelle paire crée"))
+
 
             const timeStamp = Date.now();
             const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
@@ -116,11 +119,6 @@ factoryContract.events.PairCreated()
             let ethPriceUsd = ethCallPrice.data.result.ethusd
 
 
-
-
-            console.log(" ")
-            console.log("NEW")
-            console.log('Nouvelle paire créée:', eventData);
 
 
 
@@ -138,13 +136,11 @@ factoryContract.events.PairCreated()
                 if (token0.toLowerCase() !== wETHAddress.toLowerCase()) {
 
                     tokenAddress = token0
-                    console.log("token 0 est le token")
 
                 } else if (token1.toLowerCase() !== wETHAddress.toLowerCase()) {
 
                     tokenAddress = token1
                     whichToken = "token1"
-                    console.log("token 1 est le token")
 
                 }
 
@@ -156,10 +152,10 @@ factoryContract.events.PairCreated()
                 const reserves = await pairContract.methods.getReserves().call();
                 //const circulatingSupplyCall = await pairContract.methods.totalSupply().call();
 
-                console.log("step 1")
-                const tokenContract = new web3Call.eth.Contract(erc20Standard, tokenAddress.toLowerCase());
-                console.log("step 2 complete")
 
+                const tokenContract = new web3Call.eth.Contract(erc20Standard, tokenAddress.toLowerCase());
+
+                
                 const symbol = await tokenContract.methods.symbol().call();
                 const name = await tokenContract.methods.name().call();
                 const decimals = await tokenContract.methods.decimals().call();
@@ -167,13 +163,10 @@ factoryContract.events.PairCreated()
                 const owner = await tokenContract.methods.owner().call();
 
                 const totalSupply = totalSupplyCall / 10 ** decimals
-                //const circulatingSupply = circulatingSupplyCall / 10 ** decimals
 
-
-                console.log(reserves)
-
-                console.log(name + " (" + symbol + ")")
-                console.log("supply: " + totalSupply)
+                console.log("Name: " + name + "(" + symbol + ")")
+                console.log("Contract: " + tokenAddress)
+                console.log("Txn: " + txnHash)
 
 
 
@@ -225,15 +218,9 @@ factoryContract.events.PairCreated()
                 const creationTxnCall = await web3Call.eth.getTransaction(txnHash)
 
                 const devAddress = creationTxnCall.from; // Adresse de l'expéditeur (owner) de la transaction
-                console.log('Adresse de l\'expéditeur :', devAddress);
+
                 const balanceOfDeployer = await tokenContract.methods.balanceOf(devAddress).call();
                 deployerBalance = balanceOfDeployer / 10 ** decimals
-
-                console.log("addresse owner : " + owner)
-                console.log("Price USD : " + priceUsd)
-                console.log("Price ETH : " + priceEth)
-                console.log("MC : " + marketCap)
-                console.log("MC : " + deployerBalance)
 
 
 
@@ -295,8 +282,8 @@ factoryContract.events.PairCreated()
 
 
                 if (ownership == "✅ Renounced" && liquidity >= 10 && (deployerBalance + ownerBalance) <= 0) {
-                    console.log("ici")
 
+                    
                     newPair.setDescription(">>> A new filtered pair has been created. Filtered pairs have : ownership renounced, no balance owns by contract owner or deployer, and at least 10k of liquidity.")
 
 

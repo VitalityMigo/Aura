@@ -37,7 +37,7 @@ setTimeout(() => {
     const botGuild = client.guilds.cache.get(serverId);
     channelNewBlock = botGuild.channels.cache.get(channelNewBlockId);
 
-}, 3000);
+}, 4000);
 
 
 

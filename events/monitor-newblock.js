@@ -1,13 +1,23 @@
 const { EmbedBuilder } = require("discord.js");
 const { apimonitorsql, apiproviderssql, adminsql, paymentHistory, accessSql, interactionData, reportsql, erc20, sequelize } = require('./database')
 
+
 const erc20Standard = require("../contracts/uniswap/erc20standart.json")
 const erc721Standard = require("../contracts/blur/erc721standard.json")
+
+const smartWalleterc20List = require("../contracts/smart-money/walletlisterc20.json")
+const erc20Router = require("../contracts/smart-money/erc20Router.json")
+const routerList = erc20Router.map((object) => object.contract.toLowerCase());
 
 const formatCoinValueSign = require("../functions/formatNumberEmbed")
 const reduceText = require("../functions/reducetext")
 const contractType = require("../functions/contracttype")
+
 const blockInfosTreatment = require("../functions/newblock")
+const erc20smartTreatment = require ("../functions/m-erc20smartmoney")
+
+const colors = require('colors');
+
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -69,7 +79,7 @@ setTimeout(() => {
     channelNewERC20Contract = botGuild.channels.cache.get(channelNewERC20ContractId);
     channelNewERC721Contract = botGuild.channels.cache.get(channelNewERC721ContractId);
 
-}, 3000);
+}, 4000);
 
 
 
@@ -130,7 +140,8 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
         let contractList = []
 
 
-        console.log("//// New Block ⏩ " + blockNumber)
+        console.log(colors.blue("🔗 New Block: " + blockNumber))
+
 
         await web3.eth.getBlock(blockNumber, true, async (error, block) => {
             if (error) {
@@ -162,8 +173,10 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                                     deployerTxnCount = (transaction.nonce + 1).toString()
                                     type = await contractType(contract)
 
-                                    console.log(`🟢 Nouveau contrat déployé : ` + deploymentTxn + " au bloc " + blockNumber);
-                                    console.log(`L'adresse du contrat déployé est : ${contract} at  ${deploymentTxn} from ${deployer} and type ${type}`);
+                                    
+                                    console.log(colors.green("📄 Nouveau contrat " + type + " deployé"))
+                                    console.log("Contrat: " + contract)
+                                    console.log("Txn: " + deploymentTxn)
 
 
                                     if (type == "ERC20") {
@@ -383,14 +396,21 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                 ////////////
 
                 // Code de wallet tracker pour txn normal
-                // else {
+                else {
+
+                    const fromWallet = transaction.from
+
+                    if (smartWalleterc20List.includes(fromWallet.toLowerCase())) {
+
+
+                        erc20smartTreatment(transaction)
+
+
+                    }
 
 
 
-
-                //     console.log("txn");
-
-                // }
+                }
 
                 ////////////
 
@@ -416,7 +436,6 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
         objBlock.blockTimestamp = blockTimestamp
         blockInfos.push(objBlock)
 
-        console.log("Lancement de la fonction")
         blockInfosTreatment(blockInfos, contractList)
 
 

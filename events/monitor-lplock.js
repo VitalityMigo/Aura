@@ -25,6 +25,8 @@ const web3Call = new Web3("https://cloudflare-eth.com")
 const web3 = new Web3('wss://mainnet.infura.io/ws/v3/' + infuraApiKey);
 
 const axios = require('axios')
+const colors = require('colors');
+
 
 
 function formatWallet(input) {
@@ -112,7 +114,7 @@ pinklockContract.events.LockAdded()
             let ethPriceUsd = ethCallPrice.data.result.ethusd
 
 
-            console.log("Nouvelle lock detecté (PINK)")
+          
 
             const pairAddress = eventData.returnValues.token.toLowerCase()
             const sender = eventData.returnValues.owner.toLowerCase()
@@ -120,11 +122,10 @@ pinklockContract.events.LockAdded()
             const unlockDate = eventData.returnValues.unlockDate
             const txnHash = eventData.transactionHash
 
-            console.log("pair: " + pairAddress)
-            console.log("sender: " + sender)
-            console.log("supply locked: " + supplyLocked)
-            console.log("date: " + unlockDate)
-            console.log("txn: " + txnHash)
+            console.log(colors.magenta("🔒 Nouvelle LP Lock [PINK]"))
+            console.log("Pair: " + pairAddress)
+            console.log("Txn: " + txnHash)
+
 
             createdSince = "<t:" + unlockDate + ":R>"
 
@@ -149,13 +150,11 @@ pinklockContract.events.LockAdded()
                 if (token0.toLowerCase() !== wETHAddress.toLowerCase()) {
 
                     tokenAddress = token0
-                    console.log("token 0 est le token")
 
                 } else if (token1.toLowerCase() !== wETHAddress.toLowerCase()) {
 
                     tokenAddress = token1
                     whichToken = "token1"
-                    console.log("token 1 est le token")
 
                 }
 
@@ -223,16 +222,10 @@ pinklockContract.events.LockAdded()
             const deploymentTxn = await deploymentInfos.data.result[0].txHash
 
 
-            console.log('Adresse de l\'expéditeur :', devAddress);
             const balanceOfDeployer = await tokenContract.methods.balanceOf(devAddress).call();
             deployerBalance = balanceOfDeployer / 10 ** decimals
 
-            console.log("addresse owner : " + owner)
-            console.log("Price USD : " + priceUsd)
-            console.log("Price ETH : " + priceEth)
-            console.log("MC : " + marketCap)
-            console.log("MC : " + deployerBalance)
-
+           
 
 
             if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dead") {
@@ -345,7 +338,6 @@ unxcContract.events.onDeposit()
             let ethPriceUsd = ethCallPrice.data.result.ethusd
 
 
-            console.log("Nouvelle lock detecté (UNCX)")
 
             const pairAddress = eventData.returnValues.lpToken.toLowerCase()
             const sender = eventData.returnValues.user.toLowerCase()
@@ -353,11 +345,10 @@ unxcContract.events.onDeposit()
             const unlockDate = eventData.returnValues.unlockDate
             const txnHash = eventData.transactionHash
 
-            console.log("pair: " + pairAddress)
-            console.log("sender: " + sender)
-            console.log("supply locked: " + supplyLocked)
-            console.log("date: " + unlockDate)
-            console.log("txn: " + txnHash)
+            console.log(colors.magenta("🔒 Nouvelle LP Lock [UNCX]"))
+            console.log("Pair: " + pairAddress)
+            console.log("Txn: " + txnHash)
+
 
             createdSince = "<t:" + unlockDate + ":R>"
 
@@ -379,13 +370,11 @@ unxcContract.events.onDeposit()
                 if (token0.toLowerCase() !== wETHAddress.toLowerCase()) {
 
                     tokenAddress = token0
-                    console.log("token 0 est le token")
 
                 } else if (token1.toLowerCase() !== wETHAddress.toLowerCase()) {
 
                     tokenAddress = token1
                     whichToken = "token1"
-                    console.log("token 1 est le token")
 
                 }
 
@@ -454,16 +443,10 @@ unxcContract.events.onDeposit()
             const deploymentTxn = await deploymentInfos.data.result[0].txHash
 
 
-            console.log('Adresse de l\'expéditeur :', devAddress);
             const balanceOfDeployer = await tokenContract.methods.balanceOf(devAddress).call();
             deployerBalance = balanceOfDeployer / 10 ** decimals
 
-            console.log("addresse owner : " + owner)
-            console.log("Price USD : " + priceUsd)
-            console.log("Price ETH : " + priceEth)
-            console.log("MC : " + marketCap)
-            console.log("MC : " + deployerBalance)
-
+            
 
 
             if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dead") {

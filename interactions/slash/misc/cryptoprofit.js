@@ -9,8 +9,10 @@ const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
+
 const reduceText = require("../../../functions/reducetext")
 const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
+const getApprovals = require("../../../functions/getApprovals")
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -263,7 +265,7 @@ module.exports = {
 
 
                                             const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinAddress.toLowerCase())
-console.log(coinPriceHistory.data.pairs)
+                                            console.log(coinPriceHistory.data.pairs)
                                             if (coinPriceHistory.data.pairs.length > 0) {
 
 
@@ -520,19 +522,13 @@ console.log(coinPriceHistory.data.pairs)
 
 
 
+                                                const approvalTable = await getApprovals(walletAddress, coinAddress)
 
-                                                //FAIRE LES APPROVE DANS NORMAL TXN
-                                                const approvalCall = await Moralis.EvmApi.token.getErc20Approvals({
-                                                    "chain": "0x1",
-                                                    "contractAddresses": [coinAddress],
-                                                    "walletAddresses": [walletAddress]
-                                                });
+                                                for (const appovalTxn of approvalTable) {
 
-                                                for (const appovalTxn of approvalCall.raw.result) {
+                                                    if (!allHashTable.includes((appovalTxn.transactionHash).toLowerCase())) {
 
-                                                    if (!allHashTable.includes(appovalTxn.transaction_hash)) {
-
-                                                        let normalLookup = await normalTxnWalletTable.filter(obj => obj.hash == (appovalTxn.transaction_hash).toLowerCase());
+                                                        let normalLookup = await normalTxnWalletTable.filter(obj => obj.hash == (appovalTxn.transactionHash).toLowerCase());
 
                                                         if ((normalLookup[0].functionName).includes("approve") || (normalLookup[0].functionName).includes("approveAndCall")) {
 
@@ -568,7 +564,7 @@ console.log(coinPriceHistory.data.pairs)
                                                 } else {
                                                     roi = (((((coinActualPriceEth * tokenHeldCount) + totalSoldValue) - totalBuySpent) / totalBuySpent) * 100).toFixed(2)
                                                 }
-console.log(roi)
+                                                console.log(roi)
 
                                                 if (roi !== 0 && totalBuySpent !== 0 && roi !== 0 || roi !== "NaN" && roi !== 'N/A') {
 
@@ -698,7 +694,6 @@ console.log(roi)
                                                 await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getErc20Txn", apiProvider: "etherscan", timestamp: timeStamp.toString() })
                                                 await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "walletBalance", apiProvider: "etherscan", timestamp: timeStamp.toString() })
                                                 for (let i = 0; i < computeUnits; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getTokenPrice", apiProvider: "moralis", timestamp: timeStamp.toString() }) }
-                                                for (let i = 0; i < computeUnits; i++) { await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/cryptoprofit", apiCallName: "getErc20Approvals", apiProvider: "moralis", timestamp: timeStamp.toString() }) }
 
                                             } else {
 
@@ -1067,38 +1062,29 @@ console.log(roi)
 
 
 
-                                                    //FAIRE LES APPROVE DANS NORMAL TXN
-                                                    const approvalCall = await Moralis.EvmApi.token.getErc20Approvals({
-                                                        "chain": "0x1",
-                                                        "contractAddresses": [coinAddress],
-                                                        "walletAddresses": [wallet]
-                                                    });
 
-                                                    apiObj.getErc20Approvals += 10
+                                                    const approvalTable = await getApprovals(wallet, coinAddress)
 
+                                                    for (const appovalTxn of approvalTable) {
 
-                                                    for (const appovalTxn of approvalCall.raw.result) {
+                                                        if (!allHashTable.includes((appovalTxn.transactionHash).toLowerCase())) {
 
-                                                        if (!allHashTable.includes(appovalTxn.transaction_hash)) {
+                                                            let normalLookup = await normalTxnWalletTable.filter(obj => obj.hash == (appovalTxn.transactionHash).toLowerCase());
 
-                                                            let normalLookup = await normalTxnWalletTable.filter(obj => obj.hash == (appovalTxn.transaction_hash).toLowerCase());
+                                                            if ((normalLookup[0].functionName).includes("approve") || (normalLookup[0].functionName).includes("approveAndCall")) {
 
 
-                                                            if (normalLookup.length > 0) {
+                                                                let gasSpent = parseFloat(web3.utils.fromWei(((normalLookup[0].gasPrice) * (normalLookup[0].gasUsed)).toString(), 'ether'))
 
-                                                                if ((normalLookup[0].functionName).includes("approve") || (normalLookup[0].functionName).includes("approveAndCall")) {
+                                                                soldGasValue += gasSpent
 
-
-                                                                    let gasSpent = parseFloat(web3.utils.fromWei(((normalLookup[0].gasPrice) * (normalLookup[0].gasUsed)).toString(), 'ether'))
-
-                                                                    soldGasValue += gasSpent
-
-
-                                                                }
 
                                                             }
                                                         }
                                                     }
+
+
+
 
 
                                                 }
@@ -1123,7 +1109,7 @@ console.log(roi)
                                                 }
 
 
-                                               
+
                                                 if (roi !== 0 && totalBuySpent !== 0 && roi !== 0 || roi !== "NaN" && roi !== 'N/A') {
 
                                                     if (roi > 0) {
@@ -1255,7 +1241,7 @@ console.log(roi)
 
 
 
-                                            } else  {
+                                            } else {
 
 
                                                 const notMember = new EmbedBuilder().setColor("#060A8F")
@@ -1265,34 +1251,29 @@ console.log(roi)
                                                     .setAuthor({ name: authorName, iconURL: userAvatar })
                                                     .setTimestamp()
                                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-    
+
                                                 await interaction.editReply({ embeds: [notMember] });
-    
-    
-    
-    
-                                            }
-
-
-
-
-                                            } else {
-
-                                                const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle(`No wallet`)
-                                                    .setDescription("Aura can't analyze your wallet's data because you don't have any wallet registered in your portfolio. Please use `/wallet set` or `/wallet raw` to register a wallet in your portfolio then try again.")
-                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                    .setTimestamp()
-                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                                await interaction.editReply({ embeds: [setwalletErrorEmbed] });
-
 
 
 
 
                                             }
+
+
+
+
+                                        } else {
+
+                                            const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle(`No wallet`)
+                                                .setDescription("Aura can't analyze your wallet's data because you don't have any wallet registered in your portfolio. Please use `/wallet set` or `/wallet raw` to register a wallet in your portfolio then try again.")
+                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                            await interaction.editReply({ embeds: [setwalletErrorEmbed] });
+
 
 
 
@@ -1300,75 +1281,57 @@ console.log(roi)
                                         }
 
 
-                                    } else {
-
-                                        const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
-                                            .setTitle(`Invalid Token Address`)
-                                            .setDescription("The token address you provided isn't a valid Ethereum contract address. Please try again using the appropriate form.")
-                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                                            .setTimestamp()
-                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                        await interaction.editReply({ embeds: [setwalletErrorEmbed] });
-
 
 
                                     }
 
 
-                                } else if (!member.roles.cache.has(communityMemberRoleId)) {
+                                } else {
 
-
-
-                                    const notMember = new EmbedBuilder().setColor("#060A8F")
-                                        .setTitle(`Bot Access`)
-                                        .setDescription(">>> Showing access data")
+                                    const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle(`Invalid Token Address`)
+                                        .setDescription("The token address you provided isn't a valid Ethereum contract address. Please try again using the appropriate form.")
                                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
-                                        .addFields(
-                                            { name: " ", value: " ", inline: false },
-                                            { name: "Status", value: "`Access Denied ❌`", inline: true },
-                                            { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
-                                            { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
-                                        )
                                         .setTimestamp()
-                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                    await interaction.editReply({ embeds: [notMember] });
+                                    await interaction.editReply({ embeds: [setwalletErrorEmbed] });
+
+
 
                                 }
 
 
-                            } else {
+                            } else if (!member.roles.cache.has(communityMemberRoleId)) {
 
 
-                                if (accessTier == "") {
-                                    accessTier = "Free Tier"
-                                }
 
-
-                                const botOff = new EmbedBuilder().setColor("#060A8F")
+                                const notMember = new EmbedBuilder().setColor("#060A8F")
                                     .setTitle(`Bot Access`)
-                                    .setDescription(">>> Showing the community's bot access")
+                                    .setDescription(">>> Showing access data")
                                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                     .setAuthor({ name: authorName, iconURL: userAvatar })
                                     .addFields(
-                                        { name: 'Access Status', value: "`Denied 🔴`", inline: false },
-                                        { name: 'Access Tier', value: "`" + accessTier.toUpperCase() + "`", inline: true },
-                                        { name: 'Required Tier', value: "`A-TIER`", inline: true },
-                                        { name: "Problem Detected", value: "Your access to this command has been denied. You need a higher access tier to use this feature. You can consult the available commands in this community by using `/access`.", inline: false },
+                                        { name: " ", value: " ", inline: false },
+                                        { name: "Status", value: "`Access Denied ❌`", inline: true },
+                                        { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
+                                        { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
                                     )
                                     .setTimestamp()
                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                                await interaction.editReply({ embeds: [botOff] });
+                                await interaction.editReply({ embeds: [notMember] });
 
                             }
 
 
-
                         } else {
+
+
+                            if (accessTier == "") {
+                                accessTier = "Free Tier"
+                            }
 
 
                             const botOff = new EmbedBuilder().setColor("#060A8F")
@@ -1377,148 +1340,171 @@ console.log(roi)
                                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                 .addFields(
-                                    { name: 'Access Status', value: "`Denied 🔴`", inline: true },
-                                    { name: 'Commands', value: "`Not available`", inline: true },
-                                    { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
+                                    { name: 'Access Status', value: "`Denied 🔴`", inline: false },
+                                    { name: 'Access Tier', value: "`" + accessTier.toUpperCase() + "`", inline: true },
+                                    { name: 'Required Tier', value: "`A-TIER`", inline: true },
+                                    { name: "Problem Detected", value: "Your access to this command has been denied. You need a higher access tier to use this feature. You can consult the available commands in this community by using `/access`.", inline: false },
                                 )
                                 .setTimestamp()
                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
                             await interaction.editReply({ embeds: [botOff] });
 
-
-
                         }
+
 
 
                     } else {
 
 
-                        console.log("// Step 2 : Unauthorized - Executed ✅")
-
-
                         const botOff = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle(`Bot status`)
-                            .setDescription(">>> Showing the bot status")
+                            .setTitle(`Bot Access`)
+                            .setDescription(">>> Showing the community's bot access")
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .addFields(
-                                { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
+                                { name: 'Access Status', value: "`Denied 🔴`", inline: true },
                                 { name: 'Commands', value: "`Not available`", inline: true },
-                                { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
+                                { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
                             )
                             .setTimestamp()
-                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
                         await interaction.editReply({ embeds: [botOff] });
 
-                        console.log("// Step 3 : Answer - Executed ✅")
 
 
                     }
 
-                } catch (error) {
+
+                } else {
 
 
-                    console.log("// Error - sent in report ❌")
-
-                    //On envoi une notif
-                    let botId = interaction.applicationId
-                    const botAdmins = await adminsql.findOne({ where: { botId: botId } })
-                    const mainServerId = botAdmins.dataValues.mainServerId
-                    const logChannelId = botAdmins.dataValues.logChannelId
-                    const guild = interaction.client.guilds.cache.get(mainServerId);
-                    const channel = guild.channels.cache.get(logChannelId);
+                    console.log("// Step 2 : Unauthorized - Executed ✅")
 
 
-                    const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
-                    let adminRoleId = adminAccessInfos.dataValues.adminRoleId
-                    let serverName = adminAccessInfos.dataValues.serverName
-                    const userRoleList = interaction.member._roles
-                    let userHighestRole = "Member"
-                    if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-                    let reportCommand = "/cryptoprofit"
-
-
-                    const timeStamp = Date.now();
-                    const date = new Date(timeStamp);
-                    const dateLisible = date.toLocaleString();
-                    const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
-                    const formattedDate = date1.format('Do [of] MMMM YYYY');
-
-
-
-                    //On enregistre le call
-                    await reportsql.create({
-                        botId: botId,
-                        authorId: "Bot",
-                        serverName: serverName,
-                        authorRole: userHighestRole,
-                        serverId: serverId,
-                        date: formattedDate,
-                        reportType: "Bug",
-                        reportCommand: reportCommand,
-                        reportDescription: "```" + error.stack + "```",
-                        reportPriority: "5",
-                        reportState: "Not treated",
-                    })
-
-
-
-                    console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
-
-                    const reduceText = require("../../../functions/reducetext")
-                    const roleTag = "1121510423687090186"
-
-
-                    const updateEmbed = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("New Report")
-                        .setDescription(">>> A new report has just been sent.")
+                    const botOff = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle(`Bot status`)
+                        .setDescription(">>> Showing the bot status")
                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
-                        .setTimestamp()
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
                         .addFields(
-                            { name: " ", value: " ", inline: false },
-                            { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
-                            { name: " ", value: " ", inline: false },
-                            { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
+                            { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
+                            { name: 'Commands', value: "`Not available`", inline: true },
+                            { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
                         )
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-
-                    await channel.send("<@&" + roleTag + ">");
-
-                    await channel.send({ embeds: [updateEmbed] });
-
-
-
-                    const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("An error occured")
-                        .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                         .setTimestamp()
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                    await interaction.editReply({ embeds: [botOff] });
 
-                    await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
+                    console.log("// Step 3 : Answer - Executed ✅")
+
 
                 }
 
-            } else if (interaction.guildId == null) {
+            } catch (error) {
+
+
+                console.log("// Error - sent in report ❌")
+
+                //On envoi une notif
+                let botId = interaction.applicationId
+                const botAdmins = await adminsql.findOne({ where: { botId: botId } })
+                const mainServerId = botAdmins.dataValues.mainServerId
+                const logChannelId = botAdmins.dataValues.logChannelId
+                const guild = interaction.client.guilds.cache.get(mainServerId);
+                const channel = guild.channels.cache.get(logChannelId);
+
+
+                const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
+                let adminRoleId = adminAccessInfos.dataValues.adminRoleId
+                let serverName = adminAccessInfos.dataValues.serverName
+                const userRoleList = interaction.member._roles
+                let userHighestRole = "Member"
+                if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
+                let reportCommand = "/cryptoprofit"
+
+
+                const timeStamp = Date.now();
+                const date = new Date(timeStamp);
+                const dateLisible = date.toLocaleString();
+                const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
+                const formattedDate = date1.format('Do [of] MMMM YYYY');
+
+
+
+                //On enregistre le call
+                await reportsql.create({
+                    botId: botId,
+                    authorId: "Bot",
+                    serverName: serverName,
+                    authorRole: userHighestRole,
+                    serverId: serverId,
+                    date: formattedDate,
+                    reportType: "Bug",
+                    reportCommand: reportCommand,
+                    reportDescription: "```" + error.stack + "```",
+                    reportPriority: "5",
+                    reportState: "Not treated",
+                })
+
+
+
+                console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
+
+                const reduceText = require("../../../functions/reducetext")
+                const roleTag = "1121510423687090186"
+
+
+                const updateEmbed = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("New Report")
+                    .setDescription(">>> A new report has just been sent.")
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+                    .setTimestamp()
+                    .addFields(
+                        { name: " ", value: " ", inline: false },
+                        { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
+                    )
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+                await channel.send("<@&" + roleTag + ">");
+
+                await channel.send({ embeds: [updateEmbed] });
+
+
 
                 const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Aura")
-                    .setDescription(`Hey ${interaction.user.username}, we hope you're doing well !\n\nAlthough this may be possible in the future, Aura cannot be used in DM at the moment. If you want to have access to the bot, go here: <#1108757700885622784>.\n\nIf you have any questions, don't hesitate to contact one of our team member, or directly on Discord here : <#1121110417368956958>.\n\nHave a nice day 👑`)
+                    .setTitle("An error occured")
+                    .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                     .setTimestamp()
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-                await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
-
-
+                await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
 
             }
+
+        } else if (interaction.guildId == null) {
+
+            const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
+                .setTitle("Aura")
+                .setDescription(`Hey ${interaction.user.username}, we hope you're doing well !\n\nAlthough this may be possible in the future, Aura cannot be used in DM at the moment. If you want to have access to the bot, go here: <#1108757700885622784>.\n\nIf you have any questions, don't hesitate to contact one of our team member, or directly on Discord here : <#1121110417368956958>.\n\nHave a nice day 👑`)
+                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                .setTimestamp()
+                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+            await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
+
+
+
+        }
 
     }
 }

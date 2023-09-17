@@ -90,6 +90,7 @@ async function erc20smartTreatment(rawInfos) {
 
                 const receipt = await web3.eth.getTransactionReceipt(hash)
 
+
                 const gasUsed = receipt.gasUsed
                 const gasPrice = receipt.effectiveGasPrice / 10 ** 18
                 const gasPaid = gasPrice * gasUsed
@@ -137,6 +138,7 @@ async function erc20smartTreatment(rawInfos) {
             } else {
 
                 const receipt = await web3.eth.getTransactionReceipt(hash)
+                console.log(receipt)
 
                 const gasUsed = receipt.gasUsed
                 const gasPrice = receipt.effectiveGasPrice / 10 ** 18

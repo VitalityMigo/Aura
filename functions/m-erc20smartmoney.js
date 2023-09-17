@@ -53,13 +53,15 @@ setTimeout(() => {
 }, 4000);
 
 
-let platformName = "None"
-let isBot = "✅"
-let isQT = "✅"
 
 
 async function erc20smartTreatment(monitorInfos) {
 
+
+
+    let platformName = "None"
+    let isBot = "✅"
+    let isQT = "✅"
 
 
     try {
@@ -81,13 +83,17 @@ async function erc20smartTreatment(monitorInfos) {
         console.log("Wallet: " + sender)
         console.log("Txn: " + hash)
 
+        
         const platformInfos = erc20Router.find(objet => objet.contract === contract.toLowerCase());
+
         if (platformInfos) {
-            console.log(platformInfos.type)
+
             if (platformInfos.type != "Bot") { isBot = "❌"; isQT = "❌" }
+
             platformName = platformInfos.tag
+
         }
-console.log(isBot)
+
 
 
         if (input != "0x") {

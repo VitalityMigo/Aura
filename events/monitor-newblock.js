@@ -14,7 +14,8 @@ const reduceText = require("../functions/reducetext")
 const contractType = require("../functions/contracttype")
 
 const blockInfosTreatment = require("../functions/newblock")
-const erc20smartTreatment = require ("../functions/m-erc20smartmoney")
+const erc20smartTreatment = require("../functions/m-erc20smartmoney")
+const addTimeout = require("../functions/addtimeout")
 
 const colors = require('colors');
 
@@ -110,12 +111,9 @@ let ownerBalance = ""
 // ON lance l'écoute
 web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
-
     try {
 
-        setTimeout(() => {
-
-        }, 1500);
+        await addTimeout(1.5)
 
         const timeStamp = Date.now();
         const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
@@ -157,6 +155,9 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
                 if (transaction.to == null && transaction.input !== '0x' && transaction.value == 0) {
 
+                    await addTimeout(1.5)
+
+
                     await web3.eth.getTransactionReceipt(transaction.hash)
                         .then(async receipt => {
 
@@ -173,7 +174,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                                     deployerTxnCount = (transaction.nonce + 1).toString()
                                     type = await contractType(contract)
 
-                                    
+
                                     console.log(colors.green("📄 Nouveau contrat " + type + " deployé"))
                                     console.log("Contrat: " + contract)
                                     console.log("Txn: " + deploymentTxn)
@@ -241,12 +242,12 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                                         await channelNewERC20Contract.send({ embeds: [newERC20] });
 
 
-                                        let obj20 = {}
-                                        obj20.name = name
-                                        obj20.symbal = symbol
-                                        obj20.type = type
-                                        obj20.contract = contract
-                                        contractList.push(obj20)
+                                        // let obj20 = {}
+                                        // obj20.name = name
+                                        // obj20.symbal = symbol
+                                        // obj20.type = type
+                                        // obj20.contract = contract
+                                        // contractList.push(obj20)
 
 
                                     } else if (type == "ERC721") {
@@ -310,12 +311,12 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                                         await channelNewERC721Contract.send({ embeds: [newERC721] });
 
 
-                                        let obj721 = {}
-                                        obj721.name = name
-                                        obj721.symbal = symbol
-                                        obj721.type = type
-                                        obj721.contract = contract
-                                        contractList.push(obj721)
+                                        // let obj721 = {}
+                                        // obj721.name = name
+                                        // obj721.symbal = symbol
+                                        // obj721.type = type
+                                        // obj721.contract = contract
+                                        // contractList.push(obj721)
 
 
 
@@ -391,12 +392,10 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                         });
 
 
-                }
+                } else {
 
-                ////////////
 
-                // Code de wallet tracker pour txn normal
-                else {
+                    // TRANSACTIONS CLASSIQUES
 
                     const fromWallet = transaction.from
 

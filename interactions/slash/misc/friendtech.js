@@ -200,7 +200,7 @@ module.exports = {
 
 
 
-                                const usernameProvided = interaction.options.getString("address").toLowerCase()
+                                const usernameProvided = interaction.options.getString("twitter").toLowerCase()
 
                                 const givenUsername = removeAtSymbol(usernameProvided)
                                 

@@ -5,8 +5,8 @@ const erc20Standard = require("../contracts/uniswap/erc20standart.json")
 
 async function identifyContract(txn) {
     let state = "???"
-    console.log("contract given to function =" + txn)
 
+    
     const tokenContract = new web3.eth.Contract([...erc20Standard, ...erc721Standard], txn);
 
     try {
@@ -28,7 +28,6 @@ async function contractType(contractAddress) {
 
     try {
         const type = await identifyContract(contractAddress);
-        console.log("Contract Type:", type);
 
         return type
     } catch (error) {

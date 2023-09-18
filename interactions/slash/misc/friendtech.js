@@ -16,6 +16,13 @@ dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
 const friendtechApiKey = process.env.friendtechApiKey
 
+
+const friendtechHeaders = {
+    'Authorization': friendtechApiKey, // Remplacez VOTRE_TOKEN par le token d'authentification
+    // Autres en-têtes si nécessaire
+};
+
+
 const axios = require('axios')
 
 
@@ -24,10 +31,16 @@ function isValidEthereumAddress(address) {
 }
 
 
-const friendtechHeaders = {
-    'Authorization': friendtechApiKey, // Remplacez VOTRE_TOKEN par le token d'authentification
-    // Autres en-têtes si nécessaire
-};
+function removeAtSymbol(word) {
+    if (word.startsWith('@')) {
+        return word.slice(1); // Supprime le "@" en prenant une sous-chaîne à partir du deuxième caractère.
+    } else {
+        return word; // Retourne le mot tel quel s'il n'y a pas de "@".
+    }
+}
+
+
+
 
 
 
@@ -41,8 +54,8 @@ module.exports = {
                 .setDescription("Get various metrics about a friend.tech user")
                 .addStringOption(option =>
                     option
-                        .setName("address")
-                        .setDescription("The user's friend.tech Base address")
+                        .setName("twitter")
+                        .setDescription("The user's twitter username (i.e vitalitymigo")
                         .setRequired(true)
 
                 )
@@ -187,9 +200,10 @@ module.exports = {
 
 
 
-                                const givenUsername = interaction.options.getString("address").toLowerCase()
+                                const usernameProvided = interaction.options.getString("address").toLowerCase()
 
-
+                                const givenUsername = removeAtSymbol(usernameProvided)
+                                
 
                                 try {
                                     findUser = await axios.get('https://prod-api.kosetto.com/search/users?username=' + givenUsername, { headers: friendtechHeaders })
@@ -331,7 +345,7 @@ module.exports = {
                                             //airdrop stats de l'auteur
                                             const airdropInfos = await axios.get(" https://prod-api.kosetto.com/points/" + userAddress)
 
-                                            console.log(airdropInfos)
+
                                             airdropTier = airdropInfos.data.tier.toUpperCase()
                                             airdropPoints = airdropInfos.data.totalPoints
 
@@ -566,8 +580,8 @@ module.exports = {
 
                                             while (continuation != null) {
 
-                                                console.log("ici")
-                                                console.log(continuation)
+
+
 
                                                 callPage = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token-holdings?pageStart=" + itemsNumber)
 

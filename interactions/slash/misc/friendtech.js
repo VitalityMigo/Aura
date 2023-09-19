@@ -1441,6 +1441,7 @@ module.exports = {
 
 
                                 }
+                                
                             } else if (!member.roles.cache.has(communityMemberRoleId)) {
 
 

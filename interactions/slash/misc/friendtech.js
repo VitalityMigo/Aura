@@ -10,6 +10,10 @@ const { profileData, accessSql, apimonitorsql, wallets, reportsql, adminsql, use
 const reduceText = require("../../../functions/reducetext")
 const getTwitterUserInfo = require("../../../functions/twitteruserinfo")
 const getTimeAgo = require("../../../functions/timeago")
+const countEmojis = require("../../../functions/isemoji")
+
+
+
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -39,6 +43,7 @@ function removeAtSymbol(word) {
         return word; // Retourne le mot tel quel s'il n'y a pas de "@".
     }
 }
+
 
 
 
@@ -88,8 +93,22 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName("stats")
-                .setDescription("Display global Friend.tech stats and metrics")
+                .setDescription("Display global friend.tech stats and metrics")
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("holders")
+                .setDescription("Display a friend.tech share holders")
+                .addStringOption(option =>
+                    option
+                        .setName("twitter")
+                        .setDescription("The user's twitter username (i.e vitalitymigo")
+                        .setRequired(true)
+
+                )
         ),
+
+
 
 
 
@@ -218,7 +237,7 @@ module.exports = {
 
 
 
-                                const usernameProvided = interaction.options.getString("twitter").toLowerCase()
+                                    const usernameProvided = interaction.options.getString("twitter").toLowerCase()
 
                                     const givenUsername = removeAtSymbol(usernameProvided)
 
@@ -1439,6 +1458,480 @@ module.exports = {
 
 
 
+
+                                } else if (interaction.options.getSubcommand() === 'holders') {
+
+
+
+                                    const buttonsRow = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('friendtechholderfirst-button')
+                                                .setLabel('first page')
+                                                .setStyle(2)
+                                                .setDisabled(true),
+                                            new ButtonBuilder()
+                                                .setCustomId('friendtechholderprevious-button')
+                                                .setLabel('previous page')
+                                                .setStyle(2)
+                                                .setDisabled(true),
+                                            new ButtonBuilder()
+                                                .setCustomId('friendtechholdernext-button')
+                                                .setLabel('next page')
+                                                .setStyle(2),
+                                            new ButtonBuilder()
+                                                .setCustomId('friendtechholderlast-button')
+                                                .setLabel('last page')
+                                                .setStyle(2),
+                                        );
+
+                                    const buttonsRowNo = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('friendtechholderfirst-button')
+                                                .setLabel('first page')
+                                                .setStyle(2)
+                                                .setDisabled(true),
+                                            new ButtonBuilder()
+                                                .setCustomId('friendtechholderprevious-button')
+                                                .setLabel('previous page')
+                                                .setStyle(2)
+                                                .setDisabled(true),
+                                            new ButtonBuilder()
+                                                .setCustomId('friendtechholdernext-button')
+                                                .setLabel('next page')
+                                                .setStyle(2)
+                                                .setDisabled(true),
+                                            new ButtonBuilder()
+                                                .setCustomId('friendtechholderlast-button')
+                                                .setLabel('last page')
+                                                .setStyle(2)
+                                                .setDisabled(true),
+                                        );
+
+
+
+
+                                    let findUser = []
+                                    let isMatch = true
+
+                                    const usernameProvided = interaction.options.getString("twitter").toLowerCase()
+
+                                    const givenUsername = removeAtSymbol(usernameProvided)
+
+
+
+                                    try {
+                                        findUser = await axios.get('https://prod-api.kosetto.com/search/users?username=' + givenUsername, { headers: friendtechHeaders })
+
+                                    } catch (error) {
+                                        isMatch = false
+                                    }
+
+
+                                    if (isMatch == true) {
+
+
+                                        const user = findUser.data.users.find((user) => user.twitterUsername.toLowerCase() == givenUsername.toLowerCase());
+
+
+                                        if (user) {
+
+
+                                            userAddress = user.address
+
+
+
+
+
+
+
+                                            try {
+
+
+
+                                                const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
+
+                                                let holderCount = userInfoCall.data.holderCount
+                                                let supply = userInfoCall.data.shareSupply
+                                                let twName = userInfoCall.data.twitterName
+                                                let twUsername = userInfoCall.data.twitterUsername
+                                                let price = userInfoCall.data.displayPrice / 10 ** 18
+
+
+
+                                                const holdersCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token/holders")
+                                                const holdersTable = holdersCall.data.users
+
+
+                                                if (holdersTable.length > 0) {
+
+                                                    let fullHoldingTable = []
+
+
+                                                    if (holdersCall.data.nextPageStart != 50) {
+
+                                                        for (const holding of holdersTable) {
+
+                                                            let name = holding.twitterName
+                                                            let username = holding.twitterUsername
+                                                            let address = holding.address
+                                                            let tokenCount = holding.balance
+                                                            let supplyPercentage = (tokenCount / supply) * 100;
+
+
+                                                            let obj = {}
+                                                            obj.username = username
+                                                            obj.name = name
+                                                            obj.amount = tokenCount
+                                                            obj.supplyPercentage = supplyPercentage
+                                                            obj.address = address
+
+                                                            if (!fullHoldingTable.includes(obj)) {
+
+                                                                fullHoldingTable.push(obj)
+                                                            }
+                                                        }
+
+                                                    } else {
+
+                                                        for (const holding of holdersTable) {
+
+                                                            let name = holding.twitterName
+                                                            let username = holding.twitterUsername
+                                                            let address = holding.address
+                                                            let tokenCount = holding.balance
+                                                            let supplyPercentage = (tokenCount / supply) * 100;
+
+
+                                                            let obj = {}
+                                                            obj.username = username
+                                                            obj.name = name
+                                                            obj.amount = tokenCount
+                                                            obj.supplyPercentage = supplyPercentage
+                                                            obj.address = address
+
+                                                            if (!fullHoldingTable.includes(obj)) {
+
+                                                                fullHoldingTable.push(obj)
+                                                            }
+                                                        }
+
+                                                        let itemsNumber = 50
+                                                        let callPage = ""
+
+                                                        let continuation = holdersCall.data.nextPageStart
+
+                                                        while (continuation != null) {
+
+
+
+
+                                                            callPage = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token/holders?pageStart=" + itemsNumber)
+
+                                                            continuation = callPage.data.nextPageStart
+
+                                                            if (continuation != null) {
+
+                                                                for (const holding of callPage.data.users) {
+
+                                                                    let name = holding.twitterName
+                                                                    let username = holding.twitterUsername
+                                                                    let address = holding.address
+                                                                    let tokenCount = holding.balance
+                                                                    let supplyPercentage = (tokenCount / supply) * 100;
+
+
+                                                                    let obj = {}
+                                                                    obj.username = username
+                                                                    obj.name = name
+                                                                    obj.amount = tokenCount
+                                                                    obj.supplyPercentage = supplyPercentage
+                                                                    obj.address = address
+
+                                                                    if (!fullHoldingTable.includes(obj)) {
+
+                                                                        fullHoldingTable.push(obj)
+                                                                    }
+                                                                }
+
+
+                                                                itemsNumber += 50
+
+                                                            } else {
+                                                                break
+                                                            }
+                                                        }
+                                                    }
+
+
+
+
+
+
+
+                                                    console.log(fullHoldingTable)
+                                                    console.log(fullHoldingTable.length)
+
+
+
+
+
+                                                    // On construit le tableau d'holders pour toute l'interaction
+                                                    let top10Holders = 0
+                                                    let top25Holders = 0
+                                                    let top50Holders = 0
+
+                                                    let holdersTableDB = []
+                                                    let holdersFormatted = "Owner                                           # Held\n\n"
+
+                                                    let index = 0
+
+
+
+
+
+                                                    for (const holders of fullHoldingTable) {
+
+
+
+                                                        let name = holders.name
+                                                        let username = holders.username
+                                                        let address = holders.address
+                                                        let tokenCount = holders.amount
+                                                        let supplyPercentage = holders.supplyPercentage
+
+
+                                                        if (index <= 15) {
+
+
+                                                            let lignMaxSize = 55
+                                                            let leftPartNfts = reduceText(username, 25)
+
+                                                            let rightPartNfts = tokenCount + " (" + parseFloat(supplyPercentage).toFixed(2) + "%)\n"
+                                                            let leftPartNFTsLenght = leftPartNfts.length
+                                                            let rightPartNftsLenght = rightPartNfts.length
+                                                            let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
+                                                            let spaceLenght = ""
+                                                            for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+
+
+                                                            holdersFormatted += leftPartNfts + spaceLenght + rightPartNfts
+
+
+                                                        }
+
+
+                                                        if (index <= 9) { top10Holders += parseInt(tokenCount) }
+                                                        if (index <= 24) { top25Holders += parseInt(tokenCount) }
+                                                        if (index <= 49) { top50Holders += parseInt(tokenCount) }
+
+
+                                                        let obj = {}
+
+                                                        obj.address = address
+                                                        obj.name = name
+                                                        obj.username = username
+                                                        obj.tokenCount = tokenCount
+                                                        obj.supplyPercentage = supplyPercentage
+                                                        holdersTableDB.push(obj)
+
+                                                        index++
+
+
+                                                    }
+
+
+                                                    const itemsPerPage = 16; // Nombre d'objets par page
+                                                    pageIndex = Math.ceil(holderCount / itemsPerPage);
+
+
+
+                                                    let linksFormatted = '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Dune Analytics](https://dune.com/whale_hunter/friend-tech-ultimate-analytics)' + " ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ")"
+
+
+                                                    const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
+                                                        .setTitle(twName + "'s holders")
+                                                        .setDescription(">>> Displaying the top holders of `" + twName + "`.")
+                                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                        .addFields(
+                                                            { name: " ", value: " ", inline: false },
+                                                            { name: "Supply", value: "`" + supply + "`", inline: false },
+                                                            { name: "Top 10 Holders", value: "`" + top10Holders + " (" + parseFloat((top10Holders / supply) * 100).toFixed(2) + "%)`", inline: true },
+                                                            { name: "Top 25 Holders", value: "`" + top25Holders + " (" + parseFloat((top25Holders / supply) * 100).toFixed(2) + "%)`", inline: true },
+                                                            { name: "Top 50 Holders", value: "`" + top50Holders + " (" + parseFloat((top50Holders / supply) * 100).toFixed(2) + "%)`", inline: true },
+                                                            { name: "Holders:", value: "```" + holdersFormatted + "```", inline: false },
+                                                            { name: "Links", value: linksFormatted, inline: false },
+                                                            { name: "Page", value: "`[1/" + pageIndex + "]`", inline: true },
+
+                                                        )
+                                                        .setTimestamp()
+                                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+                                                    if (pageIndex <= 1) { await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRowNo] }); }
+                                                    else { await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRow] }); }
+
+
+
+
+
+                                                    let holderDataTable = []
+                                                    let obj = {}
+                                                    obj.name = twName
+                                                    obj.username = twUsername
+                                                    obj.supply = supply
+                                                    obj.top10Holders = top10Holders + " (" + parseFloat((top10Holders / supply) * 100).toFixed(2) + "%)"
+                                                    obj.top25Holders = top25Holders + " (" + parseFloat((top25Holders / supply) * 100).toFixed(2) + "%)"
+                                                    obj.top50Holders = top50Holders + " (" + parseFloat((top50Holders / supply) * 100).toFixed(2) + "%)"
+                                                    obj.links = linksFormatted
+                                                    holderDataTable.push(obj)
+
+
+                                                    //On fait le call àbn  la base SQL
+                                                    await interactionData.destroy({ where: { authorId: authorId, commandName: "friendtech-holder", serverId: serverId } })
+
+                                                    await interactionData.create({
+
+                                                        authorId: authorId,
+                                                        authorName: authorName,
+                                                        serverId: serverId,
+                                                        commandName: "friendtech-holder",
+                                                        interactionId: interaction.id,
+                                                        walletAddress: "N/A",
+                                                        walletCategory: "N/A",
+                                                        embed1: JSON.stringify(fullHoldingTable),
+                                                        embed2: JSON.stringify(holderDataTable),
+                                                        embed3: "N/A",
+                                                        pageIndex: pageIndex.toString(),
+                                                        actualPage: "1",
+                                                        walletName: "N/A",
+                                                        selecedTimestamp: "N/A",
+                                                        selectedCollection: "N/A",
+                                                        collectionSlug: "N/A",
+                                                        collectionBanner: "N/A",
+                                                        avgDeriskPrice: "N/A",
+                                                        floorPrice: "N/A",
+                                                        lowerMarketlace: "N/A",
+                                                        collectionName: "N/A",
+                                                        buyCount: "N/A",
+                                                        soldCount: "N/A",
+                                                        remaining: "N/A",
+                                                        avgBuy: "N/A",
+                                                        avgSold: "N/A",
+                                                        realisedProfit: "N/A",
+                                                        potentialProfit: "N/A",
+                                                        roi: "N/A",
+                                                        visualTitle: "N/A",
+                                                        userAvatar: "N/A",
+                                                        nbMembersInvolved: "N/A",
+                                                        totalTradeCount: "N/A",
+                                                    })
+
+
+                                                } else {
+
+
+
+
+                                                    let holdersFormatted = "No holders found for this collection                "
+                                                    let twName = "Blur"
+
+                                                    const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
+                                                        .setTitle(twName + "'s holders")
+                                                        .setDescription(">>> Displaying the top holders of `" + twName + "`.")
+                                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                        .addFields(
+                                                            { name: " ", value: " ", inline: false },
+                                                            { name: "Supply", value: "`Not found`", inline: false },
+                                                            { name: "Top 10 Holders", value: "`0 (0.00%)`", inline: true },
+                                                            { name: "Top 25 Holders", value: "`0 (0.00%)`", inline: true },
+                                                            { name: "Top 50 Holders", value: "`0 (0.00%)`", inline: true },
+                                                            { name: "Holders:", value: "```" + holdersFormatted + "```", inline: false },
+                                                            { name: "Page", value: "`[1/1]`", inline: true },
+
+                                                        )
+                                                        .setTimestamp()
+                                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                                    /// TEMPORAIRE
+                                                    await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRowNo] })
+
+
+                                                }
+
+
+
+                                            } catch (error) {
+
+                                                console.log(error)
+                                                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle("Friend Tech")
+                                                    .setDescription("An error occured whil retreiving the Friend.tech profile. Please try again or feel free to contact a team member if you need help.")
+                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                                await interaction.editReply({ embeds: [errorNotEthereum] });
+
+
+                                            }
+
+
+
+
+
+                                        } else {
+
+                                            let usernameSuggestionFormatted = ""
+
+                                            let index = 0
+                                            for (const suggestion of findUser.data.users) {
+                                                index++
+                                                if (index <= 5) {
+
+                                                    usernameSuggestionFormatted += "∙ " + suggestion.twitterUsername + "\n"
+                                                } else {
+
+                                                    break
+                                                }
+
+                                            }
+
+
+                                            const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle("Friend Tech")
+                                                .setDescription("The exact twitter username you entered isn't registered in Friend.tech.\n\n**Maybe you are looking for:** \n\n" + usernameSuggestionFormatted)
+                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                            await interaction.editReply({ embeds: [errorNotEthereum] });
+
+
+
+
+
+                                        }
+
+                                    } else {
+
+
+                                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle("Friend Tech")
+                                            .setDescription("The twitter username you entered isn't registered in Friend.tech. Please try again with a valid username.")
+                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                        await interaction.editReply({ embeds: [errorNotEthereum] });
+
+
+
+                                    }
 
                                 }
                                 

@@ -16,29 +16,61 @@ const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
 const { accessSql, profileData, reportsql, adminsql, interactionData, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
+
+const reduceText = require("../../../functions/reducetext")
+const getTwitterUserInfo = require("../../../functions/twitteruserinfo")
+const getTimeAgo = require("../../../functions/timeago")
+
+
+
 function formatWallet(input) {
     return input.length > 35 ? `${input.substring(0, 10)}…${input.substring(input.length - 10)}` : input;
 }
 
 
+
+
+
+
 const buttonsRow = new ActionRowBuilder()
     .addComponents(
         new ButtonBuilder()
-            .setCustomId('blurholderfirst-button')
+            .setCustomId('friendtechholderfirst-button')
             .setLabel('first page')
-            .setStyle(2)
-            .setDisabled(true),
+            .setStyle(2),
         new ButtonBuilder()
-            .setCustomId('blurholderprevious-button')
+            .setCustomId('friendtechholderprevious-button')
             .setLabel('previous page')
+            .setStyle(2),
+        new ButtonBuilder()
+            .setCustomId('friendtechholdernext-button')
+            .setLabel('next page')
             .setStyle(2)
             .setDisabled(true),
         new ButtonBuilder()
-            .setCustomId('blurholdernext-button')
+            .setCustomId('friendtechholderlast-button')
+            .setLabel('last page')
+            .setStyle(2)
+            .setDisabled(true),
+
+    );
+
+const buttonsRowAllGood = new ActionRowBuilder()
+    .addComponents(
+        new ButtonBuilder()
+            .setCustomId('friendtechholderfirst-button')
+            .setLabel('first page')
+            .setStyle(2),
+        new ButtonBuilder()
+            .setCustomId('friendtechholderprevious-button')
+            .setLabel('previous page')
+            .setStyle(2),
+        new ButtonBuilder()
+            .setCustomId('friendtechholdernext-button')
             .setLabel('next page')
             .setStyle(2),
         new ButtonBuilder()
-            .setCustomId('blurholderlast-button')
+            .setCustomId('friendtechholderlast-button')
             .setLabel('last page')
             .setStyle(2),
     );
@@ -47,8 +79,10 @@ const buttonsRow = new ActionRowBuilder()
 
 
 
+
+
 module.exports = {
-    id: 'blurholderfirst-button',
+    id: 'friendtechholdernext-button',
 
     async execute(interaction) {
         if (!(interaction instanceof ButtonInteraction)) return;
@@ -73,7 +107,7 @@ module.exports = {
 
 
 
-                const lastInteraction = await interactionData.findOne({ where: { authorId: authorId, commandName: "blur-holder", serverId: serverId } })
+                const lastInteraction = await interactionData.findOne({ where: { authorId: authorId, commandName: "friendtech-holder", serverId: serverId } })
 
                 //On récupère le tableau des bids
                 const holderTableFull = JSON.parse(lastInteraction.dataValues.embed1)
@@ -81,7 +115,7 @@ module.exports = {
                 // On récupère les informations gloals des bids de la collection
                 const holderDataTable = JSON.parse(lastInteraction.dataValues.embed2)
 
-                const collectionName = holderDataTable[0].collectionName
+                const name = holderDataTable[0].name
                 const supply = holderDataTable[0].supply
                 const top10Holders = holderDataTable[0].top10Holders
                 const top25Holders = holderDataTable[0].top25Holders
@@ -89,12 +123,19 @@ module.exports = {
                 const links = holderDataTable[0].links
 
                 const pageIndex = lastInteraction.dataValues.pageIndex
-                const newPage = "1"
+                const actualPage = lastInteraction.dataValues.actualPage
+                const newPage = parseFloat(actualPage) + 1
+
+                const itemsPerPage = 16; // Nombre d'objets par page
+                const firstObject = (newPage - 1) * itemsPerPage
+                const lastObject = firstObject + itemsPerPage
+
+
 
                 console.log(newPage)
 
 
-                let holdersList = holderTableFull.slice(0, 16);
+                let holdersList = holderTableFull.slice(firstObject, lastObject);
 
                 let holdersFormatted = "Owner                                           # Held\n\n"
 
@@ -103,37 +144,30 @@ module.exports = {
 
 
 
+                    let name = holders.name
+                    let username = holders.username
                     let address = holders.address
-                    let tokenCount = holders.tokenCount
+                    let tokenCount = holders.amount
                     let supplyPercentage = holders.supplyPercentage
-                    let isUser = holders.isUser
-                    let isDeployer = holders.isDeployer
 
 
 
 
-                    let lignMaxSize = 55
-                    let leftPartNfts = formatWallet(address)
-                    if (isUser.toLowerCase() == "yes") { leftPartNfts += " (you)" }
-                    if (isDeployer.toLowerCase() == "yes") { leftPartNfts += " (deployer)" }
+                        let lignMaxSize = 55
+                        let leftPartNfts = reduceText(username, 25)
+
+                        let rightPartNfts = tokenCount + " (" + parseFloat(supplyPercentage).toFixed(2) + "%)\n"
+                        let leftPartNFTsLenght = leftPartNfts.length
+                        let rightPartNftsLenght = rightPartNfts.length
+                        let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
+                        let spaceLenght = ""
+                        for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
 
 
+                        holdersFormatted += leftPartNfts + spaceLenght + rightPartNfts
 
 
-
-                    let rightPartNfts = tokenCount + " (" + parseFloat(supplyPercentage).toFixed(2) + "%)\n"
-                    let leftPartNFTsLenght = leftPartNfts.length
-                    let rightPartNftsLenght = rightPartNfts.length
-                    let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
-                    let spaceLenght = ""
-                    for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
-
-
-                    holdersFormatted += leftPartNfts + spaceLenght + rightPartNfts
-
-
-
-
+                    
 
 
 
@@ -144,10 +178,9 @@ module.exports = {
 
 
 
-
                 const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle(collectionName + "'s holders")
-                    .setDescription(">>> Displaying the top holders of `" + collectionName + "`.")
+                    .setTitle(name + "'s holders")
+                    .setDescription(">>> Displaying the top holders of `" + name + "`.")
                     .setAuthor({ name: authorName, iconURL: userAvatar })
                     .addFields(
                         { name: " ", value: " ", inline: false },
@@ -164,10 +197,11 @@ module.exports = {
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-                await interaction.update({ embeds: [getBlurOneWallet], components: [buttonsRow] });
+                if (newPage <= 1) { await interaction.update({ embeds: [getBlurOneWallet], components: [buttonsRow] }); }
+                else { await interaction.update({ embeds: [getBlurOneWallet], components: [buttonsRowAllGood] }); }
 
 
-                await interactionData.update({ actualPage: "1", }, { where: { authorId: authorId, commandName: "blur-holder", serverId: serverId } })
+                await interactionData.update({ actualPage: newPage.toString(), }, { where: { authorId: authorId, commandName: "friendtech-holder", serverId: serverId } })
 
 
 

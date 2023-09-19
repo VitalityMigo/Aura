@@ -21,42 +21,34 @@ function formatWallet(input) {
 }
 
 
-
-
-
-
 const buttonsRow = new ActionRowBuilder()
     .addComponents(
         new ButtonBuilder()
             .setCustomId('blurholderfirst-button')
             .setLabel('first page')
-            .setStyle(2),
+            .setStyle(2)
+            .setDisabled(true),
         new ButtonBuilder()
             .setCustomId('blurholderprevious-button')
             .setLabel('previous page')
-            .setStyle(2),
+            .setStyle(2)
+            .setDisabled(true),
         new ButtonBuilder()
             .setCustomId('blurholdernext-button')
             .setLabel('next page')
-            .setStyle(2)
-            .setDisabled(true),
+            .setStyle(2),
         new ButtonBuilder()
             .setCustomId('blurholderlast-button')
             .setLabel('last page')
-            .setStyle(2)
-            .setDisabled(true),
-
+            .setStyle(2),
     );
 
 
 
 
 
-
-
-
 module.exports = {
-    id: 'blurholderlast-button',
+    id: 'blurholderfirst-button',
 
     async execute(interaction) {
         if (!(interaction instanceof ButtonInteraction)) return;
@@ -81,7 +73,7 @@ module.exports = {
 
 
 
-                const lastInteraction = await interactionData.findOne({ where: { authorId: authorId, commandName: "blur-holder", serverId: serverId } })
+                const lastInteraction = await interactionData.findOne({ where: { authorId: authorId, commandName: "friendtech-holder", serverId: serverId } })
 
                 //On récupère le tableau des bids
                 const holderTableFull = JSON.parse(lastInteraction.dataValues.embed1)
@@ -89,7 +81,7 @@ module.exports = {
                 // On récupère les informations gloals des bids de la collection
                 const holderDataTable = JSON.parse(lastInteraction.dataValues.embed2)
 
-                const collectionName = holderDataTable[0].collectionName
+                const collectionName = holderDataTable[0].name
                 const supply = holderDataTable[0].supply
                 const top10Holders = holderDataTable[0].top10Holders
                 const top25Holders = holderDataTable[0].top25Holders
@@ -97,18 +89,12 @@ module.exports = {
                 const links = holderDataTable[0].links
 
                 const pageIndex = lastInteraction.dataValues.pageIndex
-                const newPage = pageIndex
-
-                const itemsPerPage = 16; // Nombre d'objets par page
-                const firstObject = (newPage - 1) * itemsPerPage
-                const lastObject = firstObject + itemsPerPage
-
-
+                const newPage = "1"
 
                 console.log(newPage)
 
 
-                let holdersList = holderTableFull.slice(firstObject, lastObject);
+                let holdersList = holderTableFull.slice(0, 16);
 
                 let holdersFormatted = "Owner                                           # Held\n\n"
 
@@ -130,6 +116,9 @@ module.exports = {
                     let leftPartNfts = formatWallet(address)
                     if (isUser.toLowerCase() == "yes") { leftPartNfts += " (you)" }
                     if (isDeployer.toLowerCase() == "yes") { leftPartNfts += " (deployer)" }
+
+
+
 
 
                     let rightPartNfts = tokenCount + " (" + parseFloat(supplyPercentage).toFixed(2) + "%)\n"
@@ -178,8 +167,7 @@ module.exports = {
                 await interaction.update({ embeds: [getBlurOneWallet], components: [buttonsRow] });
 
 
-
-                await interactionData.update({ actualPage: pageIndex.toString(), }, { where: { authorId: authorId, commandName: "blur-holder", serverId: serverId } })
+                await interactionData.update({ actualPage: "1", }, { where: { authorId: authorId, commandName: "blur-holder", serverId: serverId } })
 
 
 

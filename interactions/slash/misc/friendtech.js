@@ -9,6 +9,7 @@ const { profileData, accessSql, apimonitorsql, wallets, reportsql, adminsql, use
 
 const reduceText = require("../../../functions/reducetext")
 const getTwitterUserInfo = require("../../../functions/twitteruserinfo")
+const getTimeAgo = require("../../../functions/timeago")
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -66,11 +67,28 @@ module.exports = {
                 .setDescription("Display various metrics about a friend.tech user's portfolio")
                 .addStringOption(option =>
                     option
-                        .setName("address")
-                        .setDescription("The user's friend.tech Base address")
+                        .setName("twitter")
+                        .setDescription("The user's twitter username (i.e vitalitymigo")
                         .setRequired(true)
 
                 )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("trades")
+                .setDescription("Display the recent trades of a Friend.tech share")
+                .addStringOption(option =>
+                    option
+                        .setName("twitter")
+                        .setDescription("The user's twitter username (i.e vitalitymigo")
+                        .setRequired(true)
+
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("stats")
+                .setDescription("Display global Friend.tech stats and metrics")
         ),
 
 
@@ -95,319 +113,356 @@ module.exports = {
 
 
 
-            //  try {
+            try {
 
-            const botAdmins = await adminsql.findOne({ where: { botId: botId } })
-            const botGlobalState = botAdmins.dataValues.botState
+                const botAdmins = await adminsql.findOne({ where: { botId: botId } })
+                const botGlobalState = botAdmins.dataValues.botState
 
-            let communityMemberRoleId = ""
-            let communityAdminRoleId = ""
-            let botPowerStatut = ""
-            let communityStatut = ""
-            let accessTier = ""
+                let communityMemberRoleId = ""
+                let communityAdminRoleId = ""
+                let botPowerStatut = ""
+                let communityStatut = ""
+                let accessTier = ""
 
-            //Récupère info varibale sur le bot et le serveur
-            const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
-            if (communityRolePerms != null) {
-                communityMemberRoleId = communityRolePerms.dataValues.memberRoleId
-                communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
-                botPowerStatut = communityRolePerms.dataValues.actualPower
-                communityStatut = communityRolePerms.dataValues.statut
-                accessTier = communityRolePerms.dataValues.accessTier
-            }
+                //Récupère info varibale sur le bot et le serveur
+                const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
+                if (communityRolePerms != null) {
+                    communityMemberRoleId = communityRolePerms.dataValues.memberRoleId
+                    communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
+                    botPowerStatut = communityRolePerms.dataValues.actualPower
+                    communityStatut = communityRolePerms.dataValues.statut
+                    accessTier = communityRolePerms.dataValues.accessTier
+                }
 
 
 
-            //Récupère régagle de privé/ou pas de l'utilisateur
-            const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
+                //Récupère régagle de privé/ou pas de l'utilisateur
+                const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
 
-            if (authorProfile === null) { await interaction.deferReply(); } else {
-                const authorPrivacyMode = authorProfile.dataValues.privacyMode
+                if (authorProfile === null) { await interaction.deferReply(); } else {
+                    const authorPrivacyMode = authorProfile.dataValues.privacyMode
 
-                if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
-                if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
-            }
+                    if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
+                    if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
+                }
 
 
 
-            //Checkpoint
-            console.log("// Step 1 : Initialization - Executed ✅")
+                //Checkpoint
+                console.log("// Step 1 : Initialization - Executed ✅")
 
 
-            if (botGlobalState.toLowerCase() === "on") {
+                if (botGlobalState.toLowerCase() === "on") {
 
 
-                if (communityStatut.toLowerCase() === "active" || communityStatut == "") {
+                    if (communityStatut.toLowerCase() === "active" || communityStatut == "") {
 
-                    if (accessTier.toLowerCase() == "a-tier" || accessTier.toLowerCase() == "s-tier") {
+                        if (accessTier.toLowerCase() == "a-tier" || accessTier.toLowerCase() == "s-tier") {
 
-                        if (member.roles.cache.has(communityMemberRoleId)) {
+                            if (member.roles.cache.has(communityMemberRoleId)) {
 
-                            //Checkpoint
-                            console.log("// Step 2 : Authorization - Executed ✅")
+                                //Checkpoint
+                                console.log("// Step 2 : Authorization - Executed ✅")
 
 
 
-                            //On enregistre le user si il est pas encore dans la database
-                            const timeStamp1 = Date.now();
-                            const actualTimestamp1 = parseFloat(timeStamp1 / 1000).toFixed(0)
-                            const isUser = await usersql.findOne({ where: { userId: authorId, serverId: serverId } })
-                            if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp1 }) }
+                                //On enregistre le user si il est pas encore dans la database
+                                const timeStamp1 = Date.now();
+                                const actualTimestamp1 = parseFloat(timeStamp1 / 1000).toFixed(0)
+                                const isUser = await usersql.findOne({ where: { userId: authorId, serverId: serverId } })
+                                if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp1 }) }
 
 
-                            if (interaction.options.getSubcommand() === 'user') {
+                                if (interaction.options.getSubcommand() === 'user') {
 
 
 
-                                let id = ""
-                                let address = ""
-                                let twitterUsername = ""
-                                let twitterName = ""
-                                let twitterPfp = ""
-                                let twitterUserId = ""
+                                    let id = ""
+                                    let address = ""
+                                    let twitterUsername = ""
+                                    let twitterName = ""
+                                    let twitterPfp = ""
+                                    let twitterUserId = ""
 
-                                let holderCount = 0
-                                let shareSupply = 0
-                                let price = 0
-                                let totalFeesCollected = 0
-                                let marketCap = 0
+                                    let holderCount = 0
+                                    let shareSupply = 0
+                                    let price = 0
+                                    let totalFeesCollected = 0
+                                    let marketCap = 0
 
-                                let holdersFormattedEmbeds = ""
-                                let uniqueHolders = 0
+                                    let holdersFormattedEmbeds = ""
+                                    let uniqueHolders = 0
 
-                                let lastTrade = 0
-                                let lastMessage = 0
-                                let lastOnlineTimestamp = 0
+                                    let lastTrade = 0
+                                    let lastMessage = 0
+                                    let lastOnlineTimestamp = 0
 
-                                let airdropTier = "UNRANKED"
-                                let airdropPoints = 0
+                                    let airdropTier = "UNRANKED"
+                                    let airdropPoints = 0
 
-                                let volume6h = 0
-                                let volume1d = 0
-                                let volume7d = 0
+                                    let volume6h = 0
+                                    let volume1d = 0
+                                    let volume7d = 0
 
-                                let tradersFormatted = ""
+                                    let tradersFormatted = ""
 
-                                let followers = 0
-                                let following = 0
-                                let created = 0
+                                    let followers = 0
+                                    let following = 0
+                                    let created = 0
 
-                                let userAddress = ""
+                                    let userAddress = ""
 
-                                let findUser = []
-                                let isMatch = true
-                                let isExactMatch = true
+                                    let findUser = []
+                                    let isMatch = true
+                                    let isExactMatch = true
 
 
 
-                                const usernameProvided = interaction.options.getString("address").toLowerCase()
+                                    const usernameProvided = interaction.options.getString("twitter").toLowerCase()
 
-                                const givenUsername = removeAtSymbol(usernameProvided)
-                                
+                                    const givenUsername = removeAtSymbol(usernameProvided)
 
-                                try {
-                                    findUser = await axios.get('https://prod-api.kosetto.com/search/users?username=' + givenUsername, { headers: friendtechHeaders })
-                                } catch (error) {
-                                    isMatch = false
-                                }
 
 
-                                if (isMatch == true) {
+                                    try {
+                                        findUser = await axios.get('https://prod-api.kosetto.com/search/users?username=' + givenUsername, { headers: friendtechHeaders })
 
+                                    } catch (error) {
+                                        isMatch = false
+                                    }
 
-                                    const user = findUser.data.users.find((user) => user.twitterUsername.toLowerCase() == givenUsername.toLowerCase());
 
+                                    if (isMatch == true) {
 
-                                    if (user) {
 
+                                        const user = findUser.data.users.find((user) => user.twitterUsername.toLowerCase() == givenUsername.toLowerCase());
 
-                                        userAddress = user.address
 
+                                        if (user) {
 
 
+                                            userAddress = user.address
 
 
 
 
-                                        try {
 
-                                            // Prix de l'ETH
-                                            const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-                                            const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
 
 
-                                            const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
+                                            try {
 
+                                                // Prix de l'ETH
+                                                const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                                                const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
 
 
-                                            address = userInfoCall.data.address
-                                            id = userInfoCall.data.id
-                                            twitterUsername = userInfoCall.data.twitterUsername
-                                            twitterName = userInfoCall.data.twitterName
-                                            twitterPfp = userInfoCall.data.twitterPfpUrl
-                                            twitterUserId = userInfoCall.data.twitterUserId
-                                            lastOnlineTimestamp = parseFloat(userInfoCall.data.lastOnline / 1000).toFixed(0)
-                                            lastMessage = parseFloat(userInfoCall.data.lastMessageTime / 1000).toFixed(0)
-                                            holderCount = userInfoCall.data.holderCount
-                                            shareSupply = userInfoCall.data.shareSupply
-                                            price = userInfoCall.data.displayPrice / 10 ** 18
-                                            totalFeesCollected = userInfoCall.data.lifetimeFeesCollectedInWei / 10 ** 18
+                                                const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
 
 
 
-                                            const twitterInfos = await getTwitterUserInfo(twitterUsername)
-                                            followers = twitterInfos.followers_count
-                                            following = twitterInfos.friends_count
+                                                address = userInfoCall.data.address
+                                                id = userInfoCall.data.id
+                                                twitterUsername = userInfoCall.data.twitterUsername
+                                                twitterName = userInfoCall.data.twitterName
+                                                twitterPfp = userInfoCall.data.twitterPfpUrl
+                                                twitterUserId = userInfoCall.data.twitterUserId
+                                                lastOnlineTimestamp = parseFloat(userInfoCall.data.lastOnline / 1000).toFixed(0)
+                                                lastMessage = parseFloat(userInfoCall.data.lastMessageTime / 1000).toFixed(0)
+                                                holderCount = userInfoCall.data.holderCount
+                                                shareSupply = userInfoCall.data.shareSupply
+                                                price = userInfoCall.data.displayPrice / 10 ** 18
+                                                totalFeesCollected = userInfoCall.data.lifetimeFeesCollectedInWei / 10 ** 18
 
-                                            const created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
 
-                                            // Call holders
-                                            const holderInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token/holders")
 
+                                                const twitterInfos = await getTwitterUserInfo(twitterUsername)
+                                                followers = twitterInfos.followers_count
+                                                following = twitterInfos.friends_count
 
-                                            // On construit la table d'holders
+                                                const created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
+
+                                                // Call holders
+                                                const holderInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token/holders")
+
+
+                                                // On construit la table d'holders
+                                                let index = 0
+
+                                                for (const holders of holderInfoCall.data.users) {
+
+                                                    index++
+
+                                                    if (index <= 10) {
+
+                                                        let holderName = holders.twitterUsername
+                                                        let holderBalance = holders.balance
+                                                        let holderValue = holderBalance * price
+                                                        let holderRatio = parseFloat((holderBalance / shareSupply) * 100).toFixed(2)
+
+
+                                                        let part1 = "`" + reduceText(holderName, 30)
+                                                        let part2 = parseFloat(holderValue).toFixed(3) + "Ξ"
+                                                        let part3 = holderBalance + " (" + holderRatio + "%)`\n"
+                                                        // let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
+
+                                                        let spaceSize = 38 - (part2).length - part1.length
+                                                        let spaceLenght = ""
+                                                        for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+
+                                                        let spaceSize2 = 19 - (part3).length
+                                                        let spaceLenght2 = ""
+                                                        for (let i = 0; i < spaceSize2; i++) { spaceLenght2 += " " }
+
+
+
+
+                                                        holdersFormattedEmbeds += part1 + spaceLenght + part2 + spaceLenght2 + part3
+
+                                                    }
+                                                }
+
+
+
+
+
+
+                                                // trade de l'auteur
+                                                const tradeInfoCall = await axios.get(" https://prod-api.kosetto.com/users/" + userAddress + "/trade-activity")
+
+                                                lastTrade = parseFloat(tradeInfoCall.data.users[0].createdAt / 1000).toFixed(0)
+
+
+
+                                                // On construit la table d'activité
+                                                let index2 = 0
+
+                                                for (const trade of tradeInfoCall.data.users) {
+
+                                                    index2++
+
+                                                    if (index2 <= 6) {
+
+                                                        let username = trade.twitterUsername
+                                                        let name = trade.twitterName
+
+                                                        let amount = trade.shareAmount
+                                                        let price = parseFloat(trade.ethAmount / 10 ** 18).toFixed(3)
+                                                        let time = parseFloat(trade.createdAt / 1000).toFixed(0)
+                                                        let isBuy = trade.isBuy
+
+                                                        let action = "🟢 Bought "
+                                                        if (isBuy == false) { action = "🔴 Sold " }
+
+                                                        tradersFormatted += "`" + action + amount + "` [" + reduceText(name, 18) + "](https://twitter.com/" + username + ") `for " + price + "Ξ` ∙ <t:" + time + ":R>\n"
+
+                                                    }
+                                                }
+
+
+
+
+
+                                                //airdrop stats de l'auteur
+                                                const airdropInfos = await axios.get(" https://prod-api.kosetto.com/points/" + userAddress)
+
+
+                                                airdropTier = airdropInfos.data.tier.toUpperCase()
+                                                airdropPoints = airdropInfos.data.totalPoints
+
+
+
+
+                                                // Calcul des dernières valeurs
+                                                marketCap = price * shareSupply
+                                                uniqueHolders = (holderCount / shareSupply) * 100;
+
+                                                if (holdersFormattedEmbeds == "") { holdersFormattedEmbeds = "```No holders found for this share.                         ```" }
+                                                if (tradersFormatted == "") { tradersFormatted = "```No recent trade found for this share.                    ```" }
+
+
+
+
+
+                                                const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle(twitterName)
+                                                    .setDescription(">>> Displaying the friend.tech metrics of `" + twitterName + "`.")
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setThumbnail(twitterPfp)
+                                                    .setTimestamp()
+                                                    .addFields(
+                                                        { name: "Name", value: "`" + twitterName + "`", inline: true },
+                                                        { name: "Username", value: "`" + twitterUsername + "`", inline: true },
+                                                        { name: " ", value: " ", inline: true },
+                                                        { name: "Followers", value: "`" + followers + "`", inline: true },
+                                                        { name: "Following", value: "`" + following + "`", inline: true },
+                                                        { name: "Created", value: "<t:" + created + ":R>", inline: true },
+                                                        { name: " ", value: " ", inline: false },
+                                                        { name: "Price", value: "`" + parseFloat(price).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(price * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                        { name: "Market Cap", value: "`" + parseFloat(marketCap).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(marketCap * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                        { name: " ", value: " ", inline: true },
+                                                        { name: "Share Supply", value: "`" + shareSupply + "`", inline: true },
+                                                        { name: "Holders", value: "`" + holderCount + "`", inline: true },
+                                                        { name: "Unique Holders", value: "`" + parseFloat(uniqueHolders).toFixed(1) + "%`", inline: true },
+                                                        { name: "Airdrop Pts.", value: "`" + airdropPoints + "`", inline: true },
+                                                        { name: "Airdrop Tier", value: "`" + airdropTier + "`", inline: true },
+                                                        { name: "Collected Fees", value: "`" + parseFloat(totalFeesCollected).toFixed(3) + "Ξ`", inline: true },
+                                                        { name: " ", value: " ", inline: false },
+                                                        { name: "Last Online", value: "<t:" + lastOnlineTimestamp + ":R>", inline: true },
+                                                        { name: "Last Message", value: "<t:" + lastMessage + ":R>", inline: true },
+                                                        { name: "Last Trade", value: "<t:" + lastTrade + ":R>", inline: true },
+                                                        { name: "Holders:", value: holdersFormattedEmbeds, inline: false },
+                                                        { name: "Last Trades:", value: tradersFormatted, inline: false },
+                                                        { name: "FT Wallet:", value: "```" + userAddress + "```", inline: false },
+                                                        { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Dune Analytics](https://dune.com/whale_hunter/friend-tech-ultimate-analytics)' + " ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ")", inline: false }
+
+                                                    )
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                                await interaction.editReply({ embeds: [userFTEmbed] });
+
+
+
+                                            } catch (error) {
+
+
+                                                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle("Friend Tech")
+                                                    .setDescription("An error occured whil retreiving the Friend.tech profile. Please try again or feel free to contact a team member if you need help.")
+                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                                await interaction.editReply({ embeds: [errorNotEthereum] });
+
+
+                                            }
+
+
+
+
+
+                                        } else {
+
+                                            let usernameSuggestionFormatted = ""
+
                                             let index = 0
-
-                                            for (const holders of holderInfoCall.data.users) {
-
+                                            for (const suggestion of findUser.data.users) {
                                                 index++
+                                                if (index <= 5) {
 
-                                                if (index <= 10) {
+                                                    usernameSuggestionFormatted += "∙ " + suggestion.twitterUsername + "\n"
+                                                } else {
 
-                                                    let holderName = holders.twitterUsername
-                                                    let holderBalance = holders.balance
-                                                    let holderValue = holderBalance * price
-                                                    let holderRatio = parseFloat((holderBalance / shareSupply) * 100).toFixed(2)
-
-
-                                                    let part1 = "`" + reduceText(holderName, 30)
-                                                    let part2 = parseFloat(holderValue).toFixed(3) + "Ξ"
-                                                    let part3 = holderBalance + " (" + holderRatio + "%)`\n"
-                                                    // let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
-
-                                                    let spaceSize = 38 - (part2).length - part1.length
-                                                    let spaceLenght = ""
-                                                    for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
-
-                                                    let spaceSize2 = 19 - (part3).length
-                                                    let spaceLenght2 = ""
-                                                    for (let i = 0; i < spaceSize2; i++) { spaceLenght2 += " " }
-
-
-
-
-                                                    holdersFormattedEmbeds += part1 + spaceLenght + part2 + spaceLenght2 + part3
-
+                                                    break
                                                 }
+
                                             }
-
-
-
-
-
-
-                                            // trade de l'auteur
-                                            const tradeInfoCall = await axios.get(" https://prod-api.kosetto.com/users/" + userAddress + "/trade-activity")
-
-                                            lastTrade = parseFloat(tradeInfoCall.data.users[0].createdAt / 1000).toFixed(0)
-
-
-
-                                            // On construit la table d'activité
-                                            let index2 = 0
-
-                                            for (const trade of tradeInfoCall.data.users) {
-
-                                                index2++
-
-                                                if (index2 <= 6) {
-
-                                                    let username = trade.twitterUsername
-                                                    let name = trade.twitterName
-
-                                                    let amount = trade.shareAmount
-                                                    let price = parseFloat(trade.ethAmount / 10 ** 18).toFixed(3)
-                                                    let time = parseFloat(trade.createdAt / 1000).toFixed(0)
-                                                    let isBuy = trade.isBuy
-
-                                                    let action = "🟢 Bought "
-                                                    if (isBuy == false) { action = "🔴 Sold " }
-
-                                                    tradersFormatted += "`" + action + amount + "` [" + reduceText(name, 18) + "](https://twitter.com/" + username + ") `for " + price + "Ξ` ∙ <t:" + time + ":R>\n"
-
-                                                }
-                                            }
-
-
-
-
-
-                                            //airdrop stats de l'auteur
-                                            const airdropInfos = await axios.get(" https://prod-api.kosetto.com/points/" + userAddress)
-
-
-                                            airdropTier = airdropInfos.data.tier.toUpperCase()
-                                            airdropPoints = airdropInfos.data.totalPoints
-
-
-
-
-                                            // Calcul des dernières valeurs
-                                            marketCap = price * shareSupply
-                                            uniqueHolders = (holderCount / shareSupply) * 100;
-
-                                            if (holdersFormattedEmbeds == "") { holdersFormattedEmbeds = "```No holders found for this share.                         ```" }
-                                            if (tradersFormatted == "") { tradersFormatted = "```No recent trade found for this share.                    ```" }
-
-
-
-
-
-                                            const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle(twitterName)
-                                                .setDescription(">>> Displaying the friend.tech metrics of `" + twitterName + "`.")
-                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                .setThumbnail(twitterPfp)
-                                                .setTimestamp()
-                                                .addFields(
-                                                    { name: "Name", value: "`" + twitterName + "`", inline: true },
-                                                    { name: "Username", value: "`" + twitterUsername + "`", inline: true },
-                                                    { name: " ", value: " ", inline: true },
-                                                    { name: "Followers", value: "`" + followers + "`", inline: true },
-                                                    { name: "Following", value: "`" + following + "`", inline: true },
-                                                    { name: "Created", value: "<t:" + created + ":R>", inline: true },
-                                                    { name: " ", value: " ", inline: false },
-                                                    { name: "Price", value: "`" + parseFloat(price).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(price * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Market Cap", value: "`" + parseFloat(marketCap).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(marketCap * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: " ", value: " ", inline: true },
-                                                    { name: "Share Supply", value: "`" + shareSupply + "`", inline: true },
-                                                    { name: "Holders", value: "`" + holderCount + "`", inline: true },
-                                                    { name: "Unique Holders", value: "`" + parseFloat(uniqueHolders).toFixed(1) + "%`", inline: true },
-                                                    { name: "Airdrop Pts.", value: "`" + airdropPoints + "`", inline: true },
-                                                    { name: "Airdrop Tier", value: "`" + airdropTier + "`", inline: true },
-                                                    { name: "Collected Fees", value: "`" + parseFloat(totalFeesCollected).toFixed(3) + "Ξ`", inline: true },
-                                                    { name: " ", value: " ", inline: false },
-                                                    { name: "Last Online", value: "<t:" + lastOnlineTimestamp + ":R>", inline: true },
-                                                    { name: "Last Message", value: "<t:" + lastMessage + ":R>", inline: true },
-                                                    { name: "Last Trade", value: "<t:" + lastTrade + ":R>", inline: true },
-                                                    { name: "Holders:", value: holdersFormattedEmbeds, inline: false },
-                                                    { name: "Last Trades:", value: tradersFormatted, inline: false },
-                                                    { name: "FT Wallet:", value: "```" + userAddress + "```", inline: false },
-                                                    { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Dune Analytics](https://dune.com/whale_hunter/friend-tech-ultimate-analytics)' + " ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ")", inline: false }
-
-                                                )
-                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                            await interaction.editReply({ embeds: [userFTEmbed] });
-
-
-
-                                        } catch (error) {
 
 
                                             const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                                 .setTitle("Friend Tech")
-                                                .setDescription("An error occured whil retreiving the Friend.tech profile. Please try again or feel free to contact a team member if you need help.")
+                                                .setDescription("The exact twitter username you entered isn't registered in Friend.tech.\n\n**Maybe you are looking for:** \n\n" + usernameSuggestionFormatted)
                                                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                                 .setTimestamp()
@@ -416,33 +471,17 @@ module.exports = {
                                             await interaction.editReply({ embeds: [errorNotEthereum] });
 
 
+
+
+
                                         }
-
-
-
-
 
                                     } else {
-
-                                        let usernameSuggestionFormatted = ""
-
-                                        let index = 0
-                                        for (const suggestion of findUser.data.users) {
-                                            index++
-                                            if (index <= 5) {
-
-                                                usernameSuggestionFormatted += "∙ " + suggestion.twitterUsername + "\n"
-                                            } else {
-
-                                                break
-                                            }
-
-                                        }
 
 
                                         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                             .setTitle("Friend Tech")
-                                            .setDescription("The exact twitter username you entered isn't registered in Friend.tech.\n\n**Maybe you are looking for:** \n\n" + usernameSuggestionFormatted)
+                                            .setDescription("The twitter username you entered isn't registered in Friend.tech. Please try again with a valid username.")
                                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                             .setAuthor({ name: authorName, iconURL: userAvatar })
                                             .setTimestamp()
@@ -452,144 +491,88 @@ module.exports = {
 
 
 
-
-
                                     }
 
-                                } else {
+                                } else if (interaction.options.getSubcommand() === 'portfolio') {
+
+                                    let totalFTValue = 0
+                                    let totalSharesValue = 0
+                                    let totalFeesCollected = 0
+
+                                    let holdingCount = 0
+                                    let totalShares = 0
+
+                                    let holdingTable = []
+                                    let holdingFormatted = ""
+
+                                    let twitterUsername = ""
+                                    let twitterName = ""
+                                    let twitterPfp = ""
 
 
-                                    const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                                        .setTitle("Friend Tech")
-                                        .setDescription("The twitter username you entered isn't registered in Friend.tech. Please try again with a valid username.")
-                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                                        .setTimestamp()
-                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                    await interaction.editReply({ embeds: [errorNotEthereum] });
+                                    let findUser = []
+                                    let isMatch = true
+                                    let isExactMatch = true
 
 
 
-                                }
+                                    const usernameProvided = interaction.options.getString("twitter").toLowerCase()
 
-                            } else if (interaction.options.getSubcommand() === 'portfolio') {
-
-                                let totalFTValue = 0
-                                let totalSharesValue = 0
-                                let totalFeesCollected = 0
-
-                                let holdingCount = 0
-                                let totalShares = 0
-
-                                let holdingTable = []
-                                let holdingFormatted = ""
-
-                                let twitterUsername = ""
-                                let twitterName = ""
-                                let twitterPfp = ""
-
-
-                                const userAddress = interaction.options.getString("address").toLowerCase()
-
-
-                                if (isValidEthereumAddress(userAddress)) {
-
-
+                                    const givenUsername = removeAtSymbol(usernameProvided)
 
 
                                     try {
+                                        findUser = await axios.get('https://prod-api.kosetto.com/search/users?username=' + givenUsername, { headers: friendtechHeaders })
+                                    } catch (error) {
+                                        isMatch = false
+                                    }
+
+
+                                    if (isMatch == true) {
+
+
+                                        const user = findUser.data.users.find((user) => user.twitterUsername.toLowerCase() == givenUsername.toLowerCase());
+
+
+                                        if (user) {
+
+
+                                            userAddress = user.address
 
 
 
 
 
-                                        // Prix de l'ETH
-                                        const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-                                        const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
+
+                                            try {
 
 
 
 
-                                        const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
 
-                                        holdingCount = userInfoCall.data.holdingCount
-                                        totalFeesCollected = userInfoCall.data.lifetimeFeesCollectedInWei / 10 ** 18
-                                        twitterUsername = userInfoCall.data.twitterUsername
-                                        twitterName = userInfoCall.data.twitterName
-                                        twitterPfp = userInfoCall.data.twitterPfpUrl
-
-
-                                        let userHoldingCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token-holdings")
-
-
-
-                                        if (userHoldingCall.data.nextPageStart != 50) {
-
-                                            for (const holding of userHoldingCall.data.users) {
-
-                                                let holdingAddress = holding.address.toLowerCase()
-
-                                                const holderInfo = await axios.get("https://prod-api.kosetto.com/users/" + holdingAddress)
-                                                let holderPrice = holderInfo.data.displayPrice / 10 ** 18
-
-
-                                                let obj = {}
-                                                obj.username = holding.twitterUsername
-                                                obj.balance = holding.balance
-                                                obj.price = holderPrice
-
-                                                if (!holdingTable.includes(obj)) {
-
-                                                    totalShares += parseFloat(holding.balance)
-                                                    totalSharesValue += parseFloat(holderPrice * holding.balance)
-
-                                                    holdingTable.push(obj)
-                                                }
-                                            }
-
-                                        } else {
-
-                                            for (const holding of userHoldingCall.data.users) {
-
-
-                                                let holdingAddress = holding.address.toLowerCase()
-
-                                                const holderInfo = await axios.get("https://prod-api.kosetto.com/users/" + holdingAddress)
-                                                let holderPrice = holderInfo.data.displayPrice / 10 ** 18
-
-
-                                                let obj = {}
-                                                obj.username = holding.twitterUsername
-                                                obj.balance = holding.balance
-                                                obj.price = holderPrice
-
-                                                if (!holdingTable.includes(obj)) {
-
-                                                    totalShares += parseFloat(holding.balance)
-                                                    totalSharesValue += parseFloat(holderPrice * holding.balance)
-
-                                                    holdingTable.push(obj)
-                                                }
-                                            }
-
-                                            let itemsNumber = 50
-                                            let callPage = ""
-
-                                            let continuation = userHoldingCall.data.nextPageStart
-
-                                            while (continuation != null) {
+                                                // Prix de l'ETH
+                                                const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                                                const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
 
 
 
 
-                                                callPage = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token-holdings?pageStart=" + itemsNumber)
+                                                const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
 
-                                                continuation = callPage.data.nextPageStart
+                                                holdingCount = userInfoCall.data.holdingCount
+                                                totalFeesCollected = userInfoCall.data.lifetimeFeesCollectedInWei / 10 ** 18
+                                                twitterUsername = userInfoCall.data.twitterUsername
+                                                twitterName = userInfoCall.data.twitterName
+                                                twitterPfp = userInfoCall.data.twitterPfpUrl
 
-                                                if (continuation != null) {
 
-                                                    for (const holding of callPage.data.users) {
+                                                let userHoldingCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token-holdings")
+
+
+
+                                                if (userHoldingCall.data.nextPageStart != 50) {
+
+                                                    for (const holding of userHoldingCall.data.users) {
 
                                                         let holdingAddress = holding.address.toLowerCase()
 
@@ -611,93 +594,211 @@ module.exports = {
                                                         }
                                                     }
 
-
-                                                    itemsNumber += 50
-                                                    console.log(itemsNumber)
                                                 } else {
+
+                                                    for (const holding of userHoldingCall.data.users) {
+
+
+                                                        let holdingAddress = holding.address.toLowerCase()
+
+                                                        const holderInfo = await axios.get("https://prod-api.kosetto.com/users/" + holdingAddress)
+                                                        let holderPrice = holderInfo.data.displayPrice / 10 ** 18
+
+
+                                                        let obj = {}
+                                                        obj.username = holding.twitterUsername
+                                                        obj.balance = holding.balance
+                                                        obj.price = holderPrice
+
+                                                        if (!holdingTable.includes(obj)) {
+
+                                                            totalShares += parseFloat(holding.balance)
+                                                            totalSharesValue += parseFloat(holderPrice * holding.balance)
+
+                                                            holdingTable.push(obj)
+                                                        }
+                                                    }
+
+                                                    let itemsNumber = 50
+                                                    let callPage = ""
+
+                                                    let continuation = userHoldingCall.data.nextPageStart
+
+                                                    while (continuation != null) {
+
+
+
+
+                                                        callPage = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token-holdings?pageStart=" + itemsNumber)
+
+                                                        continuation = callPage.data.nextPageStart
+
+                                                        if (continuation != null) {
+
+                                                            for (const holding of callPage.data.users) {
+
+                                                                let holdingAddress = holding.address.toLowerCase()
+
+                                                                const holderInfo = await axios.get("https://prod-api.kosetto.com/users/" + holdingAddress)
+                                                                let holderPrice = holderInfo.data.displayPrice / 10 ** 18
+
+
+                                                                let obj = {}
+                                                                obj.username = holding.twitterUsername
+                                                                obj.balance = holding.balance
+                                                                obj.price = holderPrice
+
+                                                                if (!holdingTable.includes(obj)) {
+
+                                                                    totalShares += parseFloat(holding.balance)
+                                                                    totalSharesValue += parseFloat(holderPrice * holding.balance)
+
+                                                                    holdingTable.push(obj)
+                                                                }
+                                                            }
+
+
+                                                            itemsNumber += 50
+
+                                                        } else {
+                                                            break
+                                                        }
+                                                    }
+                                                }
+
+
+                                                // Tri du tableau JSON en fonction de la valeur "floorAsk * tokenCount" de chaque objet "collection" en ordre décroissant
+                                                let holdingTableSorted = holdingTable.sort((a, b) => b.balance * b.price - a.balance * a.price)
+
+
+
+
+                                                let index = 0
+
+                                                // On construit la table d'holders
+                                                for (const holding of holdingTableSorted) {
+
+                                                    index++
+
+                                                    if (index <= 12) {
+
+                                                        let holderName = holding.username
+                                                        let holderBalance = holding.balance
+                                                        let price = parseFloat(holding.price).toFixed(3)
+                                                        let holderValue = parseFloat(holderBalance * holding.price).toFixed(3)
+                                                        let holderValueUsd = parseFloat((holderBalance * price) * ethUsdPrice).toFixed(0)
+
+
+                                                        let lignMaxSize = 55
+                                                        let leftPartNfts = "`" + reduceText(holderName, 30) + " ∙ " + holderBalance + " Owned ∙ " + price + "Ξ"
+                                                        let rightPartNfts = holderValue + "Ξ (" + holderValueUsd + "$)`\n"
+                                                        let leftPartNFTsLenght = leftPartNfts.length
+                                                        let rightPartNftsLenght = rightPartNfts.length
+                                                        let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
+                                                        let spaceLenght = ""
+                                                        for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+
+
+                                                        holdingFormatted += leftPartNfts + spaceLenght + rightPartNfts
+
+
+
+
+
+                                                    } else {
+                                                        break
+                                                    }
+                                                }
+
+
+                                                totalFTValue = totalSharesValue + totalFeesCollected
+
+                                                if (holdingFormatted == "") { holdingFormatted = "```No shares found for this user.                         ```" }
+
+
+
+                                                const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle(twitterName + "'s portfolio")
+                                                    .setDescription(">>> Displaying the friend.tech portfolio metrics of `" + twitterName + "`.")
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setThumbnail(twitterPfp)
+                                                    .setTimestamp()
+                                                    .addFields(
+                                                        { name: " ", value: " ", inline: false },
+                                                        { name: "Total Value", value: "`" + parseFloat(totalFTValue).toFixed(3) + "Ξ`", inline: true },
+                                                        { name: "Shares Value", value: "`" + parseFloat(totalSharesValue).toFixed(3) + "Ξ`", inline: true },
+                                                        { name: "Total Fees Collected", value: "`" + parseFloat(totalFeesCollected).toFixed(5) + "Ξ`", inline: true },
+                                                        { name: "Unique Shares Count", value: "`" + holdingCount + "`", inline: true },
+                                                        { name: "Total Shares Count", value: "`" + totalShares + "`", inline: true },
+                                                        { name: "Shares:", value: holdingFormatted, inline: false },
+                                                        { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Dune Analytics](https://dune.com/whale_hunter/friend-tech-ultimate-analytics)' + " ∙ " + '[Holding](https://www.friend.tech/trades/' + userAddress + ")", inline: false }
+
+                                                    )
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                                await interaction.editReply({ embeds: [userFTEmbed] });
+
+
+                                            } catch (error) {
+
+                                                console.log(error)
+
+                                                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle("Friend Tech")
+                                                    .setDescription("An error occured while gathering your data. Please try again or contact a team member")
+                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                                await interaction.editReply({ embeds: [errorNotEthereum] });
+
+
+                                            }
+
+
+
+
+                                        } else {
+
+                                            let usernameSuggestionFormatted = ""
+
+                                            let index = 0
+                                            for (const suggestion of findUser.data.users) {
+                                                index++
+                                                if (index <= 5) {
+
+                                                    usernameSuggestionFormatted += "∙ " + suggestion.twitterUsername + "\n"
+                                                } else {
+
                                                     break
                                                 }
+
                                             }
+
+
+                                            const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle("Friend Tech")
+                                                .setDescription("The exact twitter username you entered isn't registered in Friend.tech.\n\n**Maybe you are looking for:** \n\n" + usernameSuggestionFormatted)
+                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                            await interaction.editReply({ embeds: [errorNotEthereum] });
+
+
+
+
+
                                         }
 
+                                    } else {
 
-                                        // Tri du tableau JSON en fonction de la valeur "floorAsk * tokenCount" de chaque objet "collection" en ordre décroissant
-                                        let holdingTableSorted = holdingTable.sort((a, b) => b.balance * b.price - a.balance * a.price)
-
-                                        console.log(holdingTableSorted)
-
-
-                                        let index = 0
-
-                                        // On construit la table d'holders
-                                        for (const holding of holdingTableSorted) {
-
-                                            index++
-
-                                            if (index <= 12) {
-
-                                                let holderName = holding.username
-                                                let holderBalance = holding.balance
-                                                let price = parseFloat(holding.price).toFixed(3)
-                                                let holderValue = parseFloat(holderBalance * holding.price).toFixed(3)
-                                                let holderValueUsd = parseFloat((holderBalance * price) * ethUsdPrice).toFixed(0)
-
-
-                                                let lignMaxSize = 55
-                                                let leftPartNfts = "`" + reduceText(holderName, 30) + " ∙ " + holderBalance + " Owned ∙ " + price + "Ξ"
-                                                let rightPartNfts = holderValue + "Ξ (" + holderValueUsd + "$)`\n"
-                                                let leftPartNFTsLenght = leftPartNfts.length
-                                                let rightPartNftsLenght = rightPartNfts.length
-                                                let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
-                                                let spaceLenght = ""
-                                                for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
-
-
-                                                holdingFormatted += leftPartNfts + spaceLenght + rightPartNfts
-
-
-
-
-
-                                            } else {
-                                                break
-                                            }
-                                        }
-
-
-                                        totalFTValue = totalSharesValue + totalFeesCollected
-
-                                        if (holdingFormatted == "") { holdingFormatted = "```No shares found for this user.                         ```" }
-
-                                        console.log(holdingFormatted)
-
-                                        const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
-                                            .setTitle(twitterName + "'s portfolio")
-                                            .setDescription(">>> Displaying the friend.tech portfolio metrics of `" + twitterName + "`.")
-                                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                                            .setThumbnail(twitterPfp)
-                                            .setTimestamp()
-                                            .addFields(
-                                                { name: " ", value: " ", inline: false },
-                                                { name: "Total Value", value: "`" + parseFloat(totalFTValue).toFixed(3) + "Ξ`", inline: true },
-                                                { name: "Shares Value", value: "`" + parseFloat(totalSharesValue).toFixed(3) + "Ξ`", inline: true },
-                                                { name: "Total Fees Collected", value: "`" + parseFloat(totalFeesCollected).toFixed(5) + "Ξ`", inline: true },
-                                                { name: "Unique Shares Count", value: "`" + holdingCount + "`", inline: true },
-                                                { name: "Total Shares Count", value: "`" + totalShares + "`", inline: true },
-                                                { name: "Shares:", value: holdingFormatted, inline: false },
-                                                { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Dune Analytics](https://dune.com/whale_hunter/friend-tech-ultimate-analytics)' + " ∙ " + '[Holding](https://www.friend.tech/trades/' + userAddress + ")", inline: false }
-
-                                            )
-                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                        await interaction.editReply({ embeds: [userFTEmbed] });
-
-
-                                    } catch (error) {
 
                                         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                             .setTitle("Friend Tech")
-                                            .setDescription("The wallet address you entered isn't registered on Friend Tech. Please try again using a valid wallet.")
+                                            .setDescription("The twitter username you entered isn't registered in Friend.tech. Please try again with a valid username.")
                                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                             .setAuthor({ name: authorName, iconURL: userAvatar })
                                             .setTimestamp()
@@ -706,62 +807,690 @@ module.exports = {
                                         await interaction.editReply({ embeds: [errorNotEthereum] });
 
 
+
                                     }
 
 
 
-                                } else {
+                                } else if (interaction.options.getSubcommand() === 'trades') {
 
 
-                                    const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                                        .setTitle("Friend Tech")
-                                        .setDescription("The wallet address you entered isn't a valid Ethereum (Base) wallet address. Please try again using a valid wallet.")
-                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                    let userAddress = ""
+
+                                    let findUser = []
+                                    let isMatch = true
+
+                                    const usernameProvided = interaction.options.getString("twitter").toLowerCase()
+
+                                    const givenUsername = removeAtSymbol(usernameProvided)
+
+
+                                    try {
+                                        findUser = await axios.get('https://prod-api.kosetto.com/search/users?username=' + givenUsername, { headers: friendtechHeaders })
+
+                                    } catch (error) {
+
+                                        isMatch = false
+                                    }
+
+
+                                    if (isMatch == true) {
+
+
+                                        const user = findUser.data.users.find((user) => user.twitterUsername.toLowerCase() == givenUsername.toLowerCase());
+
+
+                                        if (user) {
+
+
+                                            userAddress = user.address
+
+
+                                            try {
+
+
+
+
+
+
+                                                let shareTradesFormatted1 = ""
+                                                let shareTradesFormatted2 = ""
+                                                let shareTradesFormatted3 = ""
+
+                                                let userTradesFormatted1 = ""
+                                                let userTradesFormatted2 = ""
+                                                let userTradesFormatted3 = ""
+
+                                                let twitterName = ""
+                                                let twitterUsername = ""
+                                                let twitterPfp = ""
+
+
+
+                                                const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
+
+
+                                                twitterUsername = userInfoCall.data.twitterUsername
+                                                twitterName = userInfoCall.data.twitterName
+                                                twitterPfp = userInfoCall.data.twitterPfpUrl
+
+
+
+
+                                                const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle(twitterName)
+                                                    .setDescription(">>> Displaying the friend.tech metrics of `" + twitterName + "`.")
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setThumbnail(twitterPfp)
+                                                    .setTimestamp()
+                                                    .addFields(
+                                                        { name: "Name", value: "`" + twitterName + "`", inline: true },
+                                                        { name: "Username", value: "`" + twitterUsername + "`", inline: true },
+                                                        { name: " ", value: " ", inline: true },
+
+                                                    )
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+
+
+
+
+                                                // On commence les deux tableaux
+                                                const shareTrades = await axios.get('https://prod-api.kosetto.com/users/' + userAddress + "/token/trade-activity", { headers: friendtechHeaders })
+                                                const shareTradeSingle = shareTrades.data.users
+                                                const shareTradeLength = shareTradeSingle.length
+
+
+
+
+                                                let index = 0
+
+                                                for (const trade of shareTradeSingle) {
+
+                                                    index++
+
+                                                    if (index <= 15) {
+
+                                                        let name = trade.twitterName
+                                                        let username = trade.twitterUsername
+                                                        let isBuy = trade.isBuy
+                                                        let amount = trade.shareAmount
+                                                        let time = Math.floor(trade.createdAt / 1000)
+                                                        let price = trade.ethAmount / 10 ** 18
+
+
+                                                        let action1 = "🟢"
+                                                        let action2 = "bought"
+
+                                                        if (isBuy == false) { action1 = "🔴"; action2 = "sold" }
+
+
+
+                                                        if (index <= 5) {
+
+                                                            shareTradesFormatted1 += "`" + action1 + "` " + "[" + reduceText(name, 18) + "](https://twitter.com/" + username + ") `" + action2 + " " + amount + " for " + parseFloat(price).toFixed(3) + "Ξ` ∙ <t:" + time + ":R>\n"
+
+                                                            if (index == 5 || index == shareTradeLength) {
+
+                                                                userFTEmbed.addFields(
+                                                                    { name: 'Share Trades:', value: shareTradesFormatted1, inline: false },
+
+                                                                );
+
+                                                            }
+
+
+                                                        } else if (index <= 10) {
+
+                                                            shareTradesFormatted2 += "`" + action1 + "` " + "[" + reduceText(name, 18) + "](https://twitter.com/" + username + ") `" + action2 + " " + amount + " for " + parseFloat(price).toFixed(3) + "Ξ` ∙ <t:" + time + ":R>\n"
+
+                                                            if (index == 10 || index == shareTradeLength) {
+
+                                                                userFTEmbed.addFields(
+                                                                    { name: ' ', value: shareTradesFormatted2, inline: false },
+
+                                                                );
+
+                                                            }
+
+
+                                                        } else if (index <= 15) {
+
+                                                            shareTradesFormatted3 += "`" + action1 + "` " + "[" + reduceText(name, 18) + "](https://twitter.com/" + username + ") `" + action2 + " " + amount + " for " + parseFloat(price).toFixed(3) + "Ξ` ∙ <t:" + time + ":R>\n"
+
+
+                                                            if (index == 15 || index == shareTradeLength) {
+
+                                                                userFTEmbed.addFields(
+                                                                    { name: ' ', value: shareTradesFormatted3, inline: false },
+
+                                                                );
+
+                                                            }
+
+                                                        } else {
+                                                            break
+                                                        }
+
+
+
+
+                                                    }
+
+
+
+                                                }
+
+
+
+                                                userFTEmbed.addFields(
+                                                    { name: ' ', value: " ", inline: false },
+
+                                                );
+
+
+                                                const userTrades = await axios.get(" https://prod-api.kosetto.com/users/" + userAddress + "/trade-activity")
+                                                const userTradeSingle = userTrades.data.users
+                                                const userTradeLength = userTradeSingle.length
+
+                                                let index2 = 0
+
+                                                for (const trade of userTradeSingle) {
+
+                                                    index2++
+
+                                                    if (index2 <= 15) {
+
+                                                        let name = trade.twitterName
+                                                        let username = trade.twitterUsername
+                                                        let isBuy = trade.isBuy
+                                                        let amount = trade.shareAmount
+                                                        let time = Math.floor(trade.createdAt / 1000)
+                                                        let price = trade.ethAmount / 10 ** 18
+
+
+                                                        let action = "🟢 Bought "
+                                                        if (isBuy == false) { action = "🔴 Sold " }
+
+
+
+                                                        if (index2 <= 5) {
+
+                                                            userTradesFormatted1 += "`" + action + amount + "` [" + reduceText(name, 18) + "](https://twitter.com/" + username + ") `for " + parseFloat(price).toFixed(3) + "Ξ` ∙ <t:" + time + ":R>\n"
+
+                                                            if (index2 == 5 || index2 == userTradeLength) {
+
+                                                                userFTEmbed.addFields(
+                                                                    { name: 'User Activity:', value: userTradesFormatted1, inline: false },
+
+                                                                );
+
+                                                            }
+
+                                                        } else if (index2 <= 10) {
+
+                                                            userTradesFormatted2 += "`" + action + amount + "` [" + reduceText(name, 18) + "](https://twitter.com/" + username + ") `for " + parseFloat(price).toFixed(3) + "Ξ` ∙ <t:" + time + ":R>\n"
+
+
+                                                            if (index2 == 10 || index2 == userTradeLength) {
+
+                                                                userFTEmbed.addFields(
+                                                                    { name: ' ', value: userTradesFormatted2, inline: false },
+
+                                                                );
+
+                                                            }
+
+                                                        } else if (index2 <= 15) {
+
+                                                            userTradesFormatted3 += "`" + action + amount + "` [" + reduceText(name, 18) + "](https://twitter.com/" + username + ") `for " + parseFloat(price).toFixed(3) + "Ξ` ∙ <t:" + time + ":R>\n"
+
+                                                            if (index2 == 15 || index2 == userTradeLength) {
+
+                                                                userFTEmbed.addFields(
+                                                                    { name: ' ', value: userTradesFormatted3, inline: false },
+
+                                                                );
+
+                                                            }
+
+
+                                                        } else {
+                                                            break
+                                                        }
+
+
+
+
+                                                    }
+
+
+
+                                                }
+
+
+
+
+                                                userFTEmbed.addFields(
+                                                    { name: ' ', value: " ", inline: false },
+
+                                                );
+
+
+                                                if (shareTradesFormatted1 == "") {
+                                                    shareTradesFormatted1 = "```No recent trade found for this share                    ```"
+
+                                                    userFTEmbed.addFields(
+                                                        { name: 'Share Trades:', value: shareTradesFormatted1, inline: false },
+
+                                                    );
+
+                                                }
+
+
+
+                                                if (userTradesFormatted1 == "") {
+                                                    userTradesFormatted1 = "```No recent activity found for this user                  ```"
+
+                                                    userFTEmbed.addFields(
+                                                        { name: 'User Activity:', value: userTradesFormatted1, inline: false },
+
+                                                    );
+
+                                                }
+
+
+
+
+                                                userFTEmbed.addFields(
+                                                    { name: ' ', value: " ", inline: false },
+                                                    { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Dune Analytics](https://dune.com/whale_hunter/friend-tech-ultimate-analytics)' + " ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ")", inline: false }
+
+                                                );
+
+
+
+
+
+
+                                                await interaction.editReply({ embeds: [userFTEmbed] });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                            } catch (error) {
+
+                                                console.log(error)
+
+                                                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle("Friend Tech")
+                                                    .setDescription("An error occured while gathering your data. Please try again or contact a team member")
+                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                                await interaction.editReply({ embeds: [errorNotEthereum] });
+
+
+                                            }
+
+
+
+
+                                        } else {
+
+                                            let usernameSuggestionFormatted = ""
+
+                                            let index = 0
+                                            for (const suggestion of findUser.data.users) {
+                                                index++
+                                                if (index <= 5) {
+
+                                                    usernameSuggestionFormatted += "∙ " + suggestion.twitterUsername + "\n"
+                                                } else {
+
+                                                    break
+                                                }
+
+                                            }
+
+
+                                            const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle("Friend Tech")
+                                                .setDescription("The exact twitter username you entered isn't registered in Friend.tech.\n\n**Maybe you are looking for:** \n\n" + usernameSuggestionFormatted)
+                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                            await interaction.editReply({ embeds: [errorNotEthereum] });
+
+
+
+
+
+                                        }
+
+                                    } else {
+
+
+                                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle("Friend Tech")
+                                            .setDescription("The twitter username you entered isn't registered in Friend.tech. Please try again with a valid username.")
+                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                        await interaction.editReply({ embeds: [errorNotEthereum] });
+
+
+
+                                    }
+
+
+                                } else if (interaction.options.getSubcommand() === 'stats') {
+
+
+
+
+                                    let totalFTValue = 0
+                                    let totalSharesValue = 0
+                                    let totalFeesCollected = 0
+
+                                    let holdingCount = 0
+                                    let totalShares = 0
+
+                                    let holdingTable = []
+                                    let holdingFormatted = ""
+
+                                    let twitterUsername = ""
+                                    let twitterName = ""
+                                    let twitterPfp = ""
+
+
+                                    let findUser = []
+                                    let isMatch = true
+                                    let isExactMatch = true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                    let trendingFormatted = ""
+                                    let topShareFormatted = ""
+                                    let lastMessengersFormatted = ""
+                                    let recentTradesFormatted = ""
+
+
+
+                                    const trendingCall = await axios.get("https://prod-api.kosetto.com/lists/trending")
+                                    const trendingTable = trendingCall.data.users
+
+
+                                    let indexTrending = 0
+                                    for (const trending of trendingTable) {
+
+                                        indexTrending++
+
+                                        if (indexTrending <= 8) {
+
+                                            const name = trending.twitterName
+                                            const username = trending.twitterUsername
+                                            const price = trending.displayPrice / 10 ** 18
+                                            const volume = trending.volume / 10 ** 18
+
+
+                                            let lignMaxSize = 60
+                                            let leftPartNfts = "`" + reduceText(name, 20)
+                                            let rightPartNfts = "Price: " + parseFloat(price).toFixed(3) + "Ξ ∙ Vol: " + parseFloat(volume).toFixed(1) + "`"
+                                            let leftPartNFTsLenght = leftPartNfts.length
+                                            let rightPartNftsLenght = rightPartNfts.length
+                                            let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
+                                            let spaceLenght = ""
+                                            for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+
+
+                                            trendingFormatted += leftPartNfts + spaceLenght + rightPartNfts + " [<:TWs:1153688442568450148>](https://twitter.com/" + username + ")\n"
+                                        } else {
+                                            break
+                                        }
+                                    }
+
+
+
+
+                                    const topSharesCall = await axios.get("https://prod-api.kosetto.com/lists/top-by-price")
+                                    const topSharesTable = topSharesCall.data.users
+
+
+                                    let indexTop = 0
+
+                                    for (const top of topSharesTable) {
+
+                                        indexTop++
+
+                                        if (indexTop <= 8) {
+
+                                            const name = top.twitterName
+                                            const username = top.twitterUsername
+                                            const price = top.displayPrice / 10 ** 18
+                                            const supply = top.shareSupply
+                                            const time = Math.floor(top.lastOnline / 1000)
+
+
+
+
+                                            let lignMaxSize = 60
+                                            let leftPartNfts = "`" + reduceText(name, 20)
+                                            let rightPartNfts = "Supply: " + parseFloat(supply).toFixed(0) + " ∙ Price: " + parseFloat(price).toFixed(3) + "Ξ`"
+                                            let leftPartNFTsLenght = leftPartNfts.length
+                                            let rightPartNftsLenght = rightPartNfts.length
+                                            let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
+                                            let spaceLenght = ""
+                                            for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+
+
+                                            topShareFormatted += leftPartNfts + spaceLenght + rightPartNfts + " [<:TWs:1153688442568450148>](https://twitter.com/" + username + ")\n"
+
+                                        } else {
+                                            break
+                                        }
+
+                                    }
+
+
+
+
+
+                                    const recentMessagersCall = await axios.get("https://prod-api.kosetto.com/lists/recent-messagers")
+                                    const recentMessagersTable = recentMessagersCall.data.users
+
+                                    let indexRecent = 0
+                                    for (const recent of recentMessagersTable) {
+
+                                        indexRecent++
+
+                                        if (indexRecent <= 8) {
+
+                                            const name = recent.twitterName
+                                            const username = recent.twitterUsername
+                                            const time = getTimeAgo(Math.floor(recent.lastMessageTimestamp / 1000))
+                                            const price = recent.ethDisplayPrice / 10 ** 18
+
+
+
+
+                                            let lignMaxSize = 60
+                                            let leftPartNfts = "`" + reduceText(name, 20)
+                                            let rightPartNfts = "Price: " + parseFloat(price).toFixed(3) + "Ξ ∙ " + time + "`"
+                                            let leftPartNFTsLenght = leftPartNfts.length
+                                            let rightPartNftsLenght = rightPartNfts.length
+                                            let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
+                                            let spaceLenght = ""
+                                            for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+
+
+                                            lastMessengersFormatted += leftPartNfts + spaceLenght + rightPartNfts + " [<:TWs:1153688442568450148>](https://twitter.com/" + username + ")\n"
+
+
+                                        } else {
+                                            break
+                                        }
+                                    }
+
+
+                                    const lastTrades = await axios.get("https://prod-api.kosetto.com/global-activity", { headers: friendtechHeaders })
+                                    const lastTradesTable = lastTrades.data.events
+
+
+                                    let indexTrades = 0
+
+                                    for (const trades of lastTradesTable) {
+
+                                        indexTrades++
+
+                                        if (indexTrades <= 6) {
+
+                                            const traderName = trades.trader.name
+                                            const traderUsername = trades.trader.username
+
+                                            const shareName = trades.subject.name
+                                            const shareUsername = trades.subject.username
+
+                                            const price = trades.ethAmount / 10 ** 18
+                                            const amount = trades.shareAmount
+                                            const isBuy = trades.isBuy
+                                            const time = Math.floor(trades.createdAt / 1000)
+
+
+                                            let action1 = "🟢"
+                                            let action2 = "bought"
+
+                                            if (isBuy == false) { action1 = "🔴"; action2 = "sold" }
+
+
+
+                                            recentTradesFormatted += "`" + action1 + "` " + "[" + reduceText(traderName, 18) + "](https://twitter.com/" + traderUsername + ") `" + action2 + " " + amount + " of` " + "[" + reduceText(shareName, 18) + "](https://twitter.com/" + shareUsername + ")" + " `for " + parseFloat(price).toFixed(3) + "Ξ` ∙ <t:" + time + ":R>\n"
+
+                                        } else {
+                                            break
+                                        }
+
+                                    }
+
+
+
+
+
+
+
+
+
+                                    const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle("Friend.tech market")
+                                        .setDescription(">>> Displaying various friend.tech metrics.")
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        // .setImage("https://cdn.discordapp.com/attachments/1104225853023461388/1153666519952269392/image.png")
                                         .setTimestamp()
+                                        .addFields(
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Trending Shares:", value: trendingFormatted, inline: true },
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Top Shares:", value: topShareFormatted, inline: true },
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Last Messengers:", value: lastMessengersFormatted, inline: true },
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Recent Trades", value: recentTradesFormatted, inline: true },
+                                            { name: "Links", value: '[Friendtech](https://www.friend.tech) ∙ ' + '[Twitter](https://twitter.com/friendtech) ∙ ' + '[Trending](https://www.friend.tech/search) ∙ ' + '[Dune Analytics](https://dune.com/whale_hunter/friend-tech-ultimate-analytics)', inline: false }
+
+                                        )
                                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                    await interaction.editReply({ embeds: [errorNotEthereum] });
+                                    await interaction.editReply({ embeds: [userFTEmbed] });
+
+
+
+
+
+
 
 
 
                                 }
+                            } else if (!member.roles.cache.has(communityMemberRoleId)) {
 
 
+
+
+
+                                const notMember = new EmbedBuilder().setColor("#060A8F")
+                                    .setTitle(`Bot Access`)
+                                    .setDescription(">>> Showing access data")
+                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    .addFields(
+                                        { name: " ", value: " ", inline: false },
+                                        { name: "Status", value: "`Access Denied ❌`", inline: true },
+                                        { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
+                                        { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
+                                    )
+                                    .setTimestamp()
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                await interaction.editReply({ embeds: [notMember] });
 
                             }
 
+                        } else {
 
+                            if (accessTier == "") {
+                                accessTier = "Free Tier"
+                            }
 
-                        } else if (!member.roles.cache.has(communityMemberRoleId)) {
-
-
-
-
-
-                            const notMember = new EmbedBuilder().setColor("#060A8F")
+                            const botOff = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle(`Bot Access`)
-                                .setDescription(">>> Showing access data")
+                                .setDescription(">>> Showing the community's bot access")
                                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                 .addFields(
-                                    { name: " ", value: " ", inline: false },
-                                    { name: "Status", value: "`Access Denied ❌`", inline: true },
-                                    { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
-                                    { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
+                                    { name: 'Access Status', value: "`Denied 🔴`", inline: false },
+                                    { name: 'Access Tier', value: "`" + accessTier.toUpperCase() + "`", inline: true },
+                                    { name: 'Required Tier', value: "`B-TIER`", inline: true },
+                                    { name: "Problem Detected", value: "Your access to this command has been denied. You need a higher access tier to use this feature. You can consult the available commands in this community by using `/access`.", inline: false },
                                 )
                                 .setTimestamp()
                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                            await interaction.editReply({ embeds: [notMember] });
-
+                            await interaction.editReply({ embeds: [botOff] });
                         }
+
 
                     } else {
 
-                        if (accessTier == "") {
-                            accessTier = "Free Tier"
-                        }
 
                         const botOff = new EmbedBuilder().setColor("#060A8F")
                             .setTitle(`Bot Access`)
@@ -769,152 +1498,131 @@ module.exports = {
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .addFields(
-                                { name: 'Access Status', value: "`Denied 🔴`", inline: false },
-                                { name: 'Access Tier', value: "`" + accessTier.toUpperCase() + "`", inline: true },
-                                { name: 'Required Tier', value: "`B-TIER`", inline: true },
-                                { name: "Problem Detected", value: "Your access to this command has been denied. You need a higher access tier to use this feature. You can consult the available commands in this community by using `/access`.", inline: false },
+                                { name: 'Access Status', value: "`Denied 🔴`", inline: true },
+                                { name: 'Commands', value: "`Not available`", inline: true },
+                                { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
                             )
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
                         await interaction.editReply({ embeds: [botOff] });
+
                     }
 
 
                 } else {
 
 
+                    console.log("// Step 2 : Unauthorized - Executed ✅")
+
+
                     const botOff = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle(`Bot Access`)
-                        .setDescription(">>> Showing the community's bot access")
+                        .setTitle(`Bot status`)
+                        .setDescription(">>> Showing the bot status")
                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                         .setAuthor({ name: authorName, iconURL: userAvatar })
                         .addFields(
-                            { name: 'Access Status', value: "`Denied 🔴`", inline: true },
+                            { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
                             { name: 'Commands', value: "`Not available`", inline: true },
-                            { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
+                            { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
                         )
                         .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
                     await interaction.editReply({ embeds: [botOff] });
 
+                    console.log("// Step 3 : Answer - Executed ✅")
+
+
                 }
 
-
-            } else {
-
-
-                console.log("// Step 2 : Unauthorized - Executed ✅")
+            } catch (error) {
 
 
-                const botOff = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle(`Bot status`)
-                    .setDescription(">>> Showing the bot status")
+                console.log("// Error - sent in report ❌")
+
+                //On envoi une notif
+                let botId = interaction.applicationId
+                const botAdmins = await adminsql.findOne({ where: { botId: botId } })
+                const mainServerId = botAdmins.dataValues.mainServerId
+                const logChannelId = botAdmins.dataValues.logChannelId
+                const guild = interaction.client.guilds.cache.get(mainServerId);
+                const channel = guild.channels.cache.get(logChannelId);
+
+
+                const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
+                let adminRoleId = adminAccessInfos.dataValues.adminRoleId
+                let serverName = adminAccessInfos.dataValues.serverName
+                const userRoleList = interaction.member._roles
+                let userHighestRole = "Member"
+                if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
+                let reportCommand = "/friendtech"
+
+                const timeStamp = Date.now();
+                const date = new Date(timeStamp);
+                const dateLisible = date.toLocaleString();
+                const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
+                const formattedDate = date1.format('Do [of] MMMM YYYY');
+
+
+
+                //On enregistre le call
+                await reportsql.create({
+                    botId: botId,
+                    authorId: "Bot",
+                    serverName: serverName,
+                    authorRole: userHighestRole,
+                    serverId: serverId,
+                    date: formattedDate,
+                    reportType: "Bug",
+                    reportCommand: reportCommand,
+                    reportDescription: "```" + error.stack + "```",
+                    reportPriority: "5",
+                    reportState: "Not treated",
+                })
+
+
+
+                console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
+
+                const reduceText = require("../../../functions/reducetext")
+                const roleTag = "1121510423687090186"
+
+
+                const updateEmbed = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("New Report")
+                    .setDescription(">>> A new report has just been sent.")
                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                    .addFields(
-                        { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
-                        { name: 'Commands', value: "`Not available`", inline: true },
-                        { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
-                    )
+                    .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
                     .setTimestamp()
+                    .addFields(
+                        { name: " ", value: " ", inline: false },
+                        { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
+                    )
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                await interaction.editReply({ embeds: [botOff] });
 
-                console.log("// Step 3 : Answer - Executed ✅")
+                await channel.send("<@&" + roleTag + ">");
+
+                await channel.send({ embeds: [updateEmbed] });
+
+
+
+
+                const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("An error occured")
+                    .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers Analytics', iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png' })
+
+
+                await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
 
 
             }
-
-            // } catch (error) {
-
-
-            //     console.log("// Error - sent in report ❌")
-
-            //     //On envoi une notif
-            //     let botId = interaction.applicationId
-            //     const botAdmins = await adminsql.findOne({ where: { botId: botId } })
-            //     const mainServerId = botAdmins.dataValues.mainServerId
-            //     const logChannelId = botAdmins.dataValues.logChannelId
-            //     const guild = interaction.client.guilds.cache.get(mainServerId);
-            //     const channel = guild.channels.cache.get(logChannelId);
-
-
-            //     const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
-            //     let adminRoleId = adminAccessInfos.dataValues.adminRoleId
-            //     let serverName = adminAccessInfos.dataValues.serverName
-            //     const userRoleList = interaction.member._roles
-            //     let userHighestRole = "Member"
-            //     if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-            //     let reportCommand = "/friendtech"
-
-            //     const timeStamp = Date.now();
-            //     const date = new Date(timeStamp);
-            //     const dateLisible = date.toLocaleString();
-            //     const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
-            //     const formattedDate = date1.format('Do [of] MMMM YYYY');
-
-
-
-            //     //On enregistre le call
-            //     await reportsql.create({
-            //         botId: botId,
-            //         authorId: "Bot",
-            //         serverName: serverName,
-            //         authorRole: userHighestRole,
-            //         serverId: serverId,
-            //         date: formattedDate,
-            //         reportType: "Bug",
-            //         reportCommand: reportCommand,
-            //         reportDescription: "```" + error.stack + "```",
-            //         reportPriority: "5",
-            //         reportState: "Not treated",
-            //     })
-
-
-
-            //     console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
-
-            //     const reduceText = require("../../../functions/reducetext")
-            //     const roleTag = "1121510423687090186"
-
-
-            //     const updateEmbed = new EmbedBuilder().setColor("#060A8F")
-            //         .setTitle("New Report")
-            //         .setDescription(">>> A new report has just been sent.")
-            //         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-            //         .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
-            //         .setTimestamp()
-            //         .addFields(
-            //             { name: " ", value: " ", inline: false },
-            //             { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
-            //             { name: " ", value: " ", inline: false },
-            //             { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
-            //         )
-            //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-
-            //     await channel.send("<@&" + roleTag + ">");
-
-            //     await channel.send({ embeds: [updateEmbed] });
-
-
-
-
-            //     const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-            //         .setTitle("An error occured")
-            //         .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
-            //         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-            //         .setTimestamp()
-            //         .setFooter({ text: 'Powered by Rolls Chasers Analytics', iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png' })
-
-
-            //     await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
-
-
-            // }
 
         } else if (interaction.guildId == null) {
 

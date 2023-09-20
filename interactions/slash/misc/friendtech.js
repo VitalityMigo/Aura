@@ -47,6 +47,14 @@ function removeAtSymbol(word) {
 
 
 
+const buttonsRow = new ActionRowBuilder()
+.addComponents(
+    new ButtonBuilder()
+        .setCustomId('friendtechprofitvisual-button')
+        .setLabel('visual')
+        .setStyle(2)
+);
+
 
 
 
@@ -2307,11 +2315,53 @@ module.exports = {
                                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
                                                 /// TEMPORAIRE
-                                                await interaction.editReply({ embeds: [getBlurOneWallet] })
+                                                await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRow] })
 
 
 
 
+                                                await interactionData.destroy({ where: { authorId: authorId, commandName: "friendtech-profit", serverId: serverId } })
+
+                                                await interactionData.create({
+
+                                                    authorId: authorId,
+                                                    authorName: authorName,
+                                                    serverId: serverId,
+                                                    walletAddress: "N/A",
+                                                    commandName: "friendtech-profit",
+                                                    interactionId: interaction.id,
+                                                    walletName: "N/A",
+                                                    selecedTimestamp: "N/A",
+                                                    embed1: "N/A",
+                                                    embed2: "N/A",
+                                                    embed3: "N/A",
+                                                    pageIndex: "N/A",
+                                                    actualPage: "N/A",
+                                                    walletCategory: "eth",
+                                                    selectedCollection: twUsername,
+                                                    collectionSlug: "N/A",
+                                                    collectionBanner: "N/A",
+                                                    avgDeriskPrice: "N/A",
+                                                    floorPrice: "N/A",
+                                                    lowerMarketlace: "N/A",
+                                                    collectionName: twName,
+                                                    collectionTwitter: "N/A",
+                                                    collectionWebsite: "N/A",
+                                                    buyCount: buyCount.toString(),
+                                                    mintCount: tradeCount.toString(),
+                                                    soldCount: soldCount.toString(),
+                                                    remaining: heldCount.toString(),
+                                                    avgBuy: parseFloat(avgBuy).toFixed(3),
+                                                    avgSold: parseFloat(avgSold).toFixed(3),
+                                                    realisedProfit: parseFloat(realizedProfit).toFixed(3),
+                                                    potentialProfit: parseFloat(potentialProfit).toFixed(3),
+                                                    roi: potentialRoi.toString(),
+                                                    visualTitle: "N/A",
+                                                    userAvatar: userAvatar,
+                                                    nbMembersInvolved: "N/A",
+                                                    totalTradeCount: "N/A",
+
+                                                })
 
 
 

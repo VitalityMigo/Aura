@@ -58,6 +58,9 @@ let createdSince = "`Unknown`"
 web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
 
+    try {
+
+
     const blockNumber = header.number
 
 
@@ -96,6 +99,15 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
         })
     });
+
+} catch (error) {
+
+
+console.log("Erreur lors de la récupération du bloc: " + error)
+
+}
+
+
 });
 
 

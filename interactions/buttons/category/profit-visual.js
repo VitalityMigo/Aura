@@ -825,7 +825,7 @@ module.exports = {
 
           //REALIZED PROFIT
           ctxFormatted.font = "700 35px 'Fira Code'";
-          if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+          if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (realisedProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
           const realisedProfitText = ctxFormatted.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + sign).width
           ctxFormatted.fillText(realisedProfit.toString() + sign, 190 - realisedProfitText / 2, 749);
 

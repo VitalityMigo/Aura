@@ -762,6 +762,45 @@ const erc20 = sequelize.define('erc20', {
 });
 
 
+//Alert up
+const exe_friendTech = sequelize.define('exec_friendtech', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    isBuy: {
+        type: Sequelize.STRING,
+    },
+    subject: {
+        type: Sequelize.STRING,
+    },
+    value: {
+        type: Sequelize.STRING,
+    },
+    simulation: {
+        type: Sequelize.STRING,
+    },
+    expectedPrice: {
+        type: Sequelize.STRING,
+    },
+    treated: {
+        type: Sequelize.STRING,
+    },
+
+
+});
+
+
+
 
 //Synching the tables
 
@@ -783,6 +822,7 @@ walletManager.sync()
 paymentHistory.sync()
 data.sync()
 erc20.sync()
+exe_friendTech.sync()
 
 
 //Export the tables informations
@@ -806,6 +846,7 @@ module.exports = {
     paymentHistory,
     data,
     erc20,
+    exe_friendTech,
     Op,
 }
 

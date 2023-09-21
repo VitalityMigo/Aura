@@ -142,6 +142,7 @@ async function newFriendtechUser(obj) {
             let followers = twitterInfos.followers_count
             let following = twitterInfos.friends_count
 
+
             let created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
 
             if (followers >= 1000) {
@@ -167,8 +168,8 @@ async function newFriendtechUser(obj) {
                         { name: "Name", value: "`" + twitterName + "`", inline: true },
                         { name: "Username", value: "`" + twitterUsername + "`", inline: true },
                         { name: " ", value: " ", inline: true },
-                        { name: " ", value: "`" + followers + "` followers", inline: true },
-                        { name: " ", value: "`" + following + "` following", inline: true },
+                        { name: " ", value: "`" + new Intl.NumberFormat('en-US').format(followers) + "` followers", inline: true },
+                        { name: " ", value: "`" + new Intl.NumberFormat('en-US').format(following) + "` following", inline: true },
                         { name: " ", value: "created <t:" + created + ":R>", inline: true },
                         { name: " ", value: "```• Friend.Tech Metrics```", inline: true },
                         { name: " ", value: " ", inline: false },
@@ -186,12 +187,12 @@ async function newFriendtechUser(obj) {
                         { name: "Value", value: "`" + parseFloat(value).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(price * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                         { name: "Sniped", value: "`" + isSniped + "`", inline: true },
                         { name: "FT Wallet:", value: "`" + userAddress + "`", inline: false },
-                        { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Transaction](https://basescan.org/tx/' + hash + ")", inline: false }
+                        { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Transaction](https://basescan.org/tx/' + hash + ") ∙ " + '[FT Contract](https://basescan.org/address/0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4) ∙ ' + '[Logs](https://basescan.org/tx/' + hash + "#eventlog)", inline: false }
 
                     )
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-
+                await channelNewFTUser1K.send({ embeds: [userFTEmbed] });
 
                 if (followers >= 1000 && followers < 10000) {
 

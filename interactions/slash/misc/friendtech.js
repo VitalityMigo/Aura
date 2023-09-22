@@ -13,7 +13,7 @@ const getTimeAgo = require("../../../functions/timeago")
 const countEmojis = require("../../../functions/isemoji")
 
 const moment = require("moment")
-const decrypt = require ("../../../functions/decrypt")
+const decrypt = require("../../../functions/decrypt")
 
 
 
@@ -221,6 +221,7 @@ module.exports = {
 
                                 if (interaction.options.getSubcommand() === 'user') {
 
+                                  
 
 
                                     let id = ""
@@ -426,6 +427,14 @@ module.exports = {
                                                 if (tradersFormatted == "") { tradersFormatted = "```No recent trade found for this share.                    ```" }
 
 
+                                                const buttonRow = new ActionRowBuilder()
+                                                .addComponents(
+                                                    new ButtonBuilder()
+                                                        .setCustomId('button_friendtech_exec_buy_' + userAddress)
+                                                        .setLabel('buy')
+                                                        .setStyle(3),
+                                                   
+                                                )
 
 
 
@@ -464,7 +473,7 @@ module.exports = {
                                                     )
                                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                                await interaction.editReply({ embeds: [userFTEmbed] });
+                                                await interaction.editReply({ embeds: [userFTEmbed],components: [buttonRow] });
 
 
 
@@ -2689,7 +2698,7 @@ module.exports = {
                     .setTitle("New Report")
                     .setDescription(">>> A new report has just been sent.")
                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                    .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+                    .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
                     .setTimestamp()
                     .addFields(
                         { name: " ", value: " ", inline: false },
@@ -2712,7 +2721,7 @@ module.exports = {
                     .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                     .setTimestamp()
-                    .setFooter({ text: 'Powered by Rolls Chasers Analytics', iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png' })
+                    .setFooter({ text: 'Powered by Aura', iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png' })
 
 
                 await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });

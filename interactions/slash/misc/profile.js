@@ -125,7 +125,7 @@ module.exports = {
                                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                     .addFields(
                                         { name: ' ', value: " ", inline: false },
-                                        { name: 'Dashboard', value: "This page allows you to modify the settings of your public and private profile on the Rolls Chasers Analytics bot. Your profile is common to all the community's your part of that are using the bot.", inline: false },
+                                        { name: 'Dashboard', value: "This page allows you to modify the settings of your public and private profile on the Aura bot. Your profile is common to all the community's your part of that are using the bot.", inline: false },
                                         { name: ' ', value: " ", inline: false },
                                         { name: 'Settings', value: "`Profile` - Manage your public profile\n`Privacy` - Manage your privacy settings\n`Visual` - Manage the profit visual you want to use\n`Help` - Ask for any help to RC team members", inline: false },
                                     )
@@ -295,7 +295,7 @@ module.exports = {
                         .setTitle("New Report")
                         .setDescription(">>> A new report has just been sent.")
                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+                        .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
                         .setTimestamp()
                         .addFields(
                             { name: " ", value: " ", inline: false },

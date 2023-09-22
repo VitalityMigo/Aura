@@ -108,7 +108,7 @@ module.exports = {
                             { name: " ", value: " ", inline: false },
                             { name: "Status", value: "`Access Denied ❌`", inline: true },
                             { name: "Required Role", value: "`Team Member`", inline: true },
-                            { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use this command if you are in Rolls Chasers Analytics team. If you usually have access to the command, contact one of the team member.", inline: false },
+                            { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use this command if you are in Aura team. If you usually have access to the command, contact one of the team member.", inline: false },
                         )
                         .setTimestamp()
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -199,7 +199,7 @@ module.exports = {
                 .setTitle("New Report")
                 .setDescription(">>> A new report has just been sent.")
                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+                .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
                 .setTimestamp()
                 .addFields(
                     { name: " ", value: " ", inline: false },

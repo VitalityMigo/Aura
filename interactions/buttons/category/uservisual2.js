@@ -262,7 +262,7 @@ module.exports = {
                     .setImage(image)
                     .addFields(
                         { name: " ", value: " ", inline: false },
-                        { name: "Visual Mecanism", value: "The Rolls Chasers Analytics bot allows the user to choose between few profit visual. Use the button below to choose the visual you'd like to use.", inline: true },
+                        { name: "Visual Mecanism", value: "The Aura bot allows the user to choose between few profit visual. Use the button below to choose the visual you'd like to use.", inline: true },
                         { name: " ", value: " ", inline: false },
                         { name: "Status", value: "Your are currently using the `visual 2`.", inline: false },
                         { name: " ", value: " ", inline: false },
@@ -350,7 +350,7 @@ module.exports = {
                 .setTitle("New Report")
                 .setDescription(">>> A new report has just been sent.")
                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+                .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
                 .setTimestamp()
                 .addFields(
                     { name: " ", value: " ", inline: false },

@@ -60,7 +60,7 @@ module.exports = {
                 .setTimestamp()
                 .addFields(
                     { name: " ", value: " ", inline: false },
-                    { name: "Status", value: "Your subscribtion has been canceled, the bot is deleting your data from the database. The bot will leave the server shortly.\n\nThe Rolls Chasers Analytics Team thanks you for trusting us. We hope to see you back soon !", inline: false },
+                    { name: "Status", value: "Your subscribtion has been canceled, the bot is deleting your data from the database. The bot will leave the server shortly.\n\nThe Aura Team thanks you for trusting us. We hope to see you back soon !", inline: false },
 
                 )
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -179,7 +179,7 @@ module.exports = {
                 .setTitle("New Report")
                 .setDescription(">>> A new report has just been sent.")
                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                .setAuthor({ name: "Rolls Chasers Analytics", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+                .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
                 .setTimestamp()
                 .addFields(
                     { name: " ", value: " ", inline: false },

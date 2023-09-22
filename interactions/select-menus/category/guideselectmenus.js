@@ -40,7 +40,7 @@ module.exports = {
 
 			const guideAllEmbed = new EmbedBuilder().setColor("#060A8F")
 				.setTitle("Guide")
-				.setDescription(">>> All the commands of Rolls Chasers Analytics. You can use `/access` to check which commands you have access too. Some commands are always in private mode, others are only in public mode.")
+				.setDescription(">>> All the commands of Aura. You can use `/access` to check which commands you have access too. Some commands are always in private mode, others are only in public mode.")
 				.setTimestamp()
 				.setAuthor({ name: authorName, iconURL: userAvatar })
 				.addFields(

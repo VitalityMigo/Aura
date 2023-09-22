@@ -23,12 +23,12 @@ module.exports = {
         let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${message.author.avatar}.png`;
 
 		const pingEmbed = new EmbedBuilder().setColor("#060A8F")
-			.setTitle("Rolls Chasers Analytics")
+			.setTitle("Aura")
 			.setAuthor({ name: authorName, iconURL: userAvatar })
 			.setDescription("Welcome to Aura\n\nTo start using analytics, use the `/` and select one of the command available. If you need any help, just type `/guide` or contact one of our team member.")
 			.setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
 			.setTimestamp()
-			.setFooter({ text: 'Rolls Chasers Analytics', iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png' })
+			.setFooter({ text: 'Aura', iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png' })
 
          await message.reply({ embeds: [pingEmbed] });
 

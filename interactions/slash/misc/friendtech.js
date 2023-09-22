@@ -5,13 +5,15 @@
 
 // On définit des constantes qui serviront dans l'ensemble de la commande
 const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-const { profileData, accessSql, apimonitorsql, wallets, reportsql, adminsql, usersql, interactionData, watchlistSql, sequelize } = require('../../../events/database');
+const { profileData, accessSql, apimonitorsql, wallets, reportsql, adminsql, usersql, interactionData, watchlistSql, exe_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
 
 const reduceText = require("../../../functions/reducetext")
 const getTwitterUserInfo = require("../../../functions/twitteruserinfo")
 const getTimeAgo = require("../../../functions/timeago")
 const countEmojis = require("../../../functions/isemoji")
 
+const moment = require("moment")
+const decrypt = require ("../../../functions/decrypt")
 
 
 
@@ -31,9 +33,6 @@ const friendtechHeaders = {
 const axios = require('axios')
 
 
-function isValidEthereumAddress(address) {
-    return /^0x[a-fA-F0-9]{40}$/.test(address);
-}
 
 
 function removeAtSymbol(word) {
@@ -47,13 +46,15 @@ function removeAtSymbol(word) {
 
 
 
+
+
 const buttonsRow = new ActionRowBuilder()
-.addComponents(
-    new ButtonBuilder()
-        .setCustomId('friendtechprofitvisual-button')
-        .setLabel('visual')
-        .setStyle(2)
-);
+    .addComponents(
+        new ButtonBuilder()
+            .setCustomId('friendtechprofitvisual-button')
+            .setLabel('visual')
+            .setStyle(2)
+    );
 
 
 
@@ -126,6 +127,12 @@ module.exports = {
                         .setRequired(true)
 
                 )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("wallet")
+                .setDescription("Manage your Friend.tech buy and sell wallet")
+
         ),
 
 
@@ -2444,6 +2451,89 @@ module.exports = {
 
 
                                     }
+
+
+                                } else if (interaction.options.getSubcommand() === 'wallet') {
+
+
+
+
+                                    const buttonsRowNew = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('infra_friendtechnewwallet-button')
+                                                .setLabel('import wallet')
+                                                .setStyle(1),
+
+                                        );
+
+
+                                    const buttonsRowModify = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('infra_friendtechmodifywallet-button')
+                                                .setLabel('modify wallet')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
+                                                .setCustomId('infra_friendtechexportwallet-button')
+                                                .setLabel('export')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
+                                                .setCustomId('infra_friendtechdeletewallet-button')
+                                                .setLabel('delete wallet')
+                                                .setStyle(4)
+                                        );
+
+
+
+                                    const userSetup = await infra_friendTech.findOne({ where: { authorId: authorId } })
+
+                                    if (userSetup != null) {
+
+
+                                        const walletAddress = decrypt(userSetup.dataValues.walletAddress)
+
+                                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle("Friend Tech Setup")
+                                            .setDescription(">>> Displaying your Friend.tech wallet setup")
+                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .addFields(
+                                                { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
+
+                                            )
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                        await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowModify] });
+
+
+                                    } else if (userSetup == null) {
+
+
+
+
+                                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle("Friend Tech Setup")
+                                            .setDescription(">>> Displaying your Friend.tech wallet setup")
+                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .addFields(
+                                                { name: " ", value: "You don't have a wallet imported in your Friend.tech portfolio. To get started, use the button below.", inline: true },
+
+                                            )
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                        await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowNew] });
+
+
+                                    }
+
+
+
+
+
 
 
                                 }

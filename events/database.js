@@ -762,7 +762,7 @@ const erc20 = sequelize.define('erc20', {
 });
 
 
-//Alert up
+// Exec record FT
 const exe_friendTech = sequelize.define('exec_friendtech', {
     id: {
         type: Sequelize.INTEGER,
@@ -801,6 +801,38 @@ const exe_friendTech = sequelize.define('exec_friendtech', {
 
 
 
+//Alert up
+const infra_friendTech = sequelize.define('infra_friendtech', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    walletAddress: {
+        type: Sequelize.STRING,
+    },
+    privateKey: {
+        type: Sequelize.STRING,
+    },
+    password: {
+        type: Sequelize.STRING,
+    },
+    
+
+
+});
+
+
+
+
 
 //Synching the tables
 
@@ -822,7 +854,9 @@ walletManager.sync()
 paymentHistory.sync()
 data.sync()
 erc20.sync()
+
 exe_friendTech.sync()
+infra_friendTech.sync()
 
 
 //Export the tables informations
@@ -847,6 +881,7 @@ module.exports = {
     data,
     erc20,
     exe_friendTech,
+    infra_friendTech,
     Op,
 }
 

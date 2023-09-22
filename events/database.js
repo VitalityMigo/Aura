@@ -777,6 +777,9 @@ const exe_friendTech = sequelize.define('exec_friendtech', {
     authorId: {
         type: Sequelize.STRING,
     },
+    serverId: {
+        type: Sequelize.STRING,
+    },
     isBuy: {
         type: Sequelize.STRING,
     },
@@ -790,6 +793,9 @@ const exe_friendTech = sequelize.define('exec_friendtech', {
         type: Sequelize.STRING,
     },
     expectedPrice: {
+        type: Sequelize.STRING,
+    },
+    txn: {
         type: Sequelize.STRING,
     },
     treated: {

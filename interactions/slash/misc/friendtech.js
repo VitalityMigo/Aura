@@ -431,8 +431,24 @@ module.exports = {
                                                 .addComponents(
                                                     new ButtonBuilder()
                                                         .setCustomId('button_friendtech_exec_buy_' + userAddress)
-                                                        .setLabel('buy')
+                                                        .setLabel('📈 Buy')
                                                         .setStyle(3),
+                                                        new ButtonBuilder()
+                                                        .setCustomId('button_friendtech_exec_quickbuy_' + userAddress)
+                                                        .setLabel('💫 Flash Buy')
+                                                        .setStyle(3),
+                                                        new ButtonBuilder()
+                                                        .setCustomId('button_friendtech_exec_sell_' + userAddress)
+                                                        .setLabel('📉 Sell')
+                                                        .setStyle(4),
+                                                        new ButtonBuilder()
+                                                        .setCustomId('button_friendtech_exec_quicksell_' + userAddress)
+                                                        .setLabel('❄️ Flash Sell')
+                                                        .setStyle(4),
+                                                        new ButtonBuilder()
+                                                        .setCustomId('friendtech_exec_setup-button')
+                                                        .setLabel('💻 Setup')
+                                                        .setStyle(1),
                                                    
                                                 )
 
@@ -479,7 +495,7 @@ module.exports = {
 
                                             } catch (error) {
 
-
+console.log(error)
                                                 const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                                     .setTitle("Friend Tech")
                                                     .setDescription("An error occured whil retreiving the Friend.tech profile. Please try again or feel free to contact a team member if you need help.")

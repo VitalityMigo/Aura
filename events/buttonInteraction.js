@@ -30,7 +30,12 @@ module.exports = {
 		// On redirige vers les bons fichier dans le cas d'un exec (transfert de l'info)
 		if (customId.startsWith("button_friendtech_exec_buy_")) {
 			command = client.buttonCommands.get("button_friendtech_exec_buy_");
-		} else  {
+		} else if (customId.startsWith("button_friendtech_exec_sell_")) {
+			command = client.buttonCommands.get("button_friendtech_exec_sell_");
+		}
+		
+		
+		else  {
 			command = client.buttonCommands.get(customId);
 		}
 	

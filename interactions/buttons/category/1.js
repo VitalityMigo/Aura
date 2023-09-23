@@ -1,34 +1,23 @@
-
+// On définit des constantes qui serviront dans l'ensemble de la commande
 const { ButtonInteraction } = require('discord.js');
-const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, infra_friendTech, sequelize } = require('../../../events/database');
+const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
+const { profileData, accessSql, apimonitorsql, wallets, reportsql, adminsql, usersql, interactionData, watchlistSql, exe_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
-
-
-const buttonsRowNew = new ActionRowBuilder()
-.addComponents(
-    new ButtonBuilder()
-        .setCustomId('infra_friendtechnewwallet-button')
-        .setLabel('import wallet')
-        .setStyle(1),
-
-);
+const decrypt = require("../../../functions/decrypt")
 
 
 
 module.exports = {
-    id: 'infra_friendtechmodifywallet-button',
+    id: 'friendtech_exec_setup-button',
 
     async execute(interaction) {
         if (!(interaction instanceof ButtonInteraction)) return;
 
-        //Récupérer informations de l'utilisateur de la commande
         let authorId = interaction.user.id;
         let authorName = interaction.user.username;
         let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
         let serverId = interaction.member.guild.id
         let botId = interaction.applicationId
-
 
         try {
 
@@ -37,39 +26,97 @@ module.exports = {
 
 
 
-               //Checkpoint
-               console.log("// Step 2 : Authorization - Executed ✅")
 
-
-               const passwordAdminDashboard = new ModalBuilder()
-                   .setCustomId('infra_friendtechnewwallet-modal')
-                   .setTitle('New Base Wallet');
-
-               // Add components to modal
-
-               // Create the text input components
-               const channel = new TextInputBuilder()
-                   .setCustomId('infra_friendtechnewwallet-modalR1')
-                   .setLabel("Private Key")
-                   .setPlaceholder("The Base wallet private key")
-                   .setStyle(TextInputStyle.Short)
-                   .setMinLength(40)
-
-              
+                //Checkpoint
+                console.log("// Step 2 : Authorization - Executed ✅")
 
 
 
 
-               // An action row only holds one text input,
-               // so you need one action row per text input.
-               const firstActionRowSetProfile = new ActionRowBuilder().addComponents(channel);
-             
+                const buttonsRowNew = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('infra_friendtechnewwallet-button')
+                        .setLabel('import wallet')
+                        .setStyle(1),
 
-               // Add inputs to the modal
-               passwordAdminDashboard.addComponents(firstActionRowSetProfile)
+                );
 
-               // Show the modal to the user
-               await interaction.showModal(passwordAdminDashboard);
+
+            const buttonsRowModify = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('infra_friendtechmodifywallet-button')
+                        .setLabel('modify wallet')
+                        .setStyle(1),
+                    new ButtonBuilder()
+                        .setCustomId('infra_friendtechexportwallet-button')
+                        .setLabel('export')
+                        .setStyle(1),
+                    new ButtonBuilder()
+                        .setCustomId('infra_friendtechdeletewallet-button')
+                        .setLabel('delete wallet')
+                        .setStyle(4)
+                );
+
+
+
+            const userSetup = await infra_friendTech.findOne({ where: { authorId: authorId } })
+
+            if (userSetup != null) {
+
+
+                const walletAddress = decrypt(userSetup.dataValues.walletAddress)
+
+                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Friend Tech Setup")
+                    .setDescription(">>> Displaying your Friend.tech wallet setup")
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                    .addFields(
+                        { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
+
+                    )
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                await interaction.reply({ embeds: [errorNotEthereum], components: [buttonsRowModify], ephemeral: true });
+
+
+            } else if (userSetup == null) {
+
+
+
+
+                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Friend Tech Setup")
+                    .setDescription(">>> Displaying your Friend.tech wallet setup")
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                    .addFields(
+                        { name: " ", value: "You don't have a wallet imported in your Friend.tech portfolio. To get started, use the button below.", inline: true },
+
+                    )
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                await interaction.reply({ embeds: [errorNotEthereum], components: [buttonsRowNew], ephemeral: true  });
+
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -94,7 +141,7 @@ module.exports = {
             const userRoleList = interaction.member._roles
             let userHighestRole = "Member"
             if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-            let reportCommand = "/admin-clientNew1"
+            let reportCommand = "/admin-botOff"
 
             const timeStamp = Date.now();
             const date = new Date(timeStamp);
@@ -160,10 +207,8 @@ module.exports = {
 
 
         }
-
     },
 };
-
 
 
 

@@ -188,11 +188,11 @@ module.exports = {
                 if (authorProfile === null) { await interaction.deferReply(); } else {
                     const authorPrivacyMode = authorProfile.dataValues.privacyMode
 
-                    if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
-                    if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
+                    if (authorPrivacyMode.toLowerCase() === "private" || interaction.options.getSubcommand() === 'wallet') { await interaction.deferReply({ ephemeral: true }); }
+                    if (authorPrivacyMode.toLowerCase() === "public" && interaction.options.getSubcommand() != 'wallet') { await interaction.deferReply(); }
                 }
 
-
+            
 
                 //Checkpoint
                 console.log("// Step 1 : Initialization - Executed ✅")
@@ -2530,7 +2530,7 @@ console.log(error)
                                             .setTimestamp()
                                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                        await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowModify] });
+                                        await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowModify], ephemeral: true });
 
 
                                     } else if (userSetup == null) {
@@ -2550,7 +2550,7 @@ console.log(error)
                                             .setTimestamp()
                                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                        await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowNew] });
+                                        await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowNew], ephemeral: true });
 
 
                                     }

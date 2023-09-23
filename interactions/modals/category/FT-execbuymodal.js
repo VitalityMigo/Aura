@@ -131,7 +131,8 @@ module.exports = {
                     const subjectProfile = await axios.get('https://prod-api.kosetto.com/users/' + subject)
 
                     const valueWEI = await shareContract.methods.getBuyPriceAfterFee(subject, amount).call();
-                    const valueETH = (valueWEI / 10 ** 18) / amount
+                    const sharePrice = (valueWEI / 10 ** 18) / amount
+                    const valueETH = (valueWEI / 10 ** 18)
 
                     const subjectName = subjectProfile.data.twitterName
                     const supply = subjectProfile.data.shareSupply
@@ -149,7 +150,7 @@ module.exports = {
                         .addFields(
                             { name: " ", value: " ", inline: false },
                             { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: false },
-                            { name: "Share Price", value: "`" + parseFloat(valueETH).toFixed(3) + "Ξ`", inline: true },
+                            { name: "Share Price", value: "`" + parseFloat(sharePrice).toFixed(3) + "Ξ`", inline: true },
                             { name: "Amount", value: "`" + amount + "`", inline: true },
                             { name: "Simulation", value: "<a:AuraLoading:1134068847616458792>", inline: false },
 
@@ -201,7 +202,7 @@ module.exports = {
                             .addFields(
                                 { name: " ", value: " ", inline: false },
                                 { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: false },
-                                { name: "Share Price", value: "`" + parseFloat(valueETH).toFixed(3) + "Ξ`", inline: true },
+                                { name: "Share Price", value: "`" + parseFloat(sharePrice).toFixed(3) + "Ξ`", inline: true },
                                 { name: "Amount", value: "`" + amount + "`", inline: true },
                                 { name: "Transaction Data ✅", value: "```" + txnDataFormatted + "```", inline: false },
 
@@ -254,7 +255,7 @@ module.exports = {
                             .addFields(
                                 { name: " ", value: " ", inline: false },
                                 { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: false },
-                                { name: "Share Price", value: "`" + parseFloat(valueETH).toFixed(3) + "Ξ`", inline: true },
+                                { name: "Share Price", value: "`" + parseFloat(sharePrice).toFixed(3) + "Ξ`", inline: true },
                                 { name: "Amount", value: "`" + amount + "`", inline: true },
                                 { name: "Transaction Data 🚫", value: "```The transaction simulation failed.\n\n" + errorMessageFormatted + "```", inline: false },
 

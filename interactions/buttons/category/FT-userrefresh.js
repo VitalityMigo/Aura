@@ -335,7 +335,7 @@ module.exports = {
                                 { name: "Holders:", value: holdersFormattedEmbeds, inline: false },
                                 { name: "Last Trades:", value: tradersFormatted, inline: false },
                                 { name: "FT Wallet:", value: "```" + userAddress + "```", inline: false },
-                                { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Dune Analytics](https://dune.com/whale_hunter/friend-tech-ultimate-analytics)' + " ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ")", inline: false }
+                                { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ")", inline: false }
 
                             )
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })

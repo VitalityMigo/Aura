@@ -8,8 +8,10 @@ const erc20Standard = require("../contracts/uniswap/erc20standart.json")
 
 const formatCoinValueSign = require("../functions/formatNumberEmbed")
 const reduceText = require("../functions/reducetext")
+const addTimeout = require("../functions/addtimeout")
 
 const newFriendtechUser = require('../functions/m-newFTuser')
+const newSmartMoneyTrade = require('../functions/m-FTsmartmoney')
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -19,8 +21,8 @@ const etherscanApiKey = process.env.etherscanApiKey
 const quicknodebaseApiKey = process.env.quicknodebaseApiKey
 
 const Web3 = require('web3');
-const web3Call =  new Web3(new Web3.providers.HttpProvider(`https://1rpc.io/base`))
-const web3 =  new Web3(new Web3.providers.WebsocketProvider(`wss://nameless-hardworking-pallet.base-mainnet.discover.quiknode.pro/` + quicknodebaseApiKey))
+const web3Call = new Web3(new Web3.providers.HttpProvider(`https://1rpc.io/base`))
+const web3 = new Web3(new Web3.providers.WebsocketProvider(`wss://nameless-hardworking-pallet.base-mainnet.discover.quiknode.pro/` + quicknodebaseApiKey))
 
 // wss://base-mainnet.blastapi.io/cd7e4eee-1068-4ca2-809e-b898e938c0d2
 
@@ -33,7 +35,11 @@ const colors = require('colors');
 // On définit les constantes et variables principales
 const shareContractAddress = "0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4";
 
+const smartWalletJson = require("../contracts/friendtech/smartwallet.json")
+const smartWalletTable = smartWalletJson.map(obj => obj.address);
 
+
+addTimeout(3)
 
 
 let tokenAddress = ""
@@ -61,51 +67,66 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
     try {
 
 
-    const blockNumber = header.number
+        const blockNumber = header.number
 
 
-    await web3.eth.getBlock(blockNumber, true, async (error, block) => {
+        await web3.eth.getBlock(blockNumber, true, async (error, block) => {
 
-        if (error) {
-            console.error('Erreur lors de la récupération du bloc :', error);
-            return;
-        }
-
-
-
-        await block.transactions.forEach(async transaction => {
-
-            const input = transaction.input
-            const contract = transaction.to
-            const value = transaction.value
-
-            const buySignature = "0x6945b123"
-            const newValue = "0"
-
-
-            
-
-            if (input.startsWith(buySignature) && contract.toLowerCase() == shareContractAddress.toLowerCase() && newValue == value) {
-
-                
-                newFriendtechUser(transaction)
-
-
-
+            if (error) {
+                console.error('Erreur lors de la récupération du bloc :', error);
+                return;
             }
 
 
 
+            await block.transactions.forEach(async transaction => {
 
-        })
-    });
+                const input = transaction.input
+                const contract = transaction.to
+                const value = transaction.value
+                const from = transaction.from
 
-} catch (error) {
+
+                const buySignature = "0x6945b123"
+                const sellSignature = "0xb51d0534"
+                const newValue = "0"
 
 
-console.log("Erreur lors de la récupération du bloc: " + error)
+                // // On renvoi vers le new user
+                if (input.startsWith(buySignature) && contract.toLowerCase() == shareContractAddress.toLowerCase() && newValue == value) {
 
-}
+
+                    newFriendtechUser(transaction)
+
+
+
+                }
+
+
+
+
+                // On vérifie que ça vient d'un wallet SM, que le contrat est bien FT, que la valeur est différente de 0, et que c'est un buy ou un sell
+                if (smartWalletTable.includes(from.toLowerCase()) && contract.toLowerCase() == shareContractAddress.toLowerCase() && (input.startsWith(sellSignature) || (input.startsWith(buySignature) && newValue != value))) {
+
+                    console.log("ici")
+
+                    newSmartMoneyTrade(transaction)
+
+
+                }
+
+
+
+
+            })
+        });
+
+    } catch (error) {
+
+
+        console.log("Erreur lors de la récupération du bloc: " + error)
+
+    }
 
 
 });

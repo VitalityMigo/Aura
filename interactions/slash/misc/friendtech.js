@@ -501,7 +501,7 @@ module.exports = {
                                                         { name: "Holders:", value: holdersFormattedEmbeds, inline: false },
                                                         { name: "Last Trades:", value: tradersFormatted, inline: false },
                                                         { name: "FT Wallet:", value: "```" + userAddress + "```", inline: false },
-                                                        { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Dune Analytics](https://dune.com/whale_hunter/friend-tech-ultimate-analytics)' + " ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ")", inline: false }
+                                                        { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ")", inline: false }
 
                                                     )
                                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -819,7 +819,7 @@ module.exports = {
                                                         { name: "Unique Shares Count", value: "`" + holdingCount + "`", inline: true },
                                                         { name: "Total Shares Count", value: "`" + totalShares + "`", inline: true },
                                                         { name: "Shares:", value: holdingFormatted, inline: false },
-                                                        { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Dune Analytics](https://dune.com/whale_hunter/friend-tech-ultimate-analytics)' + " ∙ " + '[Holding](https://www.friend.tech/trades/' + userAddress + ")", inline: false }
+                                                        { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holding](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ")", inline: false }
 
                                                     )
                                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -1193,7 +1193,7 @@ module.exports = {
 
                                                 userFTEmbed.addFields(
                                                     { name: ' ', value: " ", inline: false },
-                                                    { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Dune Analytics](https://dune.com/whale_hunter/friend-tech-ultimate-analytics)' + " ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ")", inline: false }
+                                                    { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ")", inline: false }
 
                                                 );
 
@@ -1816,7 +1816,7 @@ module.exports = {
 
 
 
-                                                    let linksFormatted = '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Dune Analytics](https://dune.com/whale_hunter/friend-tech-ultimate-analytics)' + " ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ")"
+                                                    let linksFormatted = '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ")"
 
 
                                                     const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
@@ -2357,7 +2357,7 @@ module.exports = {
                                                         { name: "Potential ROI", value: roiFormatted, inline: true },
 
 
-                                                        { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Dune Analytics](https://dune.com/whale_hunter/friend-tech-ultimate-analytics)' + " ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ")", inline: false }
+                                                        { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ")", inline: false }
 
                                                     )
                                                     .setTimestamp()

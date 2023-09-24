@@ -31,19 +31,6 @@ const protocolFee = 5
 const subjectFee = 5
 
 
-function getPrice(supply, amount) {
-    if (supply === 0) {
-      return 0;
-    }
-  
-    const sum1 = (supply - 1) * supply * (2 * (supply - 1) + 1) / 6;
-    const sum2 = (supply - 1 + amount) * (supply + amount) * (2 * (supply - 1 + amount) + 1) / 6;
-    const summation = sum2 - sum1;
-  
-    return (summation * 1e18) / 16000; // Conversion en Wei (1 ether = 1e18 Wei)
-  }
-
-
 
 
 const buttonRowChoice = new ActionRowBuilder()
@@ -138,9 +125,7 @@ module.exports = {
                     const supply = subjectProfile.data.shareSupply
                     const newSupply = parseFloat(supply) + parseFloat(amount)
 
-                    const newP =  getPrice(newSupply, parseFloat(amount))
-                    const newPrice = newP / 10**18
-
+                  
                     
                     const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
                         .setTitle("Buy Shares")

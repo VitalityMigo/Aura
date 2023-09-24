@@ -43,7 +43,7 @@ setTimeout(() => {
         // PROD
 
         serverId = "1108754348818845729"
-        channelFTSmartMoneyId = "1154362407481786368"
+        channelFTSmartMoneyId = "1155457627560611860"
 
 
     } else if (botId == "1119666128411709552") {

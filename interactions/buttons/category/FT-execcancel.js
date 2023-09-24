@@ -64,7 +64,7 @@ module.exports = {
 
             await exe_friendTech.destroy({ where: { authorId: authorId, serverId: serverId, treated: null } });
 
-            await addTimeount(2)
+            await addTimeount(1.2)
 
 
             const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")

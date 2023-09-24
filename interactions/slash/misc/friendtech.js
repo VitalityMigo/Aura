@@ -192,7 +192,7 @@ module.exports = {
                     if (authorPrivacyMode.toLowerCase() === "public" && interaction.options.getSubcommand() != 'wallet') { await interaction.deferReply(); }
                 }
 
-            
+
 
                 //Checkpoint
                 console.log("// Step 1 : Initialization - Executed ✅")
@@ -221,7 +221,7 @@ module.exports = {
 
                                 if (interaction.options.getSubcommand() === 'user') {
 
-                                  
+
 
 
                                     let id = ""
@@ -428,29 +428,46 @@ module.exports = {
 
 
                                                 const buttonRow = new ActionRowBuilder()
-                                                .addComponents(
-                                                    new ButtonBuilder()
-                                                        .setCustomId('button_friendtech_exec_buy_' + userAddress)
-                                                        .setLabel('📈 Buy')
-                                                        .setStyle(3),
+                                                    .addComponents(
                                                         new ButtonBuilder()
-                                                        .setCustomId('button_friendtech_exec_quickbuy_' + userAddress)
-                                                        .setLabel('💫 Flash Buy')
-                                                        .setStyle(3),
+                                                            .setCustomId('button_friendtech_exec_buy_' + userAddress)
+                                                            .setLabel('📈 Buy')
+                                                            .setStyle(3),
                                                         new ButtonBuilder()
-                                                        .setCustomId('button_friendtech_exec_sell_' + userAddress)
-                                                        .setLabel('📉 Sell')
-                                                        .setStyle(4),
+                                                            .setCustomId('button_friendtech_exec_quickbuy_' + userAddress)
+                                                            .setLabel('💫 Flash Buy')
+                                                            .setStyle(3),
                                                         new ButtonBuilder()
-                                                        .setCustomId('button_friendtech_exec_quicksell_' + userAddress)
-                                                        .setLabel('❄️ Flash Sell')
-                                                        .setStyle(4),
+                                                            .setCustomId('button_friendtech_exec_sell_' + userAddress)
+                                                            .setLabel('📉 Sell')
+                                                            .setStyle(4),
                                                         new ButtonBuilder()
-                                                        .setCustomId('friendtech_exec_setup-button')
-                                                        .setLabel('💻 Setup')
-                                                        .setStyle(1),
-                                                   
-                                                )
+                                                            .setCustomId('button_friendtech_exec_quicksell_' + userAddress)
+                                                            .setLabel('❄️ Flash Sell')
+                                                            .setStyle(4),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('friendtech_exec_setup-button')
+                                                            .setLabel('💻 Setup')
+                                                            .setStyle(1),
+
+                                                    )
+
+
+                                                const buttonRow2 = new ActionRowBuilder()
+                                                    .addComponents(
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_user_refresh_' + userAddress)
+                                                            .setLabel('🔄 Refresh')
+                                                            .setStyle(1),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('friendtech_infra_help-button')
+                                                            .setLabel('📑 Tutorial')
+                                                            .setStyle(1),
+                                                       
+
+
+                                                    )
+
 
 
 
@@ -489,13 +506,13 @@ module.exports = {
                                                     )
                                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                                await interaction.editReply({ embeds: [userFTEmbed],components: [buttonRow] });
+                                                await interaction.editReply({ embeds: [userFTEmbed], components: [buttonRow, buttonRow2] });
 
 
 
                                             } catch (error) {
 
-console.log(error)
+                                                console.log(error)
                                                 const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                                     .setTitle("Friend Tech")
                                                     .setDescription("An error occured whil retreiving the Friend.tech profile. Please try again or feel free to contact a team member if you need help.")

@@ -29,13 +29,25 @@ module.exports = {
 
 		// On redirige vers les bons fichier dans le cas d'un exec (transfert de l'info)
 		if (customId.startsWith("button_friendtech_exec_buy_")) {
+
 			command = client.buttonCommands.get("button_friendtech_exec_buy_");
+
 		} else if (customId.startsWith("button_friendtech_exec_sell_")) {
+
 			command = client.buttonCommands.get("button_friendtech_exec_sell_");
+
 		} else if (customId.startsWith("button_friendtech_exec_quickbuy_")) {
+
 			command = client.buttonCommands.get("button_friendtech_exec_quickbuy_");
+
 		} else if (customId.startsWith("button_friendtech_exec_quicksell_")) {
+
 			command = client.buttonCommands.get("button_friendtech_exec_quicksell_");
+
+		} else if (customId.startsWith("button_friendtech_user_refresh_")) {
+
+			command = client.buttonCommands.get("button_friendtech_user_refresh_");
+			
 		}
 		
 		

@@ -72,7 +72,7 @@ setTimeout(() => {
 async function newFriendtechUser(obj) {
 
 
-    await addTimeout(6)
+    await addTimeout(7)
 
 
     try {

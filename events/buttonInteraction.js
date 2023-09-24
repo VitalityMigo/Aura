@@ -48,8 +48,11 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_friendtech_user_refresh_");
 			
+		} else if (customId.startsWith("button_friendtech_user_panel_")) {
+
+			command = client.buttonCommands.get("button_friendtech_user_panel_");
+			
 		}
-		
 		
 		else  {
 			command = client.buttonCommands.get(customId);

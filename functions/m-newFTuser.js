@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 
 
 //Récupérer les clefs API
@@ -145,6 +145,8 @@ async function newFriendtechUser(obj) {
 
             let created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
 
+
+
             if (followers >= 1000) {
 
 
@@ -154,6 +156,16 @@ async function newFriendtechUser(obj) {
                 console.log("Twitter: @" + twitterUsername)
                 console.log("Wallet: " + userAddress)
                 console.log("Txn: " + hash)
+
+
+                const buttonRow = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId('button_friendtech_user_panel_' + userAddress)
+                            .setLabel('📊 Trade panel ')
+                            .setStyle(1),
+
+                    )
 
 
 
@@ -192,19 +204,19 @@ async function newFriendtechUser(obj) {
                     )
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                await channelNewFTUser1K.send({ embeds: [userFTEmbed] });
+
 
                 if (followers >= 1000 && followers < 10000) {
 
-                    await channelNewFTUser1K.send({ embeds: [userFTEmbed] });
+                    await channelNewFTUser1K.send({ embeds: [userFTEmbed], components: [buttonRow] });
 
                 } else if (followers >= 10000 && followers < 100000) {
 
-                    await channelNewFTUser10K.send({ embeds: [userFTEmbed] });
+                    await channelNewFTUser10K.send({ embeds: [userFTEmbed], components: [buttonRow] });
 
                 } else if (followers >= 100000) {
 
-                    await channelNewFTUser100K.send({ embeds: [userFTEmbed] });
+                    await channelNewFTUser100K.send({ embeds: [userFTEmbed], components: [buttonRow] });
 
                 }
 

@@ -80,11 +80,11 @@ module.exports = {
                 //RECUPERER STATS PROFIT LAST INTERACTION
                 const lastInteractionRcprofit = await interactionData.findOne({ where: { authorId: authorId, commandName: "friendtech-profit", serverId: serverId } })
 
-                let userName = lastInteractionRcprofit.dataValues.authorName
+                let userName = lastInteractionRcprofit.dataValues.collectionName
                 let chain = lastInteractionRcprofit.dataValues.walletCategory
-                let userLogo = lastInteractionRcprofit.dataValues.userAvatar
+                let userLogo = lastInteractionRcprofit.dataValues.collectionBanner
                 let selectedTimestamp = lastInteractionRcprofit.dataValues.selecedTimestamp
-                
+
                 let subjectTwitter = lastInteractionRcprofit.dataValues.collectionName
                 let sharePrice = lastInteractionRcprofit.dataValues.floorPrice
                 let buyCount = lastInteractionRcprofit.dataValues.buyCount
@@ -240,12 +240,12 @@ module.exports = {
 
 
                 ctxFormatted.fillStyle = "#ffffff";
-                const userNameSize = ctxFormatted.measureText(authorName.toUpperCase()).width;
+                const userNameSize = ctxFormatted.measureText(subjectTwitter.toUpperCase()).width;
 
                 while (userNameSize > MAX_WIDTH2) {
                     fontSize2 -= 1;
                     ctxFormatted.font = `${fontSize2}px opt`;
-                    userNameSize = ctxFormatted.measureText(authorName.toUpperCase()).width;
+                    userNameSize = ctxFormatted.measureText(subjectTwitter.toUpperCase()).width;
                 }
 
 
@@ -255,11 +255,11 @@ module.exports = {
                 const startImageAndName = 792
 
 
-                let pfpAndNameSize = ctxFormatted.measureText(imagesize + 8 + authorName.toUpperCase()).width;
+                let pfpAndNameSize = ctxFormatted.measureText(imagesize + 8 + subjectTwitter.toUpperCase()).width;
 
                 ctxFormatted.font = `${fontSize2}px opt`;
                 ctxFormatted.textBaseline = "middle";
-                ctxFormatted.fillText(authorName.toUpperCase(), startImageAndName + imagesize + 12 - (pfpAndNameSize / 2), 969);
+                ctxFormatted.fillText(subjectTwitter.toUpperCase(), startImageAndName + imagesize + 12 - (pfpAndNameSize / 2), 969);
 
 
                 const imagex = startImageAndName - (pfpAndNameSize / 2)

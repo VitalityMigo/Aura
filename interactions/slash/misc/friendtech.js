@@ -2098,6 +2098,7 @@ module.exports = {
 
                                                 let twName = userInfoCall.data.twitterName
                                                 let twUsername = userInfoCall.data.twitterUsername
+                                                let twPfp = userInfoCall.data.twitterPfpUrl
 
                                                 heldCount = userInfoCall.data.holdingCount
 
@@ -2368,7 +2369,7 @@ module.exports = {
 
 
 
-
+                                                
                                                 await interactionData.destroy({ where: { authorId: authorId, commandName: "friendtech-profit", serverId: serverId } })
 
                                                 await interactionData.create({
@@ -2389,7 +2390,7 @@ module.exports = {
                                                     walletCategory: "eth",
                                                     selectedCollection: twUsername,
                                                     collectionSlug: "N/A",
-                                                    collectionBanner: "N/A",
+                                                    collectionBanner: twPfp,
                                                     avgDeriskPrice: "N/A",
                                                     floorPrice: "N/A",
                                                     lowerMarketlace: "N/A",

@@ -240,7 +240,7 @@ module.exports = {
 
 
                 ctxFormatted.fillStyle = "#ffffff";
-                const userNameSize = ctxFormatted.measureText(subjectTwitter.toUpperCase()).width;
+                let userNameSize = ctxFormatted.measureText(subjectTwitter.toUpperCase()).width;
 
                 while (userNameSize > MAX_WIDTH2) {
                     fontSize2 -= 1;

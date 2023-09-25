@@ -1,6 +1,6 @@
 [
 {
-    "name": "script",
+    "name": "Script",
     "username": "0xGlock",
     "address": "0x2699b4477f481262400fa30f27b64b87084c94a2"
 
@@ -24,7 +24,7 @@
 
 },
 {
-    "name": "larrylawliet.eth",
+    "name": "Larrylawliet.eth",
     "username": "iloveponzi",
     "address": "0xc4eefdd834865882c3725e56afa6900fd83fec87"
 
@@ -36,9 +36,33 @@
 
 },
 {
-    "name": "yixie",
+    "name": "Yixie",
     "username": "yixie10",
     "address": "0x0274acc34553736f57043076984b87f6ec98debc"
+
+},
+{
+    "name": "FreeLunchCapital",
+    "username": "FLC_FlooringLab",
+    "address": "0x8cc59125cc387055790c8a2390dbcd422a658e11"
+
+},
+{
+    "name": "DΞmon 😈",
+    "username": "ToTheDemon",
+    "address": "0x7e24c429291a28c6adb2afac97f8544f7ab2c8bc"
+
+},
+{
+    "name": "0xSun",
+    "username": "0xSunNFT",
+    "address": "0x96ed4e647a147d6d8d1373a33ca4ada1825519a4"
+
+},
+{
+    "name": "Anon.eth",
+    "username": "player1_eth",
+    "address": "0xafb5a98a3fe80deac770007739a2f2d7997c33e4"
 
 }
 

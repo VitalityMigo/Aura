@@ -27,18 +27,22 @@ module.exports = {
 
 
 
-                //Checkpoint
-                console.log("// Step 2 : Authorization - Executed ✅")
+            //Checkpoint
+            console.log("// Step 2 : Authorization - Executed ✅")
 
 
 
 
-                const buttonsRowNew = new ActionRowBuilder()
+            const buttonsRowNew = new ActionRowBuilder()
                 .addComponents(
                     new ButtonBuilder()
                         .setCustomId('infra_friendtechnewwallet-button')
                         .setLabel('import wallet')
                         .setStyle(1),
+                    new ButtonBuilder()
+                        .setCustomId('infra_friendtechgeneratewallet-button')
+                        .setLabel('generate wallet')
+                        .setStyle(3),
 
                 );
 
@@ -100,7 +104,7 @@ module.exports = {
                     .setTimestamp()
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                await interaction.reply({ embeds: [errorNotEthereum], components: [buttonsRowNew], ephemeral: true  });
+                await interaction.reply({ embeds: [errorNotEthereum], components: [buttonsRowNew], ephemeral: true });
 
 
             }

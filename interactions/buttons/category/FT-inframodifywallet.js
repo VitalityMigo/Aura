@@ -5,14 +5,7 @@ const { accessSql, profileData, adminsql, reportsql, infra_friendTech, sequelize
 const moment = require('moment');
 
 
-const buttonsRowNew = new ActionRowBuilder()
-.addComponents(
-    new ButtonBuilder()
-        .setCustomId('infra_friendtechnewwallet-button')
-        .setLabel('import wallet')
-        .setStyle(1),
 
-);
 
 
 

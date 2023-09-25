@@ -68,6 +68,10 @@ const buttonsRowNew = new ActionRowBuilder()
             .setCustomId('infra_friendtechnewwallet-button')
             .setLabel('import wallet')
             .setStyle(1),
+        new ButtonBuilder()
+            .setCustomId('infra_friendtechgeneratewallet-button')
+            .setLabel('generate wallet')
+            .setStyle(3),
 
     );
 
@@ -120,7 +124,7 @@ module.exports = {
 
                     const supplyHeld = await shareContract.methods.sharesBalance(subject, sender).call();
 
-                    
+
 
 
                     if (amount <= supplyHeld) {
@@ -135,64 +139,12 @@ module.exports = {
                         const supply = subjectProfile.data.shareSupply
                         const newSupply = parseFloat(supply) - parseFloat(amount)
 
-                       
+
 
                         if (newSupply > 0) {
 
 
-                        const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle("Sell Shares")
-                            .setDescription(">>> Displaying the simulated transaction data")
-                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                            .setTimestamp()
-                            .addFields(
-                                { name: " ", value: " ", inline: false },
-                                { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: false },
-                                { name: "Sell Price", value: "`" + parseFloat(shareValue).toFixed(3) + "Ξ`", inline: true },
-                                { name: "Sell Amount", value: "`" + amount + "`", inline: true },
-                                { name: "Simulation", value: "<a:AuraLoading:1134068847616458792>", inline: false },
-
-                            )
-                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-
-
-                        await interaction.reply({ embeds: [gasTrackerEmbed], components: [buttonRowChoice], ephemeral: true });
-
-
-
-
-                        // const valueWEI = web3.utils.toWei(valueETH.toString(), 'ether');
-                        let simulationState = true
-                        let gasUsed = ""
-                        let errorMessageFormatted = ""
-
-                        try {
-                            gasUsed = await shareContract.methods.sellShares(subject, amount).estimateGas({ from: sender.toLowerCase(), value: "0" });
-                        } catch (error) {
-
-                            simulationState = false
-                            let message = error.message
-                            console.log("erreur")
-                            if (message.startsWith("Returned")) {
-                                errorMessageFormatted = message.replace("Returned error: ", "")
-                            }
-                        }
-
-                        if (simulationState == true) {
-
-
-                            const gasPriceCall = await web3.eth.getGasPrice()
-                            const gasPriceGwei = gasPriceCall / 10 ** 9
-                            const gasPriceEth = gasPriceCall / 10 ** 18
-
-                            const gasPayed = gasPriceEth * gasUsed
-                            const totalValue = valueETH - gasPayed
-
-                            const txnDataFormatted = "Sender: " + sender + "\nGas Price: " + parseFloat(gasPriceGwei).toFixed(0) + " gwei\n\nReceive: " + parseFloat(valueETH).toFixed(5) + "Ξ (fees included)\nGas fees: " + parseFloat(gasPayed).toFixed(5) + "Ξ\n\nTotal Value Received: " + parseFloat(totalValue).toFixed(5) + "Ξ"
-
-
-                            const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
+                            const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle("Sell Shares")
                                 .setDescription(">>> Displaying the simulated transaction data")
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
@@ -202,94 +154,146 @@ module.exports = {
                                     { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: false },
                                     { name: "Sell Price", value: "`" + parseFloat(shareValue).toFixed(3) + "Ξ`", inline: true },
                                     { name: "Sell Amount", value: "`" + amount + "`", inline: true },
-                                    { name: "Transaction Data ✅", value: "```" + txnDataFormatted + "```", inline: false },
+                                    { name: "Simulation", value: "<a:AuraLoading:1134068847616458792>", inline: false },
 
                                 )
                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
 
-
-                            await interaction.editReply({ embeds: [gasTrackerEmbed2], components: [buttonRowChoice], ephemeral: true });
-
-
-
-                            exe_friendTech.destroy({ where: { authorId: authorId, serverId: serverId, treated: null } });
-
-                            // On enregistre les infos
-                            let table = []
-                            let obj = {}
-                            obj.sender = encrypt(sender)
-                            obj.senderPK = encrypt(senderPK)
-                            obj.subject = subject.toLowerCase()
-                            obj.subjectName = subjectName
-                            obj.action = "📉 Sell"
-                            obj.getSellPriceAfterFee = valueETH
-                            obj.amount = amount
-                            table.push(obj)
-
-                            await exe_friendTech.create({
-
-                                serverId: serverId,
-                                authorId: authorId,
-                                authorName: authorName,
-                                isBuy: "false",
-                                subject: JSON.stringify(table),
-                                value: '0',
-                                simulation: "true",
-                                expectedPrice: totalValue.toString(),
-
-                            })
+                            await interaction.reply({ embeds: [gasTrackerEmbed], components: [buttonRowChoice], ephemeral: true });
 
 
 
+
+                            // const valueWEI = web3.utils.toWei(valueETH.toString(), 'ether');
+                            let simulationState = true
+                            let gasUsed = ""
+                            let errorMessageFormatted = ""
+
+                            try {
+                                gasUsed = await shareContract.methods.sellShares(subject, amount).estimateGas({ from: sender.toLowerCase(), value: "0" });
+                            } catch (error) {
+
+                                simulationState = false
+                                let message = error.message
+                                console.log("erreur")
+                                if (message.startsWith("Returned")) {
+                                    errorMessageFormatted = message.replace("Returned error: ", "")
+                                }
+                            }
+
+                            if (simulationState == true) {
+
+
+                                const gasPriceCall = await web3.eth.getGasPrice()
+                                const gasPriceGwei = gasPriceCall / 10 ** 9
+                                const gasPriceEth = gasPriceCall / 10 ** 18
+
+                                const gasPayed = gasPriceEth * gasUsed
+                                const totalValue = valueETH - gasPayed
+
+                                const txnDataFormatted = "Sender: " + sender + "\nGas Price: " + parseFloat(gasPriceGwei).toFixed(0) + " gwei\n\nReceive: " + parseFloat(valueETH).toFixed(5) + "Ξ (fees included)\nGas fees: " + parseFloat(gasPayed).toFixed(5) + "Ξ\n\nTotal Value Received: " + parseFloat(totalValue).toFixed(5) + "Ξ"
+
+
+                                const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
+                                    .setTitle("Sell Shares")
+                                    .setDescription(">>> Displaying the simulated transaction data")
+                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    .setTimestamp()
+                                    .addFields(
+                                        { name: " ", value: " ", inline: false },
+                                        { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: false },
+                                        { name: "Sell Price", value: "`" + parseFloat(shareValue).toFixed(3) + "Ξ`", inline: true },
+                                        { name: "Sell Amount", value: "`" + amount + "`", inline: true },
+                                        { name: "Transaction Data ✅", value: "```" + txnDataFormatted + "```", inline: false },
+
+                                    )
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+
+
+                                await interaction.editReply({ embeds: [gasTrackerEmbed2], components: [buttonRowChoice], ephemeral: true });
+
+
+
+                                exe_friendTech.destroy({ where: { authorId: authorId, serverId: serverId, treated: null } });
+
+                                // On enregistre les infos
+                                let table = []
+                                let obj = {}
+                                obj.sender = encrypt(sender)
+                                obj.senderPK = encrypt(senderPK)
+                                obj.subject = subject.toLowerCase()
+                                obj.subjectName = subjectName
+                                obj.action = "📉 Sell"
+                                obj.getSellPriceAfterFee = valueETH
+                                obj.amount = amount
+                                table.push(obj)
+
+                                await exe_friendTech.create({
+
+                                    serverId: serverId,
+                                    authorId: authorId,
+                                    authorName: authorName,
+                                    isBuy: "false",
+                                    subject: JSON.stringify(table),
+                                    value: '0',
+                                    simulation: "true",
+                                    expectedPrice: totalValue.toString(),
+
+                                })
+
+
+
+
+                            } else {
+
+                                const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
+                                    .setTitle("Sell Shares")
+                                    .setDescription(">>> Displaying the simulated transaction data")
+                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    .setTimestamp()
+                                    .addFields(
+                                        { name: " ", value: " ", inline: false },
+                                        { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: false },
+                                        { name: "Share Price", value: "`" + parseFloat(shareValue).toFixed(3) + "Ξ`", inline: true },
+                                        { name: "Amount", value: "`" + amount + "`", inline: true },
+                                        { name: "Transaction Data 🚫", value: "```The transaction simulation failed.\n\n" + errorMessageFormatted + "```", inline: false },
+
+                                    )
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+
+
+                                await interaction.editReply({ embeds: [gasTrackerEmbed2], components: [buttonRowChoiceNo], ephemeral: true });
+
+                            }
 
                         } else {
 
-                            const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
+
+
+                            const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle("Sell Shares")
-                                .setDescription(">>> Displaying the simulated transaction data")
+                                .setDescription(">>> Displaying your Friend.tech transaction")
+                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
-                                .setTimestamp()
                                 .addFields(
-                                    { name: " ", value: " ", inline: false },
-                                    { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: false },
-                                    { name: "Share Price", value: "`" + parseFloat(shareValue).toFixed(3) + "Ξ`", inline: true },
-                                    { name: "Amount", value: "`" + amount + "`", inline: true },
-                                    { name: "Transaction Data 🚫", value: "```The transaction simulation failed.\n\n" + errorMessageFormatted + "```", inline: false },
+                                    { name: " ", value: "You can't sell this key because the last key cannot be sold.", inline: true },
 
                                 )
+                                .setTimestamp()
                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                            await interaction.reply({ embeds: [errorNotEthereum], components: [buttonRowChoiceNo], ephemeral: true });
 
 
 
-                            await interaction.editReply({ embeds: [gasTrackerEmbed2], components: [buttonRowChoiceNo], ephemeral: true });
 
                         }
-
-                    } else {
-
-
-
-                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle("Sell Shares")
-                            .setDescription(">>> Displaying your Friend.tech transaction")
-                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                            .addFields(
-                                { name: " ", value: "You can't sell this key because the last key cannot be sold.", inline: true },
-
-                            )
-                            .setTimestamp()
-                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                        await interaction.reply({ embeds: [errorNotEthereum], components: [buttonRowChoiceNo], ephemeral: true });
-
-
-
-
-                    }
 
 
 

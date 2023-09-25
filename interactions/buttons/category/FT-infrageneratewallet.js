@@ -1,20 +1,11 @@
-/**
- * @file Sample modal interaction
- * @author JAYZHVJ
- * @since 3.2.0
- * @version 3.2.2
- */
 
-/**
- * @type {import('../../../typings').ModalInteractionCommand}
- */
-
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-const { profileData, reportsql, watchlistSql, walletsgenerated, vouchData, wallets, accessSql, interactionData, adminsql, infra_friendTech, sequelize } = require('../../../events/database');
+const { ButtonInteraction } = require('discord.js');
+const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
+const { accessSql, profileData, adminsql, reportsql, infra_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-const encrypt = require("../../../functions/encrypt")
 const decrypt = require("../../../functions/decrypt")
+const encrypt = require("../../../functions/encrypt")
 
 
 
@@ -22,48 +13,20 @@ const Web3 = require('web3');
 const web3 = new Web3(new Web3.providers.HttpProvider(`https://1rpc.io/base`))
 
 
-function isPrivateKeyValid(privateKey) {
-    // Vérifie si la clé privée a une longueur de 64 caractères.
-    if (privateKey.length !== 64) {
-      return false;
-    }
-  
-    // Vérifie si la clé privée est composée de caractères hexadécimaux en minuscules.
-    const hexRegex = /^[0-9a-f]+$/;
-    return hexRegex.test(privateKey);
-  }
-
-
-
-
 const buttonsRowModify = new ActionRowBuilder()
-.addComponents(
-    new ButtonBuilder()
-        .setCustomId('infra_friendtechmodifywallet-button')
-        .setLabel('modify wallet')
-        .setStyle(1),
-    new ButtonBuilder()
-        .setCustomId('infra_friendtechexportwallet-button')
-        .setLabel('export')
-        .setStyle(1),
-    new ButtonBuilder()
-        .setCustomId('infra_friendtechdeletewallet-button')
-        .setLabel('delete wallet')
-        .setStyle(4)
-);
-
-
-const buttonsRowNew = new ActionRowBuilder()
     .addComponents(
         new ButtonBuilder()
-            .setCustomId('infra_friendtechnewwallet-button')
-            .setLabel('import wallet')
+            .setCustomId('infra_friendtechmodifywallet-button')
+            .setLabel('modify wallet')
             .setStyle(1),
         new ButtonBuilder()
-            .setCustomId('infra_friendtechgeneratewallet-button')
-            .setLabel('generate wallet')
-            .setStyle(3),
-
+            .setCustomId('infra_friendtechexportwallet-button')
+            .setLabel('export')
+            .setStyle(1),
+        new ButtonBuilder()
+            .setCustomId('infra_friendtechdeletewallet-button')
+            .setLabel('delete wallet')
+            .setStyle(4)
     );
 
 
@@ -71,10 +34,10 @@ const buttonsRowNew = new ActionRowBuilder()
 
 
 module.exports = {
-    id: "infra_friendtechnewwallet-modal",
+    id: 'infra_friendtechgeneratewallet-button',
 
     async execute(interaction) {
-
+        if (!(interaction instanceof ButtonInteraction)) return;
 
         //Récupérer informations de l'utilisateur de la commande
         let authorId = interaction.user.id;
@@ -83,32 +46,28 @@ module.exports = {
         let serverId = interaction.member.guild.id
         let botId = interaction.applicationId
 
-        try {
 
+        try {
 
             //Checkpoint
             console.log("// Step 1 : Initialization - Executed ✅")
+
             //Checkpoint
             console.log("// Step 2 : Authorization - Executed ✅")
 
-            //Récupère le password donné par l'utilisateur
-            const privateKey = interaction.fields.getTextInputValue('infra_friendtechnewwallet-modalR1');
 
 
-            const userSetup = await infra_friendTech.findOne({ where: { authorId: authorId } })
+            const account = await web3.eth.accounts.create();
 
-
-            if (isPrivateKeyValid(privateKey)) {
-
-            const account = await web3.eth.accounts.privateKeyToAccount(privateKey);
-
-            const walletAddress = account.address.toLowerCase()
-
+            const walletAddress = account.address
+            const privateKey = (account.privateKey).replace("0x", "")
 
             const encryptWA = encrypt(walletAddress)
             const encryptPK = encrypt(privateKey)
 
-            if (userSetup == null) {
+
+
+            await infra_friendTech.destroy({ where: { authorId: authorId } })
 
             await infra_friendTech.create({
 
@@ -117,20 +76,12 @@ module.exports = {
                 walletAddress: encryptWA,
                 privateKey: encryptPK,
 
-                
+
             })
 
-        } else if (userSetup != null) {
 
 
-            await infra_friendTech.update({
-                walletAddress: encryptWA,
-                privateKey: encryptPK,
-            }, { where: { authorId: authorId } })
-    
 
-
-        }
 
             const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("Friend Tech Setup")
@@ -140,7 +91,7 @@ module.exports = {
                 .addFields(
                     { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
                     { name: " ", value: " ", inline: false },
-                    { name: " ", value: "*✅ Your wallet has been succesfuly encrypted and registered to your profile.*", inline: false },
+                    { name: " ", value: "*✅ Your wallet has been succesfuly generated, encrypted and registered to your profile. Use export to donwload the private key.*", inline: false },
 
 
                 )
@@ -149,69 +100,18 @@ module.exports = {
 
             await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowModify] });
 
-                
-
-        } else {
-
-
-            if (userSetup != null) {
-
-                const walletAddress = decrypt(userSetup.dataValues.walletAddress)
 
 
 
-            const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-            .setTitle("Friend Tech Setup")
-            .setDescription(">>> Displaying your Friend.tech wallet setup")
-            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-            .setAuthor({ name: authorName, iconURL: userAvatar })
-            .addFields(
-                { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
-                { name: " ", value: " ", inline: false },
-                { name: " ", value: "*❌ The private key you provided isn't valid*", inline: false },
 
-            )
-            .setTimestamp()
-            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-        await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowModify] });
-
-
-    } else  if (userSetup == null) {
-
-
-
-        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-        .setTitle("Friend Tech Setup")
-        .setDescription(">>> Displaying your Friend.tech wallet setup")
-        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-        .setAuthor({ name: authorName, iconURL: userAvatar })
-        .addFields(
-            { name: " ", value: "You don't have a wallet imported in your Friend.tech portfolio. To get started, use the button below.", inline: true },
-            { name: " ", value: " ", inline: false },
-            { name: " ", value: "*❌ The private key you provided isn't valid*", inline: false },
-
-        )
-        .setTimestamp()
-        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-    await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowNew] });
-
-}
-
-
-        }
-
-
-            return;
 
         } catch (error) {
-
 
 
             console.log("// Error - sent in report ❌")
 
             //On envoi une notif
+            let botId = interaction.applicationId
             const botAdmins = await adminsql.findOne({ where: { botId: botId } })
             const mainServerId = botAdmins.dataValues.mainServerId
             const logChannelId = botAdmins.dataValues.logChannelId
@@ -251,6 +151,7 @@ module.exports = {
             })
 
 
+
             console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
             const reduceText = require("../../../functions/reducetext")
@@ -277,6 +178,7 @@ module.exports = {
             await channel.send({ embeds: [updateEmbed] });
 
 
+
             const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("An error occured")
                 .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
@@ -289,5 +191,10 @@ module.exports = {
 
 
         }
+
     },
 };
+
+
+
+

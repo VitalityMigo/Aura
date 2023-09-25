@@ -6,13 +6,18 @@ const moment = require('moment');
 
 
 const buttonsRowNew = new ActionRowBuilder()
-.addComponents(
-    new ButtonBuilder()
-        .setCustomId('infra_friendtechnewwallet-button')
-        .setLabel('import wallet')
-        .setStyle(1),
+    .addComponents(
+        new ButtonBuilder()
+            .setCustomId('infra_friendtechnewwallet-button')
+            .setLabel('import wallet')
+            .setStyle(1),
+        new ButtonBuilder()
+            .setCustomId('infra_friendtechgeneratewallet-button')
+            .setLabel('generate wallet')
+            .setStyle(3),
+            
 
-);
+    );
 
 
 
@@ -37,25 +42,25 @@ module.exports = {
 
 
 
-                //Checkpoint
-                console.log("// Step 2 : Authorization - Executed ✅")
+            //Checkpoint
+            console.log("// Step 2 : Authorization - Executed ✅")
 
-                await infra_friendTech.destroy({ where: { authorId: authorId } })
+            await infra_friendTech.destroy({ where: { authorId: authorId } })
 
 
-                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Friend Tech Setup")
-                    .setDescription(">>> Displaying your Friend.tech wallet setup")
-                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                    .addFields(
-                        { name: " ", value: "You're wallet have been completely deleted from the database. You can use the button below to set a new one.", inline: true },
+            const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                .setTitle("Friend Tech Setup")
+                .setDescription(">>> Displaying your Friend.tech wallet setup")
+                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                .setAuthor({ name: authorName, iconURL: userAvatar })
+                .addFields(
+                    { name: " ", value: "You're wallet have been completely deleted from the database. You can use the button below to set a new one.", inline: true },
 
-                    )
-                    .setTimestamp()
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                )
+                .setTimestamp()
+                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowNew] });
+            await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowNew] });
 
 
 

@@ -70,6 +70,10 @@ const buttonsRowNew = new ActionRowBuilder()
             .setCustomId('infra_friendtechnewwallet-button')
             .setLabel('import wallet')
             .setStyle(1),
+        new ButtonBuilder()
+            .setCustomId('infra_friendtechgeneratewallet-button')
+            .setLabel('generate wallet')
+            .setStyle(3),
 
     );
 
@@ -135,7 +139,7 @@ module.exports = {
                         const supply = subjectProfile.data.shareSupply
                         const newSupply = parseFloat(supply) + parseFloat(amount)
 
-                       
+
 
 
                         const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
@@ -305,7 +309,7 @@ module.exports = {
                             const supply = subjectProfile.data.shareSupply
                             const newSupply = parseFloat(supply) - parseFloat(amount)
 
-                     
+
 
                             if (newSupply > 0) {
 

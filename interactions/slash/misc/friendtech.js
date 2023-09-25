@@ -2507,6 +2507,10 @@ module.exports = {
                                                 .setCustomId('infra_friendtechnewwallet-button')
                                                 .setLabel('import wallet')
                                                 .setStyle(1),
+                                                new ButtonBuilder()
+                                                .setCustomId('infra_friendtechgeneratewallet-button')
+                                                .setLabel('generate wallet')
+                                                .setStyle(3),
 
                                         );
 

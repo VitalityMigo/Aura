@@ -12,6 +12,7 @@ const addTimeout = require("../functions/addtimeout")
 
 const newFriendtechUser = require('../functions/m-newFTuser')
 const newSmartMoneyTrade = require('../functions/m-FTsmartmoney')
+const newFTDeposit = require("../functions/m-newbasedeposit")
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -37,6 +38,14 @@ const shareContractAddress = "0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4";
 
 const smartWalletJson = require("../contracts/friendtech/smartwallet.json")
 const smartWalletTable = smartWalletJson.map(obj => obj.address);
+
+const depositRelayAddress = "0x977f82a600a1414e583f7f13623f1ac5d58b1c0b"
+const depositBridgerL1AddressA = "0x3154cf16ccdb4c6d922629664174b904d80f2c35"
+const depositBridgerL2AddressA = "0x4200000000000000000000000000000000000007"
+const depositBridgerL2AddressB = "0x4200000000000000000000000000000000000010"
+const depositMin = 1
+
+const exepectedTxnType = 126
 
 
 addTimeout(3)
@@ -85,11 +94,14 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                 const contract = transaction.to
                 const value = transaction.value
                 const from = transaction.from
-
+                const type = transaction.type
+                const mint = parseInt(transaction.mint, 16)
+                const hash = transaction.hash
 
                 const buySignature = "0x6945b123"
                 const sellSignature = "0xb51d0534"
                 const newValue = "0"
+                const valueEth = value / 10 ** 18
 
 
                 // // On renvoi vers le new user
@@ -108,12 +120,22 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                 // On vérifie que ça vient d'un wallet SM, que le contrat est bien FT, que la valeur est différente de 0, et que c'est un buy ou un sell
                 if (smartWalletTable.includes(from.toLowerCase()) && contract.toLowerCase() == shareContractAddress.toLowerCase() && (input.startsWith(sellSignature) || (input.startsWith(buySignature) && newValue != value))) {
 
-                    console.log("ici")
 
                     newSmartMoneyTrade(transaction)
 
 
                 }
+
+
+
+
+                if ((from.toLowerCase() == depositRelayAddress.toLowerCase() && contract.toLowerCase() == depositBridgerL2AddressA.toLowerCase() && valueEth >= depositMin) || (input == "0x01" && type == exepectedTxnType && mint && from.toLowerCase() == contract.toLowerCase() && valueEth >= depositMin)) {
+
+                    newFTDeposit(transaction)
+
+
+                }
+
 
 
 

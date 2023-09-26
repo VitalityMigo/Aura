@@ -181,6 +181,13 @@ module.exports = {
                         .setRequired(true)
 
                 )
+                .addStringOption(option =>
+                    option
+                        .setName("share")
+                        .setDescription("Filter the user's PnL by a specific share (i.e vitalitymigo)")
+                        .setRequired(false)
+
+                )
         )
         .addSubcommand(subcommand =>
             subcommand
@@ -2092,6 +2099,12 @@ module.exports = {
 
                                     const usernameProvided = interaction.options.getString("twitter").toLowerCase()
 
+                                    let shareProvided = ""
+                                    if (interaction.options.getString("share")) {
+                                        shareProvided = removeAtSymbol(interaction.options.getString("share")).toLowerCase()
+                                    }
+
+
                                     const givenUsername = removeAtSymbol(usernameProvided)
 
 
@@ -2172,7 +2185,7 @@ module.exports = {
                                                 const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
 
 
-                                                heldValue = await getFTHolding(userAddress)
+                                                heldValue = await getFTHolding(userAddress, shareProvided)
 
 
 
@@ -2187,8 +2200,9 @@ module.exports = {
 
 
                                                 const holdersCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/trade-activity")
-                                                const holdersTable = holdersCall.data.users
+                                                let holdersTable = holdersCall.data.users
 
+                                                if (shareProvided != "") { holdersTable = holdersTable.filter((obj) => obj.twitterUsername.toLowerCase() == shareProvided.toLowerCase()); }
 
 
 
@@ -2283,6 +2297,7 @@ module.exports = {
 
                                                     let itemsNumber = 50
                                                     let callPage = ""
+                                                    let callPageFiltered = ""
 
                                                     let continuation = holdersCall.data.nextPageStart
 
@@ -2292,12 +2307,15 @@ module.exports = {
 
 
                                                         callPage = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/trade-activity?pageStart=" + itemsNumber)
+                                                        
+                                                        callPageFiltered = callPage.data.users
+                                                        if (shareProvided != "") { callPageFiltered = callPageFiltered.filter((obj) => obj.twitterUsername.toLowerCase() == shareProvided.toLowerCase()); }
 
                                                         continuation = callPage.data.nextPageStart
 
                                                         if (continuation != null) {
 
-                                                            for (const holding of callPage.data.users) {
+                                                            for (const holding of callPageFiltered) {
 
                                                                 let name = holding.twitterName
                                                                 let username = holding.twitterUsername
@@ -2676,11 +2694,10 @@ module.exports = {
 
                                     if (userSetup != null) {
 
-                                        // const walletAddress = decrypt(userSetup.dataValues.walletAddress).toLowerCase()
-                                        // const PK = decrypt(userSetup.dataValues.privateKey).toLowerCase()
+                                        const walletAddress = decrypt(userSetup.dataValues.walletAddress).toLowerCase()
+                                        const PK = decrypt(userSetup.dataValues.privateKey).toLowerCase()
 
-                                        const walletAddress = "0x09e970fbad12435ae1a87926d7faa290a0f75c33"
-                                        const PK = "17e4bf7969ca2684ee3643cb4fbd4db137dc44119116cf98bc53ac1a2b487e52"
+
                                         const receiver = walletAddress
 
                                         const action = "🌐 Bridge"
@@ -2722,7 +2739,7 @@ module.exports = {
                                             try {
 
                                                 gasUsed = await mainnetBridgeContract.methods.depositETHTo(receiver, deaultGas, data).estimateGas({ from: walletAddress.toLowerCase(), value: valueWEI });
-console.log(gasUsed)
+
                                             } catch (error) {
 
                                                 simulation = false
@@ -3062,18 +3079,25 @@ console.log(gasUsed)
 
 
 
-async function getFTHolding(userAddress) {
+
+
+
+
+
+async function getFTHolding(userAddress, share) {
 
     let heldValue = 0
 
 
-    let userHoldingCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token-holdings")
 
+    let userHoldingCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token-holdings")
+    let userHolding = userHoldingCall.data.users
+    if (share != "") { userHolding = userHolding.filter((obj) => obj.twitterUsername.toLowerCase() == share.toLowerCase()); }
 
 
     if (userHoldingCall.data.nextPageStart != 50) {
 
-        for (const holding of userHoldingCall.data.users) {
+        for (const holding of userHolding) {
 
             let holdingAddress = holding.address.toLowerCase()
 
@@ -3091,7 +3115,7 @@ async function getFTHolding(userAddress) {
 
     } else {
 
-        for (const holding of userHoldingCall.data.users) {
+        for (const holding of userHolding) {
 
 
             let holdingAddress = holding.address.toLowerCase()
@@ -3118,12 +3142,14 @@ async function getFTHolding(userAddress) {
 
 
             callPage = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token-holdings?pageStart=" + itemsNumber)
+            callPageFiltered = callPage.data.users
+            if (share != "") { callPageFiltered = callPageFiltered.filter((obj) => obj.twitterUsername.toLowerCase() == share.toLowerCase()); }
 
             continuation = callPage.data.nextPageStart
 
             if (continuation != null) {
 
-                for (const holding of callPage.data.users) {
+                for (const holding of callPageFiltered) {
 
                     let holdingAddress = holding.address.toLowerCase()
 

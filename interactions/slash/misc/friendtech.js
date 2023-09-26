@@ -2473,7 +2473,10 @@ module.exports = {
                                                 /// TEMPORAIRE
                                                 await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRow] })
 
-
+                                                // On modifie la description pour préciser sur quelle share si présent
+                                                if (shareProvided != '') {
+                                                    getBlurOneWallet.setDescription(">>> Displaying the friend.tech profits of `" + twName + "` on `" + shareProvided + "`.")
+                                                }
 
 
                                                 await interactionData.destroy({ where: { authorId: authorId, commandName: "friendtech-profit", serverId: serverId } })

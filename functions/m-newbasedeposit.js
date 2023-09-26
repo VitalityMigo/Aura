@@ -104,13 +104,11 @@ await addTimeout(2)
         const input = transaction.input
 
 
-        console.log("Ca passe: " + hash)
-        console.log(depositBridgerL2AddressA)
-        console.log(to)
+        
         if (depositBridgerL2AddressA.toLowerCase() == to.toLowerCase()) {
 
-            console.log("bridge")
 
+            
 
             const methodId = input.slice(0, 10)
             const sender = "0x" + input.slice(74, 138).slice(24);
@@ -144,8 +142,8 @@ await addTimeout(2)
 
         } else {
 
-            console.log("portal")
 
+            
 
             if (value >= minValue) {
 
@@ -173,7 +171,7 @@ await addTimeout(2)
 
 
             const supply = await shareContract.methods.sharesSupply(userAddress).call();
-console.log(supply)
+
             // Donc l'utilisateur est bien sur Friend.Tech
             if (supply > 0) {
 

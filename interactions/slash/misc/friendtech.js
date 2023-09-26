@@ -2470,13 +2470,16 @@ module.exports = {
                                                     .setTimestamp()
                                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+
+                                                // On modifie la description pour préciser sur quelle share si présent
+                                                if (shareProvided != "") {
+                                                    console.log("ici")
+                                                    getBlurOneWallet.setDescription(">>> Displaying the friend.tech profits of `" + twName + "` on `" + shareProvided + "`.")
+                                                }
+
                                                 /// TEMPORAIRE
                                                 await interaction.editReply({ embeds: [getBlurOneWallet], components: [buttonsRow] })
 
-                                                // On modifie la description pour préciser sur quelle share si présent
-                                                if (shareProvided != '') {
-                                                    getBlurOneWallet.setDescription(">>> Displaying the friend.tech profits of `" + twName + "` on `" + shareProvided + "`.")
-                                                }
 
 
                                                 await interactionData.destroy({ where: { authorId: authorId, commandName: "friendtech-profit", serverId: serverId } })

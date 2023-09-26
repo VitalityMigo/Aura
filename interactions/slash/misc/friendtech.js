@@ -2185,8 +2185,10 @@ module.exports = {
                                                 const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
 
 
-                                                heldValue = await getFTHolding(userAddress, shareProvided)
+                                                const holdingTable = await getFTHolding(userAddress, shareProvided)
 
+                                                heldValue = holdingTable.heldValue
+                                                heldCount = holdingTable.heldCount
 
 
                                                 const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
@@ -2195,7 +2197,7 @@ module.exports = {
                                                 let twUsername = userInfoCall.data.twitterUsername
                                                 let twPfp = userInfoCall.data.twitterPfpUrl
 
-                                                heldCount = userInfoCall.data.holdingCount
+                                                //        heldCount = userInfoCall.data.holdingCount
 
 
 
@@ -2227,7 +2229,7 @@ module.exports = {
 
                                                             buyCount += parseFloat(amount)
                                                             tradeCount += parseFloat(amount)
-                                                            buySpent += price * (1 + (totalFees / 100))
+                                                            buySpent += price
                                                             buyFeeSpent += price * (totalFees / 100)
 
 
@@ -2236,7 +2238,7 @@ module.exports = {
 
                                                             soldCount += parseFloat(amount)
                                                             tradeCount += parseFloat(amount)
-                                                            soldValue += price * (1 - (totalFees / 100))
+                                                            soldValue += price
                                                             soldFeeValue += price * (totalFees / 100)
 
 
@@ -2273,7 +2275,7 @@ module.exports = {
 
                                                             buyCount += parseFloat(amount)
                                                             tradeCount += parseFloat(amount)
-                                                            buySpent += price * (1 + (totalFees / 100))
+                                                            buySpent += price
                                                             buyFeeSpent += price * (totalFees / 100)
 
 
@@ -2282,8 +2284,10 @@ module.exports = {
 
                                                             soldCount += parseFloat(amount)
                                                             tradeCount += parseFloat(amount)
-                                                            soldValue += price * (1 - (totalFees / 100))
+                                                            soldValue += price
                                                             soldFeeValue += price * (totalFees / 100)
+
+
 
                                                         }
 
@@ -2307,7 +2311,7 @@ module.exports = {
 
 
                                                         callPage = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/trade-activity?pageStart=" + itemsNumber)
-                                                        
+
                                                         callPageFiltered = callPage.data.users
                                                         if (shareProvided != "") { callPageFiltered = callPageFiltered.filter((obj) => obj.twitterUsername.toLowerCase() == shareProvided.toLowerCase()); }
 
@@ -2333,7 +2337,7 @@ module.exports = {
 
                                                                     buyCount += parseFloat(amount)
                                                                     tradeCount += parseFloat(amount)
-                                                                    buySpent += price * (1 + (totalFees / 100))
+                                                                    buySpent += price
                                                                     buyFeeSpent += price * (totalFees / 100)
 
 
@@ -2342,8 +2346,10 @@ module.exports = {
 
                                                                     soldCount += parseFloat(amount)
                                                                     tradeCount += parseFloat(amount)
-                                                                    soldValue += price * (1 - (totalFees / 100))
+                                                                    soldValue += price
                                                                     soldFeeValue += price * (totalFees / 100)
+
+
 
                                                                 }
 
@@ -2380,9 +2386,9 @@ module.exports = {
                                                 totalSoldValue = parseFloat(soldValue) - parseFloat(soldFeeValue)
 
 
-                                                avgBuy = totalBuySpent / buyCount
-                                                avgSold = totalSoldValue / soldCount
-                                                avgHeld = heldValue / heldCount
+                                                if (totalBuySpent > 0) { avgBuy = totalBuySpent / buyCount }
+                                                if (totalSoldValue > 0) { avgSold = totalSoldValue / soldCount }
+                                                if (heldValue > 0) { avgHeld = heldValue / heldCount }
 
 
                                                 potentialProfit = (totalSoldValue + heldValue) - totalBuySpent // Ajouter royalties ?
@@ -3087,6 +3093,7 @@ module.exports = {
 async function getFTHolding(userAddress, share) {
 
     let heldValue = 0
+    let heldCount = 0
 
 
 
@@ -3108,6 +3115,7 @@ async function getFTHolding(userAddress, share) {
             let totalValue = balance * holderPrice
 
             heldValue += parseFloat(totalValue)
+            heldCount += parseFloat(balance)
 
 
 
@@ -3128,6 +3136,7 @@ async function getFTHolding(userAddress, share) {
             let totalValue = balance * holderPrice
 
             heldValue += parseFloat(totalValue)
+            heldCount += parseFloat(balance)
 
         }
 
@@ -3160,6 +3169,7 @@ async function getFTHolding(userAddress, share) {
                     let totalValue = balance * holderPrice
 
                     heldValue += parseFloat(totalValue)
+                    heldCount += parseFloat(balance)
 
 
                 }
@@ -3173,8 +3183,8 @@ async function getFTHolding(userAddress, share) {
         }
     }
 
+    return { heldValue, heldCount };
 
-    return heldValue
 
 
 

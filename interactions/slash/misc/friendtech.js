@@ -14,7 +14,7 @@ const countEmojis = require("../../../functions/isemoji")
 
 const moment = require("moment")
 const decrypt = require("../../../functions/decrypt")
-
+const encrypt = require("../../../functions/encrypt")
 
 
 //Récupérer les clefs API
@@ -33,6 +33,19 @@ const friendtechHeaders = {
 const axios = require('axios')
 
 
+//Web3 API + Cloudfare Provider
+const Web3 = require("web3")
+const web3Main = new Web3("https://1rpc.io/eth")
+
+
+// On crée des instances des contrats
+const mainnetBridgeContractAbi = require("../../../contracts/base/l1basebridge.json")
+const mainnetBridgeProxyContractAddress = "0x3154cf16ccdb4c6d922629664174b904d80f2c35"
+const mainnetBridgeContract = new web3Main.eth.Contract(mainnetBridgeContractAbi, mainnetBridgeProxyContractAddress);
+
+
+
+
 
 
 function removeAtSymbol(word) {
@@ -44,6 +57,9 @@ function removeAtSymbol(word) {
 }
 
 
+function formatWallet(input) {
+    return input.length > 35 ? `${input.substring(0, 5)}…${input.substring(input.length - 4)}` : input;
+}
 
 
 
@@ -56,6 +72,45 @@ const buttonsRow = new ActionRowBuilder()
             .setStyle(2)
     );
 
+
+
+const buttonsRowNew = new ActionRowBuilder()
+    .addComponents(
+        new ButtonBuilder()
+            .setCustomId('infra_friendtechnewwallet-button')
+            .setLabel('import wallet')
+            .setStyle(1),
+        new ButtonBuilder()
+            .setCustomId('infra_friendtechgeneratewallet-button')
+            .setLabel('generate wallet')
+            .setStyle(3),
+
+    );
+
+const buttonRowChoiceBridge = new ActionRowBuilder()
+    .addComponents(
+        new ButtonBuilder()
+            .setCustomId('friendtech_exec_bridgeconfirm')
+            .setLabel('Confirm')
+            .setEmoji("✅")
+            .setStyle(1),
+        new ButtonBuilder()
+            .setCustomId('friendtech_exec_bridgecancel')
+            .setLabel('Cancel')
+            .setStyle(4),
+
+    );
+
+
+const buttonRowChoiceNoBridge = new ActionRowBuilder()
+    .addComponents(
+
+        new ButtonBuilder()
+            .setCustomId('friendtech_exec_bridgecancel')
+            .setLabel('Cancel')
+            .setStyle(4),
+
+    );
 
 
 
@@ -112,8 +167,7 @@ module.exports = {
                     option
                         .setName("twitter")
                         .setDescription("The user's twitter username (i.e vitalitymigo")
-                        .setRequired(true)
-
+                        .setRequired(true),
                 )
         )
         .addSubcommand(subcommand =>
@@ -133,6 +187,34 @@ module.exports = {
                 .setName("wallet")
                 .setDescription("Manage your Friend.tech buy and sell wallet")
 
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("bridge")
+                .setDescription("Bridge ETH from the mainnet to Base and vise versa")
+                .addStringOption(option =>
+                    option
+                        .setName("type")
+                        .setDescription("Select the direction for bridging ETH")
+                        .setRequired(true)
+                        .setChoices(
+                            {
+                                name: 'Mainnet to Base',
+                                value: 'mainnet_to_base',
+                            },
+                            {
+                                name: 'Base to Mainnet',
+                                value: 'base_to_mainnet',
+                            }
+                        )
+                )
+                .addStringOption(option =>
+                    option
+                        .setName("amount")
+                        .setDescription("The amount of ETH to bridge")
+                        .setRequired(true)
+
+                ),
         ),
 
 
@@ -463,7 +545,7 @@ module.exports = {
                                                             .setCustomId('friendtech_infra_help-button')
                                                             .setLabel('📑 Tutorial')
                                                             .setStyle(1),
-                                                       
+
 
 
                                                     )
@@ -2369,7 +2451,7 @@ module.exports = {
 
 
 
-                                                
+
                                                 await interactionData.destroy({ where: { authorId: authorId, commandName: "friendtech-profit", serverId: serverId } })
 
                                                 await interactionData.create({
@@ -2507,7 +2589,7 @@ module.exports = {
                                                 .setCustomId('infra_friendtechnewwallet-button')
                                                 .setLabel('import wallet')
                                                 .setStyle(1),
-                                                new ButtonBuilder()
+                                            new ButtonBuilder()
                                                 .setCustomId('infra_friendtechgeneratewallet-button')
                                                 .setLabel('generate wallet')
                                                 .setStyle(3),
@@ -2580,6 +2662,198 @@ module.exports = {
 
 
 
+
+
+
+                                } else if (interaction.options.getSubcommand() === 'bridge') {
+
+                                    const value = interaction.options.getString("amount")
+                                    const type = interaction.options.getString("type")
+
+                                    const userSetup = await infra_friendTech.findOne({ where: { authorId: authorId } })
+
+
+
+                                    if (userSetup != null) {
+
+                                        // const walletAddress = decrypt(userSetup.dataValues.walletAddress).toLowerCase()
+                                        // const PK = decrypt(userSetup.dataValues.privateKey).toLowerCase()
+
+                                        const walletAddress = "0x09e970fbad12435ae1a87926d7faa290a0f75c33"
+                                        const PK = "17e4bf7969ca2684ee3643cb4fbd4db137dc44119116cf98bc53ac1a2b487e52"
+                                        const receiver = walletAddress
+
+                                        const action = "🌐 Bridge"
+
+
+                                        const data = "0x"
+                                        const deaultGas = 0
+                                        const valueWEI = web3Main.utils.toWei(value.toString(), 'ether')
+
+
+                                        if (type === "mainnet_to_base") {
+
+
+                                            const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle("Bridge Funds")
+                                                .setDescription(">>> Displaying the simulated transaction data")
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setTimestamp()
+                                                .addFields(
+                                                    { name: " ", value: " ", inline: false },
+                                                    { name: "From", value: "`" + formatWallet(walletAddress) + "`\n∟ Mainnet", inline: true },
+                                                    { name: "To", value: "`" + formatWallet(walletAddress) + "`\n∟ Base", inline: true },
+                                                    { name: "Action", value: "`" + action + "`", inline: true },
+                                                    { name: " ", value: "**Simulation loading** <a:AuraLoading:1134068847616458792>", inline: false },
+
+                                                )
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+
+                                            await interaction.editReply({ embeds: [gasTrackerEmbed], ephemeral: true });
+
+
+
+                                            let simulation = true
+                                            let gasUsed = ""
+                                            let errorMessageFormatted = ""
+
+                                            try {
+
+                                                gasUsed = await mainnetBridgeContract.methods.depositETHTo(receiver, deaultGas, data).estimateGas({ from: walletAddress.toLowerCase(), value: valueWEI });
+console.log(gasUsed)
+                                            } catch (error) {
+
+                                                simulation = false
+                                                let message = error.message
+
+                                                if (message.startsWith("Returned")) {
+                                                    errorMessageFormatted = message.replace("Returned error: ", "")
+                                                }
+                                                console.log("Erreur lors de l'estimation du bridge: " + error.stack)
+
+                                            }
+
+                                            if (simulation == true) {
+
+
+
+                                                const simulationFormatted = "Bridge: Mainnet >>> Base\n\nSender: " + walletAddress.toLowerCase() + "\nAmount:" + parseFloat(value).toFixed(4) + "Ξ"
+
+
+                                                const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle("Bridge Funds")
+                                                    .setDescription(">>> Displayng the simulated transaction data")
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setTimestamp()
+                                                    .addFields(
+                                                        { name: " ", value: " ", inline: false },
+                                                        { name: "From", value: "`" + formatWallet(walletAddress) + "`\n∟ Mainnet", inline: true },
+                                                        { name: "To", value: "`" + formatWallet(walletAddress) + "`\n∟ Base", inline: true },
+                                                        { name: "Action", value: "`" + action + "`", inline: true },
+                                                        { name: " ", value: " ", inline: false },
+                                                        { name: "Transaction Data ✅", value: "```css\n" + simulationFormatted + "```", inline: false },
+                                                        { name: " ", value: "*The selected amount will be bridged to the base chain at the same address as the sender.*", inline: false },
+
+                                                    )
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+                                                await interaction.editReply({ embeds: [gasTrackerEmbed2], components: [buttonRowChoiceBridge], ephemeral: true });
+
+
+
+                                                exe_friendTech.destroy({ where: { authorId: authorId, serverId: serverId, treated: null, isBuy: "bridge" } });
+
+                                                // On enregistre les infos
+                                                let table = []
+                                                let obj = {}
+                                                obj.sender = encrypt(walletAddress)
+                                                obj.senderPK = encrypt(PK)
+                                                obj.type = type
+                                                obj.action = "🌐 Bridge"
+                                                obj.gasUnits = gasUsed.toString()
+                                                table.push(obj)
+
+                                                await exe_friendTech.create({
+
+                                                    serverId: serverId,
+                                                    authorId: authorId,
+                                                    authorName: authorName,
+                                                    isBuy: "bridge",
+                                                    subject: JSON.stringify(table),
+                                                    value: valueWEI.toString(),
+                                                    simulation: "true",
+
+                                                })
+
+
+                                            } else {
+
+                                                const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle("Bridge Funds")
+                                                    .setDescription(">>> Displayng the simulated transaction")
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setTimestamp()
+                                                    .addFields(
+                                                        { name: " ", value: " ", inline: false },
+                                                        { name: "From", value: "`" + formatWallet(walletAddress) + "`\n∟ Mainnet", inline: false },
+                                                        { name: "To", value: "`" + formatWallet(walletAddress) + "`\n∟ Base", inline: true },
+                                                        { name: "Action", value: "`" + action + "`", inline: true },
+                                                        { name: "Transaction Data 🚫", value: "```The transaction simulation failed.\n\n" + errorMessageFormatted + "```", inline: false },
+
+                                                    )
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+                                                await interaction.editReply({ embeds: [gasTrackerEmbed2], components: [buttonRowChoiceNoBridge], ephemeral: true });
+
+                                            }
+
+
+
+
+                                        } else if (type === "base_to_mainnet") {
+
+
+                                            const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle(`${authorName}'s profit`)
+                                                .setDescription("The command you try to use is currently being built and will be available in the near future. You can still use all the other commands in the meantime.")
+                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                .setTimestamp()
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                            await interaction.editReply({ embeds: [availableInTheNearFuture] });
+
+
+
+                                        }
+
+
+
+                                    } else {
+
+
+                                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle("Friend Tech Setup")
+                                            .setDescription(">>> Displaying your Friend.tech wallet setup")
+                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .addFields(
+                                                { name: " ", value: "You don't have a wallet imported in your Friend.tech portfolio. To get started, use the button below.", inline: true },
+
+                                            )
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                        await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowNew], ephemeral: true });
+
+
+
+
+                                    }
 
 
 
@@ -2762,7 +3036,7 @@ module.exports = {
                     .setFooter({ text: 'Powered by Aura', iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png' })
 
 
-                await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
+                await interaction.editReply({ embeds: [errorAnswerUser], components: [], ephemeral: true });
 
 
             }

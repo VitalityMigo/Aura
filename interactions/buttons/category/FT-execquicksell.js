@@ -213,7 +213,7 @@ module.exports = {
                                         { name: " ", value: " ", inline: false },
                                         { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: true },
                                         { name: "Action", value: "`" + action + "`", inline: true },
-                                        { name: " ", value: "**Buying** `" + amount + "` **share for** `" + expectedValue + "Ξ`", inline: false },
+                                        { name: " ", value: "**Selling** `" + amount + "` **share for** `" + expectedValue + "Ξ`", inline: false },
                                         { name: "Transaction hash", value: "<a:AuraLoading:1134068847616458792>", inline: false },
 
                                     )

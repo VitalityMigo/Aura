@@ -193,6 +193,7 @@ await addTimeout(2)
                 twitterUsername = userInfoCall.data.twitterUsername
                 twitterName = userInfoCall.data.twitterName
                 twitterPfp = userInfoCall.data.twitterPfpUrl
+                displayPrice = userInfoCall.data.displayPrice / 10**18
 
 
                 const userBalance = (await web3.eth.getBalance(userAddress)) / 10 ** 18
@@ -225,7 +226,7 @@ await addTimeout(2)
                     .setTimestamp()
                     .addFields(
                         { name: "Name", value: "`" + twitterName + "`", inline: true },
-                        { name: "Username", value: "`" + twitterUsername + "`", inline: true },
+                        { name: "Price", value: "`" + parseFloat(displayPrice).toFixed(4) + "Ξ`", inline: true },
                         { name: " ", value: " ", inline: false },
                         { name: "From", value: "`" + formatWallet(mainnetAddress) + "`\n∟ Mainnet", inline: true },
                         { name: "To", value: "`" + formatWallet(userAddress) + "`\n∟ Base", inline: true },

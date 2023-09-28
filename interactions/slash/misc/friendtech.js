@@ -242,6 +242,19 @@ module.exports = {
                         .setRequired(true)
 
                 )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("airdrop")
+                .setDescription("Display the airdrop metrics of a Friend.Tech user")
+                .addStringOption(option =>
+                    option
+                        .setName("twitter")
+                        .setDescription("The user's twitter username (i.e vitalitymigo")
+                        .setRequired(true)
+
+                )
+
         ),
 
 
@@ -2817,7 +2830,7 @@ module.exports = {
 
                                                         let timestamp = Math.floor((date.setHours(date.getHours() + 2)) / 1000)
 
-                                                        
+
 
                                                         // on definit le tag et le type d'action
                                                         let actionType = "Buy"
@@ -3172,6 +3185,274 @@ module.exports = {
 
 
 
+
+
+
+
+
+
+
+
+
+
+                                } else if (interaction.options.getSubcommand() === 'airdrop') {
+
+
+
+                                    let userAddress = ""
+
+                                    let findUser = []
+                                    let isMatch = true
+
+                                    const usernameProvided = interaction.options.getString("twitter").toLowerCase()
+
+                                    const givenUsername = removeAtSymbol(usernameProvided)
+
+
+                                    try {
+                                        findUser = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername + '"}}')
+
+                                    } catch (error) {
+
+                                        isMatch = false
+                                    }
+
+
+                                    if (isMatch == true) {
+
+
+                                        const user = findUser.data[0].result.data.json.find(obj => obj.twitterUsername.toLowerCase() == givenUsername.toLowerCase())
+
+
+                                        if (user) {
+
+
+                                            userAddress = user.address
+
+
+                                            try {
+
+
+                                                const buttonsRow = new ActionRowBuilder()
+                                                    .addComponents(
+                                                        new ButtonBuilder()
+                                                            .setCustomId('friendtechairdrop-frenfrenmenu-button')
+                                                            .setLabel('Fren Analyzer')
+                                                            .setStyle(3),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('friendtechairdrop-leaderboardbyfren-button')
+                                                            .setLabel('Leaderboard')
+                                                            .setStyle(1),
+
+                                                    );
+
+
+                                                const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
+
+
+                                                const twitterName = user.twitterName
+                                                const twitterUsername = user.twitterUsername
+                                                const twitterPfp = userInfoCall.data.twitterPfpUrl
+
+                                                const keyPrice = user.keyPrice
+                                                const shareSupply = user.shareSupply
+                                                const holdingCount = user.holdingCount
+                                                const holderCount = user.holderCount
+
+                                                const portfolioValue = user.portfolioValue.value
+                                                const feesCollected = user.feesCollected
+                                                const subjectFees = 0.05
+                                                const volume = feesCollected / subjectFees
+
+
+                                                const airdropTier = user.tier
+                                                const airdropPoints = user.totalPoints
+                                                const expiredPoints = user.expiredPoints
+
+                                                const frenScore = user.frenScore * 100
+                                                const frenCount = user.frenfrenCount
+
+
+                                                let active = "❌ No"
+                                                if (expiredPoints == false) { active = "✅ Yes" }
+
+
+
+                                                const airdropFTBase = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle(twitterName + "'s Airdrop")
+                                                    .setDescription(">>> Displaying Friend.Tech airdrop metrics")
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setThumbnail(twitterPfp)
+                                                    .setTimestamp()
+                                                    .addFields(
+                                                        { name: "Name", value: "`" + twitterName + "`", inline: true },
+                                                        { name: "Username", value: "`" + twitterUsername + "`", inline: true },
+                                                        { name: " ", value: " ", inline: true },
+                                                        { name: " ", value: " ", inline: false },
+                                                        { name: "Supply", value: "`" + shareSupply + "`", inline: true },
+                                                        { name: "Holders", value: "`" + holderCount + "`", inline: true },
+                                                        { name: "Holding", value: "`" + holdingCount + "`", inline: true },
+                                                        { name: "Portfolio", value: "`" + parseFloat(portfolioValue).toFixed(3) + "Ξ`", inline: true },
+                                                        { name: "Volume", value: "`" + parseFloat(volume).toFixed(3) + "Ξ`", inline: true },
+                                                        { name: "Fees Collected", value: "`" + parseFloat(feesCollected).toFixed(3) + "Ξ`", inline: true },
+                                                        { name: "Airdrop Points", value: "`" + airdropPoints + " pts`", inline: true },
+                                                        { name: "Airdrop Tier", value: "`" + airdropTier + "`", inline: true },
+                                                        { name: "Active", value: "`" + active + "`", inline: true },
+                                                        { name: "Fren Count", value: "`" + frenCount + "`", inline: true },
+                                                        { name: "Fren Score", value: "`" + parseFloat(frenScore).toFixed(2) + "%`", inline: true },
+                                                        { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ") ∙ " + '[Airdrop](https://www.friend.tech/airdrop)' + " ∙ " + '[Search](https://twitter.com/search?q=friendtech%20airdrop)', inline: false }
+
+
+                                                    )
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+
+                                                await interaction.editReply({ embeds: [airdropFTBase], components: [buttonsRow] });
+
+
+
+                                                // On construit l'info table
+                                                let infoTable = []
+                                                let obj = {}
+                                                obj.userAddress = userAddress
+                                                obj.twitterName = twitterName
+                                                obj.twitterUsername = twitterUsername
+                                                obj.twitterPfp = twitterPfp
+                                                obj.shareSupply = shareSupply
+                                                obj.holderCount = holderCount
+                                                obj.holdingCount = holdingCount
+                                                obj.portfolioValue = portfolioValue
+                                                obj.volume = volume
+                                                obj.feesCollected = feesCollected
+                                                obj.airdropPoints = airdropPoints
+                                                obj.airdropTier = airdropTier
+                                                obj.active = active
+                                                obj.frenScore = frenScore
+                                                obj.frenCount = frenCount
+                                                infoTable.push(obj)
+
+
+
+                                                //On fait le call àbn  la base SQL
+                                                await interactionData.destroy({ where: { authorId: authorId, commandName: "friendtech-airdrop", serverId: serverId } })
+
+                                                await interactionData.create({
+
+                                                    authorId: authorId,
+                                                    authorName: authorName,
+                                                    serverId: serverId,
+                                                    commandName: "friendtech-airdrop",
+                                                    interactionId: interaction.id,
+                                                    walletAddress: "N/A",
+                                                    walletCategory: "collection",
+                                                    embed1: 'N/A',
+                                                    embed2: JSON.stringify(infoTable),
+                                                    embed3: JSON.stringify(airdropFTBase),
+                                                    pageIndex: "N/A",
+                                                    actualPage:"N/A",
+                                                    walletName: "N/A",
+                                                    selecedTimestamp: "N/A",
+                                                    selectedCollection: "N/A",
+                                                    collectionSlug: "N/A",
+                                                    collectionBanner: "N/A",
+                                                    avgDeriskPrice: "N/A",
+                                                    floorPrice: "N/A",
+                                                    lowerMarketlace: "N/A",
+                                                    collectionName: "N/A",
+                                                    buyCount: "N/A",
+                                                    soldCount: "N/A",
+                                                    remaining: "N/A",
+                                                    avgBuy: "N/A",
+                                                    avgSold: "N/A",
+                                                    realisedProfit: "N/A",
+                                                    potentialProfit: "N/A",
+                                                    roi: "N/A",
+                                                    visualTitle: "N/A",
+                                                    userAvatar: "N/A",
+                                                    nbMembersInvolved: "N/A",
+                                                    totalTradeCount: "N/A",
+                                                })
+
+
+
+
+
+
+
+
+
+
+                                            } catch (error) {
+
+                                                console.log(error)
+
+                                                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle("Friend Tech")
+                                                    .setDescription("An error occured while gathering your data. Please try again or contact a team member")
+                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                                await interaction.editReply({ embeds: [errorNotEthereum] });
+
+
+                                            }
+
+
+
+
+                                        } else {
+
+                                            let usernameSuggestionFormatted = ""
+
+                                            let index = 0
+                                            for (const suggestion of findUser.data[0].result.data.json) {
+                                                index++
+                                                if (index <= 5) {
+
+                                                    usernameSuggestionFormatted += "∙ " + suggestion.twitterUsername + "\n"
+                                                } else {
+
+                                                    break
+                                                }
+
+                                            }
+
+
+                                            const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle("Friend Tech")
+                                                .setDescription("The exact twitter username you entered isn't registered in Friend.tech.\n\n**Maybe you are looking for:** \n\n" + usernameSuggestionFormatted)
+                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                            await interaction.editReply({ embeds: [errorNotEthereum] });
+
+
+
+
+
+                                        }
+
+                                    } else {
+
+
+                                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle("Friend Tech")
+                                            .setDescription("The twitter username you entered isn't registered in Friend.tech. Please try again with a valid username.")
+                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                        await interaction.editReply({ embeds: [errorNotEthereum] });
+
+
+
+                                    }
 
 
 

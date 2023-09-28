@@ -28,7 +28,7 @@ const expectedTarget = "0x4200000000000000000000000000000000000010"
 const signature = "0xd764ad0b"
 const bytes = 64
 const hexEncoding = 16
-const minValue = 1
+const minValue = 2
 
 
 

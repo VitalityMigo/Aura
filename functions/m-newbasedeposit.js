@@ -71,7 +71,7 @@ setTimeout(() => {
 
 async function newFTDeposit(obj) {
 
-await addTimeout(2)
+    await addTimeout(2)
 
     try {
 
@@ -104,11 +104,11 @@ await addTimeout(2)
         const input = transaction.input
 
 
-        
+
         if (depositBridgerL2AddressA.toLowerCase() == to.toLowerCase()) {
 
 
-            
+
 
             const methodId = input.slice(0, 10)
             const sender = "0x" + input.slice(74, 138).slice(24);
@@ -143,7 +143,7 @@ await addTimeout(2)
         } else {
 
 
-            
+
 
             if (value >= minValue) {
 
@@ -170,10 +170,10 @@ await addTimeout(2)
         if (isGoodTxn == true) {
 
 
-            const supply = await shareContract.methods.sharesSupply(userAddress).call();
+            const price = await shareContract.methods.getBuyPrice(userAddress, 1).call();
 
             // Donc l'utilisateur est bien sur Friend.Tech
-            if (supply > 0) {
+            if (price > 0) {
 
 
 
@@ -193,7 +193,7 @@ await addTimeout(2)
                 twitterUsername = userInfoCall.data.twitterUsername
                 twitterName = userInfoCall.data.twitterName
                 twitterPfp = userInfoCall.data.twitterPfpUrl
-                displayPrice = userInfoCall.data.displayPrice / 10**18
+                displayPrice = price / 10 ** 18
 
 
                 const userBalance = (await web3.eth.getBalance(userAddress)) / 10 ** 18

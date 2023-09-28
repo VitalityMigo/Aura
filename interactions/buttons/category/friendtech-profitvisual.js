@@ -147,14 +147,14 @@ module.exports = {
                 //MINT COUNT
                 ctxFormatted.font = "700 35px 'Fira Code'";
                 ctxFormatted.fillStyle = "#E5EAFF";
-                const mintCountText = ctxFormatted.measureText(tradeCount.toString()).width
-                ctxFormatted.fillText(tradeCount.toString(), 190 - mintCountText / 2, 420);
+                const mintCountText = ctxFormatted.measureText(buyCount.toString()).width
+                ctxFormatted.fillText(buyCount.toString(), 190 - mintCountText / 2, 420);
 
                 //BUY COUNT
                 ctxFormatted.font = "700 35px 'Fira Code'";
                 ctxFormatted.fillStyle = "#E5EAFF";
-                const buyCountText = ctxFormatted.measureText(buyCount.toString()).width
-                ctxFormatted.fillText(buyCount.toString(), 498 - buyCountText / 2, 420);
+                const buyCountText = ctxFormatted.measureText(tradeCount.toString()).width
+                ctxFormatted.fillText(tradeCount.toString(), 498 - buyCountText / 2, 420);
 
                 //AVG BUY
                 ctxFormatted.font = "700 35px 'Fira Code'";

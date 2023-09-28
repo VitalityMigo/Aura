@@ -116,8 +116,8 @@ module.exports = {
                     const lastObject = firstObject + itemsPerPage
 
                     const bidTable = bidTableFull.slice(firstObject, lastObject);
-                    console.log(firstObject + " / " + lastObject)
 
+                    
 
 
                     let bidsFormatted = "Price                              Size     Total  User\n\n"

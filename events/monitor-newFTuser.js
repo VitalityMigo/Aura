@@ -43,7 +43,7 @@ const depositRelayAddress = "0x977f82a600a1414e583f7f13623f1ac5d58b1c0b"
 const depositBridgerL1AddressA = "0x3154cf16ccdb4c6d922629664174b904d80f2c35"
 const depositBridgerL2AddressA = "0x4200000000000000000000000000000000000007"
 const depositBridgerL2AddressB = "0x4200000000000000000000000000000000000010"
-const depositMin = 1
+const depositMin = 2
 
 const exepectedTxnType = 126
 

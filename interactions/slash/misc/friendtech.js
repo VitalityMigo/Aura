@@ -587,6 +587,10 @@ module.exports = {
                                                             .setCustomId('friendtech_infra_help-button')
                                                             .setLabel('📑 Tutorial')
                                                             .setStyle(1),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_infra_security_' + userAddress)
+                                                            .setLabel('📡 Audit')
+                                                            .setStyle(1),
 
 
 
@@ -3350,7 +3354,7 @@ module.exports = {
                                                     embed2: JSON.stringify(infoTable),
                                                     embed3: JSON.stringify(airdropFTBase),
                                                     pageIndex: "N/A",
-                                                    actualPage:"N/A",
+                                                    actualPage: "N/A",
                                                     walletName: "N/A",
                                                     selecedTimestamp: "N/A",
                                                     selectedCollection: "N/A",

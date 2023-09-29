@@ -56,7 +56,12 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_friendtech_tradeSW_copy_");
 			
+		} else if (customId.startsWith("button_friendtech_infra_security_")) {
+
+			command = client.buttonCommands.get("button_friendtech_infra_security_");
+			
 		}
+		
 		
 		else  {
 			command = client.buttonCommands.get(customId);

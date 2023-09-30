@@ -12,7 +12,7 @@ const addTimeout = require("../functions/addtimeout")
 
 const newFriendtechUser = require('../functions/m-newFTuser')
 const newSmartMoneyTrade = require('../functions/m-FTsmartmoney')
-const newFTDeposit = require("../functions/m-newbasedeposit")
+
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -129,12 +129,11 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
 
 
-                if ((from.toLowerCase() == depositRelayAddress.toLowerCase() && contract.toLowerCase() == depositBridgerL2AddressA.toLowerCase() && valueEth >= depositMin) || (input == "0x01" && type == exepectedTxnType && mint && from.toLowerCase() == contract.toLowerCase() && valueEth >= depositMin)) {
+                // if ((from.toLowerCase() == depositRelayAddress.toLowerCase() && contract.toLowerCase() == depositBridgerL2AddressA.toLowerCase() && valueEth >= depositMin) || (input == "0x01" && type == exepectedTxnType && mint && from.toLowerCase() == contract.toLowerCase() && valueEth >= depositMin)) {
 
-                    newFTDeposit(transaction)
+                //     newFTDeposit(transaction)
 
-
-                }
+                // }
 
 
 

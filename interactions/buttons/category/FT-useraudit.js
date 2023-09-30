@@ -158,7 +158,7 @@ module.exports = {
 
                     let friendTechFormatted = "∙ Smart Money : `" + "   " + "`\n∙ Distribution: `" + "   " + "`\n∙ Self: `" + "   " + "`\n∙ Whales: `" + "   " + "` | Holding: `" + "   " + "`"
 
-                    let walletFormatted = "∙ Balance: `" + "   " + "`\n∙ Deposits: `" + "   " + "` | Total: `" + "   " + "` | Last: " + "   " + "`"
+                    let walletFormatted = "∙ Balance: `" + "   " + "`\n∙ Deposits: `" + "   " + "` | Total: `" + "   " + "` | Last: `" + "   " + "`"
 
 
 
@@ -252,6 +252,8 @@ module.exports = {
 
                         for (const holding of userHolding) {
 
+                            holderCount++
+
                             let holdingAddress = holding.address.toLowerCase()
                             let holdingBalance = holding.balance
                             let ratio = (holdingBalance / supply) * 100
@@ -293,6 +295,7 @@ module.exports = {
 
                         for (const holding of userHolding) {
 
+                            holderCount++
 
                             let holdingAddress = holding.address.toLowerCase()
                             let holdingBalance = holding.balance
@@ -343,6 +346,8 @@ module.exports = {
 
                                 for (const holding of callPageFiltered) {
 
+                                    holderCount++
+
                                     let holdingAddress = holding.address.toLowerCase()
                                     let holdingBalance = holding.balance
                                     let ratio = (supply / holdingBalance) * 100
@@ -389,8 +394,10 @@ module.exports = {
                         sm.name
                     }
 
+console.log(supply)
+console.log(holderCount)
 
-                    let distribution = parseFloat((supply / holderCount) * 100).toFixed(0)
+                    let distribution = parseFloat((holderCount / supply) * 100).toFixed(0)
                     let selfRatio = parseFloat((self / supply) * 100).toFixed(0)
 
                     if (whalesSupply > 0) {
@@ -443,25 +450,36 @@ module.exports = {
 
                     let totalDeposit = 0
                     let depositCount = 0
-                    let lastDepositTime = fundingTable[0].timestamp
-                    let lastDepositHash = fundingTable[0].hash
+                    let lastDepositTime = 0
+                    let lastDepositHash = 0
 
-                    for (const deposit of fundingTable) {
+                    if (fundingTable.length > 0) {
 
-                        depositCount++
-                        totalDeposit += parseFloat(deposit.value)
+                        lastDepositTime = fundingTable[0].timestamp
+                        fundingTable[0].hash
 
+                        for (const deposit of fundingTable) {
+
+                            depositCount++
+                            totalDeposit += parseFloat(deposit.value)
+
+
+                        }
 
                     }
 
 
 
-
-
-
+if (fundingTable.length > 0) { 
                     // On envoi la réponse
                     walletFormatted = "∙ Balance: `" + userBalance + "Ξ`\n∙ Deposits: `" + depositCount + "` | Total: `" + parseFloat(totalDeposit).toFixed(3) + "Ξ` | Last: <t:" + lastDepositTime + ":R> [here](https://basescan.org/tx/" + lastDepositHash + ")"
 
+                } else {
+
+                    // On envoi la réponse
+                    walletFormatted = "∙ Balance: `" + userBalance + "Ξ`\n∙ Deposits: `" + depositCount + "` | Total: `" + parseFloat(totalDeposit).toFixed(3) + "Ξ` | Last: `None`"
+
+                }
 
                     const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
                         .setTitle("Friend.Tech Audit")
@@ -562,7 +580,7 @@ module.exports = {
             const userRoleList = interaction.member._roles
             let userHighestRole = "Member"
             if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-            let reportCommand = "/admin-clientListFirstPage"
+            let reportCommand = "/ft-audit"
 
             const timeStamp = Date.now();
             const date = new Date(timeStamp);

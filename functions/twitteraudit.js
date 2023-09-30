@@ -32,23 +32,6 @@ const Auth = new Twit({
 
 
 
-function calculateMonthDifference(timestampInSeconds) {
-    // Obtenez la date actuelle en millisecondes
-    const currentDate = new Date();
-
-    // Convertissez le timestamp en millisecondes
-    const timestampDate = new Date(timestampInSeconds * 1000);
-
-    // Calculez la différence en millisecondes
-    const timeDifference = currentDate - timestampDate;
-
-    // Convertissez la différence en mois
-    const millisecondsInMonth = 30.44 * 24 * 60 * 60 * 1000; // Environ 30.44 jours par mois
-    const monthDifference = Math.floor(timeDifference / millisecondsInMonth);
-
-    return monthDifference;
-}
-
 
 
 async function getTwitterScore(username) {
@@ -280,6 +263,28 @@ const r = ["david_wolinsky", "capcap_max", "FungibleTokn", "TXMCtrades", "bigbel
 
 
 module.exports = getTwitterScore
+
+
+
+
+
+function calculateMonthDifference(timestampInSeconds) {
+    // Obtenez la date actuelle en millisecondes
+    const currentDate = new Date();
+
+    // Convertissez le timestamp en millisecondes
+    const timestampDate = new Date(timestampInSeconds * 1000);
+
+    // Calculez la différence en millisecondes
+    const timeDifference = currentDate - timestampDate;
+
+    // Convertissez la différence en mois
+    const millisecondsInMonth = 30.44 * 24 * 60 * 60 * 1000; // Environ 30.44 jours par mois
+    const monthDifference = Math.floor(timeDifference / millisecondsInMonth);
+
+    return monthDifference;
+}
+
 
 
 // Fonction de stat

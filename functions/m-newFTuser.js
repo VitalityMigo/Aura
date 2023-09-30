@@ -145,6 +145,8 @@ async function newFriendtechUser(obj) {
 
             let created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
 
+            const b = await web3.eth.getBalance(userAddress)
+            const balance = parseFloat(b / 10 ** 18).toFixed(3)
 
 
             if (followers >= 1000) {
@@ -192,7 +194,7 @@ async function newFriendtechUser(obj) {
                         { name: "Holders", value: "`" + holderCount + "`", inline: true },
                         { name: "Unique Holders", value: "`" + parseFloat(uniqueHolders).toFixed(1) + "%`", inline: true },
                         { name: "Holding", value: "`" + holding + "`", inline: true },
-                        { name: "User Rank", value: "`#" + id + "`", inline: true },
+                        { name: "Balance", value: "`" + balance + "Ξ`", inline: true },
                         { name: "Joined At", value: "<t:" + actualTimestamp + ":R>", inline: true },
                         { name: " ", value: "```• Transaction Details```", inline: true },
                         { name: " ", value: " ", inline: false },

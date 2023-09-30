@@ -58,6 +58,9 @@ module.exports = {
         let serverId = interaction.member.guild.id
         let botId = interaction.applicationId
 
+        await interaction.deferReply({ ephemeral: true })
+
+
         try {
 
             //Checkpoint
@@ -182,7 +185,7 @@ module.exports = {
                         )
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                    await interaction.reply({ embeds: [loadingEmbed], ephemeral: true });
+                    await interaction.editReply({ embeds: [loadingEmbed] });
 
 
 
@@ -374,7 +377,7 @@ module.exports = {
                         )
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                    await interaction.editReply({ embeds: [userFTEmbed], components: [buttonRow, buttonRow2], ephemeral: true });
+                    await interaction.editReply({ embeds: [userFTEmbed], components: [buttonRow, buttonRow2] });
 
 
 

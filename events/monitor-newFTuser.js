@@ -12,7 +12,7 @@ const addTimeout = require("../functions/addtimeout")
 
 const newFriendtechUser = require('../functions/m-newFTuser')
 const newSmartMoneyTrade = require('../functions/m-FTsmartmoney')
-
+const newFTDeposit = require("../functions/m-newbasedeposit")
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -25,11 +25,11 @@ const Web3 = require('web3');
 const web3Call = new Web3(new Web3.providers.HttpProvider(`https://1rpc.io/base`))
 const web3 = new Web3(new Web3.providers.WebsocketProvider(`wss://nameless-hardworking-pallet.base-mainnet.discover.quiknode.pro/` + quicknodebaseApiKey))
 
-// wss://base-mainnet.blastapi.io/cd7e4eee-1068-4ca2-809e-b898e938c0d2
 
 
 const axios = require('axios')
 const colors = require('colors');
+
 
 
 
@@ -43,30 +43,17 @@ const depositRelayAddress = "0x977f82a600a1414e583f7f13623f1ac5d58b1c0b"
 const depositBridgerL1AddressA = "0x3154cf16ccdb4c6d922629664174b904d80f2c35"
 const depositBridgerL2AddressA = "0x4200000000000000000000000000000000000007"
 const depositBridgerL2AddressB = "0x4200000000000000000000000000000000000010"
+
+const transferSig = "0x"
+
 const depositMin = 2
+const transferMin = 5
 
 const exepectedTxnType = 126
 
 
 addTimeout(3)
 
-
-let tokenAddress = ""
-
-let priceEth = 0
-let priceUsd = 0
-let marketCap = 0
-let pooledETH = 0
-let pooledToken = 0
-let liquidity = 0
-let reserveToken0 = ""
-let reserveToken1 = ""
-
-let ownership = "N/A"
-let devBalance = 0
-let deployerBalance = 0
-let ownerBalance = 0
-let createdSince = "`Unknown`"
 
 
 
@@ -104,29 +91,37 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                 const valueEth = value / 10 ** 18
 
 
-                // // On renvoi vers le new user
+                // On renvoi vers le new user
                 if (input.startsWith(buySignature) && contract.toLowerCase() == shareContractAddress.toLowerCase() && newValue == value) {
-
 
                     newFriendtechUser(transaction)
 
-
-
                 }
 
 
 
 
-                // On vérifie que ça vient d'un wallet SM, que le contrat est bien FT, que la valeur est différente de 0, et que c'est un buy ou un sell
+               // On vérifie que ça vient d'un wallet SM, que le contrat est bien FT, que la valeur est différente de 0, et que c'est un buy ou un sell
                 if (smartWalletTable.includes(from.toLowerCase()) && contract.toLowerCase() == shareContractAddress.toLowerCase() && (input.startsWith(sellSignature) || (input.startsWith(buySignature) && newValue != value))) {
-
 
                     newSmartMoneyTrade(transaction)
 
-
                 }
 
 
+                if (valueEth >= transferMin && input == transferSig) {
+
+                    const obj = {
+                        mainnetAddress: from.toLowerCase(),
+                        baseAddress: contract.toLowerCase(),
+                        value: valueEth,
+                        hash: hash,
+                        type: "📥 Transfer",
+                    }
+
+                    newFTDeposit(obj)
+
+                }
 
 
                 // if ((from.toLowerCase() == depositRelayAddress.toLowerCase() && contract.toLowerCase() == depositBridgerL2AddressA.toLowerCase() && valueEth >= depositMin) || (input == "0x01" && type == exepectedTxnType && mint && from.toLowerCase() == contract.toLowerCase() && valueEth >= depositMin)) {

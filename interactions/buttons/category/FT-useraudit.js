@@ -146,17 +146,27 @@ module.exports = {
 
                 try {
 
-                    const userInfo = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
+                    const user = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + userAddress + '"}}')
+                    const userInfo = user.data[0].result.data.json.find(obj => obj.address.toLowerCase() === userAddress.toLowerCase())
+                    
+                    const frenScore = parseFloat(userInfo.frenScore * 100).toFixed(0)
+                    const username = userInfo.twitterUsername
+                    const supply = userInfo.shareSupply
+                    const pfp = userInfo.twitterPfpUrl
 
-                    const username = userInfo.data.twitterUsername
-                    const name = userInfo.data.twitterName
-                    const supply = userInfo.data.shareSupply
-                    const pfp = userInfo.data.twitterPfpUrl
+
+                    // // Version ancienne, fonction au cas où
+                    // const userInfo = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
+
+                    // const username = userInfo.data.twitterUsername
+                    // const name = userInfo.data.twitterName
+                    // const supply = userInfo.data.shareSupply
+                    // const pfp = userInfo.data.twitterPfpUrl
 
 
                     let twitterAuditFormatted = "∙ Score: `" + "   " + "`\n∙ Followers: `" + "   " + "` | Following: `" + "   " + "`\n∙ Tweets: `" + "   " + "` | Likes: `" + "   " + "`\n∙ Created: `" + "   " + "`"
 
-                    let friendTechFormatted = "∙ Smart Money : `" + "   " + "`\n∙ Distribution: `" + "   " + "`\n∙ Self: `" + "   " + "`\n∙ Whales: `" + "   " + "` | Holding: `" + "   " + "`"
+                    let friendTechFormatted = "∙ Fren Score: `" + "   " + "`\n∙ Smart Money : `" + "   " + "`\n∙ Distribution: `" + "   " + "`\n∙ Self: `" + "   " + "`\n∙ Whales: `" + "   " + "` | Holding: `" + "   " + "`"
 
                     let walletFormatted = "∙ Balance: `" + "   " + "`\n∙ Deposits: `" + "   " + "` | Total: `" + "   " + "` | Last: `" + "   " + "`"
 
@@ -406,7 +416,7 @@ console.log(holderCount)
 
 
                     //On edit avec les infos
-                    friendTechFormatted = "∙ Smart Money : `" + holdersSW.length + " in`\n∙ Distribution: `" + distribution + "%`\n∙ Self: `" + self + " (" + selfRatio + "%)`\n∙ Whales: `" + whalesCount + "` | Holding: `" + whalesSupply + " (" + whalesRatio + "%)`"
+                    friendTechFormatted = "∙ Fren Score: `" + frenScore + "%`\n∙ Smart Money : `" + holdersSW.length + " in`\n∙ Distribution: `" + distribution + "%`\n∙ Self: `" + self + " (" + selfRatio + "%)`\n∙ Whales: `" + whalesCount + "` | Holding: `" + whalesSupply + " (" + whalesRatio + "%)`"
 
                     const gasTrackerEmbed1 = new EmbedBuilder().setColor("#060A8F")
                         .setTitle("Friend.Tech Audit")

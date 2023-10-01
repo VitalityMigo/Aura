@@ -60,6 +60,10 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_friendtech_infra_security_");
 			
+		} else if (customId.startsWith("ft_interaction_")) {
+
+			command = client.buttonCommands.get("ft_interaction_");
+			
 		}
 		
 		

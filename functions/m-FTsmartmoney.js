@@ -187,11 +187,15 @@ async function newSmartMoneyTrade(obj) {
                         .setStyle(1),
                     new ButtonBuilder()
                         .setCustomId('button_friendtech_tradeSW_copy_' + amount + "_" + userAddress + "_" + binaryAction)
-                        .setLabel('🎭 Copy trade ')
+                        .setLabel('🎭 Copy trade')
+                        .setStyle(3),
+                        new ButtonBuilder()
+                        .setCustomId('ft_interaction_' + from + "_" + userAddress)
+                        .setLabel('👁 Insights')
                         .setStyle(3),
 
                 )
-
+                
 
 
             const userFTEmbed = new EmbedBuilder().setColor("#060A8F")

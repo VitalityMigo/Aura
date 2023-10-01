@@ -577,6 +577,8 @@ module.exports = {
                                                     )
 
 
+                                                  
+
                                                 const buttonRow2 = new ActionRowBuilder()
                                                     .addComponents(
                                                         new ButtonBuilder()
@@ -595,8 +597,6 @@ module.exports = {
 
 
                                                     )
-
-
 
 
                                                 const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
@@ -2784,7 +2784,7 @@ module.exports = {
 
 
                                                     // On prend les stats (3,3)
-                                                    if (tradeUser1Table > 0) {
+                                                    if (tradeUser1Table.length > 0) {
                                                         user1FrenRatio = parseFloat(tradeUser1Table[0].ftHolder.trader.frenScore * 100).toFixed(0)
                                                         user1FrenCount = tradeUser1Table[0].ftHolder.trader.frenfrenCount
                                                     } else {
@@ -2796,7 +2796,7 @@ module.exports = {
 
                                                     }
 
-                                                    if (tradeUser2Table > 0) {
+                                                    if (tradeUser2Table.length > 0) {
                                                         user2FrenRatio = parseFloat(tradeUser2Table[0].ftHolder.trader.frenScore * 100).toFixed(0)
                                                         user2FrenCount = tradeUser2Table[0].ftHolder.trader.frenfrenCount
                                                     } else {

@@ -41,7 +41,7 @@ async function getTwitterScore(username) {
 try {
 
     /// PARTI 1 - TWITTER ///
-console.log(username)
+
     const response = await Auth.get('users/show', { screen_name: username });
     const data = response.data;
 

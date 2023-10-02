@@ -63,7 +63,7 @@ module.exports = {
         let serverId = interaction.member.guild.id
         let botId = interaction.applicationId
 
-          await interaction.deferReply({ ephemeral: true })
+        await interaction.deferReply({ ephemeral: true })
 
 
         try {
@@ -85,7 +85,7 @@ module.exports = {
 
             const customId = interaction.customId
 
-            
+
             // Utilisation d'une expression régulière pour extraire l'adresse Ethereum
             const regex = /_0x([0-9a-fA-F]{40})/;
             const matches = customId.match(regex);
@@ -122,9 +122,9 @@ module.exports = {
 
                 let tradersFormatted = ""
 
-                let followers = 0
-                let following = 0
-                let created = 0
+                let followers = "`None`"
+                let following = "`None`"
+                let created = "`Unknwon`"
 
                 let userAddress = ""
 
@@ -208,7 +208,7 @@ module.exports = {
                         .setTitle("Panel Loading <a:AuraLoading:1134068847616458792>")
                         .setDescription(">>> Displaying the transaction execution")
                         .setAuthor({ name: authorName, iconURL: userAvatar })
-                       // .setThumbnail(twitterPfp)
+                        // .setThumbnail(twitterPfp)
                         .setTimestamp()
                         .addFields(
                             { name: " ", value: " ", inline: false },
@@ -283,12 +283,14 @@ module.exports = {
 
                     const [holdersFormattedEmbeds, tradersFormatted, airdropInfos, ethUsdPrice, twitterInfos] = await Promise.all([holdersPromise, tradersPromise, airdropInfoCall, ethUsdPricePromise, twitterPromise]);
 
+                    if (twitterInfos) {
+                        followers = twitterInfos.followers_count
+                        following = twitterInfos.friends_count
+                        let pfp = twitterInfos.profile_image_url_https
+                        twitterPfp = pfp.replace("_normal", "")
 
-                    followers = twitterInfos.followers_count
-                    following = twitterInfos.friends_count
-                    let pfp = twitterInfos.profile_image_url_https
-                    twitterPfp = pfp.replace("_normal", "")
-                    const created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
+                        created = "<t:" + Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000)) + ":R>"
+                    }
 
 
 
@@ -316,7 +318,7 @@ module.exports = {
                             { name: " ", value: " ", inline: true },
                             { name: "Followers", value: "`" + followers + "`", inline: true },
                             { name: "Following", value: "`" + following + "`", inline: true },
-                            { name: "Created", value: "<t:" + created + ":R>", inline: true },
+                            { name: "Created", value: created, inline: true },
                             { name: " ", value: " ", inline: false },
                             { name: "Price", value: "`" + parseFloat(price).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(price * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                             { name: "Market Cap", value: "`" + parseFloat(marketCap).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(marketCap * ethUsdPrice).toFixed(0)) + "$)`", inline: true },

@@ -382,9 +382,9 @@ module.exports = {
 
                                     //  let tradersFormatted = ""
 
-                                    let followers = 0
-                                    let following = 0
-                                    let created = 0
+                                    let followers = "`None`"
+                                    let following = "`None`"
+                                    let created = "`Unknwon`"
 
                                     let userAddress = ""
 
@@ -425,10 +425,7 @@ module.exports = {
 
                                             try {
 
-                                                // Prix de l'ETH
-                                                // const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-                                                // const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
-
+                                    
 
 
                                                 address = user.address
@@ -436,7 +433,7 @@ module.exports = {
                                                 twitterUsername = user.twitterUsername
                                                 twitterName = user.twitterName
                                                 twitterUserId = user.twitterUserId
-                                                lastOnlineTimestamp =  Math.floor(((new Date(user.lastMessageTime)).setHours((new Date(user.lastMessageTime)).getHours() + 2)) / 1000)
+                                                lastOnlineTimestamp =  Math.floor(((new Date(user.lastOnline)).setHours((new Date(user.lastOnline)).getHours() + 2)) / 1000)
                                                 lastMessage = Math.floor(((new Date(user.lastOnline)).setHours((new Date(user.lastOnline)).getHours() + 2)) / 1000)
                                                 joinedAt = Math.floor(((new Date(user.createdAt)).setHours((new Date(user.createdAt)).getHours() + 2)) / 1000)
                                                 holderCount = user.holderCount
@@ -452,13 +449,15 @@ module.exports = {
                                                 const holdersFormattedEmbedsPromise = formatHoldersData(userAddress, price, shareSupply)
 
                                                 const twitterInfos = await getTwitterUserInfo(twitterUsername)
+
+                                                if (twitterInfos) {
                                                 followers = twitterInfos.followers_count
                                                 following = twitterInfos.friends_count
                                                 let pfp = twitterInfos.profile_image_url_https
                                                 twitterPfp = pfp.replace("_normal", "")
 
-                                                const created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
-
+                                                created = "<t:" + Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000)) + ":R>"
+                                            }
 
                                                 // Calcul des dernières valeurs
                                                 marketCap = price * shareSupply
@@ -534,7 +533,7 @@ module.exports = {
                                                         { name: " ", value: " ", inline: true },
                                                         { name: "Followers", value: "`" + followers + "`", inline: true },
                                                         { name: "Following", value: "`" + following + "`", inline: true },
-                                                        { name: "Created", value: "<t:" + created + ":R>", inline: true },
+                                                        { name: "Created", value: created, inline: true },
                                                         { name: " ", value: " ", inline: false },
                                                         { name: "Price", value: "`" + parseFloat(price).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(price * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                                                         { name: "Market Cap", value: "`" + parseFloat(marketCap).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(marketCap * ethUsdPrice).toFixed(0)) + "$)`", inline: true },

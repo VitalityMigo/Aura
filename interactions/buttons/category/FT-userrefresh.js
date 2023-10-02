@@ -122,9 +122,9 @@ module.exports = {
 
                 let tradersFormatted = ""
 
-                let followers = 0
-                let following = 0
-                let created = 0
+                let followers = "`None`"
+                let following = "`None`"
+                let created = "`Unknwon`"
 
                 let userAddress = ""
 
@@ -142,7 +142,7 @@ module.exports = {
 
                 try {
 
-                   
+
 
 
                     const ethUsdPricePromise = ethPrice()
@@ -154,7 +154,7 @@ module.exports = {
 
                     const userCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + userAddress + '"}}')
                     const user = userCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === userAddress.toLowerCase())
-console.log(user)
+                    console.log(user)
                     if (user.twitterUsername != "") {
 
                         address = user.address
@@ -203,7 +203,7 @@ console.log(user)
 
 
 
-                   
+
 
 
                     //const twitterInfos = await getTwitterUserInfo(twitterUsername)
@@ -221,11 +221,14 @@ console.log(user)
                     const [holdersFormattedEmbeds, tradersFormatted, airdropInfos, ethUsdPrice, twitterInfos] = await Promise.all([holdersPromise, tradersPromise, airdropInfoCall, ethUsdPricePromise, twitterPromise]);
 
 
-                    followers = twitterInfos.followers_count
-                    following = twitterInfos.friends_count
-                    let pfp = twitterInfos.profile_image_url_https
-                    twitterPfp = pfp.replace("_normal", "")
-                    const created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
+                    if (twitterInfos) {
+                        followers = twitterInfos.followers_count
+                        following = twitterInfos.friends_count
+                        let pfp = twitterInfos.profile_image_url_https
+                        twitterPfp = pfp.replace("_normal", "")
+
+                        created = "<t:" + Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000)) + ":R>"
+                    }
 
 
 
@@ -253,7 +256,7 @@ console.log(user)
                             { name: " ", value: " ", inline: true },
                             { name: "Followers", value: "`" + followers + "`", inline: true },
                             { name: "Following", value: "`" + following + "`", inline: true },
-                            { name: "Created", value: "<t:" + created + ":R>", inline: true },
+                            { name: "Created", value: created, inline: true },
                             { name: " ", value: " ", inline: false },
                             { name: "Price", value: "`" + parseFloat(price).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(price * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                             { name: "Market Cap", value: "`" + parseFloat(marketCap).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(marketCap * ethUsdPrice).toFixed(0)) + "$)`", inline: true },

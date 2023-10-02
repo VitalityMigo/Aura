@@ -13,6 +13,10 @@ const getTimeAgo = require("../../../functions/timeago")
 const getTimeAgoSmall = require("../../../functions/timeagosmall")
 const countEmojis = require("../../../functions/isemoji")
 
+const ethPrice = require("../../../functions/getethprice")
+const { formatHoldersData, formatTradesData } = require('../../../functions/FT-useraccelerator');
+
+
 const moment = require("moment")
 const decrypt = require("../../../functions/decrypt")
 const encrypt = require("../../../functions/encrypt")
@@ -361,12 +365,13 @@ module.exports = {
                                     let totalFeesCollected = 0
                                     let marketCap = 0
 
-                                    let holdersFormattedEmbeds = ""
+                                    // let holdersFormattedEmbeds = ""
                                     let uniqueHolders = 0
 
                                     let lastTrade = 0
                                     let lastMessage = 0
                                     let lastOnlineTimestamp = 0
+                                    let joinedAt = 0
 
                                     let airdropTier = "UNRANKED"
                                     let airdropPoints = 0
@@ -375,7 +380,7 @@ module.exports = {
                                     let volume1d = 0
                                     let volume7d = 0
 
-                                    let tradersFormatted = ""
+                                    //  let tradersFormatted = ""
 
                                     let followers = 0
                                     let following = 0
@@ -393,11 +398,13 @@ module.exports = {
 
                                     const givenUsername = removeAtSymbol(usernameProvided)
 
+                                    const ethUsdPricePromise = ethPrice()
 
 
                                     try {
-                                        findUser = await axios.get('https://prod-api.kosetto.com/search/users?username=' + givenUsername, { headers: friendtechHeaders })
 
+                                        findUser = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername + '"}}')
+                                 
                                     } catch (error) {
                                         isMatch = false
                                     }
@@ -406,7 +413,7 @@ module.exports = {
                                     if (isMatch == true) {
 
 
-                                        const user = findUser.data.users.find((user) => user.twitterUsername.toLowerCase() == givenUsername.toLowerCase());
+                                        const user = findUser.data[0].result.data.json.find((user) => user.twitterUsername.toLowerCase() == givenUsername.toLowerCase());
 
 
                                         if (user) {
@@ -416,140 +423,48 @@ module.exports = {
 
 
 
-
-
-
-
                                             try {
 
                                                 // Prix de l'ETH
-                                                const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-                                                const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
-
-
-                                                const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
+                                                // const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                                                // const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
 
 
 
-                                                address = userInfoCall.data.address
-                                                id = userInfoCall.data.id
-                                                twitterUsername = userInfoCall.data.twitterUsername
-                                                twitterName = userInfoCall.data.twitterName
-                                                twitterPfp = userInfoCall.data.twitterPfpUrl
-                                                twitterUserId = userInfoCall.data.twitterUserId
-                                                lastOnlineTimestamp = parseFloat(userInfoCall.data.lastOnline / 1000).toFixed(0)
-                                                lastMessage = parseFloat(userInfoCall.data.lastMessageTime / 1000).toFixed(0)
-                                                holderCount = userInfoCall.data.holderCount
-                                                shareSupply = userInfoCall.data.shareSupply
-                                                price = userInfoCall.data.displayPrice / 10 ** 18
-                                                totalFeesCollected = userInfoCall.data.lifetimeFeesCollectedInWei / 10 ** 18
-
-
+                                                address = user.address
+                                                id = user.id
+                                                twitterUsername = user.twitterUsername
+                                                twitterName = user.twitterName
+                                                twitterUserId = user.twitterUserId
+                                                lastOnlineTimestamp =  Math.floor(((new Date(user.lastMessageTime)).setHours((new Date(user.lastMessageTime)).getHours() + 2)) / 1000)
+                                                lastMessage = Math.floor(((new Date(user.lastOnline)).setHours((new Date(user.lastOnline)).getHours() + 2)) / 1000)
+                                                joinedAt = Math.floor(((new Date(user.createdAt)).setHours((new Date(user.createdAt)).getHours() + 2)) / 1000)
+                                                holderCount = user.holderCount
+                                                shareSupply = user.shareSupply
+                                                price = user.keyPrice 
+                                                totalFeesCollected = user.feesCollected
+                                                airdropTier = user.tier.toUpperCase()
+                                                airdropPoints = user.totalPoints
+                                                
+                                        
+                                                
+                                                const tradersFormattedPromise = formatTradesData(userAddress)
+                                                const holdersFormattedEmbedsPromise = formatHoldersData(userAddress, price, shareSupply)
 
                                                 const twitterInfos = await getTwitterUserInfo(twitterUsername)
                                                 followers = twitterInfos.followers_count
                                                 following = twitterInfos.friends_count
+                                                let pfp = twitterInfos.profile_image_url_https
+                                                twitterPfp = pfp.replace("_normal", "")
 
                                                 const created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
-
-                                                // Call holders
-                                                const holderInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token/holders")
-
-
-                                                // On construit la table d'holders
-                                                let index = 0
-
-                                                for (const holders of holderInfoCall.data.users) {
-
-                                                    index++
-
-                                                    if (index <= 10) {
-
-                                                        let holderName = holders.twitterUsername
-                                                        let holderBalance = holders.balance
-                                                        let holderValue = holderBalance * price
-                                                        let holderRatio = parseFloat((holderBalance / shareSupply) * 100).toFixed(2)
-
-
-                                                        let part1 = "`" + reduceText(holderName, 30)
-                                                        let part2 = parseFloat(holderValue).toFixed(3) + "Ξ"
-                                                        let part3 = holderBalance + " (" + holderRatio + "%)`\n"
-                                                        // let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
-
-                                                        let spaceSize = 38 - (part2).length - part1.length
-                                                        let spaceLenght = ""
-                                                        for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
-
-                                                        let spaceSize2 = 19 - (part3).length
-                                                        let spaceLenght2 = ""
-                                                        for (let i = 0; i < spaceSize2; i++) { spaceLenght2 += " " }
-
-
-
-
-                                                        holdersFormattedEmbeds += part1 + spaceLenght + part2 + spaceLenght2 + part3
-
-                                                    }
-                                                }
-
-
-
-
-
-
-                                                // trade de l'auteur
-                                                const tradeInfoCall = await axios.get(" https://prod-api.kosetto.com/users/" + userAddress + "/trade-activity")
-
-                                                lastTrade = parseFloat(tradeInfoCall.data.users[0].createdAt / 1000).toFixed(0)
-
-
-
-                                                // On construit la table d'activité
-                                                let index2 = 0
-
-                                                for (const trade of tradeInfoCall.data.users) {
-
-                                                    index2++
-
-                                                    if (index2 <= 6) {
-
-                                                        let username = trade.twitterUsername
-                                                        let name = trade.twitterName
-
-                                                        let amount = trade.shareAmount
-                                                        let price = parseFloat(trade.ethAmount / 10 ** 18).toFixed(3)
-                                                        let time = parseFloat(trade.createdAt / 1000).toFixed(0)
-                                                        let isBuy = trade.isBuy
-
-                                                        let action = "🟢 Bought "
-                                                        if (isBuy == false) { action = "🔴 Sold " }
-
-                                                        tradersFormatted += "`" + action + amount + "` [" + reduceText(name, 18) + "](https://twitter.com/" + username + ") `for " + price + "Ξ` ∙ <t:" + time + ":R>\n"
-
-                                                    }
-                                                }
-
-
-
-
-
-                                                //airdrop stats de l'auteur
-                                                const airdropInfos = await axios.get(" https://prod-api.kosetto.com/points/" + userAddress)
-
-
-                                                airdropTier = airdropInfos.data.tier.toUpperCase()
-                                                airdropPoints = airdropInfos.data.totalPoints
-
-
 
 
                                                 // Calcul des dernières valeurs
                                                 marketCap = price * shareSupply
                                                 uniqueHolders = (holderCount / shareSupply) * 100;
 
-                                                if (holdersFormattedEmbeds == "") { holdersFormattedEmbeds = "```No holders found for this share.                         ```" }
-                                                if (tradersFormatted == "") { tradersFormatted = "```No recent trade found for this share.                    ```" }
-
+                                                
 
                                                 const buttonRow = new ActionRowBuilder()
                                                     .addComponents(
@@ -577,7 +492,7 @@ module.exports = {
                                                     )
 
 
-                                                  
+
 
                                                 const buttonRow2 = new ActionRowBuilder()
                                                     .addComponents(
@@ -597,6 +512,14 @@ module.exports = {
 
 
                                                     )
+
+                                                    const [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersFormattedEmbedsPromise, tradersFormattedPromise, ethUsdPricePromise]);
+
+
+                                                    if (holdersFormattedEmbeds == "") { holdersFormattedEmbeds = "```No holders found for this share.                         ```" }
+                                                if (tradersFormatted == "") { tradersFormatted = "```No recent trade found for this share.                    ```" }
+
+
 
 
                                                 const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
@@ -625,7 +548,7 @@ module.exports = {
                                                         { name: " ", value: " ", inline: false },
                                                         { name: "Last Online", value: "<t:" + lastOnlineTimestamp + ":R>", inline: true },
                                                         { name: "Last Message", value: "<t:" + lastMessage + ":R>", inline: true },
-                                                        { name: "Last Trade", value: "<t:" + lastTrade + ":R>", inline: true },
+                                                        { name: "Joined At", value: "<t:" + joinedAt + ":R>", inline: true },
                                                         { name: "Holders:", value: holdersFormattedEmbeds, inline: false },
                                                         { name: "Last Trades:", value: tradersFormatted, inline: false },
                                                         { name: "FT Wallet:", value: "```" + userAddress + "```", inline: false },
@@ -663,7 +586,7 @@ module.exports = {
                                             let usernameSuggestionFormatted = ""
 
                                             let index = 0
-                                            for (const suggestion of findUser.data.users) {
+                                            for (const suggestion of  findUser[0].result.data.json) {
                                                 index++
                                                 if (index <= 5) {
 

@@ -321,7 +321,7 @@ console.log(user)
 
 
 
-                await interaction.reply({ embeds: [gasTrackerEmbed2], ephemeral: true });
+                await interaction.editReply({ embeds: [gasTrackerEmbed2], ephemeral: true });
 
 
 

@@ -374,7 +374,7 @@ module.exports = {
 
 
                 const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Buy Shares")
+                    .setTitle("Profile")
                     .setDescription("An error occured while retreiving the subject's Friend.Tech address. Please try again using `/friendtech user` or contact a team member if you need help.")
                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                     .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
@@ -384,7 +384,7 @@ module.exports = {
 
 
 
-                await interaction.reply({ embeds: [gasTrackerEmbed2], ephemeral: true });
+                await interaction.editReply({ embeds: [gasTrackerEmbed2], ephemeral: true });
 
 
 
@@ -474,7 +474,7 @@ module.exports = {
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-            await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
+            await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
 
 
         }

@@ -252,7 +252,7 @@ console.log(username)
 
 } catch (error) {
 
-    console.log("Echec de l'audit du twitter : " + error.stack)
+    console.log("Echec de l'audit du twitter @" + username + " : " + error.stack)
 
 
 }

@@ -574,7 +574,7 @@ module.exports = {
             const userRoleList = interaction.member._roles
             let userHighestRole = "Member"
             if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-            let reportCommand = "/admin-botOff"
+            let reportCommand = "/FT-copytrade"
 
             const timeStamp = Date.now();
             const date = new Date(timeStamp);

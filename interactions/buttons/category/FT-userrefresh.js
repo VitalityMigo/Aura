@@ -133,6 +133,7 @@ module.exports = {
                 let isExactMatch = true
 
                 let airdropInfoCall = ""
+                let pfp2 = ""
 
 
                 // On récupère l'addresse du subject et défini le quickbuy à 1
@@ -171,6 +172,7 @@ module.exports = {
                         totalFeesCollected = user.feesCollected
                         airdropTier = user.tier.toUpperCase()
                         airdropPoints = user.totalPoints
+                        pfp2 = user.twitterPfpUrl
 
 
                     } else {
@@ -192,7 +194,7 @@ module.exports = {
                         shareSupply = userInfoCall.data.shareSupply
                         price = userInfoCall.data.displayPrice / 10 ** 18
                         totalFeesCollected = userInfoCall.data.lifetimeFeesCollectedInWei / 10 ** 18
-
+                        pfp2 = userInfoCall.data.twitterPfpUrl
 
                     }
 
@@ -228,7 +230,9 @@ module.exports = {
                         twitterPfp = pfp.replace("_normal", "")
 
                         created = "<t:" + Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000)) + ":R>"
-                    }
+                    } else {
+                        twitterPfp = pfp2
+                        }
 
 
 
@@ -353,7 +357,7 @@ module.exports = {
             const userRoleList = interaction.member._roles
             let userHighestRole = "Member"
             if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-            let reportCommand = "/admin-clientListFirstPage"
+            let reportCommand = "/FT-refresh"
 
             const timeStamp = Date.now();
             const date = new Date(timeStamp);

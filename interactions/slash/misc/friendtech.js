@@ -391,6 +391,7 @@ module.exports = {
                                     let findUser = []
                                     let isMatch = true
                                     let isExactMatch = true
+                                    let pfp2 = ""
 
 
 
@@ -404,7 +405,7 @@ module.exports = {
                                     try {
 
                                         findUser = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername + '"}}')
-                                 
+
                                     } catch (error) {
                                         isMatch = false
                                     }
@@ -425,7 +426,7 @@ module.exports = {
 
                                             try {
 
-                                    
+
 
 
                                                 address = user.address
@@ -433,37 +434,40 @@ module.exports = {
                                                 twitterUsername = user.twitterUsername
                                                 twitterName = user.twitterName
                                                 twitterUserId = user.twitterUserId
-                                                lastOnlineTimestamp =  Math.floor(((new Date(user.lastOnline)).setHours((new Date(user.lastOnline)).getHours() + 2)) / 1000)
+                                                lastOnlineTimestamp = Math.floor(((new Date(user.lastOnline)).setHours((new Date(user.lastOnline)).getHours() + 2)) / 1000)
                                                 lastMessage = Math.floor(((new Date(user.lastOnline)).setHours((new Date(user.lastOnline)).getHours() + 2)) / 1000)
                                                 joinedAt = Math.floor(((new Date(user.createdAt)).setHours((new Date(user.createdAt)).getHours() + 2)) / 1000)
                                                 holderCount = user.holderCount
                                                 shareSupply = user.shareSupply
-                                                price = user.keyPrice 
+                                                price = user.keyPrice
                                                 totalFeesCollected = user.feesCollected
                                                 airdropTier = user.tier.toUpperCase()
                                                 airdropPoints = user.totalPoints
-                                                
-                                        
-                                                
+                                                pfp2 = user.twitterPfpUrl
+
+
+
                                                 const tradersFormattedPromise = formatTradesData(userAddress)
                                                 const holdersFormattedEmbedsPromise = formatHoldersData(userAddress, price, shareSupply)
 
                                                 const twitterInfos = await getTwitterUserInfo(twitterUsername)
 
                                                 if (twitterInfos) {
-                                                followers = twitterInfos.followers_count
-                                                following = twitterInfos.friends_count
-                                                let pfp = twitterInfos.profile_image_url_https
-                                                twitterPfp = pfp.replace("_normal", "")
+                                                    followers = twitterInfos.followers_count
+                                                    following = twitterInfos.friends_count
+                                                    let pfp = twitterInfos.profile_image_url_https
+                                                    twitterPfp = pfp.replace("_normal", "")
 
-                                                created = "<t:" + Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000)) + ":R>"
-                                            }
+                                                    created = "<t:" + Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000)) + ":R>"
+                                                } else {
+                                                    twitterPfp = pfp2
+                                                }
 
                                                 // Calcul des dernières valeurs
                                                 marketCap = price * shareSupply
                                                 uniqueHolders = (holderCount / shareSupply) * 100;
 
-                                                
+
 
                                                 const buttonRow = new ActionRowBuilder()
                                                     .addComponents(
@@ -512,10 +516,10 @@ module.exports = {
 
                                                     )
 
-                                                    const [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersFormattedEmbedsPromise, tradersFormattedPromise, ethUsdPricePromise]);
+                                                const [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersFormattedEmbedsPromise, tradersFormattedPromise, ethUsdPricePromise]);
 
 
-                                                    if (holdersFormattedEmbeds == "") { holdersFormattedEmbeds = "```No holders found for this share.                         ```" }
+                                                if (holdersFormattedEmbeds == "") { holdersFormattedEmbeds = "```No holders found for this share.                         ```" }
                                                 if (tradersFormatted == "") { tradersFormatted = "```No recent trade found for this share.                    ```" }
 
 
@@ -585,7 +589,7 @@ module.exports = {
                                             let usernameSuggestionFormatted = ""
 
                                             let index = 0
-                                            for (const suggestion of  findUser.data[0].result.data.json) {
+                                            for (const suggestion of findUser.data[0].result.data.json) {
                                                 index++
                                                 if (index <= 5) {
 

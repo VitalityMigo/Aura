@@ -28,6 +28,11 @@ const etherscanApiKey = process.env.etherscanApiKey
 const friendtechApiKey = process.env.friendtechApiKey
 
 
+const ethPrice = require("../../../functions/getethprice")
+const { formatHoldersData, formatTradesData } = require('../../../functions/FT-useraccelerator');
+
+
+
 const friendtechHeaders = {
     'Authorization': friendtechApiKey, // Remplacez VOTRE_TOKEN par le token d'authentification
     // Autres en-têtes si nécessaire
@@ -127,6 +132,8 @@ module.exports = {
                 let isMatch = true
                 let isExactMatch = true
 
+                let airdropInfoCall = ""
+
 
                 // On récupère l'addresse du subject et défini le quickbuy à 1
                 userAddress = "0x" + matches[1]
@@ -135,123 +142,71 @@ module.exports = {
 
                 try {
 
-                    // Prix de l'ETH
-                    const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-                    const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
+                   
 
 
-                    const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
-
-
-
-                    address = userInfoCall.data.address
-                    id = userInfoCall.data.id
-                    twitterUsername = userInfoCall.data.twitterUsername
-                    twitterName = userInfoCall.data.twitterName
-                    twitterPfp = userInfoCall.data.twitterPfpUrl
-                    twitterUserId = userInfoCall.data.twitterUserId
-                    lastOnlineTimestamp = parseFloat(userInfoCall.data.lastOnline / 1000).toFixed(0)
-                    lastMessage = parseFloat(userInfoCall.data.lastMessageTime / 1000).toFixed(0)
-                    holderCount = userInfoCall.data.holderCount
-                    shareSupply = userInfoCall.data.shareSupply
-                    price = userInfoCall.data.displayPrice / 10 ** 18
-                    totalFeesCollected = userInfoCall.data.lifetimeFeesCollectedInWei / 10 ** 18
-
-
-
-                    const twitterInfos = await getTwitterUserInfo(twitterUsername)
-                    followers = twitterInfos.followers_count
-                    following = twitterInfos.friends_count
-
-                    const created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
-
-                    // Call holders
-                    const holderInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token/holders")
-
-
-                    // On construit la table d'holders
-                    let index = 0
-
-                    for (const holders of holderInfoCall.data.users) {
-
-                        index++
-
-                        if (index <= 10) {
-
-                            let holderName = holders.twitterUsername
-                            let holderBalance = holders.balance
-                            let holderValue = holderBalance * price
-                            let holderRatio = parseFloat((holderBalance / shareSupply) * 100).toFixed(2)
-
-
-                            let part1 = "`" + reduceText(holderName, 30)
-                            let part2 = parseFloat(holderValue).toFixed(3) + "Ξ"
-                            let part3 = holderBalance + " (" + holderRatio + "%)`\n"
-                            // let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
-
-                            let spaceSize = 38 - (part2).length - part1.length
-                            let spaceLenght = ""
-                            for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
-
-                            let spaceSize2 = 19 - (part3).length
-                            let spaceLenght2 = ""
-                            for (let i = 0; i < spaceSize2; i++) { spaceLenght2 += " " }
+                    const ethUsdPricePromise = ethPrice()
+                    const tradersPromise = formatTradesData(userAddress)
 
 
 
 
-                            holdersFormattedEmbeds += part1 + spaceLenght + part2 + spaceLenght2 + part3
 
-                        }
+                    const userCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + userAddress + '"}}')
+                    const user = userCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === userAddress.toLowerCase())
+console.log(user)
+                    if (user.twitterUsername != "") {
+
+                        address = user.address
+                        id = user.id
+                        twitterUsername = user.twitterUsername
+                        twitterName = user.twitterName
+                        twitterUserId = user.twitterUserId
+                        lastOnlineTimestamp = Math.floor(((new Date(user.lastOnline)).setHours((new Date(user.lastOnline)).getHours() + 2)) / 1000)
+                        lastMessage = Math.floor(((new Date(user.lastOnline)).setHours((new Date(user.lastOnline)).getHours() + 2)) / 1000)
+                        joinedAt = Math.floor(((new Date(user.createdAt)).setHours((new Date(user.createdAt)).getHours() + 2)) / 1000)
+                        holderCount = user.holderCount
+                        shareSupply = user.shareSupply
+                        price = user.keyPrice
+                        totalFeesCollected = user.feesCollected
+                        airdropTier = user.tier.toUpperCase()
+                        airdropPoints = user.totalPoints
+
+
+                    } else {
+                        console.log("ici")
+                        //airdrop stats de l'auteur
+                        airdropInfoCall = axios.get(" https://prod-api.kosetto.com/points/" + userAddress)
+
+                        const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
+
+                        address = userInfoCall.data.address
+                        id = userInfoCall.data.id
+                        twitterUsername = userInfoCall.data.twitterUsername
+                        twitterName = userInfoCall.data.twitterName
+                        twitterUserId = userInfoCall.data.twitterUserId
+                        lastOnlineTimestamp = parseFloat(userInfoCall.data.lastOnline / 1000).toFixed(0)
+                        lastMessage = parseFloat(userInfoCall.data.lastOnline / 1000).toFixed(0)
+                        joinedAt = 1
+                        holderCount = userInfoCall.data.holderCount
+                        shareSupply = userInfoCall.data.shareSupply
+                        price = userInfoCall.data.displayPrice / 10 ** 18
+                        totalFeesCollected = userInfoCall.data.lifetimeFeesCollectedInWei / 10 ** 18
+
+
                     }
 
+                    const holdersPromise = formatHoldersData(userAddress, price, shareSupply)
+                    const twitterPromise = getTwitterUserInfo(twitterUsername)
 
 
 
 
 
-                    // trade de l'auteur
-                    const tradeInfoCall = await axios.get(" https://prod-api.kosetto.com/users/" + userAddress + "/trade-activity")
-
-                    lastTrade = parseFloat(tradeInfoCall.data.users[0].createdAt / 1000).toFixed(0)
+                   
 
 
-
-                    // On construit la table d'activité
-                    let index2 = 0
-
-                    for (const trade of tradeInfoCall.data.users) {
-
-                        index2++
-
-                        if (index2 <= 6) {
-
-                            let username = trade.twitterUsername
-                            let name = trade.twitterName
-
-                            let amount = trade.shareAmount
-                            let price = parseFloat(trade.ethAmount / 10 ** 18).toFixed(3)
-                            let time = parseFloat(trade.createdAt / 1000).toFixed(0)
-                            let isBuy = trade.isBuy
-
-                            let action = "🟢 Bought "
-                            if (isBuy == false) { action = "🔴 Sold " }
-
-                            tradersFormatted += "`" + action + amount + "` [" + reduceText(name, 18) + "](https://twitter.com/" + username + ") `for " + price + "Ξ` ∙ <t:" + time + ":R>\n"
-
-                        }
-                    }
-
-
-
-
-
-                    //airdrop stats de l'auteur
-                    const airdropInfos = await axios.get(" https://prod-api.kosetto.com/points/" + userAddress)
-
-
-                    airdropTier = airdropInfos.data.tier.toUpperCase()
-                    airdropPoints = airdropInfos.data.totalPoints
+                    //const twitterInfos = await getTwitterUserInfo(twitterUsername)
 
 
 
@@ -260,54 +215,29 @@ module.exports = {
                     marketCap = price * shareSupply
                     uniqueHolders = (holderCount / shareSupply) * 100;
 
+
+
+
+                    const [holdersFormattedEmbeds, tradersFormatted, airdropInfos, ethUsdPrice, twitterInfos] = await Promise.all([holdersPromise, tradersPromise, airdropInfoCall, ethUsdPricePromise, twitterPromise]);
+
+
+                    followers = twitterInfos.followers_count
+                    following = twitterInfos.friends_count
+                    let pfp = twitterInfos.profile_image_url_https
+                    twitterPfp = pfp.replace("_normal", "")
+                    const created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
+
+
+
+
+                    // On récup les points d'airdrops
+                    if (user.twitterUsername == "") {
+                        airdropTier = airdropInfos.data.tier.toUpperCase()
+                        airdropPoints = airdropInfos.data.totalPoints
+                    }
+
                     if (holdersFormattedEmbeds == "") { holdersFormattedEmbeds = "```No holders found for this share.                         ```" }
                     if (tradersFormatted == "") { tradersFormatted = "```No recent trade found for this share.                    ```" }
-
-
-                    const buttonRow = new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId('button_friendtech_exec_buy_' + userAddress)
-                                .setLabel('📈 Buy')
-                                .setStyle(3),
-                            new ButtonBuilder()
-                                .setCustomId('button_friendtech_exec_quickbuy_' + userAddress)
-                                .setLabel('💫 Flash Buy')
-                                .setStyle(3),
-                            new ButtonBuilder()
-                                .setCustomId('button_friendtech_exec_sell_' + userAddress)
-                                .setLabel('📉 Sell')
-                                .setStyle(4),
-                            new ButtonBuilder()
-                                .setCustomId('button_friendtech_exec_quicksell_' + userAddress)
-                                .setLabel('❄️ Flash Sell')
-                                .setStyle(4),
-                            new ButtonBuilder()
-                                .setCustomId('friendtech_exec_setup-button')
-                                .setLabel('💻 Setup')
-                                .setStyle(1),
-
-                        )
-
-
-                    const buttonRow2 = new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId('button_friendtech_user_refresh_' + userAddress)
-                                .setLabel('🔄 Refresh')
-                                .setStyle(1),
-                            new ButtonBuilder()
-                                .setCustomId('friendtech_infra_help-button')
-                                .setLabel('📑 Tutorial')
-                                .setStyle(1),
-                            new ButtonBuilder()
-                                .setCustomId('button_friendtech_infra_security_' + userAddress)
-                                .setLabel('📡 Audit')
-                                .setStyle(1),
-
-
-                        )
-
 
 
 
@@ -337,7 +267,7 @@ module.exports = {
                             { name: " ", value: " ", inline: false },
                             { name: "Last Online", value: "<t:" + lastOnlineTimestamp + ":R>", inline: true },
                             { name: "Last Message", value: "<t:" + lastMessage + ":R>", inline: true },
-                            { name: "Last Trade", value: "<t:" + lastTrade + ":R>", inline: true },
+                            { name: "Joined At", value: "<t:" + joinedAt + ":R>", inline: true },
                             { name: "Holders:", value: holdersFormattedEmbeds, inline: false },
                             { name: "Last Trades:", value: tradersFormatted, inline: false },
                             { name: "FT Wallet:", value: "```" + userAddress + "```", inline: false },
@@ -346,7 +276,7 @@ module.exports = {
                         )
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                    await interaction.editReply({ embeds: [userFTEmbed], components: [buttonRow, buttonRow2] });
+                    await interaction.editReply({ embeds: [userFTEmbed] });
 
 
 

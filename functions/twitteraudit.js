@@ -348,8 +348,8 @@ async function getTwitterUserInfo(username) {
             const response = await Auth.get('users/show', { screen_name: x });
             const data = response.data;
 
-            // console.log(data)
 
+            
 
             // Info de base
             const follower = data.follower_count
@@ -493,15 +493,7 @@ async function getTwitterUserInfo(username) {
         statTable.push(obj2)
 
 
-        console.log(" ")
-        console.log("Table Complète : ")
-        // console.log(fullTable)
-        console.log(" ")
-        console.log("//////")
-        console.log(" ")
-        console.log("Table Stats : ")
-        console.log(statTable)
-
+        
 
         // return data;
     } catch (error) {

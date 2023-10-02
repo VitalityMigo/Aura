@@ -90,7 +90,9 @@ module.exports = {
             //Récupère le password donné par l'utilisateur
 
             const customId = interaction.customId
+            const type = interaction.message.interaction
 
+            
 
             // Utilisation d'une expression régulière pour extraire l'adresse Ethereum
             const regex = /_0x([0-9a-fA-F]{40})/;
@@ -99,44 +101,14 @@ module.exports = {
             if (matches && matches[1]) {
 
 
-                let id = ""
-                let address = ""
-                let twitterUsername = ""
-                let twitterName = ""
-                let twitterPfp = ""
-                let twitterUserId = ""
 
                 let holderCount = 0
-                let shareSupply = 0
-                let price = 0
-                let totalFeesCollected = 0
-                let marketCap = 0
-
-                let holdersFormattedEmbeds = ""
-                let uniqueHolders = 0
-
-                let lastTrade = 0
-                let lastMessage = 0
-                let lastOnlineTimestamp = 0
-
-                let airdropTier = "UNRANKED"
-                let airdropPoints = 0
-
-                let volume6h = 0
-                let volume1d = 0
-                let volume7d = 0
-
-                let tradersFormatted = ""
-
-                let followers = 0
-                let following = 0
-                let created = 0
-
                 let userAddress = ""
+                let username = ""
+                let name = ""
+                let supply = 0
+                let frenScore = 0
 
-                let findUser = []
-                let isMatch = true
-                let isExactMatch = true
 
 
                 // On récupère l'addresse du subject et défini le quickbuy à 1
@@ -146,23 +118,32 @@ module.exports = {
 
                 try {
 
+
                     const user = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + userAddress + '"}}')
                     const userInfo = user.data[0].result.data.json.find(obj => obj.address.toLowerCase() === userAddress.toLowerCase())
-                    
-                    console.log(userInfo)
-                    const frenScore = parseFloat(userInfo.frenScore * 100).toFixed(0)
-                    const username = userInfo.twitterUsername
-                    const supply = userInfo.shareSupply
 
-                    
+                    if (userInfo.twitterUsername != "") {
 
-                    // // Version ancienne, fonction au cas où
-                    // const userInfo = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
+                        frenScore = parseFloat(userInfo.frenScore * 100).toFixed(0) + "%"
+                        username = userInfo.twitterUsername
+                        supply = userInfo.shareSupply
 
-                    // const username = userInfo.data.twitterUsername
-                    // const name = userInfo.data.twitterName
-                    // const supply = userInfo.data.shareSupply
-                    // const pfp = userInfo.data.twitterPfpUrl
+
+                    } else {
+
+                        const userInfo2 = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
+
+                        username = userInfo2.data.twitterUsername
+                        supply = userInfo2.data.shareSupply
+                        frenScore = "0%"
+
+                    }
+
+
+
+
+
+
 
 
                     let twitterAuditFormatted = "∙ Score: `" + "   " + "`\n∙ Followers: `" + "   " + "` | Following: `" + "   " + "`\n∙ Tweets: `" + "   " + "` | Likes: `" + "   " + "`\n∙ Created: `" + "   " + "`"
@@ -205,7 +186,6 @@ module.exports = {
 
                     // Etape 1 = Twitter 
                     const twitterAudit = await getTwitterScore(username)
-                    console.log(twitterAudit)
                     const score = twitterAudit.capital
                     const twitterInfos = twitterAudit.data
                     const p = twitterInfos.pfpUrl
@@ -319,8 +299,8 @@ module.exports = {
                             }
 
                             const isSM = smartWalletJson.find(obj => obj.address == holdingAddress.toLowerCase())
-                            console.log(isSM)
 
+                            
                             if (isSM) {
 
                                 isSM.balance = holdingBalance
@@ -371,7 +351,6 @@ module.exports = {
 
                                     const isSM = smartWalletJson.find(obj => obj.address == holdingAddress.toLowerCase())
 
-                                    console.log(isSM)
                                     if (isSM) {
 
                                         isSM.balance = holdingBalance
@@ -404,8 +383,7 @@ module.exports = {
                         sm.name
                     }
 
-console.log(supply)
-console.log(holderCount)
+                  
 
                     let distribution = parseFloat((holderCount / supply) * 100).toFixed(0)
                     let selfRatio = parseFloat((self / supply) * 100).toFixed(0)
@@ -416,7 +394,7 @@ console.log(holderCount)
 
 
                     //On edit avec les infos
-                    friendTechFormatted = "∙ Fren Score: `" + frenScore + "%`\n∙ Smart Money : `" + holdersSW.length + " in`\n∙ Distribution: `" + distribution + "%`\n∙ Self: `" + self + " (" + selfRatio + "%)`\n∙ Whales: `" + whalesCount + "` | Holding: `" + whalesSupply + " (" + whalesRatio + "%)`"
+                    friendTechFormatted = "∙ Fren Score: `" + frenScore + "`\n∙ Smart Money : `" + holdersSW.length + " in`\n∙ Distribution: `" + distribution + "%`\n∙ Self: `" + self + " (" + selfRatio + "%)`\n∙ Whales: `" + whalesCount + "` | Holding: `" + whalesSupply + " (" + whalesRatio + "%)`"
 
                     const gasTrackerEmbed1 = new EmbedBuilder().setColor("#060A8F")
                         .setTitle("Friend.Tech Audit")
@@ -480,16 +458,16 @@ console.log(holderCount)
 
 
 
-if (fundingTable.length > 0) { 
-                    // On envoi la réponse
-                    walletFormatted = "∙ Balance: `" + userBalance + "Ξ`\n∙ Deposits: `" + depositCount + "` | Total: `" + parseFloat(totalDeposit).toFixed(3) + "Ξ` | Last: <t:" + lastDepositTime + ":R> [here](https://basescan.org/tx/" + lastDepositHash + ")"
+                    if (fundingTable.length > 0) {
+                        // On envoi la réponse
+                        walletFormatted = "∙ Balance: `" + userBalance + "Ξ`\n∙ Deposits: `" + depositCount + "` | Total: `" + parseFloat(totalDeposit).toFixed(3) + "Ξ` | Last: <t:" + lastDepositTime + ":R> [here](https://basescan.org/tx/" + lastDepositHash + ")"
 
-                } else {
+                    } else {
 
-                    // On envoi la réponse
-                    walletFormatted = "∙ Balance: `" + userBalance + "Ξ`\n∙ Deposits: `" + depositCount + "` | Total: `" + parseFloat(totalDeposit).toFixed(3) + "Ξ` | Last: `None`"
+                        // On envoi la réponse
+                        walletFormatted = "∙ Balance: `" + userBalance + "Ξ`\n∙ Deposits: `" + depositCount + "` | Total: `" + parseFloat(totalDeposit).toFixed(3) + "Ξ` | Last: `None`"
 
-                }
+                    }
 
                     const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
                         .setTitle("Friend.Tech Audit")

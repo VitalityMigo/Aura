@@ -138,10 +138,7 @@ module.exports = {
                     if (supply > 0 || subject.toLowerCase() == sender.toLowerCase()) {
 
 
-                        const valueWEI = await shareContract.methods.getBuyPriceAfterFee(subject, amount).call();
-                        const valueETH = (valueWEI / 10 ** 18)
-                        const sharePrice = (valueWEI / 10 ** 18)
-
+                       
 
                         // On renvoi le premier embed
                         const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
@@ -162,6 +159,11 @@ module.exports = {
                         await interaction.reply({ embeds: [gasTrackerEmbed2], ephemeral: true });
 
 
+
+
+                        const valueWEI = await shareContract.methods.getBuyPriceAfterFee(subject, amount).call();
+                        const valueETH = (valueWEI / 10 ** 18)
+                        const sharePrice = (valueWEI / 10 ** 18)
 
 
                         // const valueWEI = web3.utils.toWei(valueETH.toString(), 'ether');

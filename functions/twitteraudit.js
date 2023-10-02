@@ -222,7 +222,6 @@ try {
 
 
 
-
         
 
         return { capital: capital, data: obj}
@@ -239,6 +238,7 @@ try {
         obj.description = isDescription
         obj.pfp = isPfp
         obj.banner = isBanner
+        obj.pfpUrl = profilePicture
 
 
         capital = 0

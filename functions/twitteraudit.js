@@ -254,6 +254,22 @@ try {
 
     console.log("Echec de l'audit du twitter @" + username + " : " + error.stack)
 
+    let obj = {}
+    obj.follower = "None"
+    obj.following = "None"
+    obj.tweetCount = "None"
+    obj.likesCount = "None"
+    obj.created_at = "None"
+    obj.description = "None"
+    obj.pfp = "None"
+    obj.banner = "None"
+    obj.pfpUrl = "None"
+
+
+    capital = "Unknown"
+
+    return { capital: capital, data: obj}
+
 
 }
 
@@ -489,7 +505,7 @@ async function getTwitterUserInfo(username) {
 
         // return data;
     } catch (error) {
-        console.log("Erreur lors de la récupération du profil Twitter" + error.stack);
+        console.log("Erreur lors de la récupération du profil Twitter " + error.stack);
     }
 
 }

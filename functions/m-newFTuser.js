@@ -119,7 +119,6 @@ async function newFriendtechUser(obj) {
             let id = userInfoCall.data.id
             let twitterUsername = userInfoCall.data.twitterUsername
             let twitterName = userInfoCall.data.twitterName
-            let twitterPfp = userInfoCall.data.twitterPfpUrl
 
             let holderCount = userInfoCall.data.holderCount
             let shareSupply = userInfoCall.data.shareSupply
@@ -141,6 +140,9 @@ async function newFriendtechUser(obj) {
 
             let followers = twitterInfos.followers_count
             let following = twitterInfos.friends_count
+            let pfp = twitterInfos.profile_image_url_https
+            twitterPfp = pfp.replace("_normal", "")
+
 
 
             let created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))

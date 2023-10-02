@@ -57,6 +57,7 @@ try {
     const likesCount = data.favourites_count
     const location = data.location
     const extended = data.has_extended_profile
+    const profilePicture = data.profile_image_url_https
 
 
 
@@ -216,6 +217,7 @@ try {
         obj.description = isDescription
         obj.pfp = isPfp
         obj.banner = isBanner
+        obj.pfpUrl = profilePicture
 
 
 

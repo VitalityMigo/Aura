@@ -152,8 +152,8 @@ module.exports = {
                     const frenScore = parseFloat(userInfo.frenScore * 100).toFixed(0)
                     const username = userInfo.twitterUsername
                     const supply = userInfo.shareSupply
-                    const pfp = userInfo.twitterPfpUrl
 
+                    
 
                     // // Version ancienne, fonction au cas où
                     // const userInfo = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
@@ -176,7 +176,6 @@ module.exports = {
                         .setTitle("Friend.Tech Audit")
                         .setDescription(">>> Displayng the Friend.Tech user audit")
                         .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .setThumbnail(pfp)
                         .setTimestamp()
                         .addFields(
                             { name: " ", value: " ", inline: false },
@@ -208,8 +207,8 @@ module.exports = {
                     console.log(twitterAudit)
                     const score = twitterAudit.capital
                     const twitterInfos = twitterAudit.data
-                    const created = Math.floor(Date.parse(twitterInfos.created_at) / 1000)
-                    const follower = Math.floor(Date.parse(twitterInfos.created_at) / 1000)
+                    const p = twitterInfos.pfpUrl
+                    const pfp = p.replace("_normal", "")
 
 
                     // On envoi la réponse

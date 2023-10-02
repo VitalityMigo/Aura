@@ -119,31 +119,6 @@ module.exports = {
                 try {
 
 
-                    const user = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + userAddress + '"}}')
-                    const userInfo = user.data[0].result.data.json.find(obj => obj.address.toLowerCase() === userAddress.toLowerCase())
-
-                    if (userInfo.twitterUsername != "") {
-
-                        frenScore = parseFloat(userInfo.frenScore * 100).toFixed(0) + "%"
-                        username = userInfo.twitterUsername
-                        supply = userInfo.shareSupply
-
-
-                    } else {
-
-                        const userInfo2 = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
-
-                        username = userInfo2.data.twitterUsername
-                        supply = userInfo2.data.shareSupply
-                        frenScore = "0%"
-
-                    }
-
-
-
-
-
-
 
 
                     let twitterAuditFormatted = "∙ Score: `" + "   " + "`\n∙ Followers: `" + "   " + "` | Following: `" + "   " + "`\n∙ Tweets: `" + "   " + "` | Likes: `" + "   " + "`\n∙ Created: `" + "   " + "`"
@@ -181,6 +156,36 @@ module.exports = {
 
 
 
+
+
+                    const user = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + userAddress + '"}}')
+                    const userInfo = user.data[0].result.data.json.find(obj => obj.address.toLowerCase() === userAddress.toLowerCase())
+
+                    if (userInfo.twitterUsername != "") {
+
+                        frenScore = parseFloat(userInfo.frenScore * 100).toFixed(0) + "%"
+                        username = userInfo.twitterUsername
+                        supply = userInfo.shareSupply
+
+
+                    } else {
+
+                        const userInfo2 = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
+
+                        username = userInfo2.data.twitterUsername
+                        supply = userInfo2.data.shareSupply
+                        frenScore = "0%"
+
+                    }
+
+
+
+
+
+
+
+
+                    
 
 
 

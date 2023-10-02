@@ -263,7 +263,7 @@ try {
     obj.description = "None"
     obj.pfp = "None"
     obj.banner = "None"
-    obj.pfpUrl = "None"
+    obj.pfpUrl = "https://friend.tech/"
 
 
     capital = "Unknown"

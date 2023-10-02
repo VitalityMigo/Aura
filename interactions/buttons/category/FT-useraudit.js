@@ -149,6 +149,7 @@ module.exports = {
                     const user = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + userAddress + '"}}')
                     const userInfo = user.data[0].result.data.json.find(obj => obj.address.toLowerCase() === userAddress.toLowerCase())
                     
+                    console.log(userInfo)
                     const frenScore = parseFloat(userInfo.frenScore * 100).toFixed(0)
                     const username = userInfo.twitterUsername
                     const supply = userInfo.shareSupply

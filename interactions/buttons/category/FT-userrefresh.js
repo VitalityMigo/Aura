@@ -220,7 +220,7 @@ module.exports = {
 
 
 
-                    const [holdersFormattedEmbeds, tradersFormatted, airdropInfos, ethUsdPrice, twitterInfos] = await Promise.all([holdersPromise, tradersPromise, airdropInfoCall, ethUsdPricePromise, twitterPromise]);
+                    let [holdersFormattedEmbeds, tradersFormatted, airdropInfos, ethUsdPrice, twitterInfos] = await Promise.all([holdersPromise, tradersPromise, airdropInfoCall, ethUsdPricePromise, twitterPromise]);
 
 
                     if (twitterInfos) {

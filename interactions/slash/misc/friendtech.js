@@ -516,7 +516,7 @@ module.exports = {
 
                                                     )
 
-                                                const [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersFormattedEmbedsPromise, tradersFormattedPromise, ethUsdPricePromise]);
+                                                    let [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersFormattedEmbedsPromise, tradersFormattedPromise, ethUsdPricePromise]);
 
 
                                                 if (holdersFormattedEmbeds == "") { holdersFormattedEmbeds = "```No holders found for this share.                         ```" }

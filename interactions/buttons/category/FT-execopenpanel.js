@@ -21,6 +21,11 @@ const getTwitterUserInfo = require("../../../functions/twitteruserinfo")
 const getTimeAgo = require("../../../functions/timeago")
 const countEmojis = require("../../../functions/isemoji")
 
+
+const ethPrice = require("../../../functions/getethprice")
+const { formatHoldersData, formatTradesData } = require('../../../functions/FT-useraccelerator');
+
+
 //Récupérer les clefs API
 const dotenv = require("dotenv")
 dotenv.config()

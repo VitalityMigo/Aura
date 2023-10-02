@@ -72,7 +72,7 @@ setTimeout(() => {
 async function newFriendtechUser(obj) {
 
 
-    await addTimeout(7)
+    await addTimeout(8)
 
 
     try {
@@ -116,7 +116,6 @@ async function newFriendtechUser(obj) {
             }
 
 
-            let id = userInfoCall.data.id
             let twitterUsername = userInfoCall.data.twitterUsername
             let twitterName = userInfoCall.data.twitterName
 

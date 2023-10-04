@@ -298,7 +298,7 @@ module.exports = {
                         .setTimestamp()
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                    await interaction.reply({ embeds: [errorNotEthereum], ephemeral: true });
+                    await interaction.editReply({ embeds: [errorNotEthereum], ephemeral: true });
 
 
                 }
@@ -419,7 +419,7 @@ module.exports = {
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-            await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
+            await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
 
 
         }

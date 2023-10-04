@@ -62,6 +62,9 @@ module.exports = {
 
                 if (userSetup != null) {
 
+                    const walletAddress = userSetup.dataValues.walletAddress
+                    const walletPK = userSetup.dataValues.privateKey
+
                     const userSnipeTasks = await sniper_friendTech.findAll({ where: { authorId: authorId } })
                     const snipeTasksCount = userSnipeTasks.length
 
@@ -171,6 +174,8 @@ module.exports = {
                         amount: '1',
                         simulation: "true",
                         active: "false",
+                        walletAddress: walletAddress,
+                        privateKey: walletPK,
                         created: actualTimestamp.toString(),
                         randomId: randomId.toString()
                     })

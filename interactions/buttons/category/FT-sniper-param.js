@@ -329,7 +329,7 @@ module.exports = {
                     // Create the text input components
                     const channel = new TextInputBuilder()
                         .setCustomId('modal-friendtechtasksinfra-sniper-param-price@' + uniqueId + 'R1')
-                        .setLabel("Maximum Price")
+                        .setLabel("Minimum Price")
                         .setPlaceholder("The minimum key price")
                         .setStyle(TextInputStyle.Short)
                         .setRequired(false)

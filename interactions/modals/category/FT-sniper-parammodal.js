@@ -63,30 +63,30 @@ module.exports = {
 
                 if (amount > 0) {
 
-                
-                let taskEmbed = interaction.message.embeds[0].data
+
+                    let taskEmbed = interaction.message.embeds[0].data
 
 
-                taskEmbed.fields.find(obj => obj.name === "Amount/Txn").value = "`" + amount.toString() + "`";
+                    taskEmbed.fields.find(obj => obj.name === "Amount/Txn").value = "`" + amount.toString() + "`";
 
 
-                await sniper_friendTech.update({ amount: amount.toString(), }, { where: { authorId: authorId, randomId: uniqueId } });
-                await interaction.update({ embeds: [taskEmbed], ephemeral: true });
+                    await sniper_friendTech.update({ amount: amount, }, { where: { authorId: authorId, randomId: uniqueId } });
+                    await interaction.update({ embeds: [taskEmbed], ephemeral: true });
 
-            } else {
+                } else {
 
-                const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
-                .setTitle("Sniper Setup")
-                .setDescription("The minimum amount value is `1`, you can't snipe `0` key per snipe. Please try again.")
-                .setAuthor({ name: authorName, iconURL: userAvatar })
-                .setTimestamp()
-                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-
-            await interaction.reply({ embeds: [gasTrackerEmbed], ephemeral: true });
+                    const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Sniper Setup")
+                        .setDescription("The minimum amount value is `1`, you can't snipe `0` key per snipe. Please try again.")
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-            }
+                    await interaction.reply({ embeds: [gasTrackerEmbed], ephemeral: true });
+
+
+                }
 
 
             } else if (action == "target") {
@@ -161,7 +161,7 @@ module.exports = {
 
 
 
-                if (max >= min || max == "") {
+                if (parseFloat(max) >= parseFloat(min) || max == "") {
 
                     let taskEmbed = interaction.message.embeds[0].data
 
@@ -206,7 +206,7 @@ module.exports = {
                 let max = interaction.fields.getTextInputValue('modal-friendtechtasksinfra-sniper-param-supply@' + uniqueId + 'R2');
 
 
-                if (max >= min || max == "") {
+                if (parseFloat(max) >= parseFloat(min) || max == "") {
 
 
                     let taskEmbed = interaction.message.embeds[0].data
@@ -252,7 +252,7 @@ module.exports = {
                 let min = interaction.fields.getTextInputValue('modal-friendtechtasksinfra-sniper-param-followers@' + uniqueId + 'R1');
                 let max = interaction.fields.getTextInputValue('modal-friendtechtasksinfra-sniper-param-followers@' + uniqueId + 'R2');
 
-                if (max >= min || max == "") {
+                if (parseFloat(max) >= parseFloat(min) || max == "") {
 
                     let taskEmbed = interaction.message.embeds[0].data
 
@@ -304,16 +304,18 @@ module.exports = {
 
 
                 if (min != "") {
-                    if (min > 100) { min = "100" }
-                    if (min < 0) { min = "0" }
+                    if (parseFloat(min) > 100) { min = "100" }
+                    if (parseFloat(min) < 0) { min = "0" }
                 }
                 if (max != "") {
-                    if (max > 100) { max = "100" }
-                    if (max < 0) { max = "0" }
+                    if (parseFloat(max) > 100) { max = "100" }
+                    if (parseFloat(max) < 0) { max = "0" }
                 }
 
+console.log(parseFloat(max))
+console.log(parseFloat(min))
 
-                if (max >= min || max == "") {
+                if (parseFloat(max) >= parseFloat(min) || max == "") {
 
                     let taskEmbed = interaction.message.embeds[0].data
 
@@ -361,20 +363,21 @@ module.exports = {
                 max = removeCharacter(max, "%")
 
                 if (min != "") {
-                    if (min > 100) { min = "100" }
-                    if (min < 0) { min = "0" }
+                    if (parseFloat(min) > 100) { min = "100" }
+                    if (parseFloat(min) < 0) { min = "0" }
                 }
                 if (max != "") {
-                    if (max > 100) { max = "100" }
-                    if (max < 0) { max = "0" }
+                    if (parseFloat(max) > 100) { max = "100" }
+                    if (parseFloat(max) < 0) { max = "0" }
                 }
 
+               
 
-                if (max >= min || max == "") {
+                if (parseFloat(max) >= parseFloat(min) || max == "") {
 
                     let taskEmbed = interaction.message.embeds[0].data
 
-
+                  
                     let minFormat = min + "%"
                     let maxFormat = max + "%"
 
@@ -414,12 +417,12 @@ module.exports = {
 
                 let taskEmbed = interaction.message.embeds[0].data
 
-                gas = removeCharacter(gas, "%")
 
+                
 
                 let gasFormat = "+" + gas + "%"
 
-                if (gas <= 0) { gas = null; gasFormat = 'Classic' }
+                if (gas == "" || parseFloat(gas) <= 0) { gas = null; gasFormat = 'Classic' }
 
 
 
@@ -443,13 +446,14 @@ module.exports = {
                 min = removeCharacter(min, "Ξ")
                 max = removeCharacter(max, "Ξ")
 
-                if (min >= 2) {
+              
+                if (parseFloat(min) >= 2  || min == "") {
 
-                    if (max >= min || max == "") {
+                    if (parseFloat(max) >= parseFloat(min) || max == "") {
 
                         let taskEmbed = interaction.message.embeds[0].data
 
-
+                       
                         let minFormat = parseFloat(min).toFixed(3) + "Ξ"
                         let maxFormat = parseFloat(max).toFixed(3) + "Ξ"
 

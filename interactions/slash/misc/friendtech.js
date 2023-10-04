@@ -259,6 +259,12 @@ module.exports = {
 
                 )
 
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("tasks")
+                .setDescription("Create and manage your Friend.Tech automation tasks")
+
         ),
 
 
@@ -516,7 +522,7 @@ module.exports = {
 
                                                     )
 
-                                                    let [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersFormattedEmbedsPromise, tradersFormattedPromise, ethUsdPricePromise]);
+                                                let [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersFormattedEmbedsPromise, tradersFormattedPromise, ethUsdPricePromise]);
 
 
                                                 if (holdersFormattedEmbeds == "") { holdersFormattedEmbeds = "```No holders found for this share.                         ```" }
@@ -3668,7 +3674,54 @@ module.exports = {
 
 
 
+                                } else if (interaction.options.getSubcommand() === 'tasks') {
+
+
+
+
+
+                                    const buttonsRow = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('friendtechtasksinfra-snipermenu-button')
+                                                .setLabel('🥷 Sniper')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
+                                                .setCustomId('friendtechtasksinfra-ordermenu-button')
+                                                .setLabel('🔮 Order')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
+                                                .setCustomId('friendtech_exec_setup-button')
+                                                .setLabel('💻 Setup')
+                                                .setStyle(3),
+
+                                        );
+
+
+                                    const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle("Friend.Tech Tasks")
+                                        .setDescription(">>> Displaying the Friend.Tech task dashboard")
+                                        //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .addFields(
+                                            { name: "Tasks Mechanism", value: "Friend.Tech tasks are all actions that allow you to automate certain actions so that you don't miss any opportunities. There are two types of tasks:\n\n**🥷 Sniper**\nSnipe tasks let you use Aura to automatically buy keys when a specific event occurs.\n\n**🔮 Order**\nOrder tasks allow you to automate the purchase or sale of keys when certain conditions are met, just as in conventional finance.", inline: true },
+                                        )
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                    await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRow], ephemeral: true });
+
+
+
+
+
+
+
+
                                 }
+
+
+
                             } else if (!member.roles.cache.has(communityMemberRoleId)) {
 
 

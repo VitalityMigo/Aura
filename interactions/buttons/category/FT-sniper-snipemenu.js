@@ -1,112 +1,132 @@
+/**
+ * @file Sample button interaction
+ * @author JAYZHVJ
+ * @since 3.0.0
+ * @version 3.2.2
+ */
+
+/**
+ * @type {import('../../../typings').ButtonInteractionCommand}
+ */
+
 
 const { ButtonInteraction } = require('discord.js');
-const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, infra_friendTech, sniper_friendTech, sequelize } = require('../../../events/database');
+const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
+const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-const decrypt = require("../../../functions/decrypt")
-const encrypt = require("../../../functions/encrypt")
 
 
-
-const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://1rpc.io/base`))
-
-
-const buttonsRowModify = new ActionRowBuilder()
+const buttonsRow = new ActionRowBuilder()
     .addComponents(
+     
         new ButtonBuilder()
-            .setCustomId('infra_friendtechmodifywallet-button')
-            .setLabel('modify wallet')
+            .setCustomId('friendtechtasksinfra-snipercreatenewuser-button')
+            .setLabel('👼🏽 New User Task')
+            .setStyle(3),
+        new ButtonBuilder()
+            .setCustomId('friendtechtasksinfra-sniperlistnewdeposit-button')
+            .setLabel('📥 New Deposit Task')
+            .setStyle(3),
+        new ButtonBuilder()
+            .setCustomId('friendtechtasksinfra-sniperlist-button-1')
+            .setLabel('🧾 List Tasks')
             .setStyle(1),
+    
         new ButtonBuilder()
-            .setCustomId('infra_friendtechexportwallet-button')
-            .setLabel('export')
+            .setCustomId('friendtechtasksinfra-mainmenu-button')
+            .setLabel('🏠')
             .setStyle(1),
-        new ButtonBuilder()
-            .setCustomId('infra_friendtechdeletewallet-button')
-            .setLabel('delete wallet')
-            .setStyle(4)
     );
 
 
-
-
-
 module.exports = {
-    id: 'infra_friendtechgeneratewallet-button',
+    id: 'friendtechtasksinfra-snipermenu-button',
 
     async execute(interaction) {
         if (!(interaction instanceof ButtonInteraction)) return;
 
-        //Récupérer informations de l'utilisateur de la commande
         let authorId = interaction.user.id;
         let authorName = interaction.user.username;
         let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
         let serverId = interaction.member.guild.id
         let botId = interaction.applicationId
 
-
         try {
 
             //Checkpoint
             console.log("// Step 1 : Initialization - Executed ✅")
 
-            //Checkpoint
-            console.log("// Step 2 : Authorization - Executed ✅")
 
 
+            if (interaction.message.interaction.user.id === authorId) {
 
-            const account = await web3.eth.accounts.create();
+                //Checkpoint
+                console.log("// Step 2 : Authorization - Executed ✅")
 
-            const walletAddress = account.address
-            const privateKey = (account.privateKey).replace("0x", "")
-
-            const encryptWA = encrypt(walletAddress)
-            const encryptPK = encrypt(privateKey)
-
+                let sniperTasks = 0
+                let activeSniperTasks = 0
 
 
-            await infra_friendTech.destroy({ where: { authorId: authorId } })
+                const userTasks = await sniper_friendTech.findAll({ where: { authorId: authorId } })
 
-            await infra_friendTech.create({
+                if (userTasks.length > 0) {
 
-                authorId: authorId,
-                authorName: authorName,
-                walletAddress: encryptWA,
-                privateKey: encryptPK,
+                    activeSniperTasks = (userTasks.filter(obj => obj.dataValues.active == "true")).length
+                    sniperTasks = userTasks.length
 
 
-            })
+                }
 
 
-
-
-
-            const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                .setTitle("Friend Tech Setup")
-                .setDescription(">>> Displaying your Friend.tech wallet setup")
-                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                const bigEmbed = new EmbedBuilder().setColor("#060A8F")
+                .setTitle("Friend.Tech Tasks")
+                .setDescription(">>> Displaying your Friend.Tech sniper tasks")
                 .setAuthor({ name: authorName, iconURL: userAvatar })
                 .addFields(
-                    { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
                     { name: " ", value: " ", inline: false },
-                    { name: " ", value: "*✅ Your wallet has been succesfuly generated, encrypted and registered to your profile. Use export to donwload the private key.*", inline: false },
-
+                    { name: " ", value: "This panel allows you to create and display your Sniper Tasks.", inline: false },
+                    { name: " ", value: " ", inline: false },
+                    { name: "Select the method you'd like to use:\n\n", value: " ", inline: false },
+                    { name: " ", value: "\n\n**👼🏽 New Users**\nThis method allows you to snipe new Friend.Tech users as soon as they register. You can set a wide range of conditions to adapt the sniper to your needs.\n\n**📥 New Deposit**\nThis method allows you to snipe users who reload their Friend.Tech account the second their transaction leaves. Here too, you have a large number of parameters available.", inline: false },
+                    { name: " ", value: " ", inline: false },
+                    { name: " ", value: "**→** You currently have `" + activeSniperTasks + "` active sniper tasks out of `" + sniperTasks + "`.", inline: false },
 
                 )
                 .setTimestamp()
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-            await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowModify] });
-
-
-            // On update les tasks du sniper
-            await sniper_friendTech.update({ walletAddress: encryptWA, privateKey: encryptPK }, { where: { authorId: authorId } });
+            await interaction.update({ embeds: [bigEmbed], components: [buttonsRow], ephemeral: true });
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+            } else {
+
+                const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Bot Access")
+                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                    .setDescription("This button is not for you. You can only click on buttons generated by your commands. Please try again with your personal data.")
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                await interaction.reply({ embeds: [setfpEmbedNotForYou], ephemeral: true });
+
+
+
+            }
 
 
         } catch (error) {
@@ -129,7 +149,7 @@ module.exports = {
             const userRoleList = interaction.member._roles
             let userHighestRole = "Member"
             if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-            let reportCommand = "/FT-generatewallet"
+            let reportCommand = "/snipe-menu"
 
             const timeStamp = Date.now();
             const date = new Date(timeStamp);
@@ -195,10 +215,8 @@ module.exports = {
 
 
         }
-
     },
 };
-
 
 
 

@@ -1,7 +1,7 @@
 
 const { ButtonInteraction } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, infra_friendTech, sequelize } = require('../../../events/database');
+const { accessSql, profileData, adminsql, reportsql, infra_friendTech, sniper_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 
@@ -15,7 +15,7 @@ const buttonsRowNew = new ActionRowBuilder()
             .setCustomId('infra_friendtechgeneratewallet-button')
             .setLabel('generate wallet')
             .setStyle(3),
-            
+
 
     );
 
@@ -54,7 +54,7 @@ module.exports = {
                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                 .setAuthor({ name: authorName, iconURL: userAvatar })
                 .addFields(
-                    { name: " ", value: "You're wallet have been completely deleted from the database. You can use the button below to set a new one.", inline: true },
+                    { name: " ", value: "You're wallet have been completely deleted from the database. You can use the button below to set a new one. All your tasks are now inactive.", inline: true },
 
                 )
                 .setTimestamp()
@@ -64,6 +64,8 @@ module.exports = {
 
 
 
+            // On update les tasks du sniper
+            await sniper_friendTech.update({ walletAddress: null, privateKey: null, active: "false" }, { where: { authorId: authorId } });
 
 
 

@@ -839,6 +839,102 @@ const infra_friendTech = sequelize.define('infra_friendtech', {
 
 
 
+//Alert up
+const sniper_friendTech = sequelize.define('sniper_friendtech', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    authorObject: {
+        type: Sequelize.STRING,
+    },
+    type: {
+        type: Sequelize.STRING,
+    },
+    target: {
+        type: Sequelize.STRING,
+    },
+    amount: {
+        type: Sequelize.STRING,
+    },
+    repeat: {
+        type: Sequelize.STRING,
+    },
+    min_total_price: {
+        type: Sequelize.STRING,
+    },
+    max_total_price: {
+        type: Sequelize.STRING,
+    },
+    min_supply: {
+        type: Sequelize.STRING,
+    },
+    max_supply: {
+        type: Sequelize.STRING,
+    },
+    min_followers: {
+        type: Sequelize.STRING,
+    },
+    max_followers: {
+        type: Sequelize.STRING,
+    },
+    min_twitter_score: {
+        type: Sequelize.STRING,
+    },
+    max_twitter_score: {
+        type: Sequelize.STRING,
+    },
+    min_unique_holders: {
+        type: Sequelize.STRING,
+    },
+    max_unique_holders: {
+        type: Sequelize.STRING,
+    },
+    min_deposit_value: {
+        type: Sequelize.STRING,
+    },
+    max_deposit_value: {
+        type: Sequelize.STRING,
+    },
+    gas_preset: {
+        type: Sequelize.STRING,
+    },
+    simulation: {
+        type: Sequelize.STRING,
+    },
+    walletAddress: {
+        type: Sequelize.STRING,
+    },
+    privateKey: {
+        type: Sequelize.STRING,
+    },
+    active: {
+        type: Sequelize.STRING,
+    },
+    created: {
+        type: Sequelize.STRING,
+    },
+    randomId: {
+        type: Sequelize.STRING,
+    },
+   
+    
+
+
+});
+
+
+
+
 
 //Synching the tables
 
@@ -860,7 +956,7 @@ walletManager.sync()
 paymentHistory.sync()
 data.sync()
 erc20.sync()
-
+sniper_friendTech.sync()
 exe_friendTech.sync()
 infra_friendTech.sync()
 
@@ -888,6 +984,7 @@ module.exports = {
     erc20,
     exe_friendTech,
     infra_friendTech,
+    sniper_friendTech,
     Op,
 }
 

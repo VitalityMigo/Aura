@@ -10,7 +10,7 @@
  */
 
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-const { profileData, reportsql, watchlistSql, walletsgenerated, vouchData, wallets, accessSql, interactionData, adminsql, infra_friendTech, sequelize } = require('../../../events/database');
+const { profileData, reportsql, watchlistSql, walletsgenerated, vouchData, wallets, accessSql, interactionData, adminsql, sniper_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 const encrypt = require("../../../functions/encrypt")
@@ -25,32 +25,32 @@ const web3 = new Web3(new Web3.providers.HttpProvider(`https://1rpc.io/base`))
 function isPrivateKeyValid(privateKey) {
     // Vérifie si la clé privée a une longueur de 64 caractères.
     if (privateKey.length !== 64) {
-      return false;
+        return false;
     }
-  
+
     // Vérifie si la clé privée est composée de caractères hexadécimaux en minuscules.
     const hexRegex = /^[0-9a-f]+$/;
     return hexRegex.test(privateKey);
-  }
+}
 
 
 
 
 const buttonsRowModify = new ActionRowBuilder()
-.addComponents(
-    new ButtonBuilder()
-        .setCustomId('infra_friendtechmodifywallet-button')
-        .setLabel('modify wallet')
-        .setStyle(1),
-    new ButtonBuilder()
-        .setCustomId('infra_friendtechexportwallet-button')
-        .setLabel('export')
-        .setStyle(1),
-    new ButtonBuilder()
-        .setCustomId('infra_friendtechdeletewallet-button')
-        .setLabel('delete wallet')
-        .setStyle(4)
-);
+    .addComponents(
+        new ButtonBuilder()
+            .setCustomId('infra_friendtechmodifywallet-button')
+            .setLabel('modify wallet')
+            .setStyle(1),
+        new ButtonBuilder()
+            .setCustomId('infra_friendtechexportwallet-button')
+            .setLabel('export')
+            .setStyle(1),
+        new ButtonBuilder()
+            .setCustomId('infra_friendtechdeletewallet-button')
+            .setLabel('delete wallet')
+            .setStyle(4)
+    );
 
 
 const buttonsRowNew = new ActionRowBuilder()
@@ -100,107 +100,109 @@ module.exports = {
 
             if (isPrivateKeyValid(privateKey)) {
 
-            const account = await web3.eth.accounts.privateKeyToAccount(privateKey);
+                const account = await web3.eth.accounts.privateKeyToAccount(privateKey);
 
-            const walletAddress = account.address.toLowerCase()
-
-
-            const encryptWA = encrypt(walletAddress)
-            const encryptPK = encrypt(privateKey)
-
-            if (userSetup == null) {
-
-            await infra_friendTech.create({
-
-                authorId: authorId,
-                authorName: authorName,
-                walletAddress: encryptWA,
-                privateKey: encryptPK,
-
-                
-            })
-
-        } else if (userSetup != null) {
+                const walletAddress = account.address.toLowerCase()
 
 
-            await infra_friendTech.update({
-                walletAddress: encryptWA,
-                privateKey: encryptPK,
-            }, { where: { authorId: authorId } })
-    
+                const encryptWA = encrypt(walletAddress)
+                const encryptPK = encrypt(privateKey)
+
+                if (userSetup == null) {
+
+                    await infra_friendTech.create({
+
+                        authorId: authorId,
+                        authorName: authorName,
+                        walletAddress: encryptWA,
+                        privateKey: encryptPK,
 
 
-        }
+                    })
 
-            const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                .setTitle("Friend Tech Setup")
-                .setDescription(">>> Displaying your Friend.tech wallet setup")
-                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                .setAuthor({ name: authorName, iconURL: userAvatar })
-                .addFields(
-                    { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
-                    { name: " ", value: " ", inline: false },
-                    { name: " ", value: "*✅ Your wallet has been succesfuly encrypted and registered to your profile.*", inline: false },
+                } else if (userSetup != null) {
 
 
-                )
-                .setTimestamp()
-                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-            await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowModify] });
-
-                
-
-        } else {
-
-
-            if (userSetup != null) {
-
-                const walletAddress = decrypt(userSetup.dataValues.walletAddress)
+                    await infra_friendTech.update({
+                        walletAddress: encryptWA,
+                        privateKey: encryptPK,
+                    }, { where: { authorId: authorId } })
 
 
 
-            const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-            .setTitle("Friend Tech Setup")
-            .setDescription(">>> Displaying your Friend.tech wallet setup")
-            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-            .setAuthor({ name: authorName, iconURL: userAvatar })
-            .addFields(
-                { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
-                { name: " ", value: " ", inline: false },
-                { name: " ", value: "*❌ The private key you provided isn't valid*", inline: false },
+                }
 
-            )
-            .setTimestamp()
-            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-        await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowModify] });
+                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Friend Tech Setup")
+                    .setDescription(">>> Displaying your Friend.tech wallet setup")
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                    .addFields(
+                        { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
+                        { name: " ", value: " ", inline: false },
+                        { name: " ", value: "*✅ Your wallet has been succesfuly encrypted and registered to your profile.*", inline: false },
 
 
-    } else  if (userSetup == null) {
+                    )
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowModify] });
+
+                // On update les tasks du sniper
+                await sniper_friendTech.update({ walletAddress: encryptWA, privateKey: encryptPK }, { where: { authorId: authorId } });
+
+
+            } else {
+
+
+                if (userSetup != null) {
+
+                    const walletAddress = decrypt(userSetup.dataValues.walletAddress)
 
 
 
-        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-        .setTitle("Friend Tech Setup")
-        .setDescription(">>> Displaying your Friend.tech wallet setup")
-        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-        .setAuthor({ name: authorName, iconURL: userAvatar })
-        .addFields(
-            { name: " ", value: "You don't have a wallet imported in your Friend.tech portfolio. To get started, use the button below.", inline: true },
-            { name: " ", value: " ", inline: false },
-            { name: " ", value: "*❌ The private key you provided isn't valid*", inline: false },
+                    const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Friend Tech Setup")
+                        .setDescription(">>> Displaying your Friend.tech wallet setup")
+                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .addFields(
+                            { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
+                            { name: " ", value: " ", inline: false },
+                            { name: " ", value: "*❌ The private key you provided isn't valid*", inline: false },
 
-        )
-        .setTimestamp()
-        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                        )
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-    await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowNew] });
-
-}
+                    await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowModify] });
 
 
-        }
+                } else if (userSetup == null) {
+
+
+
+                    const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Friend Tech Setup")
+                        .setDescription(">>> Displaying your Friend.tech wallet setup")
+                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .addFields(
+                            { name: " ", value: "You don't have a wallet imported in your Friend.tech portfolio. To get started, use the button below.", inline: true },
+                            { name: " ", value: " ", inline: false },
+                            { name: " ", value: "*❌ The private key you provided isn't valid*", inline: false },
+
+                        )
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                    await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowNew] });
+
+                }
+
+
+            }
 
 
             return;

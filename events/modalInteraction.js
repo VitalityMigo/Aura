@@ -32,10 +32,15 @@ module.exports = {
 			command = client.modalCommands.get("modal_friendtech_exec_buy_");
 		} else if (customId.startsWith("modal_friendtech_exec_sell_")) {
 			command = client.modalCommands.get("modal_friendtech_exec_sell_");
-		} else {
+		} else if (customId.startsWith("modal-friendtechtasksinfra-sniper-param-")) {
+			command = client.modalCommands.get("modal-friendtechtasksinfra-sniper-param-");
+		} 
+		
+		
+		else {
 			command = client.modalCommands.get(customId);
 		}
-
+		
 		// If the interaction is not a command in cache, return error message.
 		// You can modify the error message at ./messages/defaultModalError.js file!
 

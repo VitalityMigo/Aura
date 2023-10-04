@@ -64,7 +64,17 @@ module.exports = {
 
 			command = client.buttonCommands.get("ft_interaction_");
 			
+		} else if (customId.startsWith("button-friendtechtasksinfra-sniper-param-")) {
+
+			command = client.buttonCommands.get("button-friendtechtasksinfra-sniper-param-");
+			
+		} else if (customId.startsWith("friendtechtasksinfra-sniperlist-button-")) {
+
+			command = client.buttonCommands.get("friendtechtasksinfra-sniperlist-button-");
+			
 		}
+
+		
 		
 		
 		else  {

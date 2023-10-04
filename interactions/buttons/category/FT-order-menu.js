@@ -1,112 +1,106 @@
+/**
+ * @file Sample button interaction
+ * @author JAYZHVJ
+ * @since 3.0.0
+ * @version 3.2.2
+ */
+
+/**
+ * @type {import('../../../typings').ButtonInteractionCommand}
+ */
+
 
 const { ButtonInteraction } = require('discord.js');
-const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, infra_friendTech, sniper_friendTech, sequelize } = require('../../../events/database');
+const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
+const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-const decrypt = require("../../../functions/decrypt")
-const encrypt = require("../../../functions/encrypt")
 
 
-
-const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://1rpc.io/base`))
-
-
-const buttonsRowModify = new ActionRowBuilder()
+const buttonsRow = new ActionRowBuilder()
     .addComponents(
+      
         new ButtonBuilder()
-            .setCustomId('infra_friendtechmodifywallet-button')
-            .setLabel('modify wallet')
+            .setCustomId('friendtechtasksinfra-mainmenu-button')
+            .setLabel('🏠')
             .setStyle(1),
-        new ButtonBuilder()
-            .setCustomId('infra_friendtechexportwallet-button')
-            .setLabel('export')
-            .setStyle(1),
-        new ButtonBuilder()
-            .setCustomId('infra_friendtechdeletewallet-button')
-            .setLabel('delete wallet')
-            .setStyle(4)
+
     );
 
 
-
-
-
 module.exports = {
-    id: 'infra_friendtechgeneratewallet-button',
+    id: 'friendtechtasksinfra-ordermenu-button',
 
     async execute(interaction) {
         if (!(interaction instanceof ButtonInteraction)) return;
 
-        //Récupérer informations de l'utilisateur de la commande
         let authorId = interaction.user.id;
         let authorName = interaction.user.username;
         let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
         let serverId = interaction.member.guild.id
         let botId = interaction.applicationId
 
-
         try {
 
             //Checkpoint
             console.log("// Step 1 : Initialization - Executed ✅")
 
-            //Checkpoint
-            console.log("// Step 2 : Authorization - Executed ✅")
+
+
+            if (interaction.message.interaction.user.id === authorId) {
+
+                //Checkpoint
+                console.log("// Step 2 : Authorization - Executed ✅")
+
+              
 
 
 
-            const account = await web3.eth.accounts.create();
+                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Friend.Tech Tasks")
+                    .setDescription(">>> Displaying your Friend.Tech order tasks")
+                    //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                    .addFields(
+                        { name: " ", value: " ", inline: false },
+                        { name: " ", value: "The order tasks are being built at the moment, and will be available soon. Come back soon !", inline: false },
+                        
 
-            const walletAddress = account.address
-            const privateKey = (account.privateKey).replace("0x", "")
+                    )
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-            const encryptWA = encrypt(walletAddress)
-            const encryptPK = encrypt(privateKey)
-
-
-
-            await infra_friendTech.destroy({ where: { authorId: authorId } })
-
-            await infra_friendTech.create({
-
-                authorId: authorId,
-                authorName: authorName,
-                walletAddress: encryptWA,
-                privateKey: encryptPK,
-
-
-            })
-
-
-
-
-
-            const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                .setTitle("Friend Tech Setup")
-                .setDescription(">>> Displaying your Friend.tech wallet setup")
-                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                .setAuthor({ name: authorName, iconURL: userAvatar })
-                .addFields(
-                    { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
-                    { name: " ", value: " ", inline: false },
-                    { name: " ", value: "*✅ Your wallet has been succesfuly generated, encrypted and registered to your profile. Use export to donwload the private key.*", inline: false },
-
-
-                )
-                .setTimestamp()
-                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-            await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowModify] });
-
-
-            // On update les tasks du sniper
-            await sniper_friendTech.update({ walletAddress: encryptWA, privateKey: encryptPK }, { where: { authorId: authorId } });
+                await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRow], ephemeral: true });
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+            } else {
+
+                const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Bot Access")
+                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                    .setDescription("This button is not for you. You can only click on buttons generated by your commands. Please try again with your personal data.")
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                await interaction.reply({ embeds: [setfpEmbedNotForYou], ephemeral: true });
+
+
+
+            }
 
 
         } catch (error) {
@@ -129,7 +123,7 @@ module.exports = {
             const userRoleList = interaction.member._roles
             let userHighestRole = "Member"
             if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-            let reportCommand = "/FT-generatewallet"
+            let reportCommand = "/snipe-menu"
 
             const timeStamp = Date.now();
             const date = new Date(timeStamp);
@@ -195,10 +189,8 @@ module.exports = {
 
 
         }
-
     },
 };
-
 
 
 

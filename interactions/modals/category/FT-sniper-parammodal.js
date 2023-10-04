@@ -161,7 +161,7 @@ module.exports = {
 
 
 
-                if (parseFloat(max) >= parseFloat(min) || max == "") {
+                if (parseFloat(max) >= parseFloat(min) || max == "" || min == "") {
 
                     let taskEmbed = interaction.message.embeds[0].data
 
@@ -206,7 +206,7 @@ module.exports = {
                 let max = interaction.fields.getTextInputValue('modal-friendtechtasksinfra-sniper-param-supply@' + uniqueId + 'R2');
 
 
-                if (parseFloat(max) >= parseFloat(min) || max == "") {
+                if (parseFloat(max) >= parseFloat(min) || max == "" || min == "") {
 
 
                     let taskEmbed = interaction.message.embeds[0].data
@@ -252,7 +252,7 @@ module.exports = {
                 let min = interaction.fields.getTextInputValue('modal-friendtechtasksinfra-sniper-param-followers@' + uniqueId + 'R1');
                 let max = interaction.fields.getTextInputValue('modal-friendtechtasksinfra-sniper-param-followers@' + uniqueId + 'R2');
 
-                if (parseFloat(max) >= parseFloat(min) || max == "") {
+                if (parseFloat(max) >= parseFloat(min) || max == "" || min == "") {
 
                     let taskEmbed = interaction.message.embeds[0].data
 
@@ -315,7 +315,7 @@ module.exports = {
 console.log(parseFloat(max))
 console.log(parseFloat(min))
 
-                if (parseFloat(max) >= parseFloat(min) || max == "") {
+                if (parseFloat(max) >= parseFloat(min) || max == "" || min == "") {
 
                     let taskEmbed = interaction.message.embeds[0].data
 
@@ -373,7 +373,7 @@ console.log(parseFloat(min))
 
                
 
-                if (parseFloat(max) >= parseFloat(min) || max == "") {
+                if (parseFloat(max) >= parseFloat(min) || max == "" || min == "") {
 
                     let taskEmbed = interaction.message.embeds[0].data
 
@@ -449,7 +449,7 @@ console.log(parseFloat(min))
               
                 if (parseFloat(min) >= 2  || min == "") {
 
-                    if (parseFloat(max) >= parseFloat(min) || max == "") {
+                    if (parseFloat(max) >= parseFloat(min) || max == "" || min == "") {
 
                         let taskEmbed = interaction.message.embeds[0].data
 

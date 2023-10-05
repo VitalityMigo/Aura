@@ -318,11 +318,16 @@ module.exports = {
                 //Récupère régagle de privé/ou pas de l'utilisateur
                 const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
 
-                if (authorProfile === null || interaction.options.getSubcommand() != 'wallet' || interaction.options.getSubcommand() != 'bridge') { await interaction.deferReply(); } else {
+                if (authorProfile === null) { 
+                
+                    if (interaction.options.getSubcommand() != 'wallet' && interaction.options.getSubcommand() != 'bridge' && interaction.options.getSubcommand() != 'tasks') { await interaction.deferReply(); 
+                    } else { await interaction.deferReply({ ephemeral: true }) }
+                
+                } else {
                     const authorPrivacyMode = authorProfile.dataValues.privacyMode
 
-                    if (authorPrivacyMode.toLowerCase() === "private" || interaction.options.getSubcommand() === 'wallet' || interaction.options.getSubcommand() === 'bridge') { await interaction.deferReply({ ephemeral: true }); }
-                    if (authorPrivacyMode.toLowerCase() === "public" && interaction.options.getSubcommand() != 'wallet' && interaction.options.getSubcommand() != 'bridge') { await interaction.deferReply(); }
+                    if (authorPrivacyMode.toLowerCase() === "private" || interaction.options.getSubcommand() === 'wallet' || interaction.options.getSubcommand() === 'bridge' || interaction.options.getSubcommand() === 'tasks') { await interaction.deferReply({ ephemeral: true }); }
+                    if (authorPrivacyMode.toLowerCase() === "public" && interaction.options.getSubcommand() != 'wallet' && interaction.options.getSubcommand() != 'bridge' && interaction.options.getSubcommand() != 'tasks') { await interaction.deferReply(); }
                 }
 
 

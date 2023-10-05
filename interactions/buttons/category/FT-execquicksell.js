@@ -180,7 +180,7 @@ module.exports = {
 
 
                             try {
-                                gasUsed = await shareContract.methods.sellShares(subject, amount).estimateGas({ from: sender.toLowerCase(), value: valueWEI });
+                                gasUsed = await shareContract.methods.sellShares(subject, amount).estimateGas({ from: sender.toLowerCase(), value: 0 });
                             } catch (error) {
 
                                 simulationState = false

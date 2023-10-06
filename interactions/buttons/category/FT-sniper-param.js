@@ -181,7 +181,6 @@ module.exports = {
 
 
 
-
                             await sniper_friendTech.update({ active: "true", }, { where: { authorId: authorId, randomId: uniqueId } });
 
                             if (componentBonus == "") {

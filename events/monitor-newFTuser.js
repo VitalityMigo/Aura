@@ -13,6 +13,7 @@ const addTimeout = require("../functions/addtimeout")
 const newFriendtechUser = require('../functions/m-newFTuser')
 const newSmartMoneyTrade = require('../functions/m-FTsmartmoney')
 const newFTDeposit = require("../functions/m-newbasedeposit")
+const FTSnipeDepositExec = require("../functions/FT-snipe-deposit")
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -47,7 +48,7 @@ const depositBridgerL2AddressB = "0x4200000000000000000000000000000000000010"
 const transferSig = "0x"
 
 const depositMin = 2
-const transferMin = 5
+const transferMin = 0.01
 
 const exepectedTxnType = 126
 
@@ -91,24 +92,6 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                 const valueEth = value / 10 ** 18
 
 
-                // On renvoi vers le new user
-                if (input.startsWith(buySignature) && contract.toLowerCase() == shareContractAddress.toLowerCase() && newValue == value) {
-
-                    newFriendtechUser(transaction)
-
-                }
-
-
-
-
-               // On vérifie que ça vient d'un wallet SM, que le contrat est bien FT, que la valeur est différente de 0, et que c'est un buy ou un sell
-                if (smartWalletTable.includes(from.toLowerCase()) && contract.toLowerCase() == shareContractAddress.toLowerCase() && (input.startsWith(sellSignature) || (input.startsWith(buySignature) && newValue != value))) {
-
-                    newSmartMoneyTrade(transaction)
-
-                }
-
-
                 if (valueEth >= transferMin && input == transferSig) {
 
                     const obj = {
@@ -118,17 +101,33 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                         hash: hash,
                         type: "📥 Transfer",
                     }
+                    console.log("Nouveau transfert")
 
-                    newFTDeposit(obj)
+                    FTSnipeDepositExec(obj)
+                    // newFTDeposit(obj)
 
                 }
 
 
-                // if ((from.toLowerCase() == depositRelayAddress.toLowerCase() && contract.toLowerCase() == depositBridgerL2AddressA.toLowerCase() && valueEth >= depositMin) || (input == "0x01" && type == exepectedTxnType && mint && from.toLowerCase() == contract.toLowerCase() && valueEth >= depositMin)) {
 
-                //     newFTDeposit(transaction)
+                // On renvoi vers le new user
+                if (input.startsWith(buySignature) && contract.toLowerCase() == shareContractAddress.toLowerCase() && newValue == value) {
 
-                // }
+                    // newFriendtechUser(transaction)
+
+                }
+
+
+
+
+                // On vérifie que ça vient d'un wallet SM, que le contrat est bien FT, que la valeur est différente de 0, et que c'est un buy ou un sell
+                if (smartWalletTable.includes(from.toLowerCase()) && contract.toLowerCase() == shareContractAddress.toLowerCase() && (input.startsWith(sellSignature) || (input.startsWith(buySignature) && newValue != value))) {
+
+                    //  newSmartMoneyTrade(transaction)
+
+                }
+
+
 
 
 

@@ -854,9 +854,6 @@ const sniper_friendTech = sequelize.define('sniper_friendtech', {
     authorId: {
         type: Sequelize.STRING,
     },
-    authorObject: {
-        type: Sequelize.STRING,
-    },
     type: {
         type: Sequelize.STRING,
     },
@@ -870,40 +867,40 @@ const sniper_friendTech = sequelize.define('sniper_friendtech', {
         type: Sequelize.STRING,
     },
     min_total_price: {
-        type: Sequelize.STRING,
+        type: Sequelize.REAL,
     },
     max_total_price: {
-        type: Sequelize.STRING,
+        type: Sequelize.REAL,
     },
     min_supply: {
-        type: Sequelize.STRING,
+        type: Sequelize.REAL,
     },
     max_supply: {
-        type: Sequelize.STRING,
+        type: Sequelize.REAL,
     },
     min_followers: {
-        type: Sequelize.STRING,
+        type: Sequelize.REAL,
     },
     max_followers: {
-        type: Sequelize.STRING,
+        type: Sequelize.REAL,
     },
     min_twitter_score: {
-        type: Sequelize.STRING,
+        type: Sequelize.REAL,
     },
     max_twitter_score: {
-        type: Sequelize.STRING,
+        type: Sequelize.REAL,
     },
     min_unique_holders: {
-        type: Sequelize.STRING,
+        type: Sequelize.REAL,
     },
     max_unique_holders: {
-        type: Sequelize.STRING,
+        type: Sequelize.REAL,
     },
     min_deposit_value: {
-        type: Sequelize.STRING,
+        type: Sequelize.REAL,
     },
     max_deposit_value: {
-        type: Sequelize.STRING,
+        type: Sequelize.REAL,
     },
     gas_preset: {
         type: Sequelize.STRING,
@@ -924,6 +921,12 @@ const sniper_friendTech = sequelize.define('sniper_friendtech', {
         type: Sequelize.STRING,
     },
     randomId: {
+        type: Sequelize.STRING,
+    },
+    usage: {
+        type: Sequelize.STRING,
+    },
+    taskNb: {
         type: Sequelize.STRING,
     },
    

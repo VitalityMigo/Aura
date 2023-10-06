@@ -63,11 +63,12 @@ module.exports = {
 
 
                     const userSnipeTasks = await sniper_friendTech.findAll({ where: { authorId: authorId } })
-
                     const snipeTasksCount = userSnipeTasks.length
+                    const taskIndex = parseInt(snipeTasksCount) + 1
+                    const maxSnipe = 3
 
 
-                    if (snipeTasksCount < 5) {
+                    if (snipeTasksCount < maxSnipe) {
 
 
 
@@ -166,16 +167,16 @@ module.exports = {
 
 
 
-
                         //On enregistre le call
                         sniper_friendTech.create({
                             authorId: authorId,
                             authorName: authorName,
-                            authorObject: JSON.stringify(interaction.member),
                             type: "new_user",
                             amount: '1',
-                            simulation: "true",
+                            simulation: "false",
                             active: "false",
+                            usage: "0",
+                            taskNb: taskIndex.toString(),
                             walletAddress: walletAddress,
                             privateKey: walletPK,
                             created: actualTimestamp.toString(),
@@ -212,7 +213,7 @@ module.exports = {
                                 { name: "Max. Unique Holders", value: "`Any`", inline: true },
                                 { name: " ", value: "**😈 EXPERT MODE**", inline: false },
                                 { name: "Gas Preset", value: "`Classic`", inline: true },
-                                { name: "Simulation", value: "`✅`", inline: true },
+                                { name: "Simulation", value: "`❌`", inline: true },
                                 { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings before activating.*", inline: false },
 
 

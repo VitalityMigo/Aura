@@ -67,186 +67,188 @@ module.exports = {
 
                     const userSnipeTasks = await sniper_friendTech.findAll({ where: { authorId: authorId } })
                     const snipeTasksCount = userSnipeTasks.length
+                    const taskIndex = parseInt(snipeTasksCount) + 1
+                    const maxSnipe = 3
 
 
-                    if (snipeTasksCount < 5) {
+                    if (snipeTasksCount < maxSnipe) {
 
 
+                        const randomId = generateRandomString(20)
 
-                    const randomId = generateRandomString(20)
-
-                    const timeStamp = Date.now();
-                    const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
-
-
-                    const buttonsRow = new ActionRowBuilder()
-                        .addComponents(
-
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-target@' + randomId)
-                                .setLabel('Set Target')
-                                .setStyle(2),
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-amount@' + randomId)
-                                .setLabel('Set Amount')
-                                .setStyle(2),
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-totaltask@' + randomId)
-                                .setLabel('Set Total Task')
-                                .setStyle(2),
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-price@' + randomId)
-                                .setLabel('Set Price')
-                                .setStyle(2),
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-supply@' + randomId)
-                                .setLabel('Set Supply')
-                                .setStyle(2),
-
-                        );
-
-                    const buttonsRow2 = new ActionRowBuilder()
-                        .addComponents(
+                        const timeStamp = Date.now();
+                        const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
 
 
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-depositamount@' + randomId)
-                                .setLabel('Set Deposit Value')
-                                .setStyle(2),
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-twitterscore@' + randomId)
-                                .setLabel('Set Twitter Score')
-                                .setStyle(2),
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-uniqueholders@' + randomId)
-                                .setLabel('Set Unique Holders')
-                                .setStyle(2),
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-gaspreset@' + randomId)
-                                .setLabel('Set Gas Preset')
-                                .setStyle(2),
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-simulation@' + randomId)
-                                .setLabel('Set Simulation')
-                                .setStyle(2),
+                        const buttonsRow = new ActionRowBuilder()
+                            .addComponents(
+
+                                new ButtonBuilder()
+                                    .setCustomId('button-friendtechtasksinfra-sniper-param-target@' + randomId)
+                                    .setLabel('Set Target')
+                                    .setStyle(2),
+                                new ButtonBuilder()
+                                    .setCustomId('button-friendtechtasksinfra-sniper-param-amount@' + randomId)
+                                    .setLabel('Set Amount')
+                                    .setStyle(2),
+                                new ButtonBuilder()
+                                    .setCustomId('button-friendtechtasksinfra-sniper-param-totaltask@' + randomId)
+                                    .setLabel('Set Total Task')
+                                    .setStyle(2),
+                                new ButtonBuilder()
+                                    .setCustomId('button-friendtechtasksinfra-sniper-param-price@' + randomId)
+                                    .setLabel('Set Price')
+                                    .setStyle(2),
+                                new ButtonBuilder()
+                                    .setCustomId('button-friendtechtasksinfra-sniper-param-supply@' + randomId)
+                                    .setLabel('Set Supply')
+                                    .setStyle(2),
+
+                            );
+
+                        const buttonsRow2 = new ActionRowBuilder()
+                            .addComponents(
 
 
-
-                        );
-
-                    const buttonsRow3 = new ActionRowBuilder()
-                        .addComponents(
-
-
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-status@' + randomId)
-                                .setLabel('🟢 Activate')
-                                .setStyle(3),
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-delete@' + randomId)
-                                .setLabel('Delete')
-                                .setStyle(4),
-                            new ButtonBuilder()
-                                .setCustomId('friendtechtasksinfra-sniperdeposittutorial-button')
-                                .setLabel('📑 Tutorial')
-                                .setStyle(1),
-                            new ButtonBuilder()
-                                .setCustomId('friendtechtasksinfra-snipermenu-button')
-                                .setLabel('↩️')
-                                .setStyle(1),
-                            new ButtonBuilder()
-                                .setCustomId('friendtechtasksinfra-mainmenu-button')
-                                .setLabel('🏠')
-                                .setStyle(1),
-
-
-                        );
+                                new ButtonBuilder()
+                                    .setCustomId('button-friendtechtasksinfra-sniper-param-depositamount@' + randomId)
+                                    .setLabel('Set Deposit Value')
+                                    .setStyle(2),
+                                new ButtonBuilder()
+                                    .setCustomId('button-friendtechtasksinfra-sniper-param-twitterscore@' + randomId)
+                                    .setLabel('Set Twitter Score')
+                                    .setStyle(2),
+                                new ButtonBuilder()
+                                    .setCustomId('button-friendtechtasksinfra-sniper-param-uniqueholders@' + randomId)
+                                    .setLabel('Set Unique Holders')
+                                    .setStyle(2),
+                                new ButtonBuilder()
+                                    .setCustomId('button-friendtechtasksinfra-sniper-param-gaspreset@' + randomId)
+                                    .setLabel('Set Gas Preset')
+                                    .setStyle(2),
+                                new ButtonBuilder()
+                                    .setCustomId('button-friendtechtasksinfra-sniper-param-simulation@' + randomId)
+                                    .setLabel('Set Simulation')
+                                    .setStyle(2),
 
 
 
+                            );
 
-                    //On enregistre le call
-                    sniper_friendTech.create({
-                        authorId: authorId,
-                        authorName: authorName,
-                        authorObject: JSON.stringify(interaction.member),
-                        type: "new_deposit",
-                        amount: '1',
-                        simulation: "true",
-                        active: "false",
-                        walletAddress: walletAddress,
-                        privateKey: walletPK,
-                        created: actualTimestamp.toString(),
-                        randomId: randomId.toString()
-                    })
+                        const buttonsRow3 = new ActionRowBuilder()
+                            .addComponents(
+
+
+                                new ButtonBuilder()
+                                    .setCustomId('button-friendtechtasksinfra-sniper-param-status@' + randomId)
+                                    .setLabel('🟢 Activate')
+                                    .setStyle(3),
+                                new ButtonBuilder()
+                                    .setCustomId('button-friendtechtasksinfra-sniper-param-delete@' + randomId)
+                                    .setLabel('Delete')
+                                    .setStyle(4),
+                                new ButtonBuilder()
+                                    .setCustomId('friendtechtasksinfra-sniperdeposittutorial-button')
+                                    .setLabel('📑 Tutorial')
+                                    .setStyle(1),
+                                new ButtonBuilder()
+                                    .setCustomId('friendtechtasksinfra-snipermenu-button')
+                                    .setLabel('↩️')
+                                    .setStyle(1),
+                                new ButtonBuilder()
+                                    .setCustomId('friendtechtasksinfra-mainmenu-button')
+                                    .setLabel('🏠')
+                                    .setStyle(1),
+
+
+                            );
 
 
 
 
-                    const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("Friend.Tech Tasks")
-                        .setDescription(">>> New deposit snipe settings")
-                        //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .addFields(
-                            { name: "Status", value: "`🔴 Not active`", inline: false },
-                            { name: " ", value: "**📖 CORE INFOS** ", inline: false },
-                            { name: "Target", value: "`Any`", inline: true },
-                            { name: "Amount/Txn", value: "`1`", inline: true },
-                            { name: "Total Task", value: "`No Limit`", inline: true },
-                            { name: " ", value: "**⚙️ ADVANCED SETTINGS** ", inline: false },
-                            { name: "Min. Key Price", value: "`Any`", inline: true },
-                            { name: "Max. Key Price", value: "`Any`", inline: true },
-                            { name: " ", value: " ", inline: false },
-                            { name: "Min. Supply", value: "`Any`", inline: true },
-                            { name: "Max. Supply", value: "`Any`", inline: true },
-                            { name: " ", value: " ", inline: false },
-                            { name: "Min. Deposit Value", value: "`Any`", inline: true },
-                            { name: "Max. Deposit Value", value: "`Any`", inline: true },
-                            { name: " ", value: " ", inline: false },
-                            { name: "Min. Twitter Score", value: "`Any`", inline: true },
-                            { name: "Max. Twitter Score", value: "`Any`", inline: true },
-                            { name: " ", value: " ", inline: false },
-                            { name: "Min. Unique Holders", value: "`Any`", inline: true },
-                            { name: "Max. Unique Holders", value: "`Any`", inline: true },
-                            { name: " ", value: "**😈 EXPERT MODE**", inline: false },
-                            { name: "Gas Preset", value: "`Classic`", inline: true },
-                            { name: "Simulation", value: "`✅`", inline: true },
-                            { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings before activating.*", inline: false },
+                        //On enregistre le call
+                        sniper_friendTech.create({
+                            authorId: authorId,
+                            authorName: authorName,
+                            type: "new_deposit",
+                            amount: '1',
+                            simulation: "false",
+                            active: "false",
+                            usage: "0",
+                            taskNb: taskIndex.toString(),
+                            walletAddress: walletAddress,
+                            privateKey: walletPK,
+                            created: actualTimestamp.toString(),
+                            randomId: randomId.toString()
+                        })
 
 
 
 
-                        )
-                        .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Friend.Tech Tasks")
+                            .setDescription(">>> New deposit snipe settings")
+                            //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                            .addFields(
+                                { name: "Status", value: "`🔴 Not active`", inline: false },
+                                { name: " ", value: "**📖 CORE INFOS** ", inline: false },
+                                { name: "Target", value: "`Any`", inline: true },
+                                { name: "Amount/Txn", value: "`1`", inline: true },
+                                { name: "Total Task", value: "`No Limit`", inline: true },
+                                { name: " ", value: "**⚙️ ADVANCED SETTINGS** ", inline: false },
+                                { name: "Min. Key Price", value: "`Any`", inline: true },
+                                { name: "Max. Key Price", value: "`Any`", inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Min. Supply", value: "`Any`", inline: true },
+                                { name: "Max. Supply", value: "`Any`", inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Min. Deposit Value", value: "`Any`", inline: true },
+                                { name: "Max. Deposit Value", value: "`Any`", inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Min. Twitter Score", value: "`Any`", inline: true },
+                                { name: "Max. Twitter Score", value: "`Any`", inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Min. Unique Holders", value: "`Any`", inline: true },
+                                { name: "Max. Unique Holders", value: "`Any`", inline: true },
+                                { name: " ", value: "**😈 EXPERT MODE**", inline: false },
+                                { name: "Gas Preset", value: "`Classic`", inline: true },
+                                { name: "Simulation", value: "`❌`", inline: true },
+                                { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings before activating.*", inline: false },
 
-                    await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRow, buttonsRow2, buttonsRow3], ephemeral: true });
+
+
+
+                            )
+                            .setTimestamp()
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                        await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRow, buttonsRow2, buttonsRow3], ephemeral: true });
 
 
 
 
-                }  else {
+                    } else {
 
 
-                    const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("Friend Tech Setup")
-                        .setDescription(">>> Displaying your Friend.tech tasks")
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .addFields(
-                            { name: " ", value: "You reached the maximum of sniper tasks per user, which is set at `5`. Please delete one of your sniper tasks before creating a new one.", inline: true },
+                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Friend Tech Setup")
+                            .setDescription(">>> Displaying your Friend.tech tasks")
+                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                            .addFields(
+                                { name: " ", value: "You reached the maximum of sniper tasks per user, which is set at `5`. Please delete one of your sniper tasks before creating a new one.", inline: true },
 
-                        )
-                        .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                            )
+                            .setTimestamp()
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                    await interaction.reply({ embeds: [errorNotEthereum], ephemeral: true });
-
-
+                        await interaction.reply({ embeds: [errorNotEthereum], ephemeral: true });
 
 
-                }
+
+
+                    }
 
 
 

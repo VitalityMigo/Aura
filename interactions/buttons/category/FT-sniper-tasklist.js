@@ -155,8 +155,9 @@ module.exports = {
                     let tutorialType = "sniperdeposittutorial"
                     if (type == "new_user") { tutorialType = "sniperusertutorial" }
 
+                    console.log(status)
                     let statusLabel = "🟢 Activate"
-                    if (status == true) { statusLabel = "🔴 Disable" }
+                    if (status == "true") { statusLabel = "🔴 Disable" }
 
 
                     // On construit les bouttons
@@ -186,13 +187,22 @@ module.exports = {
 
                         );
 
+                        let label2 = "Set Deposit Value"
+                        let index2 = 'depositamount'
+                        if (type == "new_user") {
+                            label2 = "Set Followers"
+                             index2 = 'followers'
+
+                        }
+
+
                     const buttonsRow2 = new ActionRowBuilder()
                         .addComponents(
 
 
                             new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-depositamount@' + randomId)
-                                .setLabel('Set Deposit Value')
+                                .setCustomId('button-friendtechtasksinfra-sniper-param-' + index2 + '@' + randomId)
+                                .setLabel(label2)
                                 .setStyle(2),
                             new ButtonBuilder()
                                 .setCustomId('button-friendtechtasksinfra-sniper-param-twitterscore@' + randomId)

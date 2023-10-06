@@ -109,10 +109,10 @@ module.exports = {
                     if (totalTask != null) { totalTaskFormatted = totalTask }
 
                     let minPriceFormatted = "Any"
-                    if (minPrice != null) { minPriceFormatted = minPrice + "Ξ" }
+                    if (minPrice != null) { minPriceFormatted =  parseFloat(minPrice).toFixed(3) + "Ξ" }
 
                     let maxPriceFormatted = "Any"
-                    if (maxPrice != null) { maxPriceFormatted = maxPrice + "Ξ" }
+                    if (maxPrice != null) { maxPriceFormatted =  parseFloat(maxPrice).toFixed(3) + "Ξ" }
 
                     let minSupplyFormatted = "Any"
                     if (minSupply != null) { minSupplyFormatted = minSupply }
@@ -127,10 +127,10 @@ module.exports = {
                     if (maxFollowers != null) { maxFollowersFormatted = maxFollowers }
 
                     let minDepositValueFormatted = "Any"
-                    if (minDepositValue != null) { minDepositValueFormatted = minDepositValue + "Ξ" }
+                    if (minDepositValue != null) { minDepositValueFormatted = parseFloat(minDepositValue).toFixed(3) + "Ξ" }
 
                     let maxDepositValueFormatted = "Any"
-                    if (maxDepositValue != null) { maxDepositValueFormatted = maxDepositValue + "Ξ" }
+                    if (maxDepositValue != null) { maxDepositValueFormatted = parseFloat(maxDepositValue).toFixed(3) + "Ξ" }
 
                     let minTwitterScoreFormatted = "Any"
                     if (minTwitterScore != null) { minTwitterScoreFormatted = minTwitterScore + "%" }
@@ -145,7 +145,7 @@ module.exports = {
                     if (maxUniqueHolders != null) { maxUniqueHoldersFormatted = maxUniqueHolders + "%" }
 
                     let gasPresetFormatted = "Classic"
-                    if (gasPreset != null) { gasPresetFormatted = gasPreset + "%" }
+                    if (gasPreset != null) { gasPresetFormatted = "+" + gasPreset + "%" }
 
                     let simulationFormatted = "✅"
                     if (simulation == "false") { simulationFormatted = "❌" }

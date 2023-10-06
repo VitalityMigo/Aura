@@ -458,7 +458,7 @@ console.log(parseFloat(min))
                         let maxFormat = parseFloat(max).toFixed(3) + "Ξ"
 
 
-                        if (min == "") { min = null, minFormat = "Any" }
+                        if (min == "") { min = "2", minFormat = "2.000Ξ" }
                         if (max == "") { max = null, maxFormat = "Any" }
 
 

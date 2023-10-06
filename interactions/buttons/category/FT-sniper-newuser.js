@@ -214,7 +214,7 @@ module.exports = {
                                 { name: " ", value: "**😈 EXPERT MODE**", inline: false },
                                 { name: "Gas Preset", value: "`Classic`", inline: true },
                                 { name: "Simulation", value: "`❌`", inline: true },
-                                { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings before activating.*", inline: false },
+                                { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings and open your server DMs before activating.*", inline: false },
 
 
 

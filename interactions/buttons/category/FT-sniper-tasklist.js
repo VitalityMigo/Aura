@@ -324,7 +324,7 @@ module.exports = {
                                 { name: " ", value: "**😈 EXPERT MODE**", inline: false },
                                 { name: "Gas Preset", value: "`" + gasPresetFormatted + "`", inline: true },
                                 { name: "Simulation", value: "`" + simulationFormatted + "`", inline: true },
-                                { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings before activating.*", inline: false },
+                                { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings and open your server DMs before activating.*", inline: false },
 
 
 
@@ -371,7 +371,7 @@ module.exports = {
                                 { name: " ", value: "**😈 EXPERT MODE**", inline: false },
                                 { name: "Gas Preset", value: "`" + gasPresetFormatted + "`", inline: true },
                                 { name: "Simulation", value: "`" + simulationFormatted + "`", inline: true },
-                                { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings before activating.*", inline: false },
+                                { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings and open your server DMs before activating.*", inline: false },
 
 
 

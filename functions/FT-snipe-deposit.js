@@ -37,7 +37,6 @@ async function FTSnipeDepositExec(obj) {
 
     try {
 
-        console.log("Starting Snipe...")
 
         const transaction = obj
 
@@ -52,8 +51,8 @@ async function FTSnipeDepositExec(obj) {
 
 
         const supply = await shareContract.methods.sharesSupply(userAddress).call();
-        console.log("Supply : " + supply)
 
+        
         // Donc l'utilisateur est bien sur Friend.Tech
         if (supply > 0) {
 
@@ -74,8 +73,8 @@ async function FTSnipeDepositExec(obj) {
             const twitterPfp = userInfoCall.data.twitterPfpUrl
             const holderCount = userInfoCall.data.holderCount
             const uniqueHolders = (holderCount / supply) * 100;
-            console.log("@ : " + twitterUsername)
 
+            
 
 
             const twitterAudit = await getTwitterScore(twitterUsername)
@@ -84,8 +83,8 @@ async function FTSnipeDepositExec(obj) {
 
 
             const buyPriceAfterFees = getBuyPriceAfterFees(parseInt(supply), 1) / 10 ** 18
-            console.log("p : " + buyPriceAfterFees)
 
+            
 
             const options = {
                 target: twitterUsername.toLowerCase(), // Remplacez par le nom d'utilisateur ou null
@@ -103,9 +102,7 @@ async function FTSnipeDepositExec(obj) {
             const taskListRaw = await sniperDepositTaskList(options)
             const taskList = shuffleArray(taskListRaw)
 
-            console.log(options)
 
-            console.log(taskList)
 
             if (taskList.length > 0) {
 

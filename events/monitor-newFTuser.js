@@ -101,10 +101,9 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                         hash: hash,
                         type: "📥 Transfer",
                     }
-                    console.log("Nouveau transfert")
 
                     FTSnipeDepositExec(obj)
-                    // newFTDeposit(obj)
+                    newFTDeposit(obj)
 
                 }
 
@@ -113,7 +112,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                 // On renvoi vers le new user
                 if (input.startsWith(buySignature) && contract.toLowerCase() == shareContractAddress.toLowerCase() && newValue == value) {
 
-                    // newFriendtechUser(transaction)
+                    newFriendtechUser(transaction)
 
                 }
 
@@ -123,7 +122,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                 // On vérifie que ça vient d'un wallet SM, que le contrat est bien FT, que la valeur est différente de 0, et que c'est un buy ou un sell
                 if (smartWalletTable.includes(from.toLowerCase()) && contract.toLowerCase() == shareContractAddress.toLowerCase() && (input.startsWith(sellSignature) || (input.startsWith(buySignature) && newValue != value))) {
 
-                    //  newSmartMoneyTrade(transaction)
+                    newSmartMoneyTrade(transaction)
 
                 }
 

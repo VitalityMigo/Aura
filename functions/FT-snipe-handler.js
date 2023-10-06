@@ -51,7 +51,6 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
     await addTimeout(5)
 
-    console.log("Envoie des infos du snipe")
 
 
 
@@ -74,8 +73,8 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
 
             if (receipt != null) {
-                console.log("Receipt dispo :)")
 
+                
 
                 if (receipt.status == true) {
 
@@ -95,6 +94,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
                         .addFields(
                             { name: " ", value: " ", inline: false },
                             { name: "Action", value: "`" + action + "`", inline: false },
+                            { name: " ", value: " ", inline: false },
                             { name: "Target", value: "`" + subjectName + "`", inline: true },
                             { name: "Task ID", value: "`" + task.taskNb + "`", inline: true },
                             { name: " ", value: " ", inline: false },
@@ -167,6 +167,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
                         .addFields(
                             { name: " ", value: " ", inline: false },
                             { name: "Action", value: "`" + action + "`", inline: false },
+                            { name: " ", value: " ", inline: false },
                             { name: "Target", value: "`" + subjectName + "`", inline: true },
                             { name: "Task ID", value: "`" + task.taskNb + "`", inline: true },
                             { name: " ", value: " ", inline: false },
@@ -199,6 +200,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
                     .addFields(
                         { name: " ", value: " ", inline: false },
                         { name: "Action", value: "`" + action + "`", inline: false },
+                        { name: " ", value: " ", inline: false },
                         { name: "Target", value: "`" + subjectName + "`", inline: true },
                         { name: "Task ID", value: "`" + task.taskNb + "`", inline: true },
                         { name: " ", value: " ", inline: false },
@@ -210,7 +212,6 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
                     )
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                await member.send({ embeds: [snipeMessageError] });
 
                 if (parseInt(task.taskCount) > (parseInt(task.usage) + 1)) {
 
@@ -223,6 +224,9 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
                     isDone = true
                 }
+
+                await member.send({ embeds: [snipeMessageError] });
+
 
             }
 

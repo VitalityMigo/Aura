@@ -597,15 +597,15 @@ module.exports = {
                     // Create the text input components
                     const channel = new TextInputBuilder()
                         .setCustomId('modal-friendtechtasksinfra-sniper-param-depositamount@' + uniqueId + 'R1')
-                        .setLabel("Maximum Deposit Value")
-                        .setPlaceholder("The maximum value of the user's deposit")
+                        .setLabel("Minimum Deposit Value")
+                        .setPlaceholder("The minimum value of the user's deposit")
                         .setStyle(TextInputStyle.Short)
                         .setRequired(false)
 
                     const channel2 = new TextInputBuilder()
                         .setCustomId('modal-friendtechtasksinfra-sniper-param-depositamount@' + uniqueId + 'R2')
-                        .setLabel("Maximum Price")
-                        .setPlaceholder("The minimum value of the user's deposit")
+                        .setLabel("Maximum Deposit Value")
+                        .setPlaceholder("The maximum value of the user's deposit")
                         .setStyle(TextInputStyle.Short)
                         .setRequired(false)
 

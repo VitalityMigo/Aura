@@ -16,7 +16,7 @@ const client = require('../bot'); // Chemin vers le fichier client.js
 setTimeout(() => {
 
     guild = client.guilds.cache.get(guildId);
-    botChannel = botGuild.channels.cache.get("1121481984812798084");
+    botChannel = guild.channels.cache.get("1121481984812798084");
 
 
 }, 3000);

@@ -143,8 +143,12 @@ async function newFTDeposit(obj) {
                         .addComponents(
                             new ButtonBuilder()
                                 .setCustomId('button_friendtech_user_panel_' + userAddress)
-                                .setLabel('📊 Trade panel ')
+                                .setLabel('📊 Trade panel')
                                 .setStyle(1),
+                            new ButtonBuilder()
+                                .setCustomId('button_friendtech_deposit_history_' + userAddress)
+                                .setLabel('📖 Fund Tracker')
+                                .setStyle(3),
 
                         )
 
@@ -233,6 +237,10 @@ async function newFTDeposit(obj) {
                                 .setCustomId('button_friendtech_user_panel_' + userAddress)
                                 .setLabel('📊 Trade panel ')
                                 .setStyle(1),
+                            new ButtonBuilder()
+                                .setCustomId('button_friendtech_deposit_history_' + userAddress)
+                                .setLabel('📖 Fund Tracker')
+                                .setStyle(3),
 
                         )
 

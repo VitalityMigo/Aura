@@ -72,8 +72,12 @@ module.exports = {
 
 			command = client.buttonCommands.get("friendtechtasksinfra-sniperlist-button-");
 			
-		}
+		} else if (customId.startsWith("button_friendtech_deposit_history_")) {
 
+			command = client.buttonCommands.get("button_friendtech_deposit_history_");
+			
+		}
+		
 		
 		
 		

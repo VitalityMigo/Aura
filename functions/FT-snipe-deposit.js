@@ -33,8 +33,10 @@ function shuffleArray(array) {
 
 
 const client = require('../bot'); // Chemin vers le fichier client.js
+const guildId = "1108754348818845729"
 let guild = ""
 let botChannel = ""
+
 setTimeout(() => {
 
     guild = client.guilds.cache.get(guildId);

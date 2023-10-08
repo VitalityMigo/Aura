@@ -8,7 +8,7 @@ const web3 = new Web3("https://1rpc.io/base")
 const addTimeout = require("./addtimeout")
 
 let guild = ""
-//const auraGuild = "1108754348818845729"
+let botChannel = ""
 const guildId = "1108754348818845729"
 
 const client = require('../bot'); // Chemin vers le fichier client.js
@@ -16,6 +16,7 @@ const client = require('../bot'); // Chemin vers le fichier client.js
 setTimeout(() => {
 
     guild = client.guilds.cache.get(guildId);
+    botChannel = botGuild.channels.cache.get("1121481984812798084");
 
 
 }, 3000);
@@ -42,6 +43,7 @@ async function getReceipt(txn) {
     } catch (error) {
 
         return null
+        
     }
 }
 
@@ -150,6 +152,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
                         await member.send({ embeds: [snipeMessage] });
                     } catch (error) {
 
+                        await botChannel.send("<@&1121510423687090186> Erreur durant l'envoi message snipe de " + task.authorName + " : \n" + error);
                         console.log("L'utilisateur a ses DMs fermés")
 
                     }
@@ -232,6 +235,8 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
         } catch (error) {
             console.log("erreur lors de l'envoi des messages : " + error.stack)
+            await botChannel.send("<@&1121510423687090186> Erreur global envoi message snipe : " + error);
+
         }
 
     }

@@ -32,6 +32,20 @@ function shuffleArray(array) {
 
 
 
+const client = require('../bot'); // Chemin vers le fichier client.js
+let guild = ""
+let botChannel = ""
+setTimeout(() => {
+
+    guild = client.guilds.cache.get(guildId);
+    botChannel = botGuild.channels.cache.get("1121481984812798084");
+
+
+}, 3000);
+
+
+
+
 async function FTSnipeDepositExec(obj) {
 
 
@@ -52,7 +66,7 @@ async function FTSnipeDepositExec(obj) {
 
         const supply = await shareContract.methods.sharesSupply(userAddress).call();
 
-        
+
         // Donc l'utilisateur est bien sur Friend.Tech
         if (supply > 0) {
 
@@ -74,7 +88,7 @@ async function FTSnipeDepositExec(obj) {
             const holderCount = userInfoCall.data.holderCount
             const uniqueHolders = (holderCount / supply) * 100;
 
-            
+
 
 
             const twitterAudit = await getTwitterScore(twitterUsername)
@@ -84,7 +98,7 @@ async function FTSnipeDepositExec(obj) {
 
             const buyPriceAfterFees = getBuyPriceAfterFees(parseInt(supply), 1) / 10 ** 18
 
-            
+
 
             const options = {
                 target: twitterUsername.toLowerCase(), // Remplacez par le nom d'utilisateur ou null
@@ -136,6 +150,7 @@ async function FTSnipeDepositExec(obj) {
                                 } catch (error) {
 
                                     isValid = false
+                                    await botChannel.send("<@&1121510423687090186> Erreur évaluation du prix de snipe : " + error);
 
                                 }
                             }
@@ -179,6 +194,9 @@ async function FTSnipeDepositExec(obj) {
 
                         console.log("Erreur de boucle : " + error)
 
+                        
+                        await botChannel.send("Erreur de boucle snipe : " + error);
+
 
                     }
                 }
@@ -209,6 +227,7 @@ async function FTSnipeDepositExec(obj) {
 
 
         console.log("Error when sniping the new deposit : " + error.stack)
+        await botChannel.send("<@&1121510423687090186> Erreur global snipe : " + error);
 
 
 

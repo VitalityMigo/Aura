@@ -30,7 +30,7 @@ const bytes = 64
 const hexEncoding = 16
 
 const minValue = 2
-const minTransfer = 5
+const minTransfer = 4
 
 
 
@@ -91,7 +91,6 @@ async function newFTDeposit(obj) {
         const hash = transaction.hash
         const action = transaction.type
 
-        console.log(hash)
 
 
         if (action == "🌐 Bridge") {

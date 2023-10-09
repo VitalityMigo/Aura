@@ -23,7 +23,6 @@ const etherscanApiKey = process.env.etherscanApiKey
 const quicknodebaseApiKey = process.env.quicknodebaseApiKey
 
 const Web3 = require('web3');
-const web3Call = new Web3(new Web3.providers.HttpProvider(`https://1rpc.io/base`))
 const web3 = new Web3(new Web3.providers.WebsocketProvider(`wss://nameless-hardworking-pallet.base-mainnet.discover.quiknode.pro/` + quicknodebaseApiKey))
 
 
@@ -53,8 +52,8 @@ const transferMin = 5
 const exepectedTxnType = 126
 
 
-addTimeout(3)
 
+const kossetoTest = require('../functions/zz')
 
 
 
@@ -108,13 +107,14 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                 }
 
 
-
                 // On renvoi vers le new user
-                if (input.startsWith(buySignature) && contract.toLowerCase() == shareContractAddress.toLowerCase() && newValue == value) {
+               if (input.startsWith(buySignature) && contract.toLowerCase() == shareContractAddress.toLowerCase() && newValue == value) {
 
                     newFriendtechUser(transaction)
 
-                }
+                 //  kossetoTest(transaction)
+
+               }
 
 
 

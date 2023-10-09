@@ -3,7 +3,7 @@ const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_fr
 
 
 const Web3 = require('web3')
-const web3 = new Web3("https://1rpc.io/base")
+const web3 = new Web3("https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref")
 
 const addTimeout = require("./addtimeout")
 

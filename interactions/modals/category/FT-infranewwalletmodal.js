@@ -19,7 +19,7 @@ const decrypt = require("../../../functions/decrypt")
 
 
 const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://1rpc.io/base`))
+const web3 = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref`))
 
 
 function isPrivateKeyValid(privateKey) {

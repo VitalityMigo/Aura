@@ -71,7 +71,7 @@ module.exports = {
                 userAddress = ("0x" + matches[1]).toLowerCase()
 
 
-                const transfersPromise = axios.get('https://api.basescan.org/api?module=account&action=txlist&address=' + userAddress + '&startblock=0&endblock=99999999&page=1&offset=100&sort=asc&apikey=' + etherscanApiKey)
+                const transfersPromise = axios.get('https://api.basescan.org/api?module=account&action=txlist&address=' + userAddress + '&startblock=0&endblock=99999999&page=1&offset=100&sort=desc&apikey=' + etherscanApiKey)
                 const bridgeInPromise = getBaseDeposit(userAddress)
                 const userBalanceCall = web3.eth.getBalance(userAddress)
 

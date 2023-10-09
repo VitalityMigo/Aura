@@ -53,7 +53,7 @@ const exepectedTxnType = 126
 
 
 
-const kossetoTest = require('../functions/zz')
+//const kossetoTest = require('../functions/zz')
 
 
 

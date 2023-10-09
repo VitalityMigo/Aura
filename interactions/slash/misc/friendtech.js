@@ -48,6 +48,22 @@ const mainnetBridgeContractAbi = require("../../../contracts/base/l1basebridge.j
 const mainnetBridgeProxyContractAddress = "0x3154cf16ccdb4c6d922629664174b904d80f2c35"
 const mainnetBridgeContract = new web3Main.eth.Contract(mainnetBridgeContractAbi, mainnetBridgeProxyContractAddress);
 
+const frenfrenHeader = {
+   
+    'Accept': '*/*',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
+    'Cache-Control': 'no-cache',
+    'Content-Type': 'application/json',
+    'Cookie': '__Host-next-auth.csrf-token=17b21423c30342e89a96c0a51f99eb69777e1571db90bebe226eeaef4f964df2%7C23e7151c48582c5df1a93be298616e52a1372ac5982c9e59fed1cce3ab479895; __Secure-next-auth.callback-url=https%3A%2F%2Fpreview.frenfren.pro%2Flogin; __Secure-next-auth.session-token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..0cw7kFruUUvtbe5W.lR_Kwvf2sYwo-YxML4zh5g5JwXCVu8jlb0SihZgIqp75138_UBbwXO1ztrS1ntHGRZMFrEQvyNMPN3J8ZAGLKAv-99PkuUG1vF1mBDrOGaMEP8ZTGbMts5Y3ob9BcOA2bzuNPus1stGLhIrIqCwHZjOEnn39slY2IGhzkiGE1P3i9ZU._LORE4JhL-GhVkvV9Tz0ag',
+    'Pragma': 'no-cache',
+    'Sec-Ch-Ua': '"Google Chrome";v="117", "Not;A=Brand";v="8", "Chromium";v="117"',
+    'Sec-Ch-Ua-Mobile': '?0',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-origin',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
+  };
 
 
 
@@ -415,11 +431,14 @@ module.exports = {
 
                                     try {
 
-                                        findUser = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername + '"}}')
+                                        findUser = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername + '"}}', { headers: frenfrenHeader } )
 
                                     } catch (error) {
                                         isMatch = false
+                                        console.log(error.stack)
+
                                     }
+
 
 
                                     if (isMatch == true) {
@@ -2725,7 +2744,7 @@ module.exports = {
                                                         user1FrenRatio = parseFloat(tradeUser1Table[0].ftHolder.trader.frenScore * 100).toFixed(0)
                                                         user1FrenCount = tradeUser1Table[0].ftHolder.trader.frenfrenCount
                                                     } else {
-                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername1 + '"}}')
+                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername1 + '"}}', { headers: frenfrenHeader } )
                                                         const user1Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user1Address.toLowerCase())
                                                         user1FrenRatio = parseFloat(user1Profile.frenScore * 100).toFixed(0)
                                                         user1FrenCount = user1Profile.frenfrenCount
@@ -2737,7 +2756,7 @@ module.exports = {
                                                         user2FrenRatio = parseFloat(tradeUser2Table[0].ftHolder.trader.frenScore * 100).toFixed(0)
                                                         user2FrenCount = tradeUser2Table[0].ftHolder.trader.frenfrenCount
                                                     } else {
-                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername2 + '"}}')
+                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername2 + '"}}', { headers: frenfrenHeader } )
                                                         const user2Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user2Address.toLowerCase())
                                                         user2FrenRatio = parseFloat(user2Profile.frenScore * 100).toFixed(0)
                                                         user2FrenCount = user2Profile.frenfrenCount
@@ -3006,7 +3025,7 @@ module.exports = {
                                                         user1FrenCount = tradeUser1Table[0].ftHolder.trader.frenfrenCount
                                                     } else {
 
-                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername1 + '"}}')
+                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername1 + '"}}', { headers: frenfrenHeader } )
                                                         const user1Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user1Address.toLowerCase())
                                                         user1FrenRatio = parseFloat(user1Profile.frenScore * 100).toFixed(0)
                                                         user1FrenCount = user1Profile.frenfrenCount
@@ -3017,7 +3036,7 @@ module.exports = {
                                                         user2FrenCount = tradeUser2Table[0].ftHolder.trader.frenfrenCount
                                                     } else {
 
-                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername2 + '"}}')
+                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername2 + '"}}', { headers: frenfrenHeader } )
                                                         const user2Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user2Address.toLowerCase())
                                                         user2FrenRatio = parseFloat(user2Profile.frenScore * 100).toFixed(0)
                                                         user2FrenCount = user2Profile.frenfrenCount
@@ -3151,7 +3170,7 @@ module.exports = {
 
 
                                     try {
-                                        findUser = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername + '"}}')
+                                        findUser = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername + '"}}', { headers: frenfrenHeader } )
 
                                     } catch (error) {
 

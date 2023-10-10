@@ -7,7 +7,7 @@ const colors = require("colors")
 const dotenv = require("dotenv")
 dotenv.config()
 const rpc1NodeBaseApiKey = process.env.rpc1NodeBaseApiKey
-const blastNodeApiKey = process.env.alchemyApiKey
+const blastNodeApiKey = process.env.blastNodeApiKey
 
 
 // On instancie web3.js

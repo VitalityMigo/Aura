@@ -33,28 +33,6 @@ const etherscanApiKey = process.env.etherscanApiKey
 const friendtechApiKey = process.env.friendtechApiKey
 
 
-const friendtechHeaders = {
-    'Authorization': friendtechApiKey, // Remplacez VOTRE_TOKEN par le token d'authentification
-    // Autres en-têtes si nécessaire
-};
-
-const frenfrenHeader = {
-   
-    'Accept': '*/*',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
-    'Cache-Control': 'no-cache',
-    'Content-Type': 'application/json',
-    'Cookie': '__Host-next-auth.csrf-token=17b21423c30342e89a96c0a51f99eb69777e1571db90bebe226eeaef4f964df2%7C23e7151c48582c5df1a93be298616e52a1372ac5982c9e59fed1cce3ab479895; __Secure-next-auth.callback-url=https%3A%2F%2Fpreview.frenfren.pro%2Flogin; __Secure-next-auth.session-token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..0cw7kFruUUvtbe5W.lR_Kwvf2sYwo-YxML4zh5g5JwXCVu8jlb0SihZgIqp75138_UBbwXO1ztrS1ntHGRZMFrEQvyNMPN3J8ZAGLKAv-99PkuUG1vF1mBDrOGaMEP8ZTGbMts5Y3ob9BcOA2bzuNPus1stGLhIrIqCwHZjOEnn39slY2IGhzkiGE1P3i9ZU._LORE4JhL-GhVkvV9Tz0ag',
-    'Pragma': 'no-cache',
-    'Sec-Ch-Ua': '"Google Chrome";v="117", "Not;A=Brand";v="8", "Chromium";v="117"',
-    'Sec-Ch-Ua-Mobile': '?0',
-    'Sec-Fetch-Dest': 'empty',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Site': 'same-origin',
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
-  };
-
 
 
 const axios = require('axios')
@@ -74,6 +52,8 @@ module.exports = {
     async execute(interaction) {
         if (!(interaction instanceof ButtonInteraction)) return;
 
+        const startTime1 = new Date();
+
         //Récupérer informations de l'utilisateur de la commande
         let authorId = interaction.user.id;
         let authorName = interaction.user.username;
@@ -86,18 +66,9 @@ module.exports = {
 
         try {
 
-            //Checkpoint
-            console.log("// Step 1 : Initialization - Executed ✅")
-
-
-
-
-
 
             //Checkpoint
             console.log("// Step 1 : Initialization - Executed ✅")
-            //Checkpoint
-            console.log("// Step 2 : Authorization - Executed ✅")
 
             //Récupère le password donné par l'utilisateur
 
@@ -150,7 +121,6 @@ module.exports = {
                 let isMatch = true
                 let isExactMatch = true
 
-                let airdropInfoCall = ""
                 let pfp2 = ""
 
 
@@ -162,61 +132,29 @@ module.exports = {
                 try {
 
 
-
-
-
                     const ethUsdPricePromise = ethPrice()
                     const tradersPromise = formatTradesData(userAddress)
+                    const airdropInfoCall = axios.get(" https://prod-api.kosetto.com/points/" + userAddress)
+
+
+                    const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
+
+                    address = userInfoCall.data.address
+                    id = userInfoCall.data.id
+                    twitterUsername = userInfoCall.data.twitterUsername
+                    twitterName = userInfoCall.data.twitterName
+                    twitterUserId = userInfoCall.data.twitterUserId
+                    lastOnlineTimestamp = parseFloat(userInfoCall.data.lastOnline / 1000).toFixed(0)
+                    lastMessage = parseFloat(userInfoCall.data.lastMessageTime / 1000).toFixed(0)
+                    joinedAt = 1
+                    holderCount = userInfoCall.data.holderCount
+                    shareSupply = userInfoCall.data.shareSupply
+                    price = userInfoCall.data.displayPrice / 10 ** 18
+                    totalFeesCollected = userInfoCall.data.lifetimeFeesCollectedInWei / 10 ** 18
+                    pfp2 = userInfoCall.data.twitterPfpUrl
 
 
 
-
-
-                    const userCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + userAddress + '"}}', { headers: frenfrenHeader } )
-                    const user = userCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === userAddress.toLowerCase())
-
-                    if (user.twitterUsername != "") {
-
-                        address = user.address
-                        id = user.id
-                        twitterUsername = user.twitterUsername
-                        twitterName = user.twitterName
-                        twitterUserId = user.twitterUserId
-                        lastOnlineTimestamp = Math.floor(((new Date(user.lastOnline)).setHours((new Date(user.lastOnline)).getHours() + 2)) / 1000)
-                        lastMessage = Math.floor(((new Date(user.lastOnline)).setHours((new Date(user.lastOnline)).getHours() + 2)) / 1000)
-                        joinedAt = Math.floor(((new Date(user.createdAt)).setHours((new Date(user.createdAt)).getHours() + 2)) / 1000)
-                        holderCount = user.holderCount
-                        shareSupply = user.shareSupply
-                        price = user.keyPrice
-                        totalFeesCollected = user.feesCollected
-                        airdropTier = user.tier.toUpperCase()
-                        airdropPoints = user.totalPoints
-                        pfp2 = user.twitterPfpUrl
-
-
-
-                    } else {
-                        //airdrop stats de l'auteur
-                        airdropInfoCall = axios.get(" https://prod-api.kosetto.com/points/" + userAddress)
-
-                        const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
-
-                        address = userInfoCall.data.address
-                        id = userInfoCall.data.id
-                        twitterUsername = userInfoCall.data.twitterUsername
-                        twitterName = userInfoCall.data.twitterName
-                        twitterUserId = userInfoCall.data.twitterUserId
-                        lastOnlineTimestamp = parseFloat(userInfoCall.data.lastOnline / 1000).toFixed(0)
-                        lastMessage = parseFloat(userInfoCall.data.lastOnline / 1000).toFixed(0)
-                        joinedAt = 1
-                        holderCount = userInfoCall.data.holderCount
-                        shareSupply = userInfoCall.data.shareSupply
-                        price = userInfoCall.data.displayPrice / 10 ** 18
-                        totalFeesCollected = userInfoCall.data.lifetimeFeesCollectedInWei / 10 ** 18
-                        pfp2 = userInfoCall.data.twitterPfpUrl
-
-
-                    }
 
                     const holdersPromise = formatHoldersData(userAddress, price, shareSupply)
                     const twitterPromise = getTwitterUserInfo(twitterUsername)
@@ -243,10 +181,6 @@ module.exports = {
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
                     await interaction.editReply({ embeds: [loadingEmbed], ephemeral: true });
-
-
-
-                    //const twitterInfos = await getTwitterUserInfo(twitterUsername)
 
 
 
@@ -303,7 +237,7 @@ module.exports = {
                         )
 
 
-                    let [holdersFormattedEmbeds, tradersFormatted, airdropInfos, ethUsdPrice, twitterInfos] = await Promise.all([holdersPromise, tradersPromise, airdropInfoCall, ethUsdPricePromise, twitterPromise]);
+                    let [airdropInfos, twitterInfos] = await Promise.all([airdropInfoCall, twitterPromise]);
 
                     if (twitterInfos) {
                         followers = twitterInfos.followers_count
@@ -313,17 +247,18 @@ module.exports = {
 
                         created = "<t:" + Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000)) + ":R>"
                     } else {
-                    twitterPfp = pfp2
+                        twitterPfp = pfp2
                     }
-
 
 
 
                     // On récup les points d'airdrops
-                    if (user.twitterUsername == "") {
-                        airdropTier = airdropInfos.data.tier.toUpperCase()
-                        airdropPoints = airdropInfos.data.totalPoints
-                    }
+                    airdropTier = airdropInfos.data.tier.toUpperCase()
+                    airdropPoints = airdropInfos.data.totalPoints
+
+
+                    let [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersPromise, tradersPromise, ethUsdPricePromise]);
+
 
                     if (holdersFormattedEmbeds == "") { holdersFormattedEmbeds = "```No holders found for this share.                         ```" }
                     if (tradersFormatted == "") { tradersFormatted = "```No recent trade found for this share.                    ```" }
@@ -367,6 +302,10 @@ module.exports = {
 
                     await interaction.editReply({ embeds: [userFTEmbed], components: [buttonRow, buttonRow2] });
 
+                    const endTime = new Date();
+
+                    const timeDifference = endTime - startTime1;
+                    console.log("Time = " + timeDifference / 1000 + "s")
 
 
                 } catch (error) {

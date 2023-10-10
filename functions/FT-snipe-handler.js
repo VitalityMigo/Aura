@@ -90,7 +90,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
                     const snipeMessage = new EmbedBuilder().setColor("#060A8F")
                         .setTitle("Snipe Confirmed ✅")
-                        .setDescription(">>> Displaying your snipert task")
+                        .setDescription(">>> Displaying your sniper task")
                         .setThumbnail(subjectPfp)
                         .setTimestamp()
                         .addFields(
@@ -150,9 +150,11 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
                     try {
                         await member.send({ embeds: [snipeMessage] });
+                        await botChannel.send("<@&1121510423687090186> Done Snipe" + task.authorName);
+
                     } catch (error) {
 
-                        await botChannel.send("<@&1121510423687090186> Erreur durant l'envoi message snipe de " + task.authorName + " : \n" + error);
+                        await botChannel.send("<@&1121510423687090186> Erreur durant l'envoi message snipe de " + task.authorName + " : \n" + error.stack);
                         console.log("L'utilisateur a ses DMs fermés")
 
                     }
@@ -164,7 +166,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
                     const snipeMessageError = new EmbedBuilder().setColor("#060A8F")
                         .setTitle("Snipe Failed ❌")
-                        .setDescription(">>> Displaying your snipert task")
+                        .setDescription(">>> Displaying your sniper task")
                         .setThumbnail(subjectPfp)
                         .setTimestamp()
                         .addFields(
@@ -197,7 +199,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
                 const snipeMessageError = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("Unknown Snipe Result")
-                    .setDescription(">>> Displaying your snipert task")
+                    .setDescription(">>> Displaying your sniper task")
                     .setThumbnail(subjectPfp)
                     .setTimestamp()
                     .addFields(
@@ -229,13 +231,14 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
                 }
 
                 await member.send({ embeds: [snipeMessageError] });
+                await botChannel.send("<@&1121510423687090186> Done Snipe" + task.authorName);
 
 
             }
 
         } catch (error) {
             console.log("erreur lors de l'envoi des messages : " + error.stack)
-            await botChannel.send("<@&1121510423687090186> Erreur global envoi message snipe : " + error);
+            await botChannel.send("<@&1121510423687090186> Erreur global envoi message snipe : " + error.stack);
 
         }
 

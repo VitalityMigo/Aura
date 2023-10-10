@@ -152,7 +152,7 @@ async function FTSnipeDepositExec(obj) {
                                 } catch (error) {
 
                                     isValid = false
-                                    await botChannel.send("<@&1121510423687090186> Erreur évaluation du prix de snipe : " + error);
+                                    await botChannel.send("<@&1121510423687090186> Erreur évaluation du prix de snipe : " + error.stack);
 
                                 }
                             }
@@ -197,7 +197,7 @@ async function FTSnipeDepositExec(obj) {
                         console.log("Erreur de boucle : " + error)
 
                         
-                        await botChannel.send("Erreur de boucle snipe : " + error);
+                        await botChannel.send("Erreur de boucle snipe : " + error.stack);
 
 
                     }
@@ -229,7 +229,7 @@ async function FTSnipeDepositExec(obj) {
 
 
         console.log("Error when sniping the new deposit : " + error.stack)
-        await botChannel.send("<@&1121510423687090186> Erreur global snipe : " + error);
+        await botChannel.send("<@&1121510423687090186> Erreur global snipe : " + error.stack);
 
 
 

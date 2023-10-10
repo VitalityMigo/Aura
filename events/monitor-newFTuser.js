@@ -14,6 +14,7 @@ const newFriendtechUser = require('../functions/m-newFTuser')
 const newSmartMoneyTrade = require('../functions/m-FTsmartmoney')
 const newFTDeposit = require("../functions/m-newbasedeposit")
 const FTSnipeDepositExec = require("../functions/FT-snipe-deposit")
+const FTSnipeUserExec = require('../functions/FT-snipe-user')
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -53,7 +54,6 @@ const exepectedTxnType = 126
 
 
 
-//const kossetoTest = require('../functions/zz')
 
 
 
@@ -108,13 +108,16 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
 
                 // On renvoi vers le new user
-               if (input.startsWith(buySignature) && contract.toLowerCase() == shareContractAddress.toLowerCase() && newValue == value) {
+                if (input.startsWith(buySignature) && contract.toLowerCase() == shareContractAddress.toLowerCase() && newValue == value) {
+
+
+
+                    FTSnipeUserExec(transaction)
 
                     newFriendtechUser(transaction)
 
-                 //  kossetoTest(transaction)
 
-               }
+                }
 
 
 

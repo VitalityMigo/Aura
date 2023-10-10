@@ -49,7 +49,7 @@ const mainnetBridgeProxyContractAddress = "0x3154cf16ccdb4c6d922629664174b904d80
 const mainnetBridgeContract = new web3Main.eth.Contract(mainnetBridgeContractAbi, mainnetBridgeProxyContractAddress);
 
 const frenfrenHeader = {
-   
+
     'Accept': '*/*',
     'Accept-Encoding': 'gzip, deflate, br',
     'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
@@ -63,7 +63,7 @@ const frenfrenHeader = {
     'Sec-Fetch-Mode': 'cors',
     'Sec-Fetch-Site': 'same-origin',
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
-  };
+};
 
 
 
@@ -334,11 +334,12 @@ module.exports = {
                 //Récupère régagle de privé/ou pas de l'utilisateur
                 const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
 
-                if (authorProfile === null) { 
-                
-                    if (interaction.options.getSubcommand() != 'wallet' && interaction.options.getSubcommand() != 'bridge' && interaction.options.getSubcommand() != 'tasks') { await interaction.deferReply(); 
+                if (authorProfile === null) {
+
+                    if (interaction.options.getSubcommand() != 'wallet' && interaction.options.getSubcommand() != 'bridge' && interaction.options.getSubcommand() != 'tasks') {
+                        await interaction.deferReply();
                     } else { await interaction.deferReply({ ephemeral: true }) }
-                
+
                 } else {
                     const authorPrivacyMode = authorProfile.dataValues.privacyMode
 
@@ -420,31 +421,27 @@ module.exports = {
                                     let isExactMatch = true
                                     let pfp2 = ""
 
+                                    const ethUsdPricePromise = ethPrice()
 
 
                                     const usernameProvided = interaction.options.getString("twitter").toLowerCase()
 
                                     const givenUsername = removeAtSymbol(usernameProvided)
 
-                                    const ethUsdPricePromise = ethPrice()
-
 
                                     try {
-
-                                        findUser = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername + '"}}', { headers: frenfrenHeader } )
-
+                                        findUser = await axios.get('https://prod-api.kosetto.com/search/users?username=' + givenUsername, { headers: friendtechHeaders })
                                     } catch (error) {
                                         isMatch = false
-                                        console.log(error.stack)
-
                                     }
+
 
 
 
                                     if (isMatch == true) {
 
 
-                                        const user = findUser.data[0].result.data.json.find((user) => user.twitterUsername.toLowerCase() == givenUsername.toLowerCase());
+                                        const user = findUser.data.users.find((user) => user.twitterUsername.toLowerCase() == givenUsername.toLowerCase());
 
 
                                         if (user) {
@@ -454,48 +451,44 @@ module.exports = {
 
 
 
+
                                             try {
 
+                                                const twitterPromise = getTwitterUserInfo(user.twitterUsername)
+                                                const tradersPromise = formatTradesData(userAddress)
+                                                const airdropInfoCall = axios.get("https://prod-api.kosetto.com/points/" + userAddress)
+
+
+                                                const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
 
 
 
-                                                address = user.address
-                                                id = user.id
-                                                twitterUsername = user.twitterUsername
-                                                twitterName = user.twitterName
-                                                twitterUserId = user.twitterUserId
-                                                lastOnlineTimestamp = Math.floor(((new Date(user.lastOnline)).setHours((new Date(user.lastOnline)).getHours() + 2)) / 1000)
-                                                lastMessage = Math.floor(((new Date(user.lastOnline)).setHours((new Date(user.lastOnline)).getHours() + 2)) / 1000)
-                                                joinedAt = Math.floor(((new Date(user.createdAt)).setHours((new Date(user.createdAt)).getHours() + 2)) / 1000)
-                                                holderCount = user.holderCount
-                                                shareSupply = user.shareSupply
-                                                price = user.keyPrice
-                                                totalFeesCollected = user.feesCollected
-                                                airdropTier = user.tier.toUpperCase()
-                                                airdropPoints = user.totalPoints
-                                                pfp2 = user.twitterPfpUrl
+                                                address = userInfoCall.data.address
+                                                id = userInfoCall.data.id
+                                                twitterUsername = userInfoCall.data.twitterUsername
+                                                twitterName = userInfoCall.data.twitterName
+                                                twitterUserId = userInfoCall.data.twitterUserId
+                                                lastOnlineTimestamp = parseFloat(userInfoCall.data.lastOnline / 1000).toFixed(0)
+                                                lastMessage = parseFloat(userInfoCall.data.lastMessageTime / 1000).toFixed(0)
+                                                joinedAt = 1
+                                                holderCount = userInfoCall.data.holderCount
+                                                shareSupply = userInfoCall.data.shareSupply
+                                                price = userInfoCall.data.displayPrice / 10 ** 18
+                                                totalFeesCollected = userInfoCall.data.lifetimeFeesCollectedInWei / 10 ** 18
+                                                pfp2 = userInfoCall.data.twitterPfpUrl
 
 
 
-                                                const tradersFormattedPromise = formatTradesData(userAddress)
-                                                const holdersFormattedEmbedsPromise = formatHoldersData(userAddress, price, shareSupply)
 
-                                                const twitterInfos = await getTwitterUserInfo(twitterUsername)
+                                                const holdersPromise = formatHoldersData(userAddress, price, shareSupply)
 
-                                                if (twitterInfos) {
-                                                    followers = twitterInfos.followers_count
-                                                    following = twitterInfos.friends_count
-                                                    let pfp = twitterInfos.profile_image_url_https
-                                                    twitterPfp = pfp.replace("_normal", "")
 
-                                                    created = "<t:" + Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000)) + ":R>"
-                                                } else {
-                                                    twitterPfp = pfp2
-                                                }
+
 
                                                 // Calcul des dernières valeurs
                                                 marketCap = price * shareSupply
                                                 uniqueHolders = (holderCount / shareSupply) * 100;
+
 
 
 
@@ -525,8 +518,6 @@ module.exports = {
                                                     )
 
 
-
-
                                                 const buttonRow2 = new ActionRowBuilder()
                                                     .addComponents(
                                                         new ButtonBuilder()
@@ -543,16 +534,34 @@ module.exports = {
                                                             .setStyle(1),
 
 
-
                                                     )
 
-                                                let [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersFormattedEmbedsPromise, tradersFormattedPromise, ethUsdPricePromise]);
+
+                                                let [airdropInfos, twitterInfos] = await Promise.all([airdropInfoCall, twitterPromise]);
+
+                                                if (twitterInfos) {
+                                                    followers = twitterInfos.followers_count
+                                                    following = twitterInfos.friends_count
+                                                    let pfp = twitterInfos.profile_image_url_https
+                                                    twitterPfp = pfp.replace("_normal", "")
+
+                                                    created = "<t:" + Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000)) + ":R>"
+                                                } else {
+                                                    twitterPfp = pfp2
+                                                }
+
+
+
+                                                // On récup les points d'airdrops
+                                                airdropTier = airdropInfos.data.tier.toUpperCase()
+                                                airdropPoints = airdropInfos.data.totalPoints
+
+
+                                                let [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersPromise, tradersPromise, ethUsdPricePromise]);
 
 
                                                 if (holdersFormattedEmbeds == "") { holdersFormattedEmbeds = "```No holders found for this share.                         ```" }
                                                 if (tradersFormatted == "") { tradersFormatted = "```No recent trade found for this share.                    ```" }
-
-
 
 
                                                 const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
@@ -592,7 +601,7 @@ module.exports = {
 
                                                 await interaction.editReply({ embeds: [userFTEmbed], components: [buttonRow, buttonRow2] });
 
-
+                                                
 
                                             } catch (error) {
 
@@ -2744,7 +2753,7 @@ module.exports = {
                                                         user1FrenRatio = parseFloat(tradeUser1Table[0].ftHolder.trader.frenScore * 100).toFixed(0)
                                                         user1FrenCount = tradeUser1Table[0].ftHolder.trader.frenfrenCount
                                                     } else {
-                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername1 + '"}}', { headers: frenfrenHeader } )
+                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername1 + '"}}', { headers: frenfrenHeader })
                                                         const user1Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user1Address.toLowerCase())
                                                         user1FrenRatio = parseFloat(user1Profile.frenScore * 100).toFixed(0)
                                                         user1FrenCount = user1Profile.frenfrenCount
@@ -2756,7 +2765,7 @@ module.exports = {
                                                         user2FrenRatio = parseFloat(tradeUser2Table[0].ftHolder.trader.frenScore * 100).toFixed(0)
                                                         user2FrenCount = tradeUser2Table[0].ftHolder.trader.frenfrenCount
                                                     } else {
-                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername2 + '"}}', { headers: frenfrenHeader } )
+                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername2 + '"}}', { headers: frenfrenHeader })
                                                         const user2Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user2Address.toLowerCase())
                                                         user2FrenRatio = parseFloat(user2Profile.frenScore * 100).toFixed(0)
                                                         user2FrenCount = user2Profile.frenfrenCount
@@ -3025,7 +3034,7 @@ module.exports = {
                                                         user1FrenCount = tradeUser1Table[0].ftHolder.trader.frenfrenCount
                                                     } else {
 
-                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername1 + '"}}', { headers: frenfrenHeader } )
+                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername1 + '"}}', { headers: frenfrenHeader })
                                                         const user1Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user1Address.toLowerCase())
                                                         user1FrenRatio = parseFloat(user1Profile.frenScore * 100).toFixed(0)
                                                         user1FrenCount = user1Profile.frenfrenCount
@@ -3036,7 +3045,7 @@ module.exports = {
                                                         user2FrenCount = tradeUser2Table[0].ftHolder.trader.frenfrenCount
                                                     } else {
 
-                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername2 + '"}}', { headers: frenfrenHeader } )
+                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername2 + '"}}', { headers: frenfrenHeader })
                                                         const user2Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user2Address.toLowerCase())
                                                         user2FrenRatio = parseFloat(user2Profile.frenScore * 100).toFixed(0)
                                                         user2FrenCount = user2Profile.frenfrenCount
@@ -3170,7 +3179,7 @@ module.exports = {
 
 
                                     try {
-                                        findUser = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername + '"}}', { headers: frenfrenHeader } )
+                                        findUser = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername + '"}}', { headers: frenfrenHeader })
 
                                     } catch (error) {
 

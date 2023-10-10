@@ -52,7 +52,6 @@ module.exports = {
     async execute(interaction) {
         if (!(interaction instanceof ButtonInteraction)) return;
 
-        const startTime1 = new Date();
 
         //Récupérer informations de l'utilisateur de la commande
         let authorId = interaction.user.id;
@@ -302,11 +301,7 @@ module.exports = {
 
                     await interaction.editReply({ embeds: [userFTEmbed], components: [buttonRow, buttonRow2] });
 
-                    const endTime = new Date();
-
-                    const timeDifference = endTime - startTime1;
-                    console.log("Time = " + timeDifference / 1000 + "s")
-
+                    
 
                 } catch (error) {
 

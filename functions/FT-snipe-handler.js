@@ -1,10 +1,13 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_friendTech, sequelize } = require('../events/database');
+//const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_friendTech, sequelize } = require('../events/database');
+
+const fs = require("fs")
 
 
 const Web3 = require('web3')
 const web3 = new Web3("https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref")
 
+const userJSON = '../contracts/friendtech/newuser.json';
 const addTimeout = require("./addtimeout")
 
 let guild = ""
@@ -43,7 +46,7 @@ async function getReceipt(txn) {
     } catch (error) {
 
         return null
-        
+
     }
 }
 
@@ -60,7 +63,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
         try {
 
-        
+
             let isDone = false
 
 
@@ -76,7 +79,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
             if (receipt != null) {
 
-                
+
 
                 if (receipt.status == true) {
 
@@ -113,7 +116,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
                     if (task.taskCount != null) {
 
-                       
+
 
                         if (parseInt(task.taskCount) > (parseInt(task.usage) + 1)) {
 
@@ -234,7 +237,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
                 await member.send({ embeds: [snipeMessageError] });
                 await botChannel.send("<@&1121510423687090186> Unknown Snipe " + task.authorName + " at [here](https://basescan.org/tx/" + task.hash + ")");
 
-                
+
 
             }
 
@@ -246,6 +249,33 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
     }
 
+    try {
+
+        deleteInArray(subjectAddress)
+
+    } catch (error) { }
+
+
 }
 
 module.exports = snipeUserHandler
+
+
+
+function deleteInArray(subjectAddress) {
+
+    const jsonData = JSON.parse(fs.readFileSync(userJSON, 'utf-8'));
+
+    // Étape 2 : Rechercher et supprimer l'objet
+    const indexToRemove = jsonData.findIndex(item => item.address.toLowerCase() == subjectAddress.toLowerCase());
+
+    if (indexToRemove !== -1) {
+        // L'objet a été trouvé, supprimez-le
+        jsonData.splice(indexToRemove, 1);
+
+        // Étape 3 : Enregistrez le fichier JSON mis à jour
+        fs.writeFileSync(userJSON, JSON.stringify(jsonData, null, 2), 'utf-8');
+
+    }
+
+}

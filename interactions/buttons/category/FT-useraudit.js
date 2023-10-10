@@ -45,7 +45,7 @@ const friendtechHeaders = {
 };
 
 const frenfrenHeader = {
-   
+
     'Accept': '*/*',
     'Accept-Encoding': 'gzip, deflate, br',
     'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
@@ -59,7 +59,7 @@ const frenfrenHeader = {
     'Sec-Fetch-Mode': 'cors',
     'Sec-Fetch-Site': 'same-origin',
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
-  };
+};
 
 
 
@@ -111,7 +111,7 @@ module.exports = {
             const customId = interaction.customId
             const type = interaction.message.interaction
 
-            
+
 
             // Utilisation d'une expression régulière pour extraire l'adresse Ethereum
             const regex = /_0x([0-9a-fA-F]{40})/;
@@ -142,7 +142,8 @@ module.exports = {
 
                     let twitterAuditFormatted = "∙ Score: `" + "   " + "`\n∙ Followers: `" + "   " + "` | Following: `" + "   " + "`\n∙ Tweets: `" + "   " + "` | Likes: `" + "   " + "`\n∙ Created: `" + "   " + "`"
 
-                    let friendTechFormatted = "∙ Fren Score: `" + "   " + "`\n∙ Smart Money : `" + "   " + "`\n∙ Distribution: `" + "   " + "`\n∙ Self: `" + "   " + "`\n∙ Whales: `" + "   " + "` | Holding: `" + "   " + "`"
+                    //  let friendTechFormatted = "∙ Fren Score: `" + "   " + "`\n∙ Smart Money : `" + "   " + "`\n∙ Distribution: `" + "   " + "`\n∙ Self: `" + "   " + "`\n∙ Whales: `" + "   " + "` | Holding: `" + "   " + "`"
+                    let friendTechFormatted = "∙ Smart Money : `" + "   " + "`\n∙ Distribution: `" + "   " + "`\n∙ Self: `" + "   " + "`\n∙ Whales: `" + "   " + "` | Holding: `" + "   " + "`"
 
                     let walletFormatted = "∙ Balance: `" + "   " + "`\n∙ Deposits: `" + "   " + "` | Total: `" + "   " + "` | Last: `" + "   " + "`"
 
@@ -177,25 +178,12 @@ module.exports = {
 
 
 
-                    const user = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + userAddress + '"}}', { headers: frenfrenHeader } )
-                    const userInfo = user.data[0].result.data.json.find(obj => obj.address.toLowerCase() === userAddress.toLowerCase())
 
-                    if (userInfo.twitterUsername != "") {
+                    const userInfo2 = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
 
-                        frenScore = parseFloat(userInfo.frenScore * 100).toFixed(0) + "%"
-                        username = userInfo.twitterUsername
-                        supply = userInfo.shareSupply
-
-
-                    } else {
-
-                        const userInfo2 = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
-
-                        username = userInfo2.data.twitterUsername
-                        supply = userInfo2.data.shareSupply
-                        frenScore = "0%"
-
-                    }
+                    username = userInfo2.data.twitterUsername
+                    supply = userInfo2.data.shareSupply
+                 //   frenScore = "0%"
 
 
 
@@ -204,7 +192,9 @@ module.exports = {
 
 
 
-                    
+
+
+
 
 
 
@@ -324,7 +314,7 @@ module.exports = {
 
                             const isSM = smartWalletJson.find(obj => obj.address == holdingAddress.toLowerCase())
 
-                            
+
                             if (isSM) {
 
                                 isSM.balance = holdingBalance
@@ -407,7 +397,7 @@ module.exports = {
                         sm.name
                     }
 
-                  
+
 
                     let distribution = parseFloat((holderCount / supply) * 100).toFixed(0)
                     let selfRatio = parseFloat((self / supply) * 100).toFixed(0)
@@ -418,7 +408,8 @@ module.exports = {
 
 
                     //On edit avec les infos
-                    friendTechFormatted = "∙ Fren Score: `" + frenScore + "`\n∙ Smart Money : `" + holdersSW.length + " in`\n∙ Distribution: `" + distribution + "%`\n∙ Self: `" + self + " (" + selfRatio + "%)`\n∙ Whales: `" + whalesCount + "` | Holding: `" + whalesSupply + " (" + whalesRatio + "%)`"
+                    //friendTechFormatted = "∙ Fren Score: `" + frenScore + "`\n∙ Smart Money : `" + holdersSW.length + " in`\n∙ Distribution: `" + distribution + "%`\n∙ Self: `" + self + " (" + selfRatio + "%)`\n∙ Whales: `" + whalesCount + "` | Holding: `" + whalesSupply + " (" + whalesRatio + "%)`"
+                    friendTechFormatted = "∙ Smart Money : `" + holdersSW.length + " in`\n∙ Distribution: `" + distribution + "%`\n∙ Self: `" + self + " (" + selfRatio + "%)`\n∙ Whales: `" + whalesCount + "` | Holding: `" + whalesSupply + " (" + whalesRatio + "%)`"
 
                     const gasTrackerEmbed1 = new EmbedBuilder().setColor("#060A8F")
                         .setTitle("Friend.Tech Audit")

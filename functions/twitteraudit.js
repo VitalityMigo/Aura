@@ -23,10 +23,10 @@ const oneDay = 86400
 
 
 const Auth = new Twit({
-    consumer_key: "4HEXAtmAq8Tgzin2mRZNw4kUp",
-    consumer_secret: "yBtmOpikxJc1iQ0VDXfiRfsjViY4IgvvV1lmCjmZBIDJ3mnQiu",
-    access_token: "1078340881755922440-pdBGwK1oVHYYUcCLZ4qutzXYHyQfLF",
-    access_token_secret: "fue3aRVD5GjwH4BNxjsu8FlXUUIKo2gI5EF2H7g01fVSm",
+    consumer_key: consumerKeyTW,
+    consumer_secret: consumerSecretTW,
+    access_token: accessTokenTW,
+    access_token_secret: accessTokenSecretTW,
 });
 
 

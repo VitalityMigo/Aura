@@ -2,13 +2,26 @@ const axios = require('axios')
 const fs = require("fs")
 const colors = require("colors")
 
+
+//Récupérer les clefs API
+const dotenv = require("dotenv")
+dotenv.config()
+const rpc1NodeBaseApiKey = process.env.rpc1NodeBaseApiKey
+const blastNodeApiKey = process.env.alchemyApiKey
+
+
+// On instancie web3.js
 const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref`))
+const web3Base1RPC = new Web3(new Web3.providers.HttpProvider(`https://1rpc.io/` + rpc1NodeBaseApiKey + `/base`))
+const web3BaseBlast = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.blastapi.io/` + blastNodeApiKey))
+
 
 const shareContractAbi = require("../contracts/friendtech/share.json");
 const shareContractAddress = "0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4"
-const shareContract = new web3.eth.Contract(shareContractAbi, shareContractAddress);
+const shareContract = new web3BaseBlast.eth.Contract(shareContractAbi, shareContractAddress);
 const baseChainId = "8453"
+
+
 
 const addTimeout = require("./addtimeout")
 const sniperUserTaskList = require("./FT-snipeuserdbcall")
@@ -49,7 +62,7 @@ async function FTSnipeUserExec(transaction) {
     try {
 
         
-        const gasPricePromise = web3.eth.getGasPrice()
+        const gasPricePromise = web3Base1RPC.eth.getGasPrice()
 
 
         const inputAddress = ("0x" + transaction.input.substr(34, 40)).toLowerCase()
@@ -141,7 +154,7 @@ async function FTSnipeUserExec(transaction) {
                                         };
 
                                         // On signe
-                                        const signedTx = await web3.eth.accounts.signTransaction(txInfos, decrypt(task.walletPk));
+                                        const signedTx = await web3BaseBlast.eth.accounts.signTransaction(txInfos, decrypt(task.walletPk));
                                         const rawTransaction = signedTx.rawTransaction
                                         const sendHash = signedTx.transactionHash
 
@@ -149,7 +162,7 @@ async function FTSnipeUserExec(transaction) {
                                         
                                         
                                         // On envoie
-                                        web3.eth.sendSignedTransaction(rawTransaction)
+                                      //  web3BaseBlast.eth.sendSignedTransaction(rawTransaction)
 
                                         task.hash = sendHash
                                         task.status = "true"

@@ -47,8 +47,8 @@ async function FTSnipeUserExec(transaction) {
 
 
     try {
-        console.log('Launching sniper testing...')
 
+        
         const gasPricePromise = web3.eth.getGasPrice()
 
 
@@ -83,7 +83,6 @@ async function FTSnipeUserExec(transaction) {
                     const taskListRaw = await sniperUserTaskList(options)
                     const taskList = shuffleArray(taskListRaw)
 
-                    console.log(colors.bold("Tasks Received"))
 
 
 
@@ -119,7 +118,7 @@ async function FTSnipeUserExec(transaction) {
                                         } catch (error) {
 
                                             isValid = false
-                                            //await botChannel.send("<@&1121510423687090186> Erreur évaluation du prix de snipe : " + error);
+                                            await botChannel.send("<@&1121510423687090186> Erreur évaluation du prix de snipe : " + error.stack);
 
                                         }
                                     }
@@ -146,8 +145,9 @@ async function FTSnipeUserExec(transaction) {
                                         const rawTransaction = signedTx.rawTransaction
                                         const sendHash = signedTx.transactionHash
 
-                                        console.log(rawTransaction)
 
+                                        
+                                        
                                         // On envoie
                                         web3.eth.sendSignedTransaction(rawTransaction)
 
@@ -155,7 +155,6 @@ async function FTSnipeUserExec(transaction) {
                                         task.status = "true"
                                         task.value = valueWEI
 
-                                        console.log(task)
                                         console.log(colors.rainbow("Sniper Done !!!"))
 
                                         // La réponse est envoyé par la fonction adaptée
@@ -164,10 +163,10 @@ async function FTSnipeUserExec(transaction) {
 
                             } catch (error) {
 
-                                console.log(colors.red("Erreur de boucle : " + error))
+                                console.log(colors.red("Erreur de boucle : " + error.stack))
 
 
-                                // await botChannel.send("Erreur de boucle snipe : " + error);
+                                await botChannel.send("Erreur de boucle snipe : " + error.stack);
 
 
                             }
@@ -188,6 +187,7 @@ async function FTSnipeUserExec(transaction) {
 
         console.log("Erreur globale du snipe new user")
         console.log(error.stack)
+        await botChannel.send("Erreur globale snipe : " + error.stack);
 
     }
 }

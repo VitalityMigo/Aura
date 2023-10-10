@@ -150,7 +150,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
                     try {
                         await member.send({ embeds: [snipeMessage] });
-                        await botChannel.send("<@&1121510423687090186> Done Snipe" + task.authorName);
+                        await botChannel.send("<@&1121510423687090186> Done Snipe " + task.authorName + " at [here](https://basescan.org/tx/" + task.hash + ")");
 
                     } catch (error) {
 
@@ -188,6 +188,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
 
 
+                    await botChannel.send("<@&1121510423687090186> Failed Snipe " + task.authorName + " at [here](https://basescan.org/tx/" + task.hash + ")");
 
 
                 }
@@ -231,8 +232,9 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
                 }
 
                 await member.send({ embeds: [snipeMessageError] });
-                await botChannel.send("<@&1121510423687090186> Done Snipe" + task.authorName);
+                await botChannel.send("<@&1121510423687090186> Unknown Snipe " + task.authorName + " at [here](https://basescan.org/tx/" + task.hash + ")");
 
+                
 
             }
 

@@ -20,28 +20,30 @@ async function main() {
 
                 saveUserToFile(userExists.data)
 
-                console.log("User found. Looping the monitor. Nb: " + userId);
 
+                
                 userId++;
                 setLastUserId(userId)
 
                 await addTimeout(3);
 
             } else {
-                console.log("User not found. Retrying the monitor.");
+
                 await addTimeout(6.5);
             }
         } catch (error) {
 
             if (error.message.includes("404")) {
-                console.log("User not found. Retrying the monitor.");
+
                 await addTimeout(6.5);
             } else if (error.message.includes("401")) {
-                console.log("User not found. Retrying the monitor.");
+
                 await addTimeout(60);
             }
 
         }
+
+        
 
     }
 }

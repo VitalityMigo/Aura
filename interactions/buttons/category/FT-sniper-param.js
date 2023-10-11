@@ -286,7 +286,7 @@ module.exports = {
 
                     const passwordAdminDashboard = new ModalBuilder()
                         .setCustomId('modal-friendtechtasksinfra-sniper-param-totaltask@' + uniqueId)
-                        .setTitle('Set Max Repeat');
+                        .setTitle('Set Total Task');
 
                     // Add components to modal
 
@@ -294,7 +294,7 @@ module.exports = {
                     const channel = new TextInputBuilder()
                         .setCustomId('modal-friendtechtasksinfra-sniper-param-totaltask@' + uniqueId + 'R1')
                         .setLabel("Amount")
-                        .setPlaceholder("The amount of snipe the bot should execute before stopping the task")
+                        .setPlaceholder("The amount of snipe the bot execute before stopping")
                         .setStyle(TextInputStyle.Short)
                         .setRequired(false)
 

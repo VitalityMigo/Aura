@@ -1,7 +1,5 @@
 
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref")
+const { web3Base1RPC } = require('../config/web3config');
 
 async function getBaseDeposit(address) {
 
@@ -25,12 +23,12 @@ async function getBaseDeposit(address) {
         };
 
 
-        const logs = await web3.eth.getPastLogs(filter);
+        const logs = await web3Base1RPC.eth.getPastLogs(filter);
 
         let table = []
         for (const log of logs) {
 
-            const block = await web3.eth.getBlock(log.blockNumber)
+            const block = await web3Base1RPC.eth.getBlock(log.blockNumber)
         
             let obj = {}
             obj.hash = log.transactionHash

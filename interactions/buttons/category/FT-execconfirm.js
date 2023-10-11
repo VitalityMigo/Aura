@@ -16,14 +16,13 @@ const { accessSql, profileData, adminsql, reportsql, exe_friendTech, infra_frien
 const moment = require('moment');
 
 
-const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref`))
+const { web3BaseAlchemy, web3BaseBlast } = require('../../../config/web3config');
 
 
 
 const shareContractAbi = require("../../../contracts/friendtech/share.json");
 const shareContractAddress = "0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4"
-const shareContract = new web3.eth.Contract(shareContractAbi, shareContractAddress);
+const shareContract = new web3BaseBlast.eth.Contract(shareContractAbi, shareContractAddress);
 
 const baseChainId = "8453"
 
@@ -104,7 +103,7 @@ module.exports = {
                     // On définit les presets de gas
                     const gasLimit = 200000; // Limite de gaz (ajustez selon vos besoins)
                     const gas = 21000
-                    const gasPrice = await web3.eth.getGasPrice();
+                    const gasPrice = await web3BaseAlchemy.eth.getGasPrice();
 
                     //On construit l'objet de transaction
                     const txInfos = {
@@ -119,13 +118,13 @@ module.exports = {
                     };
 
                     // On signe
-                    const signedTx = await web3.eth.accounts.signTransaction(txInfos, senderPK);
+                    const signedTx = await web3BaseBlast.eth.accounts.signTransaction(txInfos, senderPK);
                     const rawTransaction = signedTx.rawTransaction
 
                     console.log(rawTransaction)
 
                     // On envoie
-                    web3.eth.sendSignedTransaction(rawTransaction)
+                    web3BaseBlast.eth.sendSignedTransaction(rawTransaction)
                         .then(async (receipt) => {
                             console.log(receipt)
 
@@ -272,7 +271,7 @@ module.exports = {
                     // On définit les presets de gas
                     const gasLimit = 200000; // Limite de gaz (ajustez selon vos besoins)
                     const gas = 21000
-                    const gasPrice = await web3.eth.getGasPrice();
+                    const gasPrice = await web3BaseAlchemy.eth.getGasPrice();
 
                     //On construit l'objet de transaction
                     const txInfos = {
@@ -287,13 +286,13 @@ module.exports = {
                     };
 
                     // On signe
-                    const signedTx = await web3.eth.accounts.signTransaction(txInfos, senderPK);
+                    const signedTx = await web3BaseBlast.eth.accounts.signTransaction(txInfos, senderPK);
                     const rawTransaction = signedTx.rawTransaction
 
                     console.log(signedTx)
 
                     // On envoie
-                    web3.eth.sendSignedTransaction(rawTransaction)
+                    web3BaseBlast.eth.sendSignedTransaction(rawTransaction)
                         .then(async (receipt) => {
                             console.log(receipt)
 

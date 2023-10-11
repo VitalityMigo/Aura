@@ -15,8 +15,6 @@ const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
 const { accessSql, profileData, adminsql, reportsql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref`))
 
 const axios = require('axios')
 
@@ -27,11 +25,6 @@ const addTimeout = require("../../../functions/addtimeout")
 const getTimeAgoSmall = require("../../../functions/timeagosmall")
 const farmingFTScore = require("../../../functions/ft-farmingscore")
 
-
-
-const shareContractAbi = require("../../../contracts/friendtech/share.json");
-const shareContractAddress = "0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4"
-const shareContract = new web3.eth.Contract(shareContractAbi, shareContractAddress);
 
 
 const callPage = 1

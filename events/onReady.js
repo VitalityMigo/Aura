@@ -112,6 +112,14 @@ module.exports = {
             // }, 120000);
 
 
+            ////////////////////////////////////////////////////////////////////////////////////
+
+            ////// CHARGEMENT DES FICHIER DE CONFIG //////
+
+            const web3Config = require("../config/web3config")
+
+            
+
 
 
         } catch (error) {

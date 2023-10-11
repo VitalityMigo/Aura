@@ -7,8 +7,8 @@ dotenv.config()
 const infuraApiKey = process.env.infuraApiKey
 const etherscanApiKey = process.env.etherscanApiKey
 
-const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref`))
+const { web3Base1RPC } = require('../config/web3config');
+
 
 const axios = require('axios')
 const colors = require('colors');
@@ -93,7 +93,7 @@ async function newFriendtechUser(obj) {
         const value = transaction.value
 
 
-        const receipt = await web3.eth.getTransactionReceipt(hash)
+        const receipt = await web3Base1RPC.eth.getTransactionReceipt(hash)
 
         const data = receipt.logs[0].data
         const supplyWhenBuy = data[data.length - 1];
@@ -146,7 +146,7 @@ async function newFriendtechUser(obj) {
 
             let created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
 
-            const b = await web3.eth.getBalance(userAddress)
+            const b = await web3Base1RPC.eth.getBalance(userAddress)
             const balance = parseFloat(b / 10 ** 18).toFixed(3)
 
 

@@ -9,8 +9,7 @@ const encrypt = require("../../../functions/encrypt")
 
 
 
-const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref`))
+const { web3Base1RPC } = require('../../../config/web3config');
 
 
 const buttonsRowModify = new ActionRowBuilder()
@@ -57,7 +56,7 @@ module.exports = {
 
 
 
-            const account = await web3.eth.accounts.create();
+            const account = await web3Base1RPC.eth.accounts.create();
 
             const walletAddress = account.address
             const privateKey = (account.privateKey).replace("0x", "")

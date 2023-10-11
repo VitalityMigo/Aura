@@ -18,8 +18,7 @@ const decrypt = require("../../../functions/decrypt")
 
 
 
-const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref`))
+const { web3Base1RPC } = require('../../../config/web3config');
 
 
 function isPrivateKeyValid(privateKey) {
@@ -100,7 +99,7 @@ module.exports = {
 
             if (isPrivateKeyValid(privateKey)) {
 
-                const account = await web3.eth.accounts.privateKeyToAccount(privateKey);
+                const account = await web3Base1RPC.eth.accounts.privateKeyToAccount(privateKey);
 
                 const walletAddress = account.address.toLowerCase()
 

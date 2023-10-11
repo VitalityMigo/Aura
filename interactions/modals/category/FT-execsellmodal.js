@@ -16,16 +16,13 @@ const moment = require('moment');
 const encrypt = require("../../../functions/encrypt")
 const decrypt = require("../../../functions/decrypt")
 
-const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref`))
-const web3Eth = new Web3("https://cloudflare-eth.com")
-
+const { web3BaseBlast, web3Base1RPC } = require('../../../config/web3config');
 
 const axios = require("axios")
 
 const shareContractAbi = require("../../../contracts/friendtech/share.json")
 const shareContractAddress = "0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4"
-const shareContract = new web3.eth.Contract(shareContractAbi, shareContractAddress);
+const shareContract = new web3BaseBlast.eth.Contract(shareContractAbi, shareContractAddress);
 
 const protocolFee = 5
 const subjectFee = 5
@@ -186,7 +183,7 @@ module.exports = {
                             if (simulationState == true) {
 
 
-                                const gasPriceCall = await web3.eth.getGasPrice()
+                                const gasPriceCall = await web3Base1RPC.eth.getGasPrice()
                                 const gasPriceGwei = gasPriceCall / 10 ** 9
                                 const gasPriceEth = gasPriceCall / 10 ** 18
 

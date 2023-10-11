@@ -26,13 +26,6 @@ const ethPrice = require("../../../functions/getethprice")
 const { formatHoldersData, formatTradesData } = require('../../../functions/FT-useraccelerator');
 
 
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const etherscanApiKey = process.env.etherscanApiKey
-const friendtechApiKey = process.env.friendtechApiKey
-
-
 
 
 const axios = require('axios')

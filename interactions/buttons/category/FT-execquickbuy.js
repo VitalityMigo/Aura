@@ -18,15 +18,14 @@ const moment = require('moment');
 const encrypt = require("../../../functions/encrypt")
 const decrypt = require("../../../functions/decrypt")
 
-const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref`))
+const { web3BaseBlast, web3Base1RPC } = require('../../../config/web3config');
 
 
 const axios = require("axios")
 
 const shareContractAbi = require("../../../contracts/friendtech/share.json")
 const shareContractAddress = "0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4"
-const shareContract = new web3.eth.Contract(shareContractAbi, shareContractAddress);
+const shareContract = new web3BaseBlast.eth.Contract(shareContractAbi, shareContractAddress);
 const baseChainId = "8453"
 
 const protocolFee = 5
@@ -189,7 +188,7 @@ module.exports = {
 
 
 
-                            const gasPrice = await web3.eth.getGasPrice()
+                            const gasPrice = await web3Base1RPC.eth.getGasPrice()
                             const gasPriceEth = gasPrice / 10 ** 18
 
                             const gasPayed = gasPriceEth * gasUsed
@@ -236,12 +235,12 @@ module.exports = {
                             };
 
                             // On signe
-                            const signedTx = await web3.eth.accounts.signTransaction(txInfos, senderPK);
+                            const signedTx = await web3BaseBlast.eth.accounts.signTransaction(txInfos, senderPK);
                             const rawTransaction = signedTx.rawTransaction
 
 
                             // On envoie
-                            web3.eth.sendSignedTransaction(rawTransaction)
+                            web3BaseBlast.eth.sendSignedTransaction(rawTransaction)
                                 .then(async (receipt) => {
 
 

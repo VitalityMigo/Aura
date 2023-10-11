@@ -24,9 +24,7 @@ const etherscanApiKey = process.env.etherscanApiKey
 const axios = require('axios')
 
 
-const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref`))
-
+const { web3BaseAlchemy } = require('../../../config/web3config');
 
 
 
@@ -73,7 +71,7 @@ module.exports = {
 
                 const transfersPromise = axios.get('https://api.basescan.org/api?module=account&action=txlist&address=' + userAddress + '&startblock=0&endblock=99999999&page=1&offset=100&sort=desc&apikey=' + etherscanApiKey)
                 const bridgeInPromise = getBaseDeposit(userAddress)
-                const userBalanceCall = web3.eth.getBalance(userAddress)
+                const userBalanceCall = web3BaseAlchemy.eth.getBalance(userAddress)
 
 
                 let [transfersRaw, bridgeRaw] = await Promise.all([transfersPromise, bridgeInPromise]);

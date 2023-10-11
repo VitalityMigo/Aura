@@ -1,7 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 
-const Web3 = require('web3')
-const web3 = new Web3("https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref")
+const { web3Base1RPC, web3BaseAlchemy } = require('../config/web3config');
+
 
 const colors = require('colors');
 const axios = require('axios')
@@ -11,7 +11,7 @@ const addTimeout = require("./addtimeout")
 
 const shareContractAbi = require("../contracts/friendtech/share.json");
 const shareContractAddress = "0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4"
-const shareContract = new web3.eth.Contract(shareContractAbi, shareContractAddress);
+const shareContract = new web3BaseAlchemy.eth.Contract(shareContractAbi, shareContractAddress);
 
 
 
@@ -126,7 +126,7 @@ async function newFTDeposit(obj) {
                     displayPrice = price / 10 ** 18
 
 
-                    const balance = (await web3.eth.getBalance(userAddress)) / 10 ** 18
+                    const balance = (await web3Base1RPC.eth.getBalance(userAddress)) / 10 ** 18
                     const userBalance = balance + value
 
                     const bridgeInfosFormatted = "Amount: " + parseFloat(value).toFixed(4) + "Ξ\nNew balance:" + parseFloat(userBalance).toFixed(4) + "Ξ"
@@ -218,7 +218,7 @@ async function newFTDeposit(obj) {
                     displayPrice = price / 10 ** 18
 
 
-                    const balance = (await web3.eth.getBalance(userAddress)) / 10 ** 18
+                    const balance = (await web3Base1RPC.eth.getBalance(userAddress)) / 10 ** 18
                     const userBalance = balance + value
 
                     const bridgeInfosFormatted = "Amount: " + parseFloat(value).toFixed(4) + "Ξ\nNew balance:" + parseFloat(userBalance).toFixed(4) + "Ξ"

@@ -11,8 +11,7 @@ dotenv.config()
 const infuraApiKey = process.env.infuraApiKey
 const etherscanApiKey = process.env.etherscanApiKey
 
-const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref`))
+const { web3BaseAlchemy } = require('../config/web3config');
 
 const axios = require('axios')
 const colors = require('colors');
@@ -96,7 +95,7 @@ async function newSmartMoneyTrade(obj) {
 
         try {
             // on récupère le receipt
-            receipt = await web3.eth.getTransactionReceipt(hash)
+            receipt = await web3BaseAlchemy.eth.getTransactionReceipt(hash)
 
         } catch (error) {
             console.log("Erreur lors de la récupération de la txn FT SM :" + error)

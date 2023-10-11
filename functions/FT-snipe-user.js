@@ -10,10 +10,7 @@ const rpc1NodeBaseApiKey = process.env.rpc1NodeBaseApiKey
 const blastNodeApiKey = process.env.blastNodeApiKey
 
 
-// On instancie web3.js
-const Web3 = require('web3');
-const web3Base1RPC = new Web3(new Web3.providers.HttpProvider(`https://1rpc.io/` + rpc1NodeBaseApiKey + `/base`))
-const web3BaseBlast = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.blastapi.io/` + blastNodeApiKey))
+const { web3Base1RPC, web3BaseBlast } = require('../config/web3config');
 
 
 const shareContractAbi = require("../contracts/friendtech/share.json");

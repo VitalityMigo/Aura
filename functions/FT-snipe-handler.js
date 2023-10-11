@@ -3,9 +3,7 @@ const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_fr
 
 const fs = require("fs")
 
-
-const Web3 = require('web3')
-const web3 = new Web3("https://base-mainnet.g.alchemy.com/v2/KA3op6mpVPtChk_f858wIkh3dCvUoref")
+const { web3Base1RPC } = require('../config/web3config');
 
 const userJSON = '../contracts/friendtech/newuser.json';
 const addTimeout = require("./addtimeout")
@@ -28,7 +26,7 @@ setTimeout(() => {
 
 async function getReceipt(txn) {
     try {
-        const receipt = await web3.eth.getTransactionReceipt(txn)
+        const receipt = await web3Base1RPC.eth.getTransactionReceipt(txn)
 
         if (receipt != null) {
             return receipt
@@ -37,7 +35,7 @@ async function getReceipt(txn) {
 
             await addTimeout(2)
 
-            const receipt = await web3.eth.getTransactionReceipt(txn)
+            const receipt = await web3Base1RPC.eth.getTransactionReceipt(txn)
 
             return receipt
 

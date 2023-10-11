@@ -114,7 +114,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
                     FTSnipeUserExec(transaction)
 
-                   // newFriendtechUser(transaction)
+                    newFriendtechUser(transaction)
 
 
                 }

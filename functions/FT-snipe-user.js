@@ -38,18 +38,41 @@ function shuffleArray(array) {
 
 
 
+
+// On définit le client et charge les channels
 const client = require('../bot'); // Chemin vers le fichier client.js
-const guildId = "1108754348818845729"
-let guild = ""
+
+let serverId = ""
 let botChannel = ""
+let botChannelId = ""
+
 
 setTimeout(() => {
 
-    guild = client.guilds.cache.get(guildId);
-    botChannel = guild.channels.cache.get("1121481984812798084");
+    const botId = client.user.id;
+
+    if (botId == "1074328639165964368") {
+        // PROD
+
+        serverId = "1108754348818845729"
+        botChannelId = "1121481984812798084"
 
 
-}, 3000);
+    } else if (botId == "1119666128411709552") {
+        // DEV
+
+        serverId = "1071576735298113667"
+        botChannelId = "1104225853023461388"
+
+
+    }
+
+    const botGuild = client.guilds.cache.get(serverId);
+    botChannel = botGuild.channels.cache.get(botChannelId);
+
+}, 4000);
+
+
 
 
 

@@ -17,14 +17,12 @@ const moment = require('moment');
 
 
 //Web3 API + Cloudfare Provider
-const Web3 = require("web3")
-const web3Main = new Web3("https://1rpc.io/eth")
-
+const { web3Base1RPC, web3BaseUnifra } = require('../../../config/web3config')
 
 //On crée des instances des contrats
 const mainnetBridgeContractAbi = require("../../../contracts/base/l1basebridge.json")
 const mainnetBridgeProxyContractAddress = "0x3154cf16ccdb4c6d922629664174b904d80f2c35"
-const mainnetBridgeContract = new web3Main.eth.Contract(mainnetBridgeContractAbi, mainnetBridgeProxyContractAddress);
+const mainnetBridgeContract = new web3BaseUnifra.eth.Contract(mainnetBridgeContractAbi, mainnetBridgeProxyContractAddress);
 const chainId = 1
 
 
@@ -142,7 +140,7 @@ module.exports = {
                         };
 
                         // On signe
-                        const signedTx = await web3Main.eth.accounts.signTransaction(txInfos, senderPK);
+                        const signedTx = await web3BaseUnifra.eth.accounts.signTransaction(txInfos, senderPK);
                         const rawTransaction = signedTx.rawTransaction
 
                         console.log(rawTransaction)
@@ -150,7 +148,7 @@ module.exports = {
                         
                     
                         // On envoie
-                        web3Main.eth.sendSignedTransaction(rawTransaction)
+                        web3BaseUnifra.eth.sendSignedTransaction(rawTransaction)
                             .then(async (receipt) => {
                                 console.log(receipt)
 

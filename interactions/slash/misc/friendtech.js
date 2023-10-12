@@ -40,7 +40,6 @@ const axios = require('axios')
 
 // //Web3 API + Cloudfare Provider
 // const Web3 = require("web3")
-// const web3Main = new Web3("https://1rpc.io/eth")
 const { web3Base1RPC, web3BaseUnifra } = require('../../../config/web3config');
 
 // On crée des instances des contrats

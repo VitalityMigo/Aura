@@ -12,36 +12,12 @@
 
 const { ButtonInteraction } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, order_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
+const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 
-
-
-const buttonsRow = new ActionRowBuilder()
-    .addComponents(
-
-        new ButtonBuilder()
-            .setCustomId('friendtechtasksinfra-ordernewbuy-button')
-            .setLabel('📈 New Buy Order')
-            .setStyle(3),
-        new ButtonBuilder()
-            .setCustomId('friendtechtasksinfra-ordernewsell-button')
-            .setLabel('📉 New Sell Order')
-            .setStyle(3),
-        new ButtonBuilder()
-            .setCustomId('friendtechtasksinfra-ordersList-button-1')
-            .setLabel('🧾 List Orders')
-            .setStyle(1),
-        new ButtonBuilder()
-            .setCustomId('friendtechtasksinfra-mainmenu-button')
-            .setLabel('🏠')
-            .setStyle(1),
-    );
-
-
 module.exports = {
-    id: 'friendtechtasksinfra-ordermenu-button',
+    id: 'friendtechtasksinfra-orderbuytutorial-button',
 
     async execute(interaction) {
         if (!(interaction instanceof ButtonInteraction)) return;
@@ -64,39 +40,53 @@ module.exports = {
                 //Checkpoint
                 console.log("// Step 2 : Authorization - Executed ✅")
 
-                let orderTasks = 0
-                let activeOrderTasks = 0
 
 
-                const userTasks = await order_friendTech.findAll({ where: { authorId: authorId } })
-
-                if (userTasks.length > 0) {
-
-                    activeOrderTasks = (userTasks.filter(obj => obj.dataValues.active == "true")).length
-                    orderTasks = userTasks.length
 
 
-                }
 
 
-                const bigEmbed = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Friend.Tech Tasks")
-                    .setDescription(">>> Displaying your Friend.Tech sniper tasks")
+                const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Friend.Tech Order Tutorial")
                     .setAuthor({ name: authorName, iconURL: userAvatar })
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setDescription(">>> The Friend.Tech order task has several easy-to-use features.")
                     .addFields(
                         { name: " ", value: " ", inline: false },
-                        { name: " ", value: "This panel allows you to create and display your Order Tasks.", inline: false },
+                        { name: "*Status*", value: "Indicates whether the task is active or not. If it is active, the task runs within the set conditions. If not, it is not monitoring.", inline: false },
                         { name: " ", value: " ", inline: false },
-                        { name: "Select the method you'd like to use:\n\n", value: " ", inline: false },
-                        { name: " ", value: "\n\n**📈 New Buy Order**\nThis method allows you to create a purchase order for a Friend.Tech key, at a certain price and under certain conditions.\n\n**📉 New Sell Order**\nThis method allows you to create a purchase order for a Friend.Tech key, at a certain price and under certain conditions", inline: false },
+                        { name: "*Target*", value: "The Friend.Tech user to buy or sell at a pre-defined price. Accepts only twitter username.", inline: false },
                         { name: " ", value: " ", inline: false },
-                        { name: " ", value: "**→** You currently have `" + activeOrderTasks + "` active order tasks out of `" + orderTasks + "`.", inline: false },
+                        { name: "*Amount*", value: "The number of tokens to buy/sell for this task. The bot will always try to buy or sell the indicated number of tokens.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Total Task*", value: "The number of order buy or sell the bot must execute before stopping. We count in the number of users sold or bought, not in the number of tokens purchased or sold.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Buy/Sell Below*", value: "The price at which the bot must buy/sell the subject key if it is exceeded.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Buy/Sell Above*", value: "The price at which the bot must buy/sell the subjet's key if it falls below it.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Gas Preset*", value: "The gas settings to use. Classic (or 0) represents the basic setting, which can be modulated in % to make the order transactions more aggressive (10%, 30% etc).", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Simulation*", value: "Select whether you want the transaction to be simulated internally before being launched or not. This allows to prevent a failed transaction from being launched, thus reducing the chances of losing gas fees.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: " ", value: "*⚠️ All conditions are defaulted to any. To reset a field, press the corresponding button and leave the field empty.*", inline: false },
 
                     )
                     .setTimestamp()
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                await interaction.update({ embeds: [bigEmbed], components: [buttonsRow], ephemeral: true });
+                await interaction.reply({ embeds: [setfpEmbedNotForYou], ephemeral: true });
+
+
+
+
+
+
+
+
+
+
+
 
 
             } else {

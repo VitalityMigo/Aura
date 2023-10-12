@@ -34,6 +34,8 @@ module.exports = {
 			command = client.modalCommands.get("modal_friendtech_exec_sell_");
 		} else if (customId.startsWith("modal-friendtechtasksinfra-sniper-param-")) {
 			command = client.modalCommands.get("modal-friendtechtasksinfra-sniper-param-");
+		} else if (customId.startsWith("modal-friendtechtasksinfra-order-param-")) {
+			command = client.modalCommands.get("modal-friendtechtasksinfra-order-param-");
 		} 
 		
 		

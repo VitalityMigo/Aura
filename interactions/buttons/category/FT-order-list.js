@@ -12,7 +12,7 @@
 
 const { ButtonInteraction } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
+const { accessSql, profileData, adminsql, reportsql, order_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 const generateRandomString = require("../../../functions/randomkey")
@@ -22,7 +22,7 @@ const buttonsRowCancel = new ActionRowBuilder()
     .addComponents(
 
         new ButtonBuilder()
-            .setCustomId('friendtechtasksinfra-snipermenu-button')
+            .setCustomId('friendtechtasksinfra-ordermenu-button')
             .setLabel('↩️')
             .setStyle(1),
         new ButtonBuilder()
@@ -36,7 +36,7 @@ const buttonsRowCancel = new ActionRowBuilder()
 
 
 module.exports = {
-    id: 'friendtechtasksinfra-sniperlist-button-',
+    id: 'friendtechtasksinfra-ordersList-button-',
 
     async execute(interaction) {
         if (!(interaction instanceof ButtonInteraction)) return;
@@ -60,9 +60,9 @@ module.exports = {
                 const customId = interaction.customId
 
                 const desiredTaskNb = customId.substring(customId.length - 1)
-
+console.log(desiredTaskNb)
                 // On trouve la task
-                const userSnipeTasks = await sniper_friendTech.findAll({ where: { authorId: authorId } })
+                const userSnipeTasks = await order_friendTech.findAll({ where: { authorId: authorId } })
                 const snipeTasksCount = userSnipeTasks.length
                 const taskIndex = desiredTaskNb - 1
 
@@ -80,18 +80,8 @@ module.exports = {
                     const target = desiredTask.target
                     const amount = desiredTask.amount
                     const totalTask = desiredTask.repeat
-                    const minPrice = desiredTask.min_total_price
-                    const maxPrice = desiredTask.max_total_price
-                    const minSupply = desiredTask.min_supply
-                    const maxSupply = desiredTask.max_supply
-                    const minFollowers = desiredTask.min_followers
-                    const maxFollowers = desiredTask.max_followers
-                    const minTwitterScore = desiredTask.min_twitter_score
-                    const maxTwitterScore = desiredTask.max_twitter_score
-                    const minUniqueHolders = desiredTask.min_unique_holders
-                    const maxUniqueHolders = desiredTask.max_unique_holders
-                    const minDepositValue = desiredTask.min_deposit_value
-                    const maxDepositValue = desiredTask.max_deposit_value
+                    const minPrice = desiredTask.min_key_price
+                    const maxPrice = desiredTask.max_key_price
                     const gasPreset = desiredTask.gas_preset
                     const simulation = desiredTask.simulation
                     const randomId = desiredTask.randomId
@@ -102,47 +92,18 @@ module.exports = {
                     if (status == "true") { statusFormatted = "🟢 Active" }
 
 
-                    let targetFormatted = "Any"
+                    let targetFormatted = "None"
                     if (target != null) { targetFormatted = target }
 
                     let totalTaskFormatted = "No Limit"
                     if (totalTask != null) { totalTaskFormatted = totalTask }
 
-                    let minPriceFormatted = "Any"
-                    if (minPrice != null) { minPriceFormatted =  parseFloat(minPrice).toFixed(3) + "Ξ" }
+                    let minPriceFormatted = "None"
+                    if (minPrice != null) { minPriceFormatted = parseFloat(minPrice).toFixed(3) + "Ξ" }
 
-                    let maxPriceFormatted = "Any"
-                    if (maxPrice != null) { maxPriceFormatted =  parseFloat(maxPrice).toFixed(3) + "Ξ" }
+                    let maxPriceFormatted = "None"
+                    if (maxPrice != null) { maxPriceFormatted = parseFloat(maxPrice).toFixed(3) + "Ξ" }
 
-                    let minSupplyFormatted = "Any"
-                    if (minSupply != null) { minSupplyFormatted = minSupply }
-
-                    let maxSupplyFormatted = "Any"
-                    if (maxSupply != null) { maxSupplyFormatted = maxSupply }
-
-                    let minFollowersFormatted = "Any"
-                    if (minFollowers != null) { minFollowersFormatted = minFollowers }
-
-                    let maxFollowersFormatted = "Any"
-                    if (maxFollowers != null) { maxFollowersFormatted = maxFollowers }
-
-                    let minDepositValueFormatted = "Any"
-                    if (minDepositValue != null) { minDepositValueFormatted = parseFloat(minDepositValue).toFixed(3) + "Ξ" }
-
-                    let maxDepositValueFormatted = "Any"
-                    if (maxDepositValue != null) { maxDepositValueFormatted = parseFloat(maxDepositValue).toFixed(3) + "Ξ" }
-
-                    let minTwitterScoreFormatted = "Any"
-                    if (minTwitterScore != null) { minTwitterScoreFormatted = minTwitterScore + "%" }
-
-                    let maxTwitterScoreFormatted = "Any"
-                    if (maxTwitterScore != null) { maxTwitterScoreFormatted = maxTwitterScore + "%" }
-
-                    let minUniqueHoldersFormatted = "Any"
-                    if (minUniqueHolders != null) { minUniqueHoldersFormatted = minUniqueHolders + "%" }
-
-                    let maxUniqueHoldersFormatted = "Any"
-                    if (maxUniqueHolders != null) { maxUniqueHoldersFormatted = maxUniqueHolders + "%" }
 
                     let gasPresetFormatted = "Classic"
                     if (gasPreset != null) { gasPresetFormatted = "+" + gasPreset + "%" }
@@ -150,76 +111,36 @@ module.exports = {
                     let simulationFormatted = "✅"
                     if (simulation == "false") { simulationFormatted = "❌" }
 
-
-                    // Variable pour construire les bouttons
-                    let tutorialType = "sniperdeposittutorial"
-                    if (type == "new_user") { tutorialType = "sniperusertutorial" }
-
                     let statusLabel = "🟢 Activate"
                     if (status == "true") { statusLabel = "🔴 Disable" }
 
+
+                    let typeFormatted = ""
 
                     // On construit les bouttons
                     const buttonsRow = new ActionRowBuilder()
                         .addComponents(
 
                             new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-target@' + randomId)
+                                .setCustomId('button-friendtechtasksinfra-order-param-target@' + randomId)
                                 .setLabel('Set Target')
                                 .setStyle(2),
                             new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-amount@' + randomId)
+                                .setCustomId('button-friendtechtasksinfra-order-param-amount@' + randomId)
                                 .setLabel('Set Amount')
                                 .setStyle(2),
                             new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-totaltask@' + randomId)
-                                .setLabel('Set Total Task')
+                                .setCustomId('button-friendtechtasksinfra-order-param-price@' + randomId)
+                                .setLabel('Set Key Price')
                                 .setStyle(2),
                             new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-price@' + randomId)
-                                .setLabel('Set Price')
-                                .setStyle(2),
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-supply@' + randomId)
-                                .setLabel('Set Supply')
-                                .setStyle(2),
-
-                        );
-
-                        let label2 = "Set Deposit Value"
-                        let index2 = 'depositamount'
-                        if (type == "new_user") {
-                            label2 = "Set Followers"
-                             index2 = 'followers'
-
-                        }
-
-
-                    const buttonsRow2 = new ActionRowBuilder()
-                        .addComponents(
-
-
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-' + index2 + '@' + randomId)
-                                .setLabel(label2)
-                                .setStyle(2),
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-twitterscore@' + randomId)
-                                .setLabel('Set Twitter Score')
-                                .setStyle(2),
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-uniqueholders@' + randomId)
-                                .setLabel('Set Unique Holders')
-                                .setStyle(2),
-                            new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-gaspreset@' + randomId)
+                                .setCustomId('button-friendtechtasksinfra-order-param-gaspreset@' + randomId)
                                 .setLabel('Set Gas Preset')
                                 .setStyle(2),
                             new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-simulation@' + randomId)
+                                .setCustomId('button-friendtechtasksinfra-order-param-simulation@' + randomId)
                                 .setLabel('Set Simulation')
                                 .setStyle(2),
-
 
 
                         );
@@ -230,19 +151,19 @@ module.exports = {
 
 
                             new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-status@' + randomId)
+                                .setCustomId('button-friendtechtasksinfra-order-param-status@' + randomId)
                                 .setLabel(statusLabel)
                                 .setStyle(3),
                             new ButtonBuilder()
-                                .setCustomId('button-friendtechtasksinfra-sniper-param-delete@' + randomId)
+                                .setCustomId('button-friendtechtasksinfra-order-param-delete@' + randomId)
                                 .setLabel('Delete')
                                 .setStyle(4),
                             new ButtonBuilder()
-                                .setCustomId('friendtechtasksinfra-' + tutorialType + '-button')
+                                .setCustomId('friendtechtasksinfra-orderbuytutorial-button')
                                 .setLabel('📑 Tutorial')
                                 .setStyle(1),
                             new ButtonBuilder()
-                                .setCustomId('friendtechtasksinfra-snipermenu-button')
+                                .setCustomId('friendtechtasksinfra-ordermenu-button')
                                 .setLabel('↩️')
                                 .setStyle(1),
                             new ButtonBuilder()
@@ -252,7 +173,6 @@ module.exports = {
 
 
                         );
-
 
 
                     // On construit le boutton variable
@@ -265,7 +185,7 @@ module.exports = {
 
                             buttonsRow4.addComponents(
                                 new ButtonBuilder()
-                                    .setCustomId(`friendtechtasksinfra-sniperlist-button-${i}`)
+                                    .setCustomId(`friendtechtasksinfra-ordersList-button-${i}`)
                                     .setLabel(`Task ${i}`)
                                     .setStyle(style)
                             );
@@ -273,7 +193,7 @@ module.exports = {
                             // Si le numéro de tâche est supérieur au nombre de tâches disponibles, le bouton est désactivé.
                             buttonsRow4.addComponents(
                                 new ButtonBuilder()
-                                    .setCustomId(`friendtechtasksinfra-sniperlist-button-${i}`)
+                                    .setCustomId(`friendtechtasksinfra-ordersList-button-${i}`)
                                     .setLabel(`Task ${i}`)
                                     .setStyle(2) // Style en gris
                                     .setDisabled(true)
@@ -289,37 +209,28 @@ module.exports = {
 
 
                     // On renvoi l'embed adapté
-                    if (type == "new_user") {
+                    if (type == "buy") {
 
 
-
+                        typeFormatted = "📈 Buy"
 
                         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                             .setTitle("Friend.Tech Tasks")
-                            .setDescription(">>> Displaying your sniper task")
+                            .setDescription(">>> Displaying your order task")
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .addFields(
                                 { name: "Status", value: "`" + statusFormatted + "`", inline: true },
-                                { name: "Task Type", value: "`🐇 New User`", inline: true },
+                                { name: "Task Type", value: "`" + typeFormatted + "`", inline: true },
+                                { name: " ", value: " ", inline: false },
                                 { name: " ", value: "**📖 CORE INFOS** ", inline: false },
                                 { name: "Target", value: "`" + targetFormatted + "`", inline: true },
                                 { name: "Amount/Txn", value: "`" + amount + "`", inline: true },
                                 { name: "Total Task", value: "`" + totalTaskFormatted + "`", inline: true },
+                                { name: " ", value: " ", inline: false },
                                 { name: " ", value: "**⚙️ ADVANCED SETTINGS** ", inline: false },
-                                { name: "Min. Key Price", value: "`" + minPriceFormatted + "`", inline: true },
-                                { name: "Max. Key Price", value: "`" + maxPriceFormatted + "`", inline: true },
+                                { name: "Buy Below:", value: "`" + minPriceFormatted + "`", inline: true },
+                                { name: "Buy Above:", value: "`" + maxPriceFormatted + "`", inline: true },
                                 { name: " ", value: " ", inline: false },
-                                { name: "Min. Supply", value: "`" + minSupplyFormatted + "`", inline: true },
-                                { name: "Max. Supply", value: "`" + maxSupplyFormatted + "`", inline: true },
-                                { name: " ", value: " ", inline: false },
-                                { name: "Min. Followers", value: "`" + minFollowersFormatted + "`", inline: true },
-                                { name: "Max. Followers", value: "`" + maxFollowersFormatted + "`", inline: true },
-                                { name: " ", value: " ", inline: false },
-                                { name: "Min. Twitter Score", value: "`" + minTwitterScoreFormatted + "`", inline: true },
-                                { name: "Max. Twitter Score", value: "`" + maxTwitterScoreFormatted + "`", inline: true },
-                                { name: " ", value: " ", inline: false },
-                                { name: "Min. Unique Holders", value: "`" + minUniqueHoldersFormatted + "`", inline: true },
-                                { name: "Max. Unique Holders", value: "`" + maxUniqueHoldersFormatted + "`", inline: true },
                                 { name: " ", value: "**😈 EXPERT MODE**", inline: false },
                                 { name: "Gas Preset", value: "`" + gasPresetFormatted + "`", inline: true },
                                 { name: "Simulation", value: "`" + simulationFormatted + "`", inline: true },
@@ -332,45 +243,38 @@ module.exports = {
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                        await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRow4, buttonsRow, buttonsRow2, buttonsRow3], ephemeral: true });
+                        await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRow4, buttonsRow, buttonsRow3], ephemeral: true });
 
 
 
 
-                    } else if (type == "new_deposit") {
+                    } else if (type == "sell") {
 
+                        typeFormatted = "📉 Sell"
 
 
                         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle("Friend.Tech Tasks")
-                            .setDescription(">>> Displaying your sniper tasks")
-                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                            .addFields(
-                                { name: "Status", value: "`" + statusFormatted + "`", inline: true },
-                                { name: "Task Type", value: "`📥 New Deposit`", inline: true },
-                                { name: " ", value: "**📖 CORE INFOS** ", inline: false },
-                                { name: "Target", value: "`" + targetFormatted + "`", inline: true },
-                                { name: "Amount/Txn", value: "`" + amount + "`", inline: true },
-                                { name: "Total Task", value: "`" + totalTaskFormatted + "`", inline: true },
-                                { name: " ", value: "**⚙️ ADVANCED SETTINGS** ", inline: false },
-                                { name: "Min. Key Price", value: "`" + minPriceFormatted + "`", inline: true },
-                                { name: "Max. Key Price", value: "`" + maxPriceFormatted + "`", inline: true },
-                                { name: " ", value: " ", inline: false },
-                                { name: "Min. Supply", value: "`" + minSupplyFormatted + "`", inline: true },
-                                { name: "Max. Supply", value: "`" + maxSupplyFormatted + "`", inline: true },
-                                { name: " ", value: " ", inline: false },
-                                { name: "Min. Deposit Value", value: "`" + minDepositValueFormatted + "`", inline: true },
-                                { name: "Max. Deposit Value", value: "`" + maxDepositValueFormatted + "`", inline: true },
-                                { name: " ", value: " ", inline: false },
-                                { name: "Min. Twitter Score", value: "`" + minTwitterScoreFormatted + "`", inline: true },
-                                { name: "Max. Twitter Score", value: "`" + maxTwitterScoreFormatted + "`", inline: true },
-                                { name: " ", value: " ", inline: false },
-                                { name: "Min. Unique Holders", value: "`" + minUniqueHoldersFormatted + "`", inline: true },
-                                { name: "Max. Unique Holders", value: "`" + maxUniqueHoldersFormatted + "`", inline: true },
-                                { name: " ", value: "**😈 EXPERT MODE**", inline: false },
-                                { name: "Gas Preset", value: "`" + gasPresetFormatted + "`", inline: true },
-                                { name: "Simulation", value: "`" + simulationFormatted + "`", inline: true },
-                                { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings and open your server DMs before activating.*", inline: false },
+                        .setTitle("Friend.Tech Tasks")
+                        .setDescription(">>> Displaying your order task")
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .addFields(
+                            { name: "Status", value: "`" + statusFormatted + "`", inline: true },
+                            { name: "Task Type", value: "`" + typeFormatted + "`", inline: true },
+                            { name: " ", value: " ", inline: false },
+                            { name: " ", value: "**📖 CORE INFOS** ", inline: false },
+                            { name: "Target", value: "`" + targetFormatted + "`", inline: true },
+                            { name: "Amount/Txn", value: "`" + amount + "`", inline: true },
+                            { name: "Total Task", value: "`" + totalTaskFormatted + "`", inline: true },
+                            { name: " ", value: " ", inline: false },
+                            { name: " ", value: "**⚙️ ADVANCED SETTINGS** ", inline: false },
+                            { name: "Sell Below:", value: "`" + minPriceFormatted + "`", inline: true },
+                            { name: "Sell Above:", value: "`" + maxPriceFormatted + "`", inline: true },
+                            { name: " ", value: " ", inline: false },
+                            { name: " ", value: "**😈 EXPERT MODE**", inline: false },
+                            { name: "Gas Preset", value: "`" + gasPresetFormatted + "`", inline: true },
+                            { name: "Simulation", value: "`" + simulationFormatted + "`", inline: true },
+                            { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings and open your server DMs before activating.*", inline: false },
+
 
 
 
@@ -379,7 +283,7 @@ module.exports = {
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                        await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRow4, buttonsRow, buttonsRow2, buttonsRow3], ephemeral: true });
+                        await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRow4, buttonsRow, buttonsRow3], ephemeral: true });
 
 
                     }
@@ -391,11 +295,11 @@ module.exports = {
 
 
                     const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("Sniper Tasks")
+                        .setTitle("Order Tasks")
                         .setDescription(">>> Displaying your Friend.tech tasks")
                         .setAuthor({ name: authorName, iconURL: userAvatar })
                         .addFields(
-                            { name: "Tasks", value: "```You don't have any sniper tasks set up on your account                            ```∟ To create your first task, go to the sniper home page by clicking on the ↩️ button below.", inline: true },
+                            { name: "Tasks", value: "```You don't have any order tasks set up on your account                            ```∟ To create your first task, go to the order home page by clicking on the ↩️ button below.", inline: true },
 
                         )
                         .setTimestamp()

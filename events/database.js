@@ -937,6 +937,81 @@ const sniper_friendTech = sequelize.define('sniper_friendtech', {
 
 
 
+//Alert up
+const order_friendTech = sequelize.define('order_friendTech', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    type: {
+        type: Sequelize.STRING,
+    },
+    target: {
+        type: Sequelize.STRING,
+    },
+    targetWallet: {
+        type: Sequelize.STRING,
+    },
+    amount: {
+        type: Sequelize.STRING,
+    },
+    repeat: {
+        type: Sequelize.STRING,
+    },
+    min_key_price: {
+        type: Sequelize.REAL,
+    },
+    max_key_price: {
+        type: Sequelize.REAL,
+    },
+    min_value: {
+        type: Sequelize.REAL,
+    },
+    max_value: {
+        type: Sequelize.REAL,
+    },
+    gas_preset: {
+        type: Sequelize.STRING,
+    },
+    simulation: {
+        type: Sequelize.STRING,
+    },
+    walletAddress: {
+        type: Sequelize.STRING,
+    },
+    privateKey: {
+        type: Sequelize.STRING,
+    },
+    active: {
+        type: Sequelize.STRING,
+    },
+    created: {
+        type: Sequelize.STRING,
+    },
+    randomId: {
+        type: Sequelize.STRING,
+    },
+    taskNb: {
+        type: Sequelize.STRING,
+    },
+   
+    
+
+
+});
+
+
+
+
 
 
 //Synching the tables
@@ -962,6 +1037,7 @@ erc20.sync()
 sniper_friendTech.sync()
 exe_friendTech.sync()
 infra_friendTech.sync()
+order_friendTech.sync()
 
 
 //Export the tables informations
@@ -988,6 +1064,7 @@ module.exports = {
     exe_friendTech,
     infra_friendTech,
     sniper_friendTech,
+    order_friendTech,
     Op,
 }
 

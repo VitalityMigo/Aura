@@ -76,7 +76,18 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_friendtech_deposit_history_");
 			
+		}  else if (customId.startsWith("button-friendtechtasksinfra-order-param-")) {
+
+			command = client.buttonCommands.get("button-friendtechtasksinfra-order-param-");
+			
+		} else if (customId.startsWith("friendtechtasksinfra-ordersList-button-")) {
+
+			command = client.buttonCommands.get("friendtechtasksinfra-ordersList-button-");
+			
 		}
+
+
+		
 		
 		
 		

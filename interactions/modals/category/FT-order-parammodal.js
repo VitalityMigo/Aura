@@ -134,7 +134,7 @@ module.exports = {
 
                         taskEmbed.fields.find(obj => obj.name === "Target").value = "`" + givenUsername + "`";
 
-                        await order_friendTech.update({ target: givenUsername, targetWallet: targetWallet }, { where: { authorId: authorId, randomId: uniqueId } });
+                        await order_friendTech.update({ target: givenUsername, targetWallet: targetWallet.toLowerCase() }, { where: { authorId: authorId, randomId: uniqueId } });
                         await interaction.update({ embeds: [taskEmbed], ephemeral: true });
 
                     } else {

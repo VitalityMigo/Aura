@@ -10,7 +10,7 @@ const rpc1NodeBaseApiKey = process.env.rpc1NodeBaseApiKey
 const blastNodeApiKey = process.env.blastNodeApiKey
 
 
-const { web3Base1RPC, web3BaseBlast } = require('../config/web3config');
+const { web3Base1RPC, web3BaseBlast, web3BaseUnifra } = require('../config/web3config');
 
 
 const shareContractAbi = require("../contracts/friendtech/share.json");
@@ -82,7 +82,7 @@ async function FTSnipeUserExec(transaction) {
     try {
 
         
-        const gasPricePromise = web3Base1RPC.eth.getGasPrice()
+        const gasPricePromise = web3BaseUnifra.eth.getGasPrice()
 
 
         const inputAddress = ("0x" + transaction.input.substr(34, 40)).toLowerCase()

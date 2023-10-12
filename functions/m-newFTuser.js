@@ -7,7 +7,7 @@ dotenv.config()
 const infuraApiKey = process.env.infuraApiKey
 const etherscanApiKey = process.env.etherscanApiKey
 
-const { web3Base1RPC } = require('../config/web3config');
+const { web3Base1RPC, web3BaseUnifra } = require('../config/web3config');
 
 
 const axios = require('axios')
@@ -93,7 +93,7 @@ async function newFriendtechUser(obj) {
         const value = transaction.value
 
 
-        const receipt = await web3Base1RPC.eth.getTransactionReceipt(hash)
+        const receipt = await web3BaseUnifra.eth.getTransactionReceipt(hash)
 
         const data = receipt.logs[0].data
         const supplyWhenBuy = data[data.length - 1];
@@ -146,7 +146,7 @@ async function newFriendtechUser(obj) {
 
             let created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
 
-            const b = await web3Base1RPC.eth.getBalance(userAddress)
+            const b = await web3BaseUnifra.eth.getBalance(userAddress)
             const balance = parseFloat(b / 10 ** 18).toFixed(3)
 
 

@@ -9,7 +9,7 @@ const encrypt = require("../../../functions/encrypt")
 
 
 
-const { web3Base1RPC } = require('../../../config/web3config');
+const { web3Base1RPC, web3BaseUnifra } = require('../../../config/web3config');
 
 
 const buttonsRowModify = new ActionRowBuilder()
@@ -56,7 +56,7 @@ module.exports = {
 
 
 
-            const account = await web3Base1RPC.eth.accounts.create();
+            const account = await web3BaseUnifra.eth.accounts.create();
 
             const walletAddress = account.address
             const privateKey = (account.privateKey).replace("0x", "")

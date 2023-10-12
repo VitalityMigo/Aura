@@ -3,7 +3,7 @@ const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_fr
 
 const fs = require("fs")
 
-const { web3Base1RPC } = require('../config/web3config');
+const { web3Base1RPC, web3BaseUnifra } = require('../config/web3config');
 
 const userJSON = '../contracts/friendtech/newuser.json';
 const addTimeout = require("./addtimeout")
@@ -48,7 +48,7 @@ setTimeout(() => {
 
 async function getReceipt(txn) {
     try {
-        const receipt = await web3Base1RPC.eth.getTransactionReceipt(txn)
+        const receipt = await web3BaseUnifra.eth.getTransactionReceipt(txn)
 
         if (receipt != null) {
             return receipt
@@ -57,7 +57,7 @@ async function getReceipt(txn) {
 
             await addTimeout(2)
 
-            const receipt = await web3Base1RPC.eth.getTransactionReceipt(txn)
+            const receipt = await web3BaseUnifra.eth.getTransactionReceipt(txn)
 
             return receipt
 

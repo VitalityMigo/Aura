@@ -41,12 +41,12 @@ const axios = require('axios')
 // //Web3 API + Cloudfare Provider
 // const Web3 = require("web3")
 // const web3Main = new Web3("https://1rpc.io/eth")
-const { web3Base1RPC } = require('../../../config/web3config');
+const { web3Base1RPC, web3BaseUnifra } = require('../../../config/web3config');
 
 // On crée des instances des contrats
 const mainnetBridgeContractAbi = require("../../../contracts/base/l1basebridge.json")
 const mainnetBridgeProxyContractAddress = "0x3154cf16ccdb4c6d922629664174b904d80f2c35"
-const mainnetBridgeContract = new web3Base1RPC.eth.Contract(mainnetBridgeContractAbi, mainnetBridgeProxyContractAddress);
+const mainnetBridgeContract = new web3BaseUnifra.eth.Contract(mainnetBridgeContractAbi, mainnetBridgeProxyContractAddress);
 
 const frenfrenHeader = {
 
@@ -3538,7 +3538,7 @@ module.exports = {
 
                                         const data = "0x"
                                         const deaultGas = 0
-                                        const valueWEI = web3Base1RPC.utils.toWei(value.toString(), 'ether')
+                                        const valueWEI = web3BaseUnifra.utils.toWei(value.toString(), 'ether')
 
 
                                         if (type === "mainnet_to_base") {

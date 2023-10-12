@@ -7,7 +7,7 @@ const rpc1NodeBaseApiKey = process.env.rpc1NodeBaseApiKey
 const blastNodeApiKey = process.env.blastNodeApiKey
 console.log(rpc1NodeBaseApiKey)
 
-const { web3Base1RPC, web3BaseBlast } = require('../config/web3config');
+const { web3Base1RPC, web3BaseBlast, web3BaseUnifra } = require('../config/web3config');
 
 const colors = require('colors');
 const axios = require('axios')
@@ -87,7 +87,7 @@ async function FTSnipeDepositExec(obj) {
         const hash = transaction.hash
         const action = transaction.type
 
-        const gasPricePromise = web3Base1RPC.eth.getGasPrice()
+        const gasPricePromise = web3BaseUnifra.eth.getGasPrice()
 
 
 

@@ -18,7 +18,7 @@ const decrypt = require("../../../functions/decrypt")
 
 
 
-const { web3Base1RPC } = require('../../../config/web3config');
+const { web3Base1RPC, web3BaseUnifra } = require('../../../config/web3config');
 
 
 function isPrivateKeyValid(privateKey) {

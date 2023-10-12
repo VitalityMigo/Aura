@@ -1,6 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 
-const { web3Base1RPC, web3BaseAlchemy } = require('../config/web3config');
+const { web3Base1RPC, web3BaseAlchemy, web3BaseUnifra} = require('../config/web3config');
 
 
 const colors = require('colors');
@@ -126,7 +126,7 @@ async function newFTDeposit(obj) {
                     displayPrice = price / 10 ** 18
 
 
-                    const balance = (await web3Base1RPC.eth.getBalance(userAddress)) / 10 ** 18
+                    const balance = (await web3BaseUnifra.eth.getBalance(userAddress)) / 10 ** 18
                     const userBalance = balance + value
 
                     const bridgeInfosFormatted = "Amount: " + parseFloat(value).toFixed(4) + "Ξ\nNew balance:" + parseFloat(userBalance).toFixed(4) + "Ξ"
@@ -218,7 +218,7 @@ async function newFTDeposit(obj) {
                     displayPrice = price / 10 ** 18
 
 
-                    const balance = (await web3Base1RPC.eth.getBalance(userAddress)) / 10 ** 18
+                    const balance = (await web3BaseUnifra.eth.getBalance(userAddress)) / 10 ** 18
                     const userBalance = balance + value
 
                     const bridgeInfosFormatted = "Amount: " + parseFloat(value).toFixed(4) + "Ξ\nNew balance:" + parseFloat(userBalance).toFixed(4) + "Ξ"

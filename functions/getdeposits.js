@@ -1,5 +1,5 @@
 
-const { web3Base1RPC } = require('../config/web3config');
+const { web3Base1RPC, web3BaseUnifra } = require('../config/web3config');
 
 async function getBaseDeposit(address) {
 
@@ -23,12 +23,12 @@ async function getBaseDeposit(address) {
         };
 
 
-        const logs = await web3Base1RPC.eth.getPastLogs(filter);
+        const logs = await web3BaseUnifra.eth.getPastLogs(filter);
 
         let table = []
         for (const log of logs) {
 
-            const block = await web3Base1RPC.eth.getBlock(log.blockNumber)
+            const block = await web3BaseUnifra.eth.getBlock(log.blockNumber)
         
             let obj = {}
             obj.hash = log.transactionHash

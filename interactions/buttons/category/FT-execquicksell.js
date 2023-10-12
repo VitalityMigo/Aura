@@ -195,7 +195,7 @@ module.exports = {
 
 
 
-                                const gasPrice = await web3Base1RPC.eth.getGasPrice()
+                                const gasPrice = await web3BaseUnifra.eth.getGasPrice()
                                 const gasPriceEth = gasPrice / 10 ** 18
 
                                 const gasPayed = gasPriceEth * gasUsed

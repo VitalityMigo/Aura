@@ -18,7 +18,7 @@ const moment = require('moment');
 const encrypt = require("../../../functions/encrypt")
 const decrypt = require("../../../functions/decrypt")
 
-const { web3BaseAlchemy, web3Base1RPC } = require('../../../config/web3config');
+const { web3BaseAlchemy, web3Base1RPC, web3BaseUnifra} = require('../../../config/web3config');
 
 
 
@@ -183,7 +183,7 @@ module.exports = {
                         if (simulationState == true) {
 
 
-                            const gasPriceCall = await web3Base1RPC.eth.getGasPrice()
+                            const gasPriceCall = await web3BaseUnifra.eth.getGasPrice()
                             const gasPriceGwei = gasPriceCall / 10 ** 9
                             const gasPriceEth = gasPriceCall / 10 ** 18
 
@@ -355,7 +355,7 @@ module.exports = {
                                 if (simulationState == true) {
 
 
-                                    const gasPriceCall = await web3Base1RPC.eth.getGasPrice()
+                                    const gasPriceCall = await web3BaseUnifra.eth.getGasPrice()
                                     const gasPriceGwei = gasPriceCall / 10 ** 9
                                     const gasPriceEth = gasPriceCall / 10 ** 18
 

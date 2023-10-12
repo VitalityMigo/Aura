@@ -93,6 +93,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
             const member = await botGuild.members.fetch(task.authorId);
 
+            
 
             const receipt = await getReceipt(task.hash)
 

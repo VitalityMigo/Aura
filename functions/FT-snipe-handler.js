@@ -91,7 +91,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
             if (type == "new_user") { action = "🐇 Snipe New User" }
 
 
-            const member = await guild.members.fetch(task.authorId);
+            const member = await botGuild.members.fetch(task.authorId);
 
 
             const receipt = await getReceipt(task.hash)

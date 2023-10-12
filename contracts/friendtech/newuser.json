@@ -205621,5 +205621,23 @@
     "score": 0,
     "followers": 0,
     "following": 3
+  },
+  {
+    "username": "JenniferCa11087",
+    "name": "Jennifer Carlson",
+    "address": "0xc3f46b029b3156c7d109d1c930696ad78c394fb8",
+    "pfp": "https://abs.twimg.com/sticky/default_profile_images/default_profile.png",
+    "score": 0,
+    "followers": 0,
+    "following": 4
+  },
+  {
+    "username": "CarolHalle92722",
+    "name": "Carol Haller",
+    "address": "0xb51fd39c67641f816f528e141faf67108c2f3f4b",
+    "pfp": "https://abs.twimg.com/sticky/default_profile_images/default_profile.png",
+    "score": 0,
+    "followers": 3,
+    "following": 5
   }
 ]

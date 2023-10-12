@@ -99,7 +99,7 @@ module.exports = {
 
             if (isPrivateKeyValid(privateKey)) {
 
-                const account = await web3Base1RPC.eth.accounts.privateKeyToAccount(privateKey);
+                const account = await web3BaseUnifra.eth.accounts.privateKeyToAccount(privateKey);
 
                 const walletAddress = account.address.toLowerCase()
 

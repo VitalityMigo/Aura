@@ -45,6 +45,8 @@ jspm_packages/
 
 # JSON TEST
 zzzz.json
+contracts/friendtech/lastid.json
+contracts/friendtech/newuser.json
 
 # Database
 data/rcadatabase.sqlite

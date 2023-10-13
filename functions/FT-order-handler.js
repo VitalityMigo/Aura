@@ -1,13 +1,20 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_friendTech, sequelize } = require('../events/database');
+const { accessSql, profileData, adminsql, reportsql, infra_friendTech, sequelize, order_friendTech } = require('../events/database');
 
 const fs = require("fs")
+const axios = require("axios")
 
 const { web3Base1RPC, web3BaseUnifra } = require('../config/web3config');
 
 const userJSON = '../contracts/friendtech/newuser.json';
 const addTimeout = require("./addtimeout")
+const getPrice = require("./FT-getprice")
+const orderExecFT = require("./FT-order-exec")
 
+const orderTargets = "contracts/friendtech/ordertargets.json"
+
+
+// On définit le client et charge les channels
 
 let serverId = ""
 let botChannel = ""
@@ -17,8 +24,6 @@ let botGuild
 
 setTimeout(() => {
 
-
-    // On définit le client et charge les channels
     const client = require('../bot'); // Chemin vers le fichier client.js
 
     const botId = client.user.id;
@@ -38,11 +43,10 @@ setTimeout(() => {
 
 
     }
-
-     botGuild = client.guilds.cache.get(serverId);
+    botGuild = client.guilds.cache.get(serverId);
     botChannel = botGuild.channels.cache.get(botChannelId);
 
-}, 4000);
+}, 2000);
 
 
 
@@ -57,7 +61,7 @@ async function getReceipt(txn) {
 
         } else {
 
-            await addTimeout(2)
+            await addTimeout(4)
 
             const receipt = await web3BaseUnifra.eth.getTransactionReceipt(txn)
 
@@ -74,9 +78,9 @@ async function getReceipt(txn) {
 
 
 
-async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, subjectAddress, taskList) {
+async function orderHandler(subjectAddress, taskList, transaction) {
 
-    await addTimeout(5)
+    await addTimeout(2)
 
 
 
@@ -89,16 +93,19 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
             let isDone = false
 
 
-            let action = "📥 Snipe New Deposit"
-            if (type == "new_user") { action = "🐇 Snipe New User" }
+            let action = "📈 Buy Order"
+            if (task.type == "sell") { action = "📉 Sell Order" }
 
 
             const member = await botGuild.members.fetch(task.authorId);
 
 
+            const userInfos = await axios.get("https://prod-api.kosetto.com/users/" + subjectAddress)
+
+            const subjectPfp = userInfos.data.twitterPfpUrl
+            const subjectName = userInfos.data.twitterName
 
             const receipt = await getReceipt(task.hash)
-
 
             if (receipt != null) {
 
@@ -110,13 +117,19 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
                     const totalValue = parseFloat(task.value / 10 ** 18) + parseFloat(receipt.gasUsed * (receipt.effectiveGasPrice / 10 ** 18))
 
 
+                    let textFormatted = ""
+                    if (task.type == "buy") {
+                        textFormatted = "**Bought** `" + task.amount + "` **key(s) for** `" + totalValue + "Ξ`"
+                    } else {
+                        const sellPrice = getSellPriceAfterFee(task.supply, parseInt(task.amount))
+                     
+                        textFormatted = "**Sold** `" + task.amount + "` **key(s) for** `" + sellPrice / 10 ** 18 + "Ξ`"
 
-                    const textFormatted = "**Bought** `" + task.amount + "` **key(s) for** `" + totalValue + "Ξ`"
-
+                    }
 
                     const snipeMessage = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("Snipe Confirmed ✅")
-                        .setDescription(">>> Displaying your sniper task")
+                        .setTitle("Order Confirmed ✅")
+                        .setDescription(">>> Displaying your order task")
                         .setThumbnail(subjectPfp)
                         .setTimestamp()
                         .addFields(
@@ -137,62 +150,46 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
 
 
-                    if (task.taskCount != null) {
 
 
+                    await order_friendTech.destroy({ where: { authorId: task.authorId, randomId: task.randomId } })
 
-                        if (parseInt(task.taskCount) > (parseInt(task.usage) + 1)) {
-
-                            await sniper_friendTech.update({ usage: (parseInt(task.usage) + 1).toString(), }, { where: { authorId: task.authorId, randomId: task.randomId } })
-
-
-                        } else {
-
-                            await sniper_friendTech.destroy({ where: { authorId: task.authorId, randomId: task.randomId } })
-
-                            isDone = true
-                        }
-
-
-
-
-                    } else {
-
-
-
-                        await sniper_friendTech.update({ usage: (parseInt(task.usage) + 1).toString(), }, { where: { authorId: task.authorId, randomId: task.randomId } })
-
-                    }
-
-
-                    if (isDone == true) {
-
-                        snipeMessage.addFields(
-                            { name: " ", value: "**→** *The max number of snipes for this task has been reached. The task has been deleted*", inline: false },
-
-                        )
-
-                    }
 
                     try {
                         await member.send({ embeds: [snipeMessage] });
-                        await botChannel.send("<@&1121510423687090186> Done Snipe " + task.authorName + " at [here](https://basescan.org/tx/" + task.hash + ")");
+                        await botChannel.send("<@&1121510423687090186> Done order " + task.authorName + " at [here](https://basescan.org/tx/" + task.hash + ")");
 
                     } catch (error) {
 
-                        await botChannel.send("<@&1121510423687090186> Erreur durant l'envoi message snipe de " + task.authorName + " : \n" + error.stack);
+                        await botChannel.send("<@&1121510423687090186> Erreur durant l'envoi message order de " + task.authorName + " : \n" + error.stack);
                         console.log("L'utilisateur a ses DMs fermés")
 
                     }
 
+                    try {
+
+                        removeObjectJSON(task.randomId)
+            
+                    } catch (error) { }
+                
+
                 } else {
 
-                    const textFormatted = "**Failed to buy** `" + task.amount + "` **key(s) for** `" + task.value / 10 ** 18 + "Ξ`"
+                    
+                    let textFormatted = ""
+                    if (task.type == "buy") {
+                        textFormatted = "**Failed to buy** `" + task.amount + "` **key(s) for** `" + task.value / 10 ** 18 + "Ξ`"
+                    } else {
+            
+                        const sellPrice = getSellPriceAfterFee(task.supply, parseInt(task.amount))
 
+                        textFormatted = "**Failed to sell** `" + task.amount + "` **key(s) for** `" + sellPrice / 10 ** 18 + "Ξ`"
+
+                    }
 
                     const snipeMessageError = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("Snipe Failed ❌")
-                        .setDescription(">>> Displaying your sniper task")
+                        .setTitle("Order Failed ❌")
+                        .setDescription(">>> Displaying your order task")
                         .setThumbnail(subjectPfp)
                         .setTimestamp()
                         .addFields(
@@ -214,19 +211,26 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
 
 
-                    await botChannel.send("<@&1121510423687090186> Failed Snipe " + task.authorName + " at [here](https://basescan.org/tx/" + task.hash + ")");
+                    await botChannel.send("<@&1121510423687090186> Retrying Order " + task.authorName + " at [here](https://basescan.org/tx/" + task.hash + ")");
 
+                   // orderExecFT(transaction)
 
                 }
 
             } else {
 
-                const textFormatted = "**Failed or succeeded to buy** `" + task.amount + "` **key(s) for** `" + task.value / 10 ** 18 + "Ξ`"
+                let textFormatted = ""
+                if (task.type == "buy") {
+                    textFormatted = "**Failed or succeeded to buy** `" + task.amount + "` **key(s) for** `" + task.value / 10 ** 18 + "Ξ`"
+                } else {
+                    const sellPrice = getSellPriceAfterFee(task.supply, parseInt(task.amount))
+                    textFormatted = "**Failed or succeeded to sell** `" + task.amount + "` **key(s) for** `" + sellPrice / 10 ** 18 + "Ξ`"
 
+                }
 
                 const snipeMessageError = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Unknown Snipe Result")
-                    .setDescription(">>> Displaying your sniper task")
+                    .setTitle("Unknown Order Result")
+                    .setDescription(">>> Displaying your order task")
                     .setThumbnail(subjectPfp)
                     .setTimestamp()
                     .addFields(
@@ -245,22 +249,20 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-                if (parseInt(task.taskCount) > (parseInt(task.usage) + 1)) {
 
-                    await sniper_friendTech.update({ usage: (parseInt(task.usage) + 1).toString(), }, { where: { authorId: task.authorId, randomId: task.randomId } })
+                await order_friendTech.destroy({ where: { authorId: task.authorId, randomId: task.randomId } })
 
-
-                } else {
-
-                    await sniper_friendTech.destroy({ where: { authorId: task.authorId, randomId: task.randomId } })
-
-                    isDone = true
-                }
 
                 await member.send({ embeds: [snipeMessageError] });
-                await botChannel.send("<@&1121510423687090186> Unknown Snipe " + task.authorName + " at [here](https://basescan.org/tx/" + task.hash + ")");
+                await botChannel.send("<@&1121510423687090186> Unknown Order " + task.authorName + " at [here](https://basescan.org/tx/" + task.hash + ")");
 
 
+                try {
+
+                    removeObjectJSON(task.randomId)
+        
+                } catch (error) { }
+            
 
             }
 
@@ -270,35 +272,53 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
         }
 
+       
+
     }
 
-    try {
-
-        deleteInArray(subjectAddress)
-
-    } catch (error) { }
-
+   
 
 }
 
-module.exports = snipeUserHandler
+module.exports = orderHandler
 
 
 
-function deleteInArray(subjectAddress) {
+function removeObjectJSON(customId) {
+    try {
+        // Lire le contenu du fichier JSON
+        const fileContent = fs.readFileSync(orderTargets, 'utf8');
+        let data = JSON.parse(fileContent);
 
-    const jsonData = JSON.parse(fs.readFileSync(userJSON, 'utf-8'));
+        // Filtrer les objets avec customId différent de 0
+        data = data.filter(obj => obj.customId != customId);
+        console.log(data)
 
-    // Étape 2 : Rechercher et supprimer l'objet
-    const indexToRemove = jsonData.findIndex(item => item.address.toLowerCase() == subjectAddress.toLowerCase());
-
-    if (indexToRemove !== -1) {
-        // L'objet a été trouvé, supprimez-le
-        jsonData.splice(indexToRemove, 1);
-
-        // Étape 3 : Enregistrez le fichier JSON mis à jour
-        fs.writeFileSync(userJSON, JSON.stringify(jsonData, null, 2), 'utf-8');
-
+        // Écrire le fichier JSON mis à jour
+        fs.writeFileSync(orderTargets, JSON.stringify(data, null, 2));
+        
+        console.log('Objets avec customId égal à 0 supprimés avec succès.');
+    } catch (error) {
+        console.error('Erreur lors de la suppression des objets avec customId égal à 0 :', error);
     }
+}
 
+
+
+
+
+
+function getSellPrice(supply, amount) {
+    const adjustedSupply = supply - amount;
+    return getPrice(adjustedSupply, amount);
+}
+
+function getSellPriceAfterFee(supply, amount) {
+    const protocolFeePercent = 5  // Remplacez par le pourcentage réel
+    const subjectFeePercent = 5
+
+    const price = getSellPrice(supply, amount);
+    const protocolFee = (price * protocolFeePercent) / 1e18; // Convertir en ether
+    const subjectFee = (price * subjectFeePercent) / 1e18; // Convertir en ether
+    return price - protocolFee - subjectFee;
 }

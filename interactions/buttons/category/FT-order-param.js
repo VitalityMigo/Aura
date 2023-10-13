@@ -13,7 +13,12 @@
 const { ButtonInteraction } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
 const { accessSql, profileData, adminsql, reportsql, order_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
+const fs = require('fs');
 const moment = require('moment');
+
+
+const targetsJSON = './contracts/friendtech/ordertargets.json';
+
 
 
 const addTimeount = require("../../../functions/addtimeout")
@@ -129,7 +134,7 @@ module.exports = {
                     await interaction.editReply({ embeds: [gasTrackerEmbed2], components: [buttonsRowCancel], ephemeral: true });
 
 
-
+                    deleteTarget(uniqueId)
 
 
                 } else if (action == "status") {
@@ -435,10 +440,8 @@ module.exports = {
 
                 } else if (action == "simulation") {
 
-console.log(action)
 
                     let taskEmbed = interaction.message.embeds[0].data
-console.log(uniqueId)
 
                     if (taskEmbed.fields.find(obj => obj.name === "Simulation").value == "`✅`") {
 
@@ -574,5 +577,25 @@ console.log(uniqueId)
     },
 };
 
+
+
+// Fonctions
+function deleteTarget(taskId) {
+    let existingData = []
+    if (fs.existsSync(targetsJSON)) {
+        const fileContent = fs.readFileSync(targetsJSON, 'utf8');
+        existingData = JSON.parse(fileContent);
+    }
+
+    if (existingData.some(item => item.customId == taskId)) {
+    const indexToRemove = existingData.findIndex(item => item.customId == taskId);
+    if (indexToRemove !== -1) {
+        // L'objet a été trouvé, supprimez-le
+        existingData.splice(indexToRemove, 1);
+    }
+}
+    // Écrivez le fichier JSON avec la nouvelle liste
+    fs.writeFileSync(targetsJSON, JSON.stringify(existingData, null, 2));
+}
 
 

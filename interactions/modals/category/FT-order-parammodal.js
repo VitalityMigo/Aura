@@ -11,7 +11,12 @@
 
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { accessSql, profileData, adminsql, reportsql, order_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
+const fs = require('fs');
 const moment = require('moment');
+
+
+const targetsJSON = './contracts/friendtech/ordertargets.json';
+
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -33,7 +38,6 @@ function removeCharacter(str, char) {
     const regex = new RegExp(char, 'g');
     return str.replace(regex, '');
 }
-
 
 
 
@@ -136,6 +140,11 @@ module.exports = {
 
                         await order_friendTech.update({ target: givenUsername, targetWallet: targetWallet.toLowerCase() }, { where: { authorId: authorId, randomId: uniqueId } });
                         await interaction.update({ embeds: [taskEmbed], ephemeral: true });
+
+
+                        pushAddress(targetWallet, uniqueId)
+
+
 
                     } else {
 
@@ -425,3 +434,37 @@ module.exports = {
         }
     },
 };
+
+
+
+// fonctions 
+
+function pushAddress(address, customId) {
+    let existingData = []
+    if (fs.existsSync(targetsJSON)) {
+        const fileContent = fs.readFileSync(targetsJSON, 'utf8');
+        existingData = JSON.parse(fileContent);
+    }
+
+    if (existingData.some(item => item.customId === customId)) {
+    const indexToRemove = existingData.findIndex(item => item.customId == customId);
+    if (indexToRemove !== -1) {
+        // L'objet a été trouvé, supprimez-le
+        existingData.splice(indexToRemove, 1);
+    }
+}
+    // Ajoutez le nouvel utilisateur à la liste existante
+
+
+        let obj = {
+            address: address.toLowerCase(),
+            customId: customId
+        }
+        existingData.push(obj);
+    
+
+    // Écrivez le fichier JSON avec la nouvelle liste
+    fs.writeFileSync(targetsJSON, JSON.stringify(existingData, null, 2));
+}
+
+

@@ -15,6 +15,7 @@ const newSmartMoneyTrade = require('../functions/m-FTsmartmoney')
 const newFTDeposit = require("../functions/m-newbasedeposit")
 const FTSnipeDepositExec = require("../functions/FT-snipe-deposit")
 const FTSnipeUserExec = require('../functions/FT-snipe-user')
+const orderExecFT = require("../functions/FT-order-exec")
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -115,6 +116,15 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                     FTSnipeUserExec(transaction)
 
                     newFriendtechUser(transaction)
+
+
+                }
+
+                // On renvoi vers les trade order
+                if ((input.startsWith(buySignature) || input.startsWith(sellSignature)) && contract.toLowerCase() == shareContractAddress.toLowerCase()) {
+
+
+                    orderExecFT(transaction)
 
 
                 }

@@ -9,8 +9,9 @@ async function formatHoldersData(userAddress, price, shareSupply) {
 
         let holdersFormattedEmbeds = ""
 
-        // Call holders
-        const holderInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token/holders")
+        const holderInfoCall = await axios.get(`https://prod-api.kosetto.com/users/${userAddress}/token/holders`, {
+            timeout: 5000, // Timeout de 6 secondes
+        });
 
 
         // On construit la table d'holders
@@ -57,6 +58,7 @@ async function formatHoldersData(userAddress, price, shareSupply) {
 
         console.log("Erreur lors de la récupération des holders du user FT : " + error.stack)
 
+        return holdersFormattedEmbeds
 
 
 
@@ -75,7 +77,10 @@ async function formatTradesData(userAddress) {
         let tradersFormatted = ""
 
         // trade de l'auteur
-        const tradeInfoCall = await axios.get(" https://prod-api.kosetto.com/users/" + userAddress + "/trade-activity")
+        const tradeInfoCall = await axios.get(" https://prod-api.kosetto.com/users/" + userAddress + "/trade-activity", {
+            timeout: 5000, // Timeout de 6 secondes
+        });
+
 
         // lastTrade = parseFloat(tradeInfoCall.data.users[0].createdAt / 1000).toFixed(0)
 
@@ -111,8 +116,11 @@ async function formatTradesData(userAddress) {
 
     } catch (error) {
 
+        
+
         console.log("Erreur lors de la récupération des trades du user FT : " + error.stack)
 
+        return tradersFormatted
 
     }
 

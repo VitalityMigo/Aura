@@ -46,7 +46,7 @@ setTimeout(() => {
     botGuild = client.guilds.cache.get(serverId);
     botChannel = botGuild.channels.cache.get(botChannelId);
 
-}, 2000);
+}, 4000);
 
 
 

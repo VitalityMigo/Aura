@@ -18,7 +18,7 @@ const moment = require('moment');
 const encrypt = require("../../../functions/encrypt")
 const decrypt = require("../../../functions/decrypt")
 
-const { web3BaseBlast, web3Base1RPC } = require('../../../config/web3config');
+const { web3BaseBlast, web3Base1RPC, web3BaseUnifra } = require('../../../config/web3config');
 
 
 const axios = require("axios")

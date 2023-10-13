@@ -42,6 +42,7 @@ const axios = require('axios')
 // const Web3 = require("web3")
 const { web3Base1RPC, web3BaseUnifra } = require('../../../config/web3config');
 
+
 // On crée des instances des contrats
 const mainnetBridgeContractAbi = require("../../../contracts/base/l1basebridge.json")
 const mainnetBridgeProxyContractAddress = "0x3154cf16ccdb4c6d922629664174b904d80f2c35"

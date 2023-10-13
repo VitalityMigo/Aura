@@ -9,15 +9,16 @@ const userJSON = '../contracts/friendtech/newuser.json';
 const addTimeout = require("./addtimeout")
 
 
-// On définit le client et charge les channels
-const client = require('../bot'); // Chemin vers le fichier client.js
-
 let serverId = ""
 let botChannel = ""
 let botChannelId = ""
 
 
 setTimeout(() => {
+
+
+    // On définit le client et charge les channels
+    const client = require('../bot'); // Chemin vers le fichier client.js
 
     const botId = client.user.id;
 
@@ -93,7 +94,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
             const member = await botGuild.members.fetch(task.authorId);
 
-            
+
 
             const receipt = await getReceipt(task.hash)
 

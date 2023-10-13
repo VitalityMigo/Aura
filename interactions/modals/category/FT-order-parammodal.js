@@ -234,7 +234,7 @@ module.exports = {
                         const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + targetWallet)
                         const price = userInfoCall.data.displayPrice / 10 ** 18
 
-                        if ((parseFloat(price) < parseFloat(max) && parseFloat(price) > parseFloat(min)) || (parseFloat(price) < parseFloat(max) && min == "") || (parseFloat(price) > parseFloat(min) && max == "") || (max == "" && min == "")) {
+                        if ((parseFloat(price) <= parseFloat(max) && parseFloat(price) >= parseFloat(min)) || (parseFloat(price) <= parseFloat(max) && min == "") || (parseFloat(price) >= parseFloat(min) && max == "") || (max == "" && min == "")) {
 
 
                             let taskEmbed = interaction.message.embeds[0].data

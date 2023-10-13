@@ -80,6 +80,7 @@ async function getReceipt(txn) {
 
 async function orderHandler(subjectAddress, taskList, transaction) {
 
+    // On attend que le receipt soit dispo
     await addTimeout(2)
 
 

@@ -47,7 +47,6 @@ jspm_packages/
 zzzz.json
 contracts/friendtech/lastid.json
 contracts/friendtech/newuser.json
-contracts/friendtech/ordertargets.json
 
 # Database
 data/rcadatabase.sqlite

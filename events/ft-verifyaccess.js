@@ -1,6 +1,8 @@
 const { adminsql, reportsql, sequelize, access_friendtech } = require('./database');
 const { EmbedBuilder } = require("discord.js");
 
+const axios = require("axios")
+
 const friendtechaccount = "0x87F9Ee054Dfcbfe0d459143A52Af81652e94173D"
 
 const guildId = '1108754348818845729';
@@ -15,8 +17,8 @@ async function interval_ftaccess(client) {
 
     try {
 
-        const guild = client.guilds.cache.get(guildId);
-        const channel = guild.channels.cache.get(logChannelUser);
+        const guild = await client.guilds.cache.get(guildId);
+        const channel = await guild.channels.cache.get(logChannelUser);
 
 
         let holdersTableAddress = []
@@ -87,7 +89,7 @@ async function interval_ftaccess(client) {
         }
 
 
-
+        
         // On vérifie pour chaque user avec une sub active si ils sont dans le tableau
         for (const user of ft_access_list) {
 
@@ -101,7 +103,7 @@ async function interval_ftaccess(client) {
 
                 try {
 
-                    const member = guild.members.fetch(authorId);
+                    const member = await guild.members.fetch(authorId);
 
                     if (!member.roles.cache.has(ffrole)) {
 
@@ -119,9 +121,8 @@ async function interval_ftaccess(client) {
 
                         const memberEmbed = new EmbedBuilder().setColor("#060A8F")
                             .setTitle("Aura Analytics")
-                            .setDescription("Hey " + authorName + ", we hope you are doing great.\n\nYour access to Aura has been revoked after you sold the access key on Friend.Tech.\n\nWe'd like to thank you for your support and hope to see you soon. Feel free to give us feedbacks [here](https://hzzmtzmuh0y.typeform.com/to/H3zgiFPj).\n\nHave a nice day !")
+                            .setDescription("Hey " + authorName + ", we hope you are doing great 💫.\n\nYour access to Aura has been revoked after you sold the access key on Friend.Tech.\n\nWe'd like to thank you for your support and hope to see you soon. Feel free to give us feedbacks [here](https://hzzmtzmuh0y.typeform.com/to/H3zgiFPj).\n\nHave a nice day !")
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                            .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
@@ -152,7 +153,9 @@ async function interval_ftaccess(client) {
                     }
 
                 } catch (error) {
+
                     console.log("Erreur lors de la verif du role du user : " + authorId)
+                    console.log(error.stack)
                 }
             }
         }
@@ -168,6 +171,7 @@ async function interval_ftaccess(client) {
 
     } catch (error) {
 
+        console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
         //On envoi une notif
         const botAdmins = adminsql.findOne({ where: { botId: botId } })
@@ -210,7 +214,6 @@ async function interval_ftaccess(client) {
 
 
 
-        console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
         const reduceText = require("../../../functions/reducetext")
         const roleTag = "1121510423687090186"

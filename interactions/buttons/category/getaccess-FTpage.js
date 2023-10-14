@@ -90,24 +90,7 @@ module.exports = {
 
                 const supply = await shareContract.methods.sharesBalance(friendtechaccount, userAddress).call();
 
-                if (parseInt(supply) <= 0) {
-
-
-                    const walletManager = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("Get Access")
-                        .setDescription("Our verification system didn't find any `@Vitalitymigo` key in the Friend.Tech account you provided. Please try again using the twitter that owns the key. If you need any help, feel free to open a ticket")
-                        .setTimestamp()
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                    await interaction.editReply({ embeds: [walletManager], ephemeral: true });
-
-                    isAlreadyAnswer = true
-
-
-
-
-                } else {
+                if (parseInt(supply) > 0) {
 
                     const roleId1 = '1108761632928182424'; // Remplacez par l'ID de votre rôle
                     const role1 = interaction.guild.roles.cache.get(roleId1);
@@ -162,6 +145,19 @@ module.exports = {
                 channel.send({ embeds: [updateEmbed] });
 
 
+
+                } else {
+
+                    const walletManager = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Get Access")
+                    .setDescription("Our verification system didn't find any `@Vitalitymigo` key in the Friend.Tech account you provided. Please try again using the twitter that owns the key. If you need any help, feel free to open a ticket")
+                    .setTimestamp()
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                await interaction.editReply({ embeds: [walletManager], ephemeral: true });
+
+                  
 
                 }
 

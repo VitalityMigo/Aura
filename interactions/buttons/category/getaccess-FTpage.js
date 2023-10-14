@@ -122,16 +122,15 @@ module.exports = {
 
 
 
-                        const updateEmbed = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle("Friend.Tech User Leaved")
-                            .setDescription("A Friend Tech user just leaved Aura. Here are is infos:\n\nName: `" + authorName + "`\nAddress: `" + userAddress + "`")
-                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                            .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
-                            .setTimestamp()
-                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                        const walletManager2 = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("New Friend.Tech User 🐇")
+                        .setDescription("A new Friend.Tech user has joined Aura. Here are is infos:\n\nName: `" + authorName + "`\nAddress: `" + userAddress + "`")
+                        .setTimestamp()
+                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                    await channel.send({ embeds: [walletManager2] });
 
-                        channel.send({ embeds: [updateEmbed] });
 
 
 

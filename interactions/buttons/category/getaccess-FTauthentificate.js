@@ -209,9 +209,10 @@ module.exports = {
 
 
                                 const walletManager2 = new EmbedBuilder().setColor("#060A8F")
-                                    .setTitle("New Friend.Tech User")
+                                    .setTitle("New Friend.Tech User 🐇")
                                     .setDescription("A new Friend.Tech user has joined Aura. Here are is infos:\n\nName: `" + authorName + "`\nAddress: `" + userAddress + "`")
                                     .setTimestamp()
+                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
                                 await channel.send({ embeds: [walletManager2] });

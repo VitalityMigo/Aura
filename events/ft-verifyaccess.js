@@ -131,7 +131,7 @@ async function interval_ftaccess(client) {
 
 
                         const updateEmbed = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle("Friend.Tech User Leaved")
+                            .setTitle("Friend.Tech User Leaved 🐇")
                             .setDescription("A Friend Tech user just leaved Aura. Here are is infos:\n\nName: `" + authorName + "`\nAddress: `" + address + "`")
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })

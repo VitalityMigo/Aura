@@ -4,10 +4,10 @@ const reduceText = require("./reducetext")
 
 async function formatHoldersData(userAddress, price, shareSupply) {
 
+    let holdersFormattedEmbeds = ""
 
     try {
 
-        let holdersFormattedEmbeds = ""
 
         const holderInfoCall = await axios.get(`https://prod-api.kosetto.com/users/${userAddress}/token/holders`, {
             timeout: 5000, // Timeout de 6 secondes
@@ -71,10 +71,10 @@ async function formatHoldersData(userAddress, price, shareSupply) {
 
 async function formatTradesData(userAddress) {
 
+    let tradersFormatted = ""
 
     try {
 
-        let tradersFormatted = ""
 
         // trade de l'auteur
         const tradeInfoCall = await axios.get(" https://prod-api.kosetto.com/users/" + userAddress + "/trade-activity", {

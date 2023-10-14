@@ -68,7 +68,7 @@ module.exports = {
             let member = interaction.member;
             let botId = interaction.applicationId
 
-            
+
             try {
 
                 const botAdmins = await adminsql.findOne({ where: { botId: botId } })
@@ -80,7 +80,7 @@ module.exports = {
                 let communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
                 let botPowerStatut = communityRolePerms.dataValues.actualPower
                 let communityStatut = communityRolePerms.dataValues.statut
-					accessTier = communityRolePerms.dataValues.accessTier
+                accessTier = communityRolePerms.dataValues.accessTier
 
 
 
@@ -145,13 +145,18 @@ module.exports = {
                                         .setLabel('F&F (Beta)')
                                         .setStyle(3),
                                     new ButtonBuilder()
+                                        .setCustomId('getaccessFTech-button')
+                                        .setLabel('Friend.Tech')
+                                        .setStyle(3),
+                                    new ButtonBuilder()
                                         .setCustomId('getaccess1monthsubconfirm-button')
                                         .setLabel('Verify')
                                         .setStyle(1),
-                                    new ButtonBuilder()
-                                        .setCustomId('getaccesssubstatut-button')
-                                        .setLabel('Sub. Status')
-                                        .setStyle(1),
+                                    // new ButtonBuilder()
+                                    //     .setCustomId('getaccesssubstatut-button')
+                                    //     .setLabel('Sub. Status')
+                                    //     .setStyle(1),
+
                                     //     new ButtonBuilder()
                                     //     .setCustomId('getaccess1monthsubverify-button')
                                     //     .setLabel('verify wallet')

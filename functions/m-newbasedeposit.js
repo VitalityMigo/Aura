@@ -218,8 +218,7 @@ async function newFTDeposit(obj) {
                     displayPrice = price / 10 ** 18
 
 
-                    const balance = (await web3BaseUnifra.eth.getBalance(userAddress)) / 10 ** 18
-                    const userBalance = balance + value
+                    const userBalance = (await web3BaseUnifra.eth.getBalance(userAddress)) / 10 ** 18
 
                     const bridgeInfosFormatted = "Amount: " + parseFloat(value).toFixed(4) + "Ξ\nNew balance:" + parseFloat(userBalance).toFixed(4) + "Ξ"
 

@@ -16,6 +16,7 @@ const intervalSubDaily = require('./intervalsubdaily')
 const intervalcleandatabase = require('./intervalcleandatabase')
 
 const executeNewVerified = require('./monitor-verifiedcontracts')
+const interval_ftaccess = require("./ft-verifyaccess")
 
 const schedule = require('node-schedule');
 
@@ -110,6 +111,14 @@ module.exports = {
             //     await executeNewVerified()
 
             // }, 120000);
+
+
+            ////////////////////////////////////////////////////////////////////////////////////
+
+            ////// Verification FT User Role //////
+
+
+            interval_ftaccess
 
 
             ////////////////////////////////////////////////////////////////////////////////////

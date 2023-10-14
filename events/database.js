@@ -1010,6 +1010,43 @@ const order_friendTech = sequelize.define('order_friendTech', {
 });
 
 
+//Access
+const access_friendtech = sequelize.define('access_friendtech', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    serverId: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    twitterUsername: {
+        type: Sequelize.STRING,
+    },
+    friendtech_address: {
+        type: Sequelize.STRING,
+    },
+    active: {
+        type: Sequelize.STRING,
+    },
+    user_key: {
+        type: Sequelize.STRING,
+    },
+    timestamp: {
+        type: Sequelize.STRING,
+    },
+   
+});
+
+
 
 
 
@@ -1038,6 +1075,7 @@ sniper_friendTech.sync()
 exe_friendTech.sync()
 infra_friendTech.sync()
 order_friendTech.sync()
+access_friendtech.sync()
 
 
 //Export the tables informations
@@ -1065,6 +1103,7 @@ module.exports = {
     infra_friendTech,
     sniper_friendTech,
     order_friendTech,
+    access_friendtech,
     Op,
 }
 

@@ -52,137 +52,126 @@ module.exports = {
             if (ft_access_list == null) {
 
 
-            const walletAddress = new ModalBuilder()
-                .setCustomId('getaccessFTtwittermodal')
-                .setTitle('Friend.Tech Authentification');
+                const walletAddress = new ModalBuilder()
+                    .setCustomId('getaccessFTtwittermodal')
+                    .setTitle('Friend.Tech Authentification');
 
-            // Add components to modal
+                // Add components to modal
 
-            // Create the text input components
-            const txnHash = new TextInputBuilder()
-                .setCustomId('getaccessFTtwittermodal-R1')
-                .setLabel("Friend.Tech Twitter username")
-                .setPlaceholder("The username of the twitter linked to your Friend.Tech")
-                .setStyle(TextInputStyle.Short)
-                .setMaxLength(100);
-
-
+                // Create the text input components
+                const txnHash = new TextInputBuilder()
+                    .setCustomId('getaccessFTtwittermodal-R1')
+                    .setLabel("Friend.Tech Twitter username")
+                    .setPlaceholder("The username of the twitter linked to your Friend.Tech")
+                    .setStyle(TextInputStyle.Short)
+                    .setMaxLength(100);
 
 
-            // An action row only holds one text input,
-            // so you need one action row per text input.
-            const zeroActionRowSetProfile = new ActionRowBuilder().addComponents(txnHash);
-
-            // Add inputs to the modal
-            walletAddress.addComponents(zeroActionRowSetProfile)
-
-            // Show the modal to the user
-            await interaction.showModal(walletAddress);
-
-        } else {
-
-            await interaction.deferReply({ ephemeral: true })
-
-            if (ft_access_list.dataValues.active == "false") {
-
-                const userAddress = ft_access_list.dataValues.friendtech_address
 
 
-                const supply = await shareContract.methods.sharesBalance(friendtechaccount, userAddress).call();
+                // An action row only holds one text input,
+                // so you need one action row per text input.
+                const zeroActionRowSetProfile = new ActionRowBuilder().addComponents(txnHash);
 
-                if (parseInt(supply) > 0) {
+                // Add inputs to the modal
+                walletAddress.addComponents(zeroActionRowSetProfile)
 
-                    const roleId1 = '1108761632928182424'; // Remplacez par l'ID de votre rôle
-                    const role1 = interaction.guild.roles.cache.get(roleId1);
-                    interaction.member.roles.add(role1)
+                // Show the modal to the user
+                await interaction.showModal(walletAddress);
 
-                    const roleId2 = '1154424757299724459'; // Remplacez par l'ID de votre rôle
-                    const role2 = interaction.guild.roles.cache.get(roleId2);
-                    interaction.member.roles.add(role2)
+            } else {
+
+                await interaction.deferReply({ ephemeral: true })
+
+                if (ft_access_list.dataValues.active == "false") {
+
+                    const userAddress = ft_access_list.dataValues.friendtech_address
 
 
+                    const supply = await shareContract.methods.sharesBalance(friendtechaccount, userAddress).call();
+
+                    if (parseInt(supply) > 0) {
+
+                        const roleId1 = '1108761632928182424'; // Remplacez par l'ID de votre rôle
+                        const role1 = interaction.guild.roles.cache.get(roleId1);
+                        interaction.member.roles.add(role1)
+
+                        const roleId2 = '1154424757299724459'; // Remplacez par l'ID de votre rôle
+                        const role2 = interaction.guild.roles.cache.get(roleId2);
+                        interaction.member.roles.add(role2)
+
+
+
+
+                        const walletManager = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Get Access")
+                            .setDescription("Welcome to Aura and to the Friend Tech Council " + authorName + " !\n\nWe'd like to thank you for your trust and hope you'll profit from Aura. Feel free to ask any question to our team if you need.\n\nYour member and Friend.Tech role have been granted 👑.")
+                            .setTimestamp()
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                        await interaction.editReply({ embeds: [walletManager], ephemeral: true });
+
+
+                        //On trouve la transaction qui vient d'être faite
+                        await access_friendtech.update({ active: "true" }, { where: { authorId: authorId } })
+
+
+
+                        const guild = interaction.client.guilds.cache.get("1108754348818845729");
+                        const channel = guild.channels.cache.get("1121482045839908945");
+
+
+
+                        const updateEmbed = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Friend.Tech User Leaved")
+                            .setDescription("A Friend Tech user just leaved Aura. Here are is infos:\n\nName: `" + authorName + "`\nAddress: `" + userAddress + "`")
+                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                            .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+                            .setTimestamp()
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+                        channel.send({ embeds: [updateEmbed] });
+
+
+
+                    } else {
+
+                        const walletManager = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Get Access")
+                            .setDescription("Our verification system didn't find any `@Vitalitymigo` key in the Friend.Tech account you provided. Please try again using the twitter that owns the key. If you need any help, feel free to open a ticket")
+                            .setTimestamp()
+                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                        await interaction.editReply({ embeds: [walletManager], ephemeral: true });
+
+
+
+                    }
+
+
+
+                } else {
 
 
                     const walletManager = new EmbedBuilder().setColor("#060A8F")
                         .setTitle("Get Access")
-                        .setDescription("Welcome to Aura and to the Friend Tech Council " + authorName + " !\n\nWe'd like to thank you for your trust and hope you'll profit from Aura. Feel free to ask any question to our team if you need.\n\nYour member and Friend.Tech role have been granted 👑.")
+                        .setDescription("You are already verified as a Friend.Tech member of Aura. You can already use the full bot features. If you need help, feel free to ask to our team.")
                         .setTimestamp()
+                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
                     await interaction.editReply({ embeds: [walletManager], ephemeral: true });
 
 
 
-                    const timeStamp = Math.round(Date.now() / 1000)
-
-                    await access_friendtech.create({
-
-                        serverId: serverId.toString(),
-                        authorId: authorId.toString(),
-                        authorName: authorName.toString(),
-                        friendtech_address: userAddress,
-                        twitterUsername: username.toString(),
-                        user_key: randomKey,
-                        active: "true",
-                        timetamp: timeStamp.toString()
-                    })
-
-
-                    const guild = interaction.client.guilds.cache.get("1108754348818845729");
-                    const channel = guild.channels.cache.get("1121482045839908945");
-                    
-                    
-
-                    const updateEmbed = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Friend.Tech User Leaved")
-                    .setDescription("A Friend Tech user just leaved Aura. Here are is infos:\n\nName: `" + authorName + "`\nAddress: `" + userAddress + "`")
-                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                    .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
-                    .setTimestamp()
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-
-                channel.send({ embeds: [updateEmbed] });
-
-
-
-                } else {
-
-                    const walletManager = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Get Access")
-                    .setDescription("Our verification system didn't find any `@Vitalitymigo` key in the Friend.Tech account you provided. Please try again using the twitter that owns the key. If you need any help, feel free to open a ticket")
-                    .setTimestamp()
-                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                await interaction.editReply({ embeds: [walletManager], ephemeral: true });
-
-                  
 
                 }
 
 
 
-            } else {
-
-
-                const walletManager = new EmbedBuilder().setColor("#060A8F")
-                .setTitle("Get Access")
-                .setDescription("You are already verified as a Friend.Tech member of Aura. You can already use the full bot features. If you need help, feel free to ask to our team.")
-                .setTimestamp()
-                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-            await interaction.editReply({ embeds: [walletManager], ephemeral: true });
-
-
-
-
             }
-
-
-
-        }
 
 
 

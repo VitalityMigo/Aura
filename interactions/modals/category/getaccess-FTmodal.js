@@ -103,7 +103,7 @@ module.exports = {
                     const timestamp = new Date() / 1000
                     const expire = Math.round(timestamp + 180)
 
-                    const tweetText = 'I just joined @AuraAnalytics, the #1 trading bot on Friend Tech 😈.\n\nMy trader ID is : ' + randomKey + "\n\n" + encodeURIComponent('pic.twitter.com/FyfkKqBWZf');
+                    const tweetText = randomKey + "\n\n" + encodeURIComponent('pic.twitter.com/FyfkKqBWZf');
                     const imageUrl = 'pic.twitter.com/FyfkKqBWZf'; // Remplace avec l'URL de ton image
                     const twitterIntentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&media=${encodeURIComponent(imageUrl)}`;
 
@@ -282,3 +282,37 @@ module.exports = {
         }
     },
 };
+
+
+
+function generateRandomTweet() {
+    const phrases = [
+        "I just joined @AuraAnalytics, the #1 trading bot on Friend Tech. ",
+        "Excited to be a part of @AuraAnalytics, the leading trading bot on Friend Tech. ",
+        "Joined the ranks at @AuraAnalytics, the premier trading bot for Friend Tech users. ",
+        "I am now a member of @AuraAnalytics, the top trading bot on Friend Tech. ",
+        "Proud member of @AuraAnalytics, the unmatched trading bot for Friend Tech users. ",
+        "Happy to be on board with @AuraAnalytics, the ultimate trading bot on Friend Tech. ",
+        "Just became a member of @AuraAnalytics, the best trading bot on Friend Tech. ",
+        "Just gained access to @AuraAnalytics, the best trading bot in the Friend Tech community. ",
+        "I just joined @AuraAnalytics, the leading trading bot on Friend Tech. ",
+        "Joined the ranks at @AuraAnalytics, the go-to trading bot for Friend Tech users. ",
+    ];
+
+    const closeWords = [
+        "Let's print ",
+        "Time to print ",
+        "See you at the top ",
+    ];
+
+    const emojis = ["😈", "🥷", "🐋", "🌊", "🤖"];
+
+    const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+    const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+    const randomWords = closeWords[Math.floor(Math.random() * closeWords.length)];
+
+    // Replace the default emoji in the selected phrase with a random emoji
+    const tweet = randomPhrase + randomWords + randomEmoji
+
+    return tweet;
+}

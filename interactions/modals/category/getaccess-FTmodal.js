@@ -98,7 +98,7 @@ module.exports = {
                     const walletUser = user.address
 
 
-                    const randomKey = "Aura-" + generateRandomTweet()
+                    const randomKey = generateRandomTweet()
 
                     const timestamp = new Date() / 1000
                     const expire = Math.round(timestamp + 180)

@@ -37,8 +37,6 @@ module.exports = {
         let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
         let serverId = interaction.member.guild.id
 
-        await interaction.deferReply({ ephemeral: true })
-
         try {
 
             //Checkpoint
@@ -83,6 +81,7 @@ module.exports = {
 
         } else {
 
+            await interaction.deferReply({ ephemeral: true })
 
             if (ft_access_list.dataValues.active == "false") {
 
@@ -193,6 +192,7 @@ module.exports = {
 
         } catch (error) {
 
+            await interaction.deferReply({ ephemeral: true })
 
             console.log("// Error - sent in report ❌")
 

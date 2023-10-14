@@ -117,8 +117,10 @@ module.exports = {
 
             ////// Verification FT User Role //////
 
-
-            interval_ftaccess
+            //Checker constant
+            const interval_FTverify = schedule.scheduleJob('0 * * * *', function () {
+                interval_ftaccess(client);
+            });
 
 
             ////////////////////////////////////////////////////////////////////////////////////
@@ -127,7 +129,7 @@ module.exports = {
 
             const web3Config = require("../config/web3config")
 
-            
+
 
 
 

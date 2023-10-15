@@ -67,8 +67,8 @@ setTimeout(() => {
 
 
     }
-
-     botGuild = client.guilds.cache.get(serverId);
+    
+    botGuild = client.guilds.cache.get(serverId);
     botChannel = botGuild.channels.cache.get(botChannelId);
 
 }, 4000);
@@ -82,7 +82,7 @@ async function FTSnipeUserExec(transaction) {
 
     try {
 
-        
+
         const gasPricePromise = web3BaseUnifra.eth.getGasPrice()
 
 
@@ -183,7 +183,7 @@ async function FTSnipeUserExec(transaction) {
                                         
                                         
                                         // On envoie
-                                      //  web3BaseBlast.eth.sendSignedTransaction(rawTransaction)
+                                        web3BaseBlast.eth.sendSignedTransaction(rawTransaction)
 
                                         task.hash = sendHash
                                         task.status = "true"
@@ -227,4 +227,3 @@ async function FTSnipeUserExec(transaction) {
 }
 
 module.exports = FTSnipeUserExec
-

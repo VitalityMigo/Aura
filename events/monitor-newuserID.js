@@ -21,7 +21,7 @@ async function main() {
                 saveUserToFile(userExists.data)
 
 
-                
+
                 userId++;
                 setLastUserId(userId)
 
@@ -43,7 +43,7 @@ async function main() {
 
         }
 
-        
+
 
     }
 }
@@ -123,30 +123,31 @@ async function saveUserToFile(userData) {
 
     if ((typeof twitterAudit.capital === 'number' && !isNaN(twitterAudit.capital)) && (typeof twitterAudit.data.follower === 'number' && !isNaN(twitterAudit.data.follower)) && (typeof twitterAudit.data.following === 'number' && !isNaN(twitterAudit.data.following))) {
 
-        const userObject = {
-            username: userData.twitterUsername,
-            name: userData.twitterName,
-            address: userData.address,
-            pfp: twitterAudit.data.pfpUrl.replace("_normal", ""),
-            score: twitterAudit.capital,
-            followers: twitterAudit.data.follower,
-            following: twitterAudit.data.following,
+        if (twitterAudit.data.follower >= 1000) {
+            const userObject = {
+                username: userData.twitterUsername,
+                name: userData.twitterName,
+                address: userData.address,
+                pfp: twitterAudit.data.pfpUrl.replace("_normal", ""),
+                score: twitterAudit.capital,
+                followers: twitterAudit.data.follower,
+                following: twitterAudit.data.following,
 
+            }
+
+            // Lisez le fichier JSON existant
+            let existingData = [];
+
+            if (fs.existsSync(newUsersFile)) {
+                const fileContent = fs.readFileSync(newUsersFile, 'utf8');
+                existingData = JSON.parse(fileContent);
+            }
+
+            // Ajoutez le nouvel utilisateur à la liste existante
+            existingData.push(userObject);
+
+            // Écrivez le fichier JSON avec la nouvelle liste
+            fs.writeFileSync(newUsersFile, JSON.stringify(existingData, null, 2));
         }
-
-        // Lisez le fichier JSON existant
-        let existingData = [];
-
-        if (fs.existsSync(newUsersFile)) {
-            const fileContent = fs.readFileSync(newUsersFile, 'utf8');
-            existingData = JSON.parse(fileContent);
-        }
-
-        // Ajoutez le nouvel utilisateur à la liste existante
-        existingData.push(userObject);
-
-        // Écrivez le fichier JSON avec la nouvelle liste
-        fs.writeFileSync(newUsersFile, JSON.stringify(existingData, null, 2));
-
     }
 }

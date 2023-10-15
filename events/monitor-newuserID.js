@@ -123,7 +123,6 @@ async function saveUserToFile(userData) {
 
     if ((typeof twitterAudit.capital === 'number' && !isNaN(twitterAudit.capital)) && (typeof twitterAudit.data.follower === 'number' && !isNaN(twitterAudit.data.follower)) && (typeof twitterAudit.data.following === 'number' && !isNaN(twitterAudit.data.following))) {
 
-        if ( twitterAudit.data.follower >= 1000) {
         const userObject = {
             username: userData.twitterUsername,
             name: userData.twitterName,
@@ -148,6 +147,6 @@ async function saveUserToFile(userData) {
 
         // Écrivez le fichier JSON avec la nouvelle liste
         fs.writeFileSync(newUsersFile, JSON.stringify(existingData, null, 2));
-    }
+
     }
 }

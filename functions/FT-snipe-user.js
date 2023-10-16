@@ -18,7 +18,7 @@ const shareContractAddress = "0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4"
 const shareContract = new web3BaseBlast.eth.Contract(shareContractAbi, shareContractAddress);
 const baseChainId = "8453"
 
-const newUserFile = "../contracts/friendtech/newuser.json"
+const newUserFile = "contracts/friendtech/newuser.json"
 
 
 const addTimeout = require("./addtimeout")

@@ -92,7 +92,7 @@ async function FTSnipeUserExec(transaction) {
 
         if (inputAddress == transaction.from.toLowerCase()) {
 
-            const cachedTUsersFile = await fs.readFile(newUserFile, 'utf8');
+            const cachedTUsersFile = fs.readFileSync(newUserFile, 'utf8');
             const cachedUsers = JSON.parse(cachedTUsersFile)
             const user = cachedUsers.find((object) => object.address.toLowerCase() == inputAddress.toLowerCase());
 

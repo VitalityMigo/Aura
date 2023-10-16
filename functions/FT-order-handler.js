@@ -96,6 +96,7 @@ async function orderHandler(subjectAddress, taskList, transaction) {
 
             let action = "📈 Buy Order"
             if (task.type == "sell") { action = "📉 Sell Order" }
+            else if (task.type == "auto_sell") { action = "🤖 Auto Sell Order" }
 
 
             const member = await botGuild.members.fetch(task.authorId);
@@ -123,7 +124,7 @@ async function orderHandler(subjectAddress, taskList, transaction) {
                         textFormatted = "**Bought** `" + task.amount + "` **key(s) for** `" + totalValue + "Ξ`"
                     } else {
                         const sellPrice = getSellPriceAfterFee(task.supply, parseInt(task.amount))
-                     
+
                         textFormatted = "**Sold** `" + task.amount + "` **key(s) for** `" + sellPrice / 10 ** 18 + "Ξ`"
 
                     }
@@ -170,18 +171,18 @@ async function orderHandler(subjectAddress, taskList, transaction) {
                     try {
 
                         removeObjectJSON(task.randomId)
-            
+
                     } catch (error) { }
-                
+
 
                 } else {
 
-                    
+
                     let textFormatted = ""
                     if (task.type == "buy") {
                         textFormatted = "**Failed to buy** `" + task.amount + "` **key(s) for** `" + task.value / 10 ** 18 + "Ξ`"
                     } else {
-            
+
                         const sellPrice = getSellPriceAfterFee(task.supply, parseInt(task.amount))
 
                         textFormatted = "**Failed to sell** `" + task.amount + "` **key(s) for** `" + sellPrice / 10 ** 18 + "Ξ`"
@@ -214,7 +215,7 @@ async function orderHandler(subjectAddress, taskList, transaction) {
 
                     await botChannel.send("<@&1121510423687090186> Retrying Order " + task.authorName + " at [here](https://basescan.org/tx/" + task.hash + ")");
 
-                   // orderExecFT(transaction)
+                    // orderExecFT(transaction)
 
                 }
 
@@ -261,9 +262,9 @@ async function orderHandler(subjectAddress, taskList, transaction) {
                 try {
 
                     removeObjectJSON(task.randomId)
-        
+
                 } catch (error) { }
-            
+
 
             }
 
@@ -273,11 +274,11 @@ async function orderHandler(subjectAddress, taskList, transaction) {
 
         }
 
-       
+
 
     }
 
-   
+
 
 }
 
@@ -297,7 +298,7 @@ function removeObjectJSON(customId) {
 
         // Écrire le fichier JSON mis à jour
         fs.writeFileSync(orderTargets, JSON.stringify(data, null, 2));
-        
+
         console.log('Objets avec customId égal à 0 supprimés avec succès.');
     } catch (error) {
         console.error('Erreur lors de la suppression des objets avec customId égal à 0 :', error);

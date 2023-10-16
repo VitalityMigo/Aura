@@ -1,13 +1,14 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_friendTech, sequelize } = require('../events/database');
+const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_friendTech, order_friendTech, sequelize } = require('../events/database');
 
 const fs = require("fs")
 
 const { web3Base1RPC, web3BaseUnifra } = require('../config/web3config');
 
 const userJSON = '../contracts/friendtech/newuser.json';
+const targetsJSON = './contracts/friendtech/ordertargets.json';
 const addTimeout = require("./addtimeout")
-
+const generateRandomString = require("./randomkey")
 
 let serverId = ""
 let botChannel = ""
@@ -39,7 +40,7 @@ setTimeout(() => {
 
     }
 
-     botGuild = client.guilds.cache.get(serverId);
+    botGuild = client.guilds.cache.get(serverId);
     botChannel = botGuild.channels.cache.get(botChannelId);
 
 }, 4000);
@@ -137,6 +138,54 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
 
 
+                    let isAutoSell = false
+                    // On enregistre le call dans la DB
+                    if (task.stopLoss != null || task.takeProfit != null) {
+
+
+
+                        let stopLoss = null
+                        let takeProfit = null
+                        if (task.stopLoss != null) { stopLoss = parseFloat((parseFloat(task.value / 10 ** 18) / parseInt(task.amount)) * (1 + task.stopLoss / 100)) }
+                        if (task.takeProfit != null) { takeProfit = parseFloat((parseFloat(task.value / 10 ** 18) / parseInt(task.amount)) * (1 + task.takeProfit / 100)) }
+
+                        try {
+
+                            const key = generateRandomString(20)
+
+                            //On enregistre le call
+                            order_friendTech.create({
+                                authorName: authorName,
+                                authorId: authorId,
+                                type: "auto_sell",
+                                target: subjectUsername,
+                                targetWallet: subjectAddress.toLowerCase(),
+                                amount: task.amount.toString(),
+                                repeat: "1",
+                                min_key_price: stopLoss,
+                                max_key_price: takeProfit,
+                                min_value: parseFloat(task.value / 10 ** 18) / parseInt(task.amount),
+                                simulation: "false",
+                                walletAddress: task.walletAddress,
+                                privateKey: task.walletPk,
+                                active: "true",
+                                randomId: key,
+                                created: task.randomId,
+                                taskNb: "None",
+                            })
+
+                            pushAddress(subjectAddress.toLowerCase(), key)
+                            isAutoSell = true
+
+                        } catch (error) {
+
+                            await botChannel.send("<@&1121510423687090186> Erreur durant le set du Auto Sell de " + task.authorName + " : \n" + error.stack);
+
+                        }
+
+                    }
+
+
                     if (task.taskCount != null) {
 
 
@@ -164,6 +213,16 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
                     }
 
+                    if (isAutoSell == true) {
+
+                        snipeMessage.addFields(
+                            { name: " ", value: "", inline: false },
+                            { name: " ", value: "Auto Sell : `Activated ✅`", inline: false },
+                            { name: " ", value: "", inline: false },
+
+                        )
+
+                    }
 
                     if (isDone == true) {
 
@@ -205,7 +264,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
                             { name: " ", value: textFormatted, inline: false },
                             { name: " ", value: " ", inline: false },
                             { name: "Transaction hash:", value: "```" + task.hash + "```Transaction details [here](https://basescan.org/tx/" + task.hash + ")", inline: false },
-                            { name: " ", value: " ", inline: false },
+
 
                         )
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -221,46 +280,50 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
             } else {
 
-                const textFormatted = "**Failed or succeeded to buy** `" + task.amount + "` **key(s) for** `" + task.value / 10 ** 18 + "Ξ`"
+                if (task.hash.startsWith("0x")) {
+
+                    const textFormatted = "**Failed or succeeded to buy** `" + task.amount + "` **key(s) for** `" + task.value / 10 ** 18 + "Ξ`"
 
 
-                const snipeMessageError = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Unknown Snipe Result")
-                    .setDescription(">>> Displaying your sniper task")
-                    .setThumbnail(subjectPfp)
-                    .setTimestamp()
-                    .addFields(
-                        { name: " ", value: " ", inline: false },
-                        { name: "Action", value: "`" + action + "`", inline: false },
-                        { name: " ", value: " ", inline: false },
-                        { name: "Target", value: "`" + subjectName + "`", inline: true },
-                        { name: "Task ID", value: "`" + task.taskNb + "`", inline: true },
-                        { name: " ", value: " ", inline: false },
-                        { name: " ", value: textFormatted, inline: false },
-                        { name: " ", value: " ", inline: false },
-                        { name: "Transaction hash:", value: "```" + task.hash + "```Transaction details [here](https://basescan.org/tx/" + task.hash + ")", inline: false },
-                        { name: " ", value: " ", inline: false },
-
-                    )
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                    const snipeMessageError = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Unknown Snipe Result")
+                        .setDescription(">>> Displaying your sniper task")
+                        .setThumbnail(subjectPfp)
+                        .setTimestamp()
+                        .addFields(
+                            { name: " ", value: " ", inline: false },
+                            { name: "Action", value: "`" + action + "`", inline: false },
+                            { name: " ", value: " ", inline: false },
+                            { name: "Target", value: "`" + subjectName + "`", inline: true },
+                            { name: "Task ID", value: "`" + task.taskNb + "`", inline: true },
+                            { name: " ", value: " ", inline: false },
+                            { name: " ", value: textFormatted, inline: false },
+                            { name: " ", value: " ", inline: false },
+                            { name: "Transaction hash:", value: "```" + task.hash + "```Transaction details [here](https://basescan.org/tx/" + task.hash + ")", inline: false },
+                            { name: " ", value: " ", inline: false },
+                            { name: " ", value: "*If you've set an auto sell for this snipe, please set it manually in order. Aura isn't setting the auto sell when the snipe result isn't known.*", inline: false },
 
 
-                if (parseInt(task.taskCount) > (parseInt(task.usage) + 1)) {
+                        )
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                    await sniper_friendTech.update({ usage: (parseInt(task.usage) + 1).toString(), }, { where: { authorId: task.authorId, randomId: task.randomId } })
+
+                    if (parseInt(task.taskCount) > (parseInt(task.usage) + 1)) {
+
+                        await sniper_friendTech.update({ usage: (parseInt(task.usage) + 1).toString(), }, { where: { authorId: task.authorId, randomId: task.randomId } })
 
 
-                } else {
+                    } else {
 
-                    await sniper_friendTech.destroy({ where: { authorId: task.authorId, randomId: task.randomId } })
+                        await sniper_friendTech.destroy({ where: { authorId: task.authorId, randomId: task.randomId } })
 
-                    isDone = true
+                        isDone = true
+                    }
+
+                    await member.send({ embeds: [snipeMessageError] });
+                    await botChannel.send("<@&1121510423687090186> Unknown Snipe " + task.authorName + " at [here](https://basescan.org/tx/" + task.hash + ")");
+
                 }
-
-                await member.send({ embeds: [snipeMessageError] });
-                await botChannel.send("<@&1121510423687090186> Unknown Snipe " + task.authorName + " at [here](https://basescan.org/tx/" + task.hash + ")");
-
-
 
             }
 
@@ -302,3 +365,35 @@ function deleteInArray(subjectAddress) {
     }
 
 }
+
+
+
+function pushAddress(address, customId) {
+    let existingData = []
+    if (fs.existsSync(targetsJSON)) {
+        const fileContent = fs.readFileSync(targetsJSON, 'utf8');
+        existingData = JSON.parse(fileContent);
+    }
+
+    if (existingData.some(item => item.customId === customId)) {
+        const indexToRemove = existingData.findIndex(item => item.customId == customId);
+        if (indexToRemove !== -1) {
+            // L'objet a été trouvé, supprimez-le
+            existingData.splice(indexToRemove, 1);
+        }
+    }
+    // Ajoutez le nouvel utilisateur à la liste existante
+
+
+    let obj = {
+        address: address.toLowerCase(),
+        customId: customId
+    }
+    existingData.push(obj);
+
+
+    // Écrivez le fichier JSON avec la nouvelle liste
+    fs.writeFileSync(targetsJSON, JSON.stringify(existingData, null, 2));
+}
+
+

@@ -68,7 +68,8 @@ module.exports = {
                 let activeOrderTasks = 0
 
 
-                const userTasks = await order_friendTech.findAll({ where: { authorId: authorId } })
+                const userTasksAll = await order_friendTech.findAll({ where: { authorId: authorId } })
+                const userTasks = userTasksAll.filter(obj => obj.dataValues.type != "auto_sell")
 
                 if (userTasks.length > 0) {
 

@@ -12,7 +12,7 @@
 
 const { ButtonInteraction } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
+const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_friendTech, order_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 
@@ -624,7 +624,47 @@ module.exports = {
                     await interaction.showModal(passwordAdminDashboard);
 
 
-                }
+                } else if (action == "autosell") {
+
+
+                    const passwordAdminDashboard = new ModalBuilder()
+                        .setCustomId('modal-friendtechtasksinfra-sniper-param-autosell@' + uniqueId)
+                        .setTitle('Set Auto Sell');
+
+                    // Add components to modal
+
+                    // Create the text input components
+                    const channel = new TextInputBuilder()
+                        .setCustomId('modal-friendtechtasksinfra-sniper-param-autosell@' + uniqueId + 'R1')
+                        .setLabel("Stop Loss")
+                        .setPlaceholder("Percentage of decrease since purchase (e.g. -50% or -50)")
+                        .setStyle(TextInputStyle.Short)
+                        .setRequired(false)
+
+                    const channel2 = new TextInputBuilder()
+                        .setCustomId('modal-friendtechtasksinfra-sniper-param-autosell@' + uniqueId + 'R2')
+                        .setLabel("Take Profit")
+                        .setPlaceholder("Percentage of increase since purchase (e.g. +50% or 50)")
+                        .setStyle(TextInputStyle.Short)
+                        .setRequired(false)
+
+
+
+                    // An action row only holds one text input,
+                    // so you need one action row per text input.
+                    const firstActionRowSetProfile = new ActionRowBuilder().addComponents(channel);
+                    const firstActionRowSetProfile2 = new ActionRowBuilder().addComponents(channel2);
+
+
+                    // Add inputs to the modal
+                    passwordAdminDashboard.addComponents(firstActionRowSetProfile, firstActionRowSetProfile2)
+
+                    // Show the modal to the user
+                    await interaction.showModal(passwordAdminDashboard);
+
+
+
+                } 
 
 
 

@@ -18,6 +18,7 @@ const shareContractAddress = "0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4"
 const shareContract = new web3BaseBlast.eth.Contract(shareContractAbi, shareContractAddress);
 const baseChainId = "8453"
 
+const newUserFile = "../contracts/friendtech/newuser.json"
 
 
 const addTimeout = require("./addtimeout")
@@ -67,7 +68,7 @@ setTimeout(() => {
 
 
     }
-    
+
     botGuild = client.guilds.cache.get(serverId);
     botChannel = botGuild.channels.cache.get(botChannelId);
 
@@ -91,7 +92,8 @@ async function FTSnipeUserExec(transaction) {
 
         if (inputAddress == transaction.from.toLowerCase()) {
 
-            const cachedUsers = require("../contracts/friendtech/newuser.json")
+            const cachedTUsersFile = await fs.readFile(newUserFile, 'utf8');
+            const cachedUsers = JSON.parse(cachedTUsersFile)
             const user = cachedUsers.find((object) => object.address.toLowerCase() == inputAddress.toLowerCase());
 
             if (user) {
@@ -180,8 +182,8 @@ async function FTSnipeUserExec(transaction) {
                                         const sendHash = signedTx.transactionHash
 
 
-                                        
-                                        
+
+
                                         // On envoie
                                         web3BaseBlast.eth.sendSignedTransaction(rawTransaction)
 

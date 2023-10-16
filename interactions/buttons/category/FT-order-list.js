@@ -60,9 +60,10 @@ module.exports = {
                 const customId = interaction.customId
 
                 const desiredTaskNb = customId.substring(customId.length - 1)
-console.log(desiredTaskNb)
+
                 // On trouve la task
-                const userSnipeTasks = await order_friendTech.findAll({ where: { authorId: authorId } })
+                const userSnipeTasksAll = await order_friendTech.findAll({ where: { authorId: authorId } })
+                const userSnipeTasks = userSnipeTasksAll.filter(obj => obj.dataValues.type != "auto_sell")
                 const snipeTasksCount = userSnipeTasks.length
                 const taskIndex = desiredTaskNb - 1
 

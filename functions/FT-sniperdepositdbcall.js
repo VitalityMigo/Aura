@@ -71,6 +71,9 @@ async function sniperDepositTaskList(options) {
             usage: task.dataValues.usage,
             taskNb: task.dataValues.taskNb,
             randomId: task.dataValues.randomId,
+            stopLoss: task.dataValues.stop_loss,
+            takeProfit: task.dataValues.take_profit,
+
         }
         
         taskTable.push(obj)

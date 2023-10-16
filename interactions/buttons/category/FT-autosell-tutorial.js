@@ -16,35 +16,8 @@ const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_fr
 const moment = require('moment');
 
 
-
-const buttonsRow = new ActionRowBuilder()
-    .addComponents(
-     
-        new ButtonBuilder()
-            .setCustomId('friendtechtasksinfra-snipercreatenewuser-button')
-            .setLabel('👼🏽 New User Task')
-            .setStyle(3),
-        new ButtonBuilder()
-            .setCustomId('friendtechtasksinfra-sniperlistnewdeposit-button')
-            .setLabel('📥 New Deposit Task')
-            .setStyle(3),
-        new ButtonBuilder()
-            .setCustomId('friendtechtasksinfra-sniperlist-button-1')
-            .setLabel('🧾 List Tasks')
-            .setStyle(1),
-            new ButtonBuilder()
-            .setCustomId('friendtechtasksinfra-sniperautoselllist-button-1')
-            .setLabel('🤖 Auto Sells')
-            .setStyle(1),
-        new ButtonBuilder()
-            .setCustomId('friendtechtasksinfra-mainmenu-button')
-            .setLabel('🏠')
-            .setStyle(1),
-    );
-
-
 module.exports = {
-    id: 'friendtechtasksinfra-snipermenu-button',
+    id: 'friendtechtasksinfra-autoselltutorial-button',
 
     async execute(interaction) {
         if (!(interaction instanceof ButtonInteraction)) return;
@@ -67,41 +40,40 @@ module.exports = {
                 //Checkpoint
                 console.log("// Step 2 : Authorization - Executed ✅")
 
-                let sniperTasks = 0
-                let activeSniperTasks = 0
 
 
-                const userTasks = await sniper_friendTech.findAll({ where: { authorId: authorId } })
-
-                if (userTasks.length > 0) {
-
-                    activeSniperTasks = (userTasks.filter(obj => obj.dataValues.active == "true")).length
-                    sniperTasks = userTasks.length
 
 
-                }
 
 
-                const bigEmbed = new EmbedBuilder().setColor("#060A8F")
-                .setTitle("Friend.Tech Tasks")
-                .setDescription(">>> Displaying your Friend.Tech sniper tasks")
-                .setAuthor({ name: authorName, iconURL: userAvatar })
-                .addFields(
-                    { name: " ", value: " ", inline: false },
-                    { name: " ", value: "This panel allows you to create and display your Sniper Tasks.", inline: false },
-                    { name: " ", value: " ", inline: false },
-                    { name: "Select the method you'd like to use:\n\n", value: " ", inline: false },
-                    { name: " ", value: "\n\n**👼🏽 New Users**\nThis method allows you to snipe new Friend.Tech users as soon as they register. You can set a wide range of conditions to adapt the sniper to your needs.\n\n**📥 New Deposit**\nThis method allows you to snipe users who reload their Friend.Tech account the second their transaction leaves. Here too, you have a large number of parameters available.", inline: false },
-                    { name: " ", value: " ", inline: false },
-                    { name: " ", value: "**→** You currently have `" + activeSniperTasks + "` active sniper tasks out of `" + sniperTasks + "`.", inline: false },
+                const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Friend.Tech Auto Sell Tutorial")
+                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setDescription(">>> The Friend.Tech order task has several easy-to-use features.")
+                    .addFields(
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Status*", value: "Indicates whether the auto sell is active or not. If it is active, the auto sell runs within the set conditions. If not, it is not monitoring. You can't modify the status of auto sells.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Target*", value: "The Friend.Tech user to sell at a pre-defined price. You can't modify the target of auto sells.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Amount*", value: "The number of tokens to sell for this task. The bot will always try to sell the amount sniped. You can't modify the amount of auto sells", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Total Task*", value: "The number of sell the bot execute before stopping. For auto sells, it's defaulted to 1 and can't be modified.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Stop Loss*", value: "The price at which the bot will sell the sniped key if it is falls below it. You can't modify the stop loss of auto sells.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Buy/Sell Above*", value: "The price at which the bot will sell the sniped key if it breaks it. You can't modify the take profit of auto sells", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Created By*", value: 'Indicate which sniper task created this auto sell. If the task has been deleted, it will appear as "Deleted Task"', inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: " ", value: "*⚠️ Auto Sells are generated automatically by previously executed snipe tasks that had the Auto Sell option. You can't modify them but you can delete them and create a sell order instead for more personalization.*", inline: false },
 
-                )
-                .setTimestamp()
-                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                    )
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-            await interaction.update({ embeds: [bigEmbed], components: [buttonsRow], ephemeral: true });
-
-
+                await interaction.reply({ embeds: [setfpEmbedNotForYou], ephemeral: true });
 
 
 
@@ -152,7 +124,7 @@ module.exports = {
             const userRoleList = interaction.member._roles
             let userHighestRole = "Member"
             if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-            let reportCommand = "/snipe-menu"
+            let reportCommand = "/autosell-tutorial"
 
             const timeStamp = Date.now();
             const date = new Date(timeStamp);

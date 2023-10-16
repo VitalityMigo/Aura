@@ -84,7 +84,16 @@ module.exports = {
 
 			command = client.buttonCommands.get("friendtechtasksinfra-ordersList-button-");
 			
+		} else if (customId.startsWith("friendtechtasksinfra-sniperautoselllist-button-")) {
+
+			command = client.buttonCommands.get("friendtechtasksinfra-sniperautoselllist-button-");
+			
+		} else if (customId.startsWith("button-friendtechtasksinfra-autosell-param-")) {
+
+			command = client.buttonCommands.get("button-friendtechtasksinfra-autosell-param-");
+			
 		}
+		
 
 
 		

@@ -10,7 +10,7 @@
  */
 
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
+const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, order_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 
@@ -312,8 +312,8 @@ module.exports = {
                     if (parseFloat(max) < 0) { max = "0" }
                 }
 
-console.log(parseFloat(max))
-console.log(parseFloat(min))
+                console.log(parseFloat(max))
+                console.log(parseFloat(min))
 
                 if (parseFloat(max) >= parseFloat(min) || max == "" || min == "") {
 
@@ -371,13 +371,13 @@ console.log(parseFloat(min))
                     if (parseFloat(max) < 0) { max = "0" }
                 }
 
-               
+
 
                 if (parseFloat(max) >= parseFloat(min) || max == "" || min == "") {
 
                     let taskEmbed = interaction.message.embeds[0].data
 
-                  
+
                     let minFormat = min + "%"
                     let maxFormat = max + "%"
 
@@ -418,7 +418,7 @@ console.log(parseFloat(min))
                 let taskEmbed = interaction.message.embeds[0].data
 
 
-                
+
 
                 let gasFormat = "+" + gas + "%"
 
@@ -446,14 +446,14 @@ console.log(parseFloat(min))
                 min = removeCharacter(min, "Ξ")
                 max = removeCharacter(max, "Ξ")
 
-              
-                if (parseFloat(min) >= 2  || min == "") {
+
+                if (parseFloat(min) >= 2 || min == "") {
 
                     if (parseFloat(max) >= parseFloat(min) || max == "" || min == "") {
 
                         let taskEmbed = interaction.message.embeds[0].data
 
-                       
+
                         let minFormat = parseFloat(min).toFixed(3) + "Ξ"
                         let maxFormat = parseFloat(max).toFixed(3) + "Ξ"
 
@@ -500,7 +500,76 @@ console.log(parseFloat(min))
                 }
 
 
-            }
+            } else if (action == "autosell") {
+
+
+                let min = interaction.fields.getTextInputValue('modal-friendtechtasksinfra-sniper-param-autosell@' + uniqueId + 'R1');
+                let max = interaction.fields.getTextInputValue('modal-friendtechtasksinfra-sniper-param-autosell@' + uniqueId + 'R2');
+
+
+                min = removeCharacter(min, "%")
+                min = min.replace(/\+/g, '')
+                max = removeCharacter(max, "%")
+                max = max.replace(/\+/g, '')
+
+                
+
+
+                if ((parseFloat(max) > 0 || max == "") && (parseFloat(min) < 0 || min == "")) {
+
+                    if (parseFloat(min) >= -100 || min == "") {
+
+                        let taskEmbed = interaction.message.embeds[0].data
+
+
+                        let minFormat = parseFloat(min).toFixed(0) + "% (x" + parseFloat(1 + min / 100).toFixed(1) + ")"
+                        let maxFormat = "+" + parseFloat(max).toFixed(0) + "% (x" + parseFloat(1 + max / 100).toFixed(1) + ")"
+
+
+                        if (min == "") { min = null, minFormat = "None" }
+                        if (max == "") { max = null, maxFormat = "None" }
+
+
+                        taskEmbed.fields.find(obj => obj.name === "Auto Sell").value = "TP: `" + minFormat + "`\nSL: `" + maxFormat + "`"
+
+
+                        await sniper_friendTech.update({ stop_loss: min, take_profit: max }, { where: { authorId: authorId, randomId: uniqueId } });
+                        await interaction.update({ embeds: [taskEmbed], ephemeral: true });
+
+
+                    } else {
+
+                        const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Sniper Setup")
+                            .setDescription("The stop loss `(" + min + "%)` must be greater or equal to `0`, you can't sell at a negative price. Please try again.")
+                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                            .setTimestamp()
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+                        await interaction.reply({ embeds: [gasTrackerEmbed], ephemeral: true });
+
+                    }
+
+                } else {
+
+                    if (min == "") { min = 0 }
+                    if (max == "") { max = 0 }
+
+
+                    const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Sniper Setup")
+                        .setDescription("The stop loss `(" + min + "%)` must be lower than `0` and the take profit `(" + max + "%)` must be greater than `0`. Please try again.")
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+                    await interaction.reply({ embeds: [gasTrackerEmbed], ephemeral: true });
+
+                }
+
+            } 
 
 
 

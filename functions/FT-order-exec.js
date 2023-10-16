@@ -193,7 +193,7 @@ async function orderExecFT(transaction) {
                             }
 
 
-                        } else if (task.type == "sell") {
+                        } else if (task.type == "sell" || task.type == "auto_sell") {
 
 
 

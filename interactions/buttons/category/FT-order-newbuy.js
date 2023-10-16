@@ -151,7 +151,6 @@ module.exports = {
                             taskNb: taskIndex.toString(),
                             walletAddress: walletAddress,
                             privateKey: walletPK,
-                            created: actualTimestamp.toString(),
                             randomId: randomId.toString()
                         })
 

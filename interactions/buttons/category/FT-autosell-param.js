@@ -11,40 +11,37 @@
 
 
 const { ButtonInteraction } = require('discord.js');
-const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
+const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
+const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_friendTech, order_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 
+const addTimeount = require("../../../functions/addtimeout")
+const targetsJSON = './contracts/friendtech/ordertargets.json';
 
-const buttonsRow = new ActionRowBuilder()
+
+
+
+
+const buttonsRowCancel = new ActionRowBuilder()
     .addComponents(
-     
+
         new ButtonBuilder()
-            .setCustomId('friendtechtasksinfra-snipercreatenewuser-button')
-            .setLabel('👼🏽 New User Task')
-            .setStyle(3),
-        new ButtonBuilder()
-            .setCustomId('friendtechtasksinfra-sniperlistnewdeposit-button')
-            .setLabel('📥 New Deposit Task')
-            .setStyle(3),
-        new ButtonBuilder()
-            .setCustomId('friendtechtasksinfra-sniperlist-button-1')
-            .setLabel('🧾 List Tasks')
-            .setStyle(1),
-            new ButtonBuilder()
-            .setCustomId('friendtechtasksinfra-sniperautoselllist-button-1')
-            .setLabel('🤖 Auto Sells')
+            .setCustomId('friendtechtasksinfra-snipermenu-button')
+            .setLabel('↩️')
             .setStyle(1),
         new ButtonBuilder()
             .setCustomId('friendtechtasksinfra-mainmenu-button')
             .setLabel('🏠')
             .setStyle(1),
+
+
     );
 
 
+
 module.exports = {
-    id: 'friendtechtasksinfra-snipermenu-button',
+    id: 'button-friendtechtasksinfra-autosell-param-',
 
     async execute(interaction) {
         if (!(interaction instanceof ButtonInteraction)) return;
@@ -67,43 +64,68 @@ module.exports = {
                 //Checkpoint
                 console.log("// Step 2 : Authorization - Executed ✅")
 
-                let sniperTasks = 0
-                let activeSniperTasks = 0
+                const customId = interaction.customId
+
+                const parts = customId.split("@");
+                const action = parts[0].split("-").pop() || null;
+                const uniqueId = parts[1] || null;
 
 
-                const userTasks = await sniper_friendTech.findAll({ where: { authorId: authorId } })
 
-                if (userTasks.length > 0) {
 
-                    activeSniperTasks = (userTasks.filter(obj => obj.dataValues.active == "true")).length
-                    sniperTasks = userTasks.length
+
+                if (action == "delete") {
+
+
+
+
+
+
+                    const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Deleting Task")
+                        .setDescription(">>> Auto Sell settings")
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .setTimestamp()
+                        .addFields(
+                            { name: " ", value: " ", inline: false },
+                            { name: "Deleting Task <a:AuraLoading:1134068847616458792>", value: " ", inline: false },
+
+                        )
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+
+                    await interaction.update({ embeds: [gasTrackerEmbed], components: [], ephemeral: true });
+
+
+
+                    await order_friendTech.destroy({ where: { authorId: authorId, randomId: uniqueId } });
+
+                    await addTimeount(0.5)
+
+
+                    const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Task Cancelled")
+                        .setDescription(">>> Displaying the simulated transaction data")
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .setTimestamp()
+                        .addFields(
+                            { name: " ", value: " ", inline: false },
+                            { name: "Task Cancelled ✅", value: "Your task has been successfully cancelled , you can recreate a new one from the Friend.Tech task panel", inline: false },
+
+                        )
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+
+                    await interaction.editReply({ embeds: [gasTrackerEmbed2], components: [buttonsRowCancel], ephemeral: true });
+
+                    deleteTarget(uniqueId)
+
+
 
 
                 }
-
-
-                const bigEmbed = new EmbedBuilder().setColor("#060A8F")
-                .setTitle("Friend.Tech Tasks")
-                .setDescription(">>> Displaying your Friend.Tech sniper tasks")
-                .setAuthor({ name: authorName, iconURL: userAvatar })
-                .addFields(
-                    { name: " ", value: " ", inline: false },
-                    { name: " ", value: "This panel allows you to create and display your Sniper Tasks.", inline: false },
-                    { name: " ", value: " ", inline: false },
-                    { name: "Select the method you'd like to use:\n\n", value: " ", inline: false },
-                    { name: " ", value: "\n\n**👼🏽 New Users**\nThis method allows you to snipe new Friend.Tech users as soon as they register. You can set a wide range of conditions to adapt the sniper to your needs.\n\n**📥 New Deposit**\nThis method allows you to snipe users who reload their Friend.Tech account the second their transaction leaves. Here too, you have a large number of parameters available.", inline: false },
-                    { name: " ", value: " ", inline: false },
-                    { name: " ", value: "**→** You currently have `" + activeSniperTasks + "` active sniper tasks out of `" + sniperTasks + "`.", inline: false },
-
-                )
-                .setTimestamp()
-                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-            await interaction.update({ embeds: [bigEmbed], components: [buttonsRow], ephemeral: true });
-
-
-
-
 
 
 
@@ -136,6 +158,7 @@ module.exports = {
 
 
             console.log("// Error - sent in report ❌")
+            console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
             //On envoi une notif
             let botId = interaction.applicationId
@@ -179,7 +202,6 @@ module.exports = {
 
 
 
-            console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
             const reduceText = require("../../../functions/reducetext")
             const roleTag = "1121510423687090186"
@@ -223,3 +245,22 @@ module.exports = {
 
 
 
+
+// Fonctions
+function deleteTarget(taskId) {
+    let existingData = []
+    if (fs.existsSync(targetsJSON)) {
+        const fileContent = fs.readFileSync(targetsJSON, 'utf8');
+        existingData = JSON.parse(fileContent);
+    }
+
+    if (existingData.some(item => item.customId == taskId)) {
+    const indexToRemove = existingData.findIndex(item => item.customId == taskId);
+    if (indexToRemove !== -1) {
+        // L'objet a été trouvé, supprimez-le
+        existingData.splice(indexToRemove, 1);
+    }
+}
+    // Écrivez le fichier JSON avec la nouvelle liste
+    fs.writeFileSync(targetsJSON, JSON.stringify(existingData, null, 2));
+}

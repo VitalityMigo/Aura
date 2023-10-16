@@ -95,6 +95,8 @@ module.exports = {
                     const gasPreset = desiredTask.gas_preset
                     const simulation = desiredTask.simulation
                     const randomId = desiredTask.randomId
+                    const stopLoss = desiredTask.stop_loss
+                    const takeProfit = desiredTask.take_profit
 
 
                     // On met en forme les valeurs
@@ -109,10 +111,10 @@ module.exports = {
                     if (totalTask != null) { totalTaskFormatted = totalTask }
 
                     let minPriceFormatted = "Any"
-                    if (minPrice != null) { minPriceFormatted =  parseFloat(minPrice).toFixed(3) + "Ξ" }
+                    if (minPrice != null) { minPriceFormatted = parseFloat(minPrice).toFixed(3) + "Ξ" }
 
                     let maxPriceFormatted = "Any"
-                    if (maxPrice != null) { maxPriceFormatted =  parseFloat(maxPrice).toFixed(3) + "Ξ" }
+                    if (maxPrice != null) { maxPriceFormatted = parseFloat(maxPrice).toFixed(3) + "Ξ" }
 
                     let minSupplyFormatted = "Any"
                     if (minSupply != null) { minSupplyFormatted = minSupply }
@@ -151,9 +153,21 @@ module.exports = {
                     if (simulation == "false") { simulationFormatted = "❌" }
 
 
+
+
+                    let stopLossFormatted = "None"
+                    let takeProfitFormatted = "None"
+                    if (stopLoss != null) { stopLossFormatted = parseFloat(stopLoss).toFixed(0) + "% (x" + parseFloat(1 + stopLoss / 100).toFixed(1) + ")" }
+                    if (takeProfit != null) { takeProfitFormatted = "+" + parseFloat(takeProfit).toFixed(0) + "% (x" + parseFloat(1 + takeProfit / 100).toFixed(1) + ")" }
+
+
                     // Variable pour construire les bouttons
                     let tutorialType = "sniperdeposittutorial"
-                    if (type == "new_user") { tutorialType = "sniperusertutorial" }
+                    if (type == "new_user") {
+                        tutorialType = "sniperusertutorial"
+                    }
+
+
 
                     let statusLabel = "🟢 Activate"
                     if (status == "true") { statusLabel = "🔴 Disable" }
@@ -186,13 +200,13 @@ module.exports = {
 
                         );
 
-                        let label2 = "Set Deposit Value"
-                        let index2 = 'depositamount'
-                        if (type == "new_user") {
-                            label2 = "Set Followers"
-                             index2 = 'followers'
+                    let label2 = "Set Deposit Value"
+                    let index2 = 'depositamount'
+                    if (type == "new_user") {
+                        label2 = "Set Followers"
+                        index2 = 'followers'
 
-                        }
+                    }
 
 
                     const buttonsRow2 = new ActionRowBuilder()
@@ -242,13 +256,17 @@ module.exports = {
                                 .setLabel('📑 Tutorial')
                                 .setStyle(1),
                             new ButtonBuilder()
+                                .setCustomId('button-friendtechtasksinfra-sniper-param-autosell@' + randomId)
+                                .setLabel('Auto Sell')
+                                .setStyle(1),
+                            new ButtonBuilder()
                                 .setCustomId('friendtechtasksinfra-snipermenu-button')
                                 .setLabel('↩️')
                                 .setStyle(1),
-                            new ButtonBuilder()
-                                .setCustomId('friendtechtasksinfra-mainmenu-button')
-                                .setLabel('🏠')
-                                .setStyle(1),
+                            // new ButtonBuilder()
+                            //     .setCustomId('friendtechtasksinfra-mainmenu-button')
+                            //     .setLabel('🏠')
+                            //     .setStyle(1),
 
 
                         );
@@ -296,11 +314,10 @@ module.exports = {
 
                         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                             .setTitle("Friend.Tech Tasks")
-                            .setDescription(">>> Displaying your sniper task")
+                            .setDescription(">>> Displaying your sniper task : `🐇 New User`")
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .addFields(
                                 { name: "Status", value: "`" + statusFormatted + "`", inline: true },
-                                { name: "Task Type", value: "`🐇 New User`", inline: true },
                                 { name: " ", value: "**📖 CORE INFOS** ", inline: false },
                                 { name: "Target", value: "`" + targetFormatted + "`", inline: true },
                                 { name: "Amount/Txn", value: "`" + amount + "`", inline: true },
@@ -323,6 +340,7 @@ module.exports = {
                                 { name: " ", value: "**😈 EXPERT MODE**", inline: false },
                                 { name: "Gas Preset", value: "`" + gasPresetFormatted + "`", inline: true },
                                 { name: "Simulation", value: "`" + simulationFormatted + "`", inline: true },
+                                { name: "Auto Sell", value: "SL: `" + stopLossFormatted + "`\nTP: `" + takeProfitFormatted + "`", inline: true },
                                 { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings and open your server DMs before activating.*", inline: false },
 
 
@@ -343,11 +361,10 @@ module.exports = {
 
                         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                             .setTitle("Friend.Tech Tasks")
-                            .setDescription(">>> Displaying your sniper tasks")
+                            .setDescription(">>> Displaying your sniper tasks : `📥 New Deposit`")
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .addFields(
                                 { name: "Status", value: "`" + statusFormatted + "`", inline: true },
-                                { name: "Task Type", value: "`📥 New Deposit`", inline: true },
                                 { name: " ", value: "**📖 CORE INFOS** ", inline: false },
                                 { name: "Target", value: "`" + targetFormatted + "`", inline: true },
                                 { name: "Amount/Txn", value: "`" + amount + "`", inline: true },
@@ -370,6 +387,7 @@ module.exports = {
                                 { name: " ", value: "**😈 EXPERT MODE**", inline: false },
                                 { name: "Gas Preset", value: "`" + gasPresetFormatted + "`", inline: true },
                                 { name: "Simulation", value: "`" + simulationFormatted + "`", inline: true },
+                                { name: "Auto Sell", value: "SL: `" + stopLossFormatted + "`\nTP: `" + takeProfitFormatted + "`", inline: true },
                                 { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings and open your server DMs before activating.*", inline: false },
 
 

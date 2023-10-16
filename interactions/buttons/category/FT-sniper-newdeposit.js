@@ -152,13 +152,17 @@ module.exports = {
                                     .setLabel('📑 Tutorial')
                                     .setStyle(1),
                                 new ButtonBuilder()
+                                    .setCustomId('button-friendtechtasksinfra-sniper-param-autosell@' + randomId)
+                                    .setLabel('Auto Sell')
+                                    .setStyle(1),
+                                new ButtonBuilder()
                                     .setCustomId('friendtechtasksinfra-snipermenu-button')
                                     .setLabel('↩️')
                                     .setStyle(1),
-                                new ButtonBuilder()
-                                    .setCustomId('friendtechtasksinfra-mainmenu-button')
-                                    .setLabel('🏠')
-                                    .setStyle(1),
+                                // new ButtonBuilder()
+                                //     .setCustomId('friendtechtasksinfra-mainmenu-button')
+                                //     .setLabel('🏠')
+                                //     .setStyle(1),
 
 
                             );
@@ -215,6 +219,7 @@ module.exports = {
                                 { name: " ", value: "**😈 EXPERT MODE**", inline: false },
                                 { name: "Gas Preset", value: "`Classic`", inline: true },
                                 { name: "Simulation", value: "`❌`", inline: true },
+                                { name: "Auto Sell", value: "SL: `None`\nTP: `None`", inline: true },
                                 { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings and open your server DMs before activating.*", inline: false },
 
 

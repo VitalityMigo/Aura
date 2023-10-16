@@ -929,6 +929,12 @@ const sniper_friendTech = sequelize.define('sniper_friendtech', {
     taskNb: {
         type: Sequelize.STRING,
     },
+    stop_loss: {
+        type: Sequelize.STRING,
+    },
+    take_profit: {
+        type: Sequelize.STRING,
+    },
    
     
 

@@ -280,7 +280,7 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
             } else {
 
-                if (task.hash.startsWith("0x")) {
+                if (task.hash) {
 
                     const textFormatted = "**Failed or succeeded to buy** `" + task.amount + "` **key(s) for** `" + task.value / 10 ** 18 + "Ξ`"
 

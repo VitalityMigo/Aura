@@ -601,7 +601,7 @@ module.exports = {
 
                                                 await interaction.editReply({ embeds: [userFTEmbed], components: [buttonRow, buttonRow2] });
 
-                                                
+
 
                                             } catch (error) {
 
@@ -1292,20 +1292,56 @@ module.exports = {
 
 
 
+                                                const buttonRow = new ActionRowBuilder()
+                                                    .addComponents(
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_exec_buy_' + userAddress)
+                                                            .setLabel('📈 Buy')
+                                                            .setStyle(3),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_exec_quickbuy_' + userAddress)
+                                                            .setLabel('💫 Flash Buy')
+                                                            .setStyle(3),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_exec_sell_' + userAddress)
+                                                            .setLabel('📉 Sell')
+                                                            .setStyle(4),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_exec_quicksell_' + userAddress)
+                                                            .setLabel('❄️ Flash Sell')
+                                                            .setStyle(4),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('friendtech_exec_setup-button')
+                                                            .setLabel('💻 Setup')
+                                                            .setStyle(1),
+
+                                                    )
+
+
+                                                const buttonRow2 = new ActionRowBuilder()
+                                                    .addComponents(
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_trade_refresh_' + userAddress)
+                                                            .setLabel('🔄 Refresh')
+                                                            .setStyle(1),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('friendtech_infra_help-button')
+                                                            .setLabel('📑 Tutorial')
+                                                            .setStyle(1),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_infra_security_' + userAddress)
+                                                            .setLabel('📡 Audit')
+                                                            .setStyle(1),
+
+
+                                                    )
 
 
 
-                                                await interaction.editReply({ embeds: [userFTEmbed] });
 
 
 
-
-
-
-
-
-
-
+                                                await interaction.editReply({ embeds: [userFTEmbed], components: [buttonRow, buttonRow2] });
 
 
 

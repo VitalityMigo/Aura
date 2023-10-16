@@ -48,6 +48,10 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_friendtech_user_refresh_");
 			
+		} else if (customId.startsWith("button_friendtech_trade_refresh_")) {
+
+			command = client.buttonCommands.get("button_friendtech_trade_refresh_");
+			
 		} else if (customId.startsWith("button_friendtech_user_panel_")) {
 
 			command = client.buttonCommands.get("button_friendtech_user_panel_");
@@ -92,9 +96,9 @@ module.exports = {
 
 			command = client.buttonCommands.get("button-friendtechtasksinfra-autosell-param-");
 			
-		}
+		} 
 		
-
+		
 
 		
 		

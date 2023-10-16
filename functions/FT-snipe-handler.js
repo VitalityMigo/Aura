@@ -155,8 +155,8 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
                             //On enregistre le call
                             order_friendTech.create({
-                                authorName: authorName,
-                                authorId: authorId,
+                                authorName: task.authorName,
+                                authorId: task.authorId,
                                 type: "auto_sell",
                                 target: subjectUsername,
                                 targetWallet: subjectAddress.toLowerCase(),

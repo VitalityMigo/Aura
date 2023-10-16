@@ -1,5 +1,5 @@
 const axios = require('axios')
-const fs = require("fs")
+const fs = require('fs').promises;
 const colors = require("colors")
 
 
@@ -92,13 +92,13 @@ async function FTSnipeUserExec(transaction) {
 
         if (inputAddress == transaction.from.toLowerCase()) {
 
-            const cachedTUsersFile = fs.readFileSync(newUserFile, 'utf8');
+            const cachedTUsersFile = await fs.readFile(newUserFile, 'utf8');
             const cachedUsers = JSON.parse(cachedTUsersFile)
             const user = cachedUsers.find((object) => object.address.toLowerCase() == inputAddress.toLowerCase());
 
             if (user) {
 
-
+                console.log("Starting snipe user...")
 
                 if (user.followers >= 0) {
 

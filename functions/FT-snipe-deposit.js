@@ -99,6 +99,9 @@ async function FTSnipeDepositExec(obj) {
         // Donc l'utilisateur est bien sur Friend.Tech
         if (supply > 0) {
 
+            console.log("Starting snipe deposit...")
+
+
             let userInfoCall = ""
             let isFTUser = true
 

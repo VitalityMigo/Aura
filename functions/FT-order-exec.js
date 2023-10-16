@@ -84,7 +84,6 @@ async function orderExecFT(transaction) {
 
         await addTimeout(2)
 
-        console.log("Starting order....")
 
 
         const subject = ("0x" + transaction.input.substring(34, 74)).toLowerCase()
@@ -95,6 +94,8 @@ async function orderExecFT(transaction) {
 
 
         if (targetsList.includes(subject)) {
+
+            console.log("Starting order....")
 
             const gasPricePromise = web3BaseUnifra.eth.getGasPrice()
 

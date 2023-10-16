@@ -216,9 +216,9 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
                     if (isAutoSell == true) {
 
                         snipeMessage.addFields(
-                            { name: " ", value: "", inline: false },
+                            { name: " ", value: " ", inline: false },
                             { name: " ", value: "Auto Sell : `Activated ✅`", inline: false },
-                            { name: " ", value: "", inline: false },
+                            { name: " ", value: " ", inline: false },
 
                         )
 

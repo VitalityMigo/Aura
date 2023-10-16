@@ -22,7 +22,7 @@ const buttonsRowCancel = new ActionRowBuilder()
     .addComponents(
 
         new ButtonBuilder()
-            .setCustomId('friendtechtasksinfra-ordermenu-button')
+            .setCustomId('friendtechtasksinfra-snipermenu-button')
             .setLabel('↩️')
             .setStyle(1),
         new ButtonBuilder()

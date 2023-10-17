@@ -628,7 +628,7 @@ module.exports = {
                                             let usernameSuggestionFormatted = ""
 
                                             let index = 0
-                                            for (const suggestion of findUser.data[0].result.data.json) {
+                                            for (const suggestion of findUser.data.users) {
                                                 index++
                                                 if (index <= 5) {
 

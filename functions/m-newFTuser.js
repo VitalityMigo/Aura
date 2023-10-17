@@ -125,7 +125,6 @@ async function newFriendtechUser(obj) {
                 } catch (error) {
 
                     isAvailable = false
-                    console.log("Erreur dans la récupération des infos du user FT " + error.stack)
                 }
 
 
@@ -263,9 +262,9 @@ async function newFriendtechUser(obj) {
                         const price = getPrice(parseInt(shareSupply), 1) / 10 ** 18
 
                     
-                        const holderCount = "N/A"
-                        const holding = "N/A"
-                        const uniqueHolders = "100%"
+                        const holderCount = shareSupply
+                        const holding = 1
+                        const uniqueHolders = (holderCount / shareSupply) * 100;
 
                         const marketCap = shareSupply * price
 
@@ -371,7 +370,6 @@ async function newFriendtechUser(obj) {
                 } catch (error) {
 
                     isAvailable = false
-                    console.log("Erreur dans la récupération des infos du user FT " + error.stack)
                 }
 
 

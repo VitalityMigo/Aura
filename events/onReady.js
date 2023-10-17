@@ -17,6 +17,7 @@ const intervalcleandatabase = require('./intervalcleandatabase')
 
 const executeNewVerified = require('./monitor-verifiedcontracts')
 const interval_ftaccess = require("./ft-verifyaccess")
+const intervalCleanFTnewId = require("./interval-cleanFTnewid")
 
 const schedule = require('node-schedule');
 
@@ -122,7 +123,14 @@ module.exports = {
                 interval_ftaccess(client);
             });
 
+            ////// Clean FT New User ID //////
 
+            const interval_FTnewUserCleanId = schedule.scheduleJob('0 19 * * *', function () {
+                intervalCleanFTnewId(client)
+            });
+        
+
+            
             ////////////////////////////////////////////////////////////////////////////////////
 
             ////// CHARGEMENT DES FICHIER DE CONFIG //////

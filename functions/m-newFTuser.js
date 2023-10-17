@@ -7,16 +7,26 @@ dotenv.config()
 const infuraApiKey = process.env.infuraApiKey
 const etherscanApiKey = process.env.etherscanApiKey
 
-const { web3Base1RPC, web3BaseUnifra } = require('../config/web3config');
-
+const { web3Base1RPC, web3BaseUnifra, web3BaseDRPC } = require('../config/web3config');
 
 const axios = require('axios')
 const colors = require('colors');
+const fs = require('fs').promises;
+
+
+const shareContractAbi = require("../contracts/friendtech/share.json");
+const shareContractAddress = "0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4"
+const shareContract = new web3BaseDRPC.eth.Contract(shareContractAbi, shareContractAddress);
+
+
+const newUserFile = "contracts/friendtech/newuser.json"
 
 
 const reduceText = require("./reducetext")
 const addTimeout = require("./addtimeout")
 const getTwitterUserInfo = require("../functions/twitteruserinfo")
+const getEthPrice = require("./getethprice")
+const getPrice = require("./FT-getprice")
 
 
 
@@ -80,8 +90,7 @@ async function newFriendtechUser(obj) {
         const timeStamp = Date.now();
         const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
 
-        const ethCallPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-        let ethUsdPrice = ethCallPrice.data.result.ethusd
+        const ethUsdPrice = await getEthPrice()
 
 
 
@@ -93,138 +102,391 @@ async function newFriendtechUser(obj) {
         const value = transaction.value
 
 
-        const receipt = await web3BaseUnifra.eth.getTransactionReceipt(hash)
-
-        const data = receipt.logs[0].data
-        const supplyWhenBuy = data[data.length - 1];
+        const amount = parseInt("0x" + input.slice(-64), 16)
+        const subject = ("0x" + input.substring(34, 74)).toLowerCase()
 
 
-        if (supplyWhenBuy == "1") {
+        if (subject.toLowerCase() == userAddress.toLowerCase() && amount == 1) {
 
 
-
-
-
-
-            let userInfoCall = ""
-
-            try {
-                userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress.toLowerCase())
-            } catch (error) {
-
-                console.log("Erreur dans la récupération des infos du user FT " + error.stack)
-            }
-
-
-            let twitterUsername = userInfoCall.data.twitterUsername
-            let twitterName = userInfoCall.data.twitterName
-
-            let holderCount = userInfoCall.data.holderCount
-            let shareSupply = userInfoCall.data.shareSupply
-            let price = userInfoCall.data.displayPrice / 10 ** 18
-            let holding = userInfoCall.data.holdingCount
-
-
-            let marketCap = shareSupply * price
-            let uniqueHolders = (holderCount / shareSupply) * 100;
-
-            let isSniped = "❌"
-            if (holderCount > 1) { isSniped = "✅" }
+            const cachedTUsersFile = await fs.readFile(newUserFile, 'utf8');
+            const cachedUsers = JSON.parse(cachedTUsersFile)
+            const user = cachedUsers.find((object) => object.address.toLowerCase() == userAddress.toLowerCase());
 
 
 
+            if (user) {
 
-            // On récupère les infos Twitter
-            const twitterInfos = await getTwitterUserInfo(twitterUsername)
+                let userInfoCall = ""
+                let isAvailable = true
 
-            let followers = twitterInfos.followers_count
-            let following = twitterInfos.friends_count
-            let pfp = twitterInfos.profile_image_url_https
-            twitterPfp = pfp.replace("_normal", "")
+                try {
+                    userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress.toLowerCase())
+                } catch (error) {
 
-
-
-            let created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
-
-            const b = await web3BaseUnifra.eth.getBalance(userAddress)
-            const balance = parseFloat(b / 10 ** 18).toFixed(3)
+                    isAvailable = false
+                    console.log("Erreur dans la récupération des infos du user FT " + error.stack)
+                }
 
 
-            if (followers >= 1000) {
+                if (isAvailable == true) {
+
+                    let twitterUsername = userInfoCall.data.twitterUsername
+                    let twitterName = userInfoCall.data.twitterName
+
+                    let holderCount = userInfoCall.data.holderCount
+                    let shareSupply = userInfoCall.data.shareSupply
+                    let price = userInfoCall.data.displayPrice / 10 ** 18
+                    let holding = userInfoCall.data.holdingCount
 
 
+                    let marketCap = shareSupply * price
+                    let uniqueHolders = (holderCount / shareSupply) * 100;
 
-                // Console log monitor
-                console.log(colors.cyan("🐇 New Friend.tech user"))
-                console.log("Twitter: @" + twitterUsername)
-                console.log("Wallet: " + userAddress)
-                console.log("Txn: " + hash)
-
-
-                const buttonRow = new ActionRowBuilder()
-                    .addComponents(
-                        new ButtonBuilder()
-                            .setCustomId('button_friendtech_user_panel_' + userAddress)
-                            .setLabel('📊 Trade panel ')
-                            .setStyle(1),
-
-                    )
+                    let isSniped = "❌"
+                    if (holderCount > 1) { isSniped = "✅" }
 
 
 
-                const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle(twitterName)
-                    .setDescription(">>> A new user has joined Friend.Tech")
-                    .setThumbnail(twitterPfp)
-                    .setTimestamp()
-                    .addFields(
-                        { name: " ", value: '```• Twitter Informations```', inline: true },
-                        { name: " ", value: " ", inline: false },
-                        { name: "Name", value: "`" + twitterName + "`", inline: true },
-                        { name: "Username", value: "`" + twitterUsername + "`", inline: true },
-                        { name: " ", value: " ", inline: true },
-                        { name: " ", value: "`" + new Intl.NumberFormat('en-US').format(followers) + "` followers", inline: true },
-                        { name: " ", value: "`" + new Intl.NumberFormat('en-US').format(following) + "` following", inline: true },
-                        { name: " ", value: "created <t:" + created + ":R>", inline: true },
-                        { name: " ", value: "```• Friend.Tech Metrics```", inline: true },
-                        { name: " ", value: " ", inline: false },
-                        { name: "Price", value: "`" + parseFloat(price).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(price * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                        { name: "Market Cap", value: "`" + parseFloat(marketCap).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(marketCap * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                        { name: " ", value: " ", inline: true },
-                        { name: "Share Supply", value: "`" + shareSupply + "`", inline: true },
-                        { name: "Holders", value: "`" + holderCount + "`", inline: true },
-                        { name: "Unique Holders", value: "`" + parseFloat(uniqueHolders).toFixed(1) + "%`", inline: true },
-                        { name: "Holding", value: "`" + holding + "`", inline: true },
-                        { name: "Balance", value: "`" + balance + "Ξ`", inline: true },
-                        { name: "Joined At", value: "<t:" + actualTimestamp + ":R>", inline: true },
-                        { name: " ", value: "```• Transaction Details```", inline: true },
-                        { name: " ", value: " ", inline: false },
-                        { name: "Value", value: "`" + parseFloat(value).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(price * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                        { name: "Sniped", value: "`" + isSniped + "`", inline: true },
-                        { name: "FT Wallet:", value: "`" + userAddress + "`", inline: false },
-                        { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Transaction](https://basescan.org/tx/' + hash + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ") ∙ " + '[Logs](https://basescan.org/tx/' + hash + "#eventlog)", inline: false }
 
-                    )
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                    // On récupère les infos Twitter
+                    const twitterInfos = await getTwitterUserInfo(twitterUsername)
+
+                    let followers = twitterInfos.followers_count
+                    let following = twitterInfos.friends_count
+                    let pfp = twitterInfos.profile_image_url_https
+                    twitterPfp = pfp.replace("_normal", "")
+                    let created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
+
+
+                    if (followers >= 1000) {
+
+
+                        const b = await web3BaseUnifra.eth.getBalance(userAddress)
+                        const balance = parseFloat(b / 10 ** 18).toFixed(3)
 
 
 
-                if (followers >= 1000 && followers < 10000) {
 
-                    await channelNewFTUser1K.send({ embeds: [userFTEmbed], components: [buttonRow] });
 
-                } else if (followers >= 10000 && followers < 100000) {
+                        // Console log monitor
+                        console.log(colors.cyan("🐇 New Friend.tech user"))
+                        console.log("Twitter: @" + twitterUsername)
+                        console.log("Wallet: " + userAddress)
+                        console.log("Txn: " + hash)
 
-                    await channelNewFTUser10K.send({ embeds: [userFTEmbed], components: [buttonRow] });
 
-                } else if (followers >= 100000) {
+                        const buttonRow = new ActionRowBuilder()
+                            .addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId('button_friendtech_user_panel_' + userAddress)
+                                    .setLabel('📊 Trade panel ')
+                                    .setStyle(1),
 
-                    await channelNewFTUser100K.send({ embeds: [userFTEmbed], components: [buttonRow] });
+                            )
+
+
+
+                        const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle(twitterName)
+                            .setDescription(">>> A new user has joined Friend.Tech")
+                            .setThumbnail(twitterPfp)
+                            .setTimestamp()
+                            .addFields(
+                                { name: " ", value: '```• Twitter Informations```', inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Name", value: "`" + twitterName + "`", inline: true },
+                                { name: "Username", value: "`" + twitterUsername + "`", inline: true },
+                                { name: " ", value: " ", inline: true },
+                                { name: " ", value: "`" + new Intl.NumberFormat('en-US').format(followers) + "` followers", inline: true },
+                                { name: " ", value: "`" + new Intl.NumberFormat('en-US').format(following) + "` following", inline: true },
+                                { name: " ", value: "created <t:" + created + ":R>", inline: true },
+                                { name: " ", value: "```• Friend.Tech Metrics```", inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Price", value: "`" + parseFloat(price).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(price * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                { name: "Market Cap", value: "`" + parseFloat(marketCap).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(marketCap * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                { name: " ", value: " ", inline: true },
+                                { name: "Share Supply", value: "`" + shareSupply + "`", inline: true },
+                                { name: "Holders", value: "`" + holderCount + "`", inline: true },
+                                { name: "Unique Holders", value: "`" + parseFloat(uniqueHolders).toFixed(1) + "%`", inline: true },
+                                { name: "Holding", value: "`" + holding + "`", inline: true },
+                                { name: "Balance", value: "`" + balance + "Ξ`", inline: true },
+                                { name: "Joined At", value: "<t:" + actualTimestamp + ":R>", inline: true },
+                                { name: " ", value: "```• Transaction Details```", inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Value", value: "`" + parseFloat(value).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(price * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                { name: "Sniped", value: "`" + isSniped + "`", inline: true },
+                                { name: "FT Wallet:", value: "`" + userAddress + "`", inline: false },
+                                { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Transaction](https://basescan.org/tx/' + hash + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ") ∙ " + '[Logs](https://basescan.org/tx/' + hash + "#eventlog)", inline: false }
+
+                            )
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+
+                        if (followers >= 1000 && followers < 10000) {
+
+                            await channelNewFTUser1K.send({ embeds: [userFTEmbed], components: [buttonRow] });
+
+                        } else if (followers >= 10000 && followers < 100000) {
+
+                            await channelNewFTUser10K.send({ embeds: [userFTEmbed], components: [buttonRow] });
+
+                        } else if (followers >= 100000) {
+
+                            await channelNewFTUser100K.send({ embeds: [userFTEmbed], components: [buttonRow] });
+
+                        }
+
+                    }
+
+
+                } else {
+
+
+                    let twitterUsername = user.username
+                    let twitterName = user.name
+
+                    // On récupère les infos Twitter
+                    const twitterInfos = await getTwitterUserInfo(twitterUsername)
+
+                    let followers = twitterInfos.followers_count
+                    let following = twitterInfos.friends_count
+                    let pfp = twitterInfos.profile_image_url_https
+                    let twitterPfp = pfp.replace("_normal", "")
+                    let created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
+
+
+                    if (followers >= 1000) {
+
+                        const shareSupply = await shareContract.methods.sharesSupply(userAddress).call()
+                        const price = getPrice(parseInt(shareSupply), 1) / 10 ** 18
+
+                    
+                        const holderCount = "N/A"
+                        const holding = "N/A"
+                        const uniqueHolders = "100%"
+
+                        const marketCap = shareSupply * price
+
+                        let isSniped = "❌"
+                        if (shareSupply > 3) { isSniped = "✅" }
+
+
+                        const b = await web3BaseUnifra.eth.getBalance(userAddress)
+                        const balance = parseFloat(b / 10 ** 18).toFixed(3)
+
+
+                        // Console log monitor
+                        console.log(colors.cyan("🐇 New Friend.tech user"))
+                        console.log("Twitter: @" + twitterUsername)
+                        console.log("Wallet: " + userAddress)
+                        console.log("Txn: " + hash)
+
+
+                        const buttonRow = new ActionRowBuilder()
+                            .addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId('button_friendtech_user_panel_' + userAddress)
+                                    .setLabel('📊 Trade panel ')
+                                    .setStyle(1),
+
+                            )
+
+
+
+                        const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle(twitterName)
+                            .setDescription(">>> A new user has joined Friend.Tech")
+                            .setThumbnail(twitterPfp)
+                            .setTimestamp()
+                            .addFields(
+                                { name: " ", value: '```• Twitter Informations```', inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Name", value: "`" + twitterName + "`", inline: true },
+                                { name: "Username", value: "`" + twitterUsername + "`", inline: true },
+                                { name: " ", value: " ", inline: true },
+                                { name: " ", value: "`" + new Intl.NumberFormat('en-US').format(followers) + "` followers", inline: true },
+                                { name: " ", value: "`" + new Intl.NumberFormat('en-US').format(following) + "` following", inline: true },
+                                { name: " ", value: "created <t:" + created + ":R>", inline: true },
+                                { name: " ", value: "```• Friend.Tech Metrics```", inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Price", value: "`" + parseFloat(price).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(price * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                { name: "Market Cap", value: "`" + parseFloat(marketCap).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(marketCap * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                { name: " ", value: " ", inline: true },
+                                { name: "Share Supply", value: "`" + shareSupply + "`", inline: true },
+                                { name: "Holders", value: "`" + holderCount + "`", inline: true },
+                                { name: "Unique Holders", value: "`" + parseFloat(uniqueHolders).toFixed(1) + "%`", inline: true },
+                                { name: "Holding", value: "`" + holding + "`", inline: true },
+                                { name: "Balance", value: "`" + balance + "Ξ`", inline: true },
+                                { name: "Joined At", value: "<t:" + actualTimestamp + ":R>", inline: true },
+                                { name: " ", value: "```• Transaction Details```", inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Value", value: "`" + parseFloat(value).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(price * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                { name: "Sniped", value: "`" + isSniped + "`", inline: true },
+                                { name: "FT Wallet:", value: "`" + userAddress + "`", inline: false },
+                                { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Transaction](https://basescan.org/tx/' + hash + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ") ∙ " + '[Logs](https://basescan.org/tx/' + hash + "#eventlog)", inline: false }
+
+                            )
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+
+                        if (followers >= 1000 && followers < 10000) {
+
+                            await channelNewFTUser1K.send({ embeds: [userFTEmbed], components: [buttonRow] });
+
+                        } else if (followers >= 10000 && followers < 100000) {
+
+                            await channelNewFTUser10K.send({ embeds: [userFTEmbed], components: [buttonRow] });
+
+                        } else if (followers >= 100000) {
+
+                            await channelNewFTUser100K.send({ embeds: [userFTEmbed], components: [buttonRow] });
+
+                        }
+
+                    }
+
+
+
+
 
                 }
 
-            }
 
+
+
+
+            } else if (!user) {
+
+
+
+
+                let userInfoCall = ""
+                let isAvailable = true
+
+                try {
+                    userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress.toLowerCase())
+                } catch (error) {
+
+                    isAvailable = false
+                    console.log("Erreur dans la récupération des infos du user FT " + error.stack)
+                }
+
+
+                if (isAvailable == true) {
+
+                    let twitterUsername = userInfoCall.data.twitterUsername
+                    let twitterName = userInfoCall.data.twitterName
+
+                    let holderCount = userInfoCall.data.holderCount
+                    let shareSupply = userInfoCall.data.shareSupply
+                    let price = userInfoCall.data.displayPrice / 10 ** 18
+                    let holding = userInfoCall.data.holdingCount
+
+
+                    let marketCap = shareSupply * price
+                    let uniqueHolders = (holderCount / shareSupply) * 100;
+
+                    let isSniped = "❌"
+                    if (holderCount > 1) { isSniped = "✅" }
+
+
+
+
+                    // On récupère les infos Twitter
+                    const twitterInfos = await getTwitterUserInfo(twitterUsername)
+
+                    let followers = twitterInfos.followers_count
+                    let following = twitterInfos.friends_count
+                    let pfp = twitterInfos.profile_image_url_https
+                    twitterPfp = pfp.replace("_normal", "")
+                    let created = Math.floor(((new Date(twitterInfos.created_at)).getTime() / 1000))
+
+
+                    if (followers >= 1000) {
+
+
+                        const b = await web3BaseUnifra.eth.getBalance(userAddress)
+                        const balance = parseFloat(b / 10 ** 18).toFixed(3)
+
+
+
+
+
+                        // Console log monitor
+                        console.log(colors.cyan("🐇 New Friend.tech user"))
+                        console.log("Twitter: @" + twitterUsername)
+                        console.log("Wallet: " + userAddress)
+                        console.log("Txn: " + hash)
+
+
+                        const buttonRow = new ActionRowBuilder()
+                            .addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId('button_friendtech_user_panel_' + userAddress)
+                                    .setLabel('📊 Trade panel ')
+                                    .setStyle(1),
+
+                            )
+
+
+
+                        const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle(twitterName)
+                            .setDescription(">>> A new user has joined Friend.Tech")
+                            .setThumbnail(twitterPfp)
+                            .setTimestamp()
+                            .addFields(
+                                { name: " ", value: '```• Twitter Informations```', inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Name", value: "`" + twitterName + "`", inline: true },
+                                { name: "Username", value: "`" + twitterUsername + "`", inline: true },
+                                { name: " ", value: " ", inline: true },
+                                { name: " ", value: "`" + new Intl.NumberFormat('en-US').format(followers) + "` followers", inline: true },
+                                { name: " ", value: "`" + new Intl.NumberFormat('en-US').format(following) + "` following", inline: true },
+                                { name: " ", value: "created <t:" + created + ":R>", inline: true },
+                                { name: " ", value: "```• Friend.Tech Metrics```", inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Price", value: "`" + parseFloat(price).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(price * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                { name: "Market Cap", value: "`" + parseFloat(marketCap).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(marketCap * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                { name: " ", value: " ", inline: true },
+                                { name: "Share Supply", value: "`" + shareSupply + "`", inline: true },
+                                { name: "Holders", value: "`" + holderCount + "`", inline: true },
+                                { name: "Unique Holders", value: "`" + parseFloat(uniqueHolders).toFixed(1) + "%`", inline: true },
+                                { name: "Holding", value: "`" + holding + "`", inline: true },
+                                { name: "Balance", value: "`" + balance + "Ξ`", inline: true },
+                                { name: "Joined At", value: "<t:" + actualTimestamp + ":R>", inline: true },
+                                { name: " ", value: "```• Transaction Details```", inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Value", value: "`" + parseFloat(value).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(price * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                { name: "Sniped", value: "`" + isSniped + "`", inline: true },
+                                { name: "FT Wallet:", value: "`" + userAddress + "`", inline: false },
+                                { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Transaction](https://basescan.org/tx/' + hash + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ") ∙ " + '[Logs](https://basescan.org/tx/' + hash + "#eventlog)", inline: false }
+
+                            )
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+
+                        if (followers >= 1000 && followers < 10000) {
+
+                            await channelNewFTUser1K.send({ embeds: [userFTEmbed], components: [buttonRow] });
+
+                        } else if (followers >= 10000 && followers < 100000) {
+
+                            await channelNewFTUser10K.send({ embeds: [userFTEmbed], components: [buttonRow] });
+
+                        } else if (followers >= 100000) {
+
+                            await channelNewFTUser100K.send({ embeds: [userFTEmbed], components: [buttonRow] });
+
+                        }
+
+                    }
+                }
+            }
 
         }
 

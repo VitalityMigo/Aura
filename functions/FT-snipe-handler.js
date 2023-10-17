@@ -335,13 +335,6 @@ async function snipeUserHandler(type, subjectUsername, subjectName, subjectPfp, 
 
     }
 
-    try {
-
-        deleteInArray(subjectAddress)
-
-    } catch (error) { }
-
-
 }
 
 module.exports = snipeUserHandler

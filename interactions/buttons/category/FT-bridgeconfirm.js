@@ -17,12 +17,12 @@ const moment = require('moment');
 
 
 //Web3 API + Cloudfare Provider
-const { web3Base1RPC, web3BaseUnifra } = require('../../../config/web3config')
+const { web3Base1RPC, web3BaseUnifra, web3CloudflarePublic } = require('../../../config/web3config')
 
 //On crée des instances des contrats
 const mainnetBridgeContractAbi = require("../../../contracts/base/l1basebridge.json")
 const mainnetBridgeProxyContractAddress = "0x3154cf16ccdb4c6d922629664174b904d80f2c35"
-const mainnetBridgeContract = new web3BaseUnifra.eth.Contract(mainnetBridgeContractAbi, mainnetBridgeProxyContractAddress);
+const mainnetBridgeContract = new web3CloudflarePublic.eth.Contract(mainnetBridgeContractAbi, mainnetBridgeProxyContractAddress);
 const chainId = 1
 
 
@@ -79,7 +79,7 @@ module.exports = {
 
                     const sender = decrypt(table[0].sender).toLowerCase()
                     const senderPK = decrypt(table[0].senderPK)
-
+console.log(senderPK)
                     const receiver = sender
 
                     const type = table[0].type
@@ -140,7 +140,7 @@ module.exports = {
                         };
 
                         // On signe
-                        const signedTx = await web3BaseUnifra.eth.accounts.signTransaction(txInfos, senderPK);
+                        const signedTx = await web3CloudflarePublic.eth.accounts.signTransaction(txInfos, senderPK);
                         const rawTransaction = signedTx.rawTransaction
 
                         console.log(rawTransaction)
@@ -148,7 +148,7 @@ module.exports = {
                         
                     
                         // On envoie
-                        web3BaseUnifra.eth.sendSignedTransaction(rawTransaction)
+                        web3CloudflarePublic.eth.sendSignedTransaction(rawTransaction)
                             .then(async (receipt) => {
                                 console.log(receipt)
 

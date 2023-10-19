@@ -1,11 +1,4 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const rpc1NodeBaseApiKey = process.env.rpc1NodeBaseApiKey
-const blastNodeApiKey = process.env.blastNodeApiKey
-console.log(rpc1NodeBaseApiKey)
 
 const { web3Base1RPC, web3BaseBlast, web3BaseUnifra } = require('../config/web3config');
 

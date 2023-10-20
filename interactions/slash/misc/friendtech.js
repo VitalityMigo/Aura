@@ -44,7 +44,8 @@ const { web3Base1RPC, web3BaseUnifra } = require('../../../config/web3config');
 
 
 // On crée des instances des contrats
-const mainnetBridgeContractAbi = require("../../../contracts/base/l1basebridge.json")
+const mainnetBridgeContractAbi = require("../../../contracts/base/l1basebridge.json");
+const { auth } = require("twitter-api-sdk");
 const mainnetBridgeProxyContractAddress = "0x3154cf16ccdb4c6d922629664174b904d80f2c35"
 const mainnetBridgeContract = new web3BaseUnifra.eth.Contract(mainnetBridgeContractAbi, mainnetBridgeProxyContractAddress);
 
@@ -132,6 +133,10 @@ const buttonRowChoiceNoBridge = new ActionRowBuilder()
             .setStyle(4),
 
     );
+
+
+
+
 
 
 
@@ -677,6 +682,9 @@ module.exports = {
 
                                 } else if (interaction.options.getSubcommand() === 'portfolio') {
 
+
+
+
                                     let totalFTValue = 0
                                     let totalSharesValue = 0
                                     let totalFeesCollected = 0
@@ -685,7 +693,6 @@ module.exports = {
                                     let totalShares = 0
 
                                     let holdingTable = []
-                                    let holdingFormatted = ""
 
                                     let twitterUsername = ""
                                     let twitterName = ""
@@ -697,6 +704,8 @@ module.exports = {
                                     let isExactMatch = true
 
 
+                                    let userSetAddress = "0x"
+                                    let userAddress = ""
 
                                     const usernameProvided = interaction.options.getString("twitter").toLowerCase()
 
@@ -714,12 +723,13 @@ module.exports = {
 
 
                                         const user = findUser.data.users.find((user) => user.twitterUsername.toLowerCase() == givenUsername.toLowerCase());
+                                        console.log("1")
 
 
                                         if (user) {
 
 
-                                            userAddress = user.address
+                                            userAddress = user.address.toLowerCase()
 
 
 
@@ -728,22 +738,117 @@ module.exports = {
 
                                             try {
 
+                                                const userSetup = await infra_friendTech.findOne({ where: { authorId: authorId } })
+                                                let isUserSetupDisable = false
+
+                                                if (userSetup != null) {
+                                                    userSetAddress = decrypt(userSetup.dataValues.walletAddress).toLowerCase()
+
+                                                    if (userSetAddress == userAddress) {
+                                                        isUserSetupDisable = true
+                                                    }
+                                                }
 
 
 
 
-                                                // Prix de l'ETH
-                                                const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-                                                const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
 
 
 
+                                                const buttonsRowNoPortfolio = new ActionRowBuilder()
+                                                    .addComponents(
+                                                        new ButtonBuilder()
+                                                            .setCustomId('friendtech-portfolio-first-button')
+                                                            .setLabel('first page')
+                                                            .setStyle(2)
+                                                            .setDisabled(true),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('friendtech-portfolio-previous-button')
+                                                            .setLabel('previous page')
+                                                            .setStyle(2)
+                                                            .setDisabled(true),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('friendtech-portfolio-next-button')
+                                                            .setLabel('next page')
+                                                            .setStyle(2)
+                                                            .setDisabled(true),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('friendtech-portfolio-last-button')
+                                                            .setLabel('last page')
+                                                            .setStyle(2)
+                                                            .setDisabled(true),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_portfolio_myportfolio_' + userSetAddress)
+                                                            .setLabel('👝 My Portfolio')
+                                                            .setStyle(1)
+                                                            .setDisabled(isUserSetupDisable),
+                                                    );
 
+
+                                                const buttonsRowPortfolio = new ActionRowBuilder()
+                                                    .addComponents(
+                                                        new ButtonBuilder()
+                                                            .setCustomId('friendtech-portfolio-first-button')
+                                                            .setLabel('first page')
+                                                            .setStyle(2)
+                                                            .setDisabled(true),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('friendtech-portfolio-previous-button')
+                                                            .setLabel('previous page')
+                                                            .setStyle(2)
+                                                            .setDisabled(true),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('friendtech-portfolio-next-button')
+                                                            .setLabel('next page')
+                                                            .setStyle(2),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('friendtech-portfolio-last-button')
+                                                            .setLabel('last page')
+                                                            .setStyle(2),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_portfolio_myportfolio_' + userSetAddress)
+                                                            .setLabel('👝 My Portfolio')
+                                                            .setStyle(1)
+                                                            .setDisabled(isUserSetupDisable),
+                                                    );
+
+
+                                                const buttonsRowPortfolioAction = new ActionRowBuilder()
+                                                    .addComponents(
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_portfolio_liqAll')
+                                                            .setLabel('💣 Liquidate All')
+                                                            .setStyle(4),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_portfolio_liqFew')
+                                                            .setLabel('🧯 Liquidate Few')
+                                                            .setStyle(4),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_portfolio_liqOne')
+                                                            .setLabel('🎯 Liquidate One')
+                                                            .setStyle(3),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_portfolio_liqOverOne')
+                                                            .setLabel('🪄 Liquidate +1')
+                                                            .setStyle(3),
+
+                                                    );
+
+                                                const buttonsRowPortfolioAction2 = new ActionRowBuilder()
+                                                    .addComponents(
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_portfolio_userlookup')
+                                                            .setLabel('👁 User Lookup')
+                                                            .setStyle(1),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_portfolio_tutorial')
+                                                            .setLabel('📑 Tutorial')
                                                             .setStyle(1),
                                                         new ButtonBuilder()
                                                             .setCustomId('friendtech_exec_setup-button')
                                                             .setLabel('💻 Setup')
                                                             .setStyle(1),
+
 
 
                                                     );
@@ -753,6 +858,8 @@ module.exports = {
                                                 const ethUsdPrice = await ethPrice()
                                                 const userBalance = parseFloat(await web3Base1RPC.eth.getBalance(userAddress)) / 10 ** 18
                                                 //{}
+
+
                                                 const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
 
                                                 holdingCount = userInfoCall.data.holdingCount
@@ -764,6 +871,7 @@ module.exports = {
 
                                                 let userHoldingCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token-holdings")
 
+                                                console.log("2")
 
 
                                                 if (userHoldingCall.data.nextPageStart != 50) {
@@ -840,6 +948,7 @@ module.exports = {
 
 
                                                                 let obj = {}
+                                                                obj.username = holding.twitterUsername.toLowerCase()
                                                                 obj.balance = holding.balance
                                                                 obj.price = holderPrice
 
@@ -867,7 +976,6 @@ module.exports = {
 
 
 
-
                                                 let holdingFormatted = "Subject                  #Held        Price        Value\n\n"
                                                 let index = 0
 
@@ -876,21 +984,18 @@ module.exports = {
 
                                                     index++
 
-                                                    if (index <= 12) {
+                                                    if (index <= 16) {
 
-                                                        let holderName = holding.username
+                                                        let holderName = reduceText(holding.username, 26).toLowerCase()
                                                         let holderBalance = holding.balance
                                                         let price = parseFloat(holding.price).toFixed(3)
                                                         let holderValue = parseFloat(holderBalance * holding.price).toFixed(3)
 
 
-                                                        let lignMaxSize = 55
-                                                        let leftPartNfts = "`" + reduceText(holderName, 30) + " ∙ " + holderBalance + " Owned ∙ " + price + "Ξ"
-                                                        let leftPartNFTsLenght = leftPartNfts.length
-                                                        let rightPartNftsLenght = rightPartNfts.length
-                                                        let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
+                                                        let part1 = holderName
                                                         let part2 = holderBalance
                                                         let part3 = parseFloat(price).toFixed(2) + "Ξ"
+                                                        let part4 = parseFloat(holderValue).toFixed(2) + "Ξ\n"
 
                                                     
                                                         let spaceSize = 30 - part2.length - part1.length
@@ -898,9 +1003,12 @@ module.exports = {
                                                         for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
 
                                                         let spaceSize2 = 13 - part3.length
+                                                        let spaceLenght2 = ""
+                                                        for (let i = 0; i < spaceSize2; i++) { spaceLenght2 += " " }
 
-                                                        holdingFormatted += leftPartNfts + spaceLenght + rightPartNfts
                                                         let spaceSize3 = 13 - part4.length
+                                                        let spaceLenght3 = ""
+                                                        for (let i = 0; i < spaceSize3; i++) { spaceLenght3 += " " }
 
 
                                                         holdingFormatted += part1 + spaceLenght + part2 + spaceLenght2 + part3 + spaceLenght3 + part4
@@ -912,15 +1020,19 @@ module.exports = {
                                                     }
                                                 }
 
+                                                const itemsPerPage = 16; // Nombre d'objets par page
+                                                const pageIndex = Math.ceil(holdingTableSorted.length / itemsPerPage);
 
 
                                                 totalFTValue = totalSharesValue + userBalance
 
+                                                if (holdingFormatted == "") { holdingFormatted = "```No shares found for this user.                         ```" }
 
 
+                                                console.log("3")
                                                 const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
                                                     .setTitle(twitterName + "'s portfolio")
-                                                    .setDescription(">>> Displaying the friend.tech portfolio metrics of `" + twitterName + "`.")
+                                                    .setDescription(">>> Displaying the friend.tech portfolio metrics.")
                                                     .setAuthor({ name: authorName, iconURL: userAvatar })
                                                     //.setThumbnail(twitterPfp)
                                                     .setTimestamp()
@@ -928,16 +1040,60 @@ module.exports = {
                                                         { name: " ", value: " ", inline: false },
                                                         { name: "Total Value", value: "`" + parseFloat(totalFTValue).toFixed(3) + "Ξ`", inline: true },
                                                         { name: "Shares Value", value: "`" + parseFloat(totalSharesValue).toFixed(3) + "Ξ`", inline: true },
-                                                        { name: "Total Fees Collected", value: "`" + parseFloat(totalFeesCollected).toFixed(5) + "Ξ`", inline: true },
-                                                        { name: "Unique Shares Count", value: "`" + holdingCount + "`", inline: true },
-                                                        { name: "Total Shares Count", value: "`" + totalShares + "`", inline: true },
-                                                        { name: "Shares:", value: holdingFormatted, inline: false },
-                                                        { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holding](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ")", inline: false }
+                                                        { name: "Base ETH Value", value: "`" + parseFloat(userBalance).toFixed(3) + "Ξ`", inline: true },
+                                                        { name: " ", value: " ", inline: false },
+                                                        { name: "Shares:", value: "```" + holdingFormatted + "```", inline: false },
+                                                        { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holding](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ")", inline: false },
+                                                        { name: "Page:", value: "`[1/" + pageIndex + "]`", inline: false },
 
                                                     )
                                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                                await interaction.editReply({ embeds: [userFTEmbed] });
+
+                                                if (isUserSetupDisable == false) {
+                                                    if (pageIndex <= 1) { await interaction.editReply({ embeds: [userFTEmbed], components: [buttonsRowNoPortfolio] }); }
+                                                    else { await interaction.editReply({ embeds: [userFTEmbed], components: [buttonsRowPortfolio] }); }
+                                                } else {
+                                                    if (pageIndex <= 1) { await interaction.editReply({ embeds: [userFTEmbed], components: [buttonsRowNoPortfolio, buttonsRowPortfolioAction, buttonsRowPortfolioAction2] }); }
+                                                    else { await interaction.editReply({ embeds: [userFTEmbed], components: [buttonsRowPortfolio, buttonsRowPortfolioAction, buttonsRowPortfolioAction2] }); }
+
+                                                }
+
+
+                                                let holdingDataTable = []
+                                                let obj = {}
+                                                obj.name = twitterName
+                                                obj.username = twitterUsername
+                                                obj.address = userAddress
+                                                obj.totalValue = parseFloat(totalFTValue).toFixed(3) + "Ξ"
+                                                obj.shareValue = parseFloat(totalSharesValue).toFixed(3) + "Ξ"
+                                                obj.userBalance = parseFloat(userBalance).toFixed(3) + "Ξ"
+                                                obj.links = '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holding](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ")"
+                                                holdingDataTable.push(obj)
+
+
+                                                //On fait le call àbn  la base SQL
+                                                await interactionData.destroy({ where: { authorId: authorId, commandName: "friendtech-portfolio", serverId: serverId } })
+
+                                                await interactionData.create({
+
+                                                    authorId: authorId,
+                                                    authorName: authorName,
+                                                    serverId: serverId,
+                                                    commandName: "friendtech-portfolio",
+                                                    interactionId: interaction.id,
+                                                    walletAddress: "N/A",
+                                                    walletCategory: "N/A",
+                                                    embed1: JSON.stringify(holdingTableSorted),
+                                                    embed2: JSON.stringify(holdingDataTable),
+                                                    embed3: "N/A",
+                                                    pageIndex: pageIndex.toString(),
+                                                    actualPage: "1",
+                                                    walletName: "N/A",
+                                                    selecedTimestamp: "N/A",
+                                                    selectedCollection: "N/A",
+                                                    collectionSlug: "N/A",
+                                                    collectionBanner: "N/A",
                                                     avgDeriskPrice: "N/A",
                                                     floorPrice: "N/A",
                                                     lowerMarketlace: "N/A",
@@ -945,6 +1101,8 @@ module.exports = {
                                                     buyCount: "N/A",
                                                     soldCount: "N/A",
                                                     remaining: "N/A",
+                                                    avgBuy: "N/A",
+                                                    avgSold: "N/A",
                                                     realisedProfit: "N/A",
                                                     potentialProfit: "N/A",
                                                     roi: "N/A",

@@ -456,7 +456,7 @@ module.exports = {
 
                                                 const twitterPromise = getTwitterUserInfo(user.twitterUsername)
                                                 const tradersPromise = formatTradesData(userAddress)
-                                                const airdropInfoCall = axios.get("https://prod-api.kosetto.com/points/" + userAddress)
+                                                const airdropInfoCall = axios.get("https://prod-api.kosetto.com/points/" + userAddress, { headers: friendtechHeaders })
 
 
                                                 const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
@@ -555,6 +555,7 @@ module.exports = {
                                                 // On récup les points d'airdrops
                                                 airdropTier = airdropInfos.data.tier.toUpperCase()
                                                 airdropPoints = airdropInfos.data.totalPoints
+                                                let airdropRank = airdropInfos.data.leaderboard
 
 
                                                 let [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersPromise, tradersPromise, ethUsdPricePromise]);
@@ -586,7 +587,7 @@ module.exports = {
                                                         { name: "Unique Holders", value: "`" + parseFloat(uniqueHolders).toFixed(1) + "%`", inline: true },
                                                         { name: "Airdrop Pts.", value: "`" + airdropPoints + "`", inline: true },
                                                         { name: "Airdrop Tier", value: "`" + airdropTier + "`", inline: true },
-                                                        { name: "Collected Fees", value: "`" + parseFloat(totalFeesCollected).toFixed(3) + "Ξ`", inline: true },
+                                                        { name: "Airdrop Rank", value: "`#" + airdropRank + "`", inline: true },
                                                         { name: " ", value: " ", inline: false },
                                                         { name: "Last Online", value: "<t:" + lastOnlineTimestamp + ":R>", inline: true },
                                                         { name: "Last Message", value: "<t:" + lastMessage + ":R>", inline: true },
@@ -738,6 +739,20 @@ module.exports = {
 
 
 
+                                                            .setStyle(1),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('friendtech_exec_setup-button')
+                                                            .setLabel('💻 Setup')
+                                                            .setStyle(1),
+
+
+                                                    );
+
+
+
+                                                const ethUsdPrice = await ethPrice()
+                                                const userBalance = parseFloat(await web3Base1RPC.eth.getBalance(userAddress)) / 10 ** 18
+                                                //{}
                                                 const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
 
                                                 holdingCount = userInfoCall.data.holdingCount
@@ -825,7 +840,6 @@ module.exports = {
 
 
                                                                 let obj = {}
-                                                                obj.username = holding.twitterUsername
                                                                 obj.balance = holding.balance
                                                                 obj.price = holderPrice
 
@@ -854,6 +868,7 @@ module.exports = {
 
 
 
+                                                let holdingFormatted = "Subject                  #Held        Price        Value\n\n"
                                                 let index = 0
 
                                                 // On construit la table d'holders
@@ -867,22 +882,28 @@ module.exports = {
                                                         let holderBalance = holding.balance
                                                         let price = parseFloat(holding.price).toFixed(3)
                                                         let holderValue = parseFloat(holderBalance * holding.price).toFixed(3)
-                                                        let holderValueUsd = parseFloat((holderBalance * price) * ethUsdPrice).toFixed(0)
 
 
                                                         let lignMaxSize = 55
                                                         let leftPartNfts = "`" + reduceText(holderName, 30) + " ∙ " + holderBalance + " Owned ∙ " + price + "Ξ"
-                                                        let rightPartNfts = holderValue + "Ξ (" + holderValueUsd + "$)`\n"
                                                         let leftPartNFTsLenght = leftPartNfts.length
                                                         let rightPartNftsLenght = rightPartNfts.length
                                                         let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
+                                                        let part2 = holderBalance
+                                                        let part3 = parseFloat(price).toFixed(2) + "Ξ"
+
+                                                    
+                                                        let spaceSize = 30 - part2.length - part1.length
                                                         let spaceLenght = ""
                                                         for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
 
+                                                        let spaceSize2 = 13 - part3.length
 
                                                         holdingFormatted += leftPartNfts + spaceLenght + rightPartNfts
+                                                        let spaceSize3 = 13 - part4.length
 
 
+                                                        holdingFormatted += part1 + spaceLenght + part2 + spaceLenght2 + part3 + spaceLenght3 + part4
 
 
 
@@ -892,9 +913,8 @@ module.exports = {
                                                 }
 
 
-                                                totalFTValue = totalSharesValue + totalFeesCollected
 
-                                                if (holdingFormatted == "") { holdingFormatted = "```No shares found for this user.                         ```" }
+                                                totalFTValue = totalSharesValue + userBalance
 
 
 
@@ -902,7 +922,7 @@ module.exports = {
                                                     .setTitle(twitterName + "'s portfolio")
                                                     .setDescription(">>> Displaying the friend.tech portfolio metrics of `" + twitterName + "`.")
                                                     .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                    .setThumbnail(twitterPfp)
+                                                    //.setThumbnail(twitterPfp)
                                                     .setTimestamp()
                                                     .addFields(
                                                         { name: " ", value: " ", inline: false },
@@ -918,6 +938,21 @@ module.exports = {
                                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
                                                 await interaction.editReply({ embeds: [userFTEmbed] });
+                                                    avgDeriskPrice: "N/A",
+                                                    floorPrice: "N/A",
+                                                    lowerMarketlace: "N/A",
+                                                    collectionName: "N/A",
+                                                    buyCount: "N/A",
+                                                    soldCount: "N/A",
+                                                    remaining: "N/A",
+                                                    realisedProfit: "N/A",
+                                                    potentialProfit: "N/A",
+                                                    roi: "N/A",
+                                                    visualTitle: "N/A",
+                                                    userAvatar: "N/A",
+                                                    nbMembersInvolved: "N/A",
+                                                    totalTradeCount: "N/A",
+                                                })
 
 
                                             } catch (error) {
@@ -1753,7 +1788,7 @@ module.exports = {
                                                 let holderCount = userInfoCall.data.holderCount
                                                 let supply = userInfoCall.data.shareSupply
                                                 let twName = userInfoCall.data.twitterName
-                                                let twUsername = userInfoCall.data.twitterUsername
+                                                let twUsername = user.twitterUsername
                                                 let price = userInfoCall.data.displayPrice / 10 ** 18
 
 
@@ -1945,7 +1980,7 @@ module.exports = {
 
 
 
-                                                    let linksFormatted = '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ")"
+                                                    let linksFormatted = '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ")"
 
 
                                                     const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")

@@ -34,6 +34,11 @@ const { formatHoldersData, formatTradesData } = require('../../../functions/FT-u
 
 const axios = require('axios')
 
+const friendtechHeaders = {
+    'Authorization': friendtechApiKey, // Remplacez VOTRE_TOKEN par le token d'authentification
+    // Autres en-têtes si nécessaire
+};
+
 
 
 function formatWallet(input) {
@@ -133,7 +138,7 @@ module.exports = {
 
                     const ethUsdPricePromise = ethPrice()
                     const tradersPromise = formatTradesData(userAddress)
-                    const airdropInfoCall = axios.get("https://prod-api.kosetto.com/points/" + userAddress)
+                    const airdropInfoCall = axios.get("https://prod-api.kosetto.com/points/" + userAddress, { headers: friendtechHeaders })
 
 
                     const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
@@ -189,6 +194,7 @@ module.exports = {
                     // On récup les points d'airdrops
                     airdropTier = airdropInfos.data.tier.toUpperCase()
                     airdropPoints = airdropInfos.data.totalPoints
+                    let airdropRank = airdropInfos.data.leaderboard
 
 
                     let [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersPromise, tradersPromise, ethUsdPricePromise]);
@@ -220,7 +226,7 @@ module.exports = {
                             { name: "Unique Holders", value: "`" + parseFloat(uniqueHolders).toFixed(1) + "%`", inline: true },
                             { name: "Airdrop Pts.", value: "`" + airdropPoints + "`", inline: true },
                             { name: "Airdrop Tier", value: "`" + airdropTier + "`", inline: true },
-                            { name: "Collected Fees", value: "`" + parseFloat(totalFeesCollected).toFixed(3) + "Ξ`", inline: true },
+                            { name: "Airdrop Rank", value: "`#" + airdropRank + "`", inline: true },
                             { name: " ", value: " ", inline: false },
                             { name: "Last Online", value: "<t:" + lastOnlineTimestamp + ":R>", inline: true },
                             { name: "Last Message", value: "<t:" + lastMessage + ":R>", inline: true },

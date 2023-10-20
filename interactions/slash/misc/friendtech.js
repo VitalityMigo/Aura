@@ -40,7 +40,7 @@ const axios = require('axios')
 
 // //Web3 API + Cloudfare Provider
 // const Web3 = require("web3")
-const { web3Base1RPC, web3BaseUnifra } = require('../../../config/web3config');
+const { web3Base1RPC, web3BaseUnifra, web3BaseDRPC } = require('../../../config/web3config');
 
 
 // On crée des instances des contrats
@@ -409,6 +409,9 @@ module.exports = {
                                     let airdropTier = "UNRANKED"
                                     let airdropPoints = 0
 
+                                    let watchlistCount = 0
+                                    let holdingCount = 0
+
                                     let volume6h = 0
                                     let volume1d = 0
                                     let volume7d = 0
@@ -461,7 +464,8 @@ module.exports = {
 
                                                 const twitterPromise = getTwitterUserInfo(user.twitterUsername)
                                                 const tradersPromise = formatTradesData(userAddress)
-                                                const airdropInfoCall = axios.get("https://prod-api.kosetto.com/points/" + userAddress, { headers: friendtechHeaders })
+                                                // const airdropInfoCall = axios.get("https://prod-api.kosetto.com/points/" + userAddress, { headers: friendtechHeaders })
+                                                const balanceCall = web3BaseDRPC.eth.getBalance(userAddress)
 
 
                                                 const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
@@ -481,6 +485,8 @@ module.exports = {
                                                 price = userInfoCall.data.displayPrice / 10 ** 18
                                                 totalFeesCollected = userInfoCall.data.lifetimeFeesCollectedInWei / 10 ** 18
                                                 pfp2 = userInfoCall.data.twitterPfpUrl
+                                                watchlistCount = userInfoCall.data.watchlistCount
+                                                holdingCount = userInfoCall.data.holdingCount
 
 
 
@@ -542,7 +548,7 @@ module.exports = {
                                                     )
 
 
-                                                let [airdropInfos, twitterInfos] = await Promise.all([airdropInfoCall, twitterPromise]);
+                                                let [balanceRaw, twitterInfos] = await Promise.all([balanceCall, twitterPromise]);
 
                                                 if (twitterInfos) {
                                                     followers = twitterInfos.followers_count
@@ -556,11 +562,11 @@ module.exports = {
                                                 }
 
 
-
+                                                const balance = balanceRaw / 10 ** 18
                                                 // On récup les points d'airdrops
-                                                airdropTier = airdropInfos.data.tier.toUpperCase()
-                                                airdropPoints = airdropInfos.data.totalPoints
-                                                let airdropRank = airdropInfos.data.leaderboard
+                                                //  airdropTier = airdropInfos.data.tier.toUpperCase()
+                                                //  airdropPoints = airdropInfos.data.totalPoints
+                                                //  let airdropRank = airdropInfos.data.leaderboard
 
 
                                                 let [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersPromise, tradersPromise, ethUsdPricePromise]);
@@ -590,9 +596,9 @@ module.exports = {
                                                         { name: "Share Supply", value: "`" + shareSupply + "`", inline: true },
                                                         { name: "Holders", value: "`" + holderCount + "`", inline: true },
                                                         { name: "Unique Holders", value: "`" + parseFloat(uniqueHolders).toFixed(1) + "%`", inline: true },
-                                                        { name: "Airdrop Pts.", value: "`" + airdropPoints + "`", inline: true },
-                                                        { name: "Airdrop Tier", value: "`" + airdropTier + "`", inline: true },
-                                                        { name: "Airdrop Rank", value: "`#" + airdropRank + "`", inline: true },
+                                                        { name: "Holding", value: "`" + holdingCount + "`", inline: true },
+                                                        { name: "Watchlist", value: "`" + watchlistCount + "`", inline: true },
+                                                        { name: "Balance", value: "`" + parseFloat(balance).toFixed(3) + "Ξ`", inline: true },
                                                         { name: " ", value: " ", inline: false },
                                                         { name: "Last Online", value: "<t:" + lastOnlineTimestamp + ":R>", inline: true },
                                                         { name: "Last Message", value: "<t:" + lastMessage + ":R>", inline: true },
@@ -997,7 +1003,7 @@ module.exports = {
                                                         let part3 = parseFloat(price).toFixed(2) + "Ξ"
                                                         let part4 = parseFloat(holderValue).toFixed(2) + "Ξ\n"
 
-                                                    
+
                                                         let spaceSize = 30 - part2.length - part1.length
                                                         let spaceLenght = ""
                                                         for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }

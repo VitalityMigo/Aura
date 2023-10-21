@@ -38,8 +38,6 @@ const friendtechHeaders = {
 const axios = require('axios')
 
 
-// //Web3 API + Cloudfare Provider
-// const Web3 = require("web3")
 const { web3Base1RPC, web3BaseUnifra, web3BaseDRPC } = require('../../../config/web3config');
 
 
@@ -784,7 +782,7 @@ module.exports = {
                                                             .setStyle(2)
                                                             .setDisabled(true),
                                                         new ButtonBuilder()
-                                                            .setCustomId('button_friendtech_portfolio_myportfolio_' + userSetAddress)
+                                                            .setCustomId('button_friendtech_portfolio_exec_myportfolio')
                                                             .setLabel('👝 My Portfolio')
                                                             .setStyle(1)
                                                             .setDisabled(isUserSetupDisable),
@@ -812,7 +810,7 @@ module.exports = {
                                                             .setLabel('last page')
                                                             .setStyle(2),
                                                         new ButtonBuilder()
-                                                            .setCustomId('button_friendtech_portfolio_myportfolio_' + userSetAddress)
+                                                            .setCustomId('button_friendtech_portfolio_exec_myportfolio')
                                                             .setLabel('👝 My Portfolio')
                                                             .setStyle(1)
                                                             .setDisabled(isUserSetupDisable),
@@ -822,19 +820,19 @@ module.exports = {
                                                 const buttonsRowPortfolioAction = new ActionRowBuilder()
                                                     .addComponents(
                                                         new ButtonBuilder()
-                                                            .setCustomId('button_friendtech_portfolio_liqAll')
+                                                            .setCustomId('button_friendtech_portfolio_exec_liqAll')
                                                             .setLabel('💣 Liquidate All')
                                                             .setStyle(4),
                                                         new ButtonBuilder()
-                                                            .setCustomId('button_friendtech_portfolio_liqFew')
+                                                            .setCustomId('button_friendtech_portfolio_exec_liqFew')
                                                             .setLabel('🧯 Liquidate Few')
                                                             .setStyle(4),
                                                         new ButtonBuilder()
-                                                            .setCustomId('button_friendtech_portfolio_liqOne')
+                                                            .setCustomId('button_friendtech_portfolio_exec_liqOne')
                                                             .setLabel('🎯 Liquidate One')
                                                             .setStyle(3),
                                                         new ButtonBuilder()
-                                                            .setCustomId('button_friendtech_portfolio_liqOverOne')
+                                                            .setCustomId('button_friendtech_portfolio_exec_liqOverOne')
                                                             .setLabel('🪄 Liquidate +1')
                                                             .setStyle(3),
 
@@ -843,11 +841,11 @@ module.exports = {
                                                 const buttonsRowPortfolioAction2 = new ActionRowBuilder()
                                                     .addComponents(
                                                         new ButtonBuilder()
-                                                            .setCustomId('button_friendtech_portfolio_userlookup')
+                                                            .setCustomId('button_friendtech_portfolio_exec_userlookup')
                                                             .setLabel('👁 User Lookup')
                                                             .setStyle(1),
                                                         new ButtonBuilder()
-                                                            .setCustomId('button_friendtech_portfolio_tutorial')
+                                                            .setCustomId('button_friendtech_portfolio_exec_tutorial')
                                                             .setLabel('📑 Tutorial')
                                                             .setStyle(1),
                                                         new ButtonBuilder()
@@ -861,7 +859,6 @@ module.exports = {
 
 
 
-                                                const ethUsdPrice = await ethPrice()
                                                 const userBalance = parseFloat(await web3Base1RPC.eth.getBalance(userAddress)) / 10 ** 18
                                                 //{}
 
@@ -892,6 +889,8 @@ module.exports = {
 
                                                         let obj = {}
                                                         obj.username = holding.twitterUsername
+                                                        obj.address = holding.address.toLowerCase()
+                                                        obj.pfp = holding.twitterPfpUrl.toLowerCase()
                                                         obj.balance = holding.balance
                                                         obj.price = holderPrice
 
@@ -917,6 +916,8 @@ module.exports = {
 
                                                         let obj = {}
                                                         obj.username = holding.twitterUsername
+                                                        obj.address = holding.address.toLowerCase()
+                                                        obj.pfp = holding.twitterPfpUrl.toLowerCase()
                                                         obj.balance = holding.balance
                                                         obj.price = holderPrice
 
@@ -955,6 +956,8 @@ module.exports = {
 
                                                                 let obj = {}
                                                                 obj.username = holding.twitterUsername.toLowerCase()
+                                                                obj.pfp = holding.twitterPfpUrl.toLowerCase()
+                                                                obj.address = holding.address.toLowerCase()
                                                                 obj.balance = holding.balance
                                                                 obj.price = holderPrice
 

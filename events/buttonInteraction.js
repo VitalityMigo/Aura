@@ -96,10 +96,17 @@ module.exports = {
 
 			command = client.buttonCommands.get("button-friendtechtasksinfra-autosell-param-");
 			
-		} 
-		
-		
+		} else if (customId.startsWith("button_friendtech_portfolio_exec_")) {
 
+			command = client.buttonCommands.get("button_friendtech_portfolio_exec_");
+			
+		} else if (customId.startsWith("friendtech_portfolio_exec_confirm_")) {
+
+			command = client.buttonCommands.get("friendtech_portfolio_exec_confirm_");
+			
+		}
+		
+		
 		
 		
 		

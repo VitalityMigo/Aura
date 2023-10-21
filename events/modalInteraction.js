@@ -36,7 +36,10 @@ module.exports = {
 			command = client.modalCommands.get("modal-friendtechtasksinfra-sniper-param-");
 		} else if (customId.startsWith("modal-friendtechtasksinfra-order-param-")) {
 			command = client.modalCommands.get("modal-friendtechtasksinfra-order-param-");
+		} else if (customId.startsWith("modal_friendtech_portfolio_exec_")) {
+			command = client.modalCommands.get("modal_friendtech_portfolio_exec_");
 		} 
+		
 		
 		
 		else {

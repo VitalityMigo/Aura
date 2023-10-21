@@ -339,15 +339,15 @@ module.exports = {
 
                 if (authorProfile === null) {
 
-                    if (interaction.options.getSubcommand() != 'wallet' && interaction.options.getSubcommand() != 'bridge' && interaction.options.getSubcommand() != 'tasks') {
+                    if (interaction.options.getSubcommand() != 'wallet' && interaction.options.getSubcommand() != 'bridge' && interaction.options.getSubcommand() != 'tasks' && interaction.options.getSubcommand() != 'portfolio') {
                         await interaction.deferReply();
                     } else { await interaction.deferReply({ ephemeral: true }) }
 
                 } else {
                     const authorPrivacyMode = authorProfile.dataValues.privacyMode
 
-                    if (authorPrivacyMode.toLowerCase() === "private" || interaction.options.getSubcommand() === 'wallet' || interaction.options.getSubcommand() === 'bridge' || interaction.options.getSubcommand() === 'tasks') { await interaction.deferReply({ ephemeral: true }); }
-                    if (authorPrivacyMode.toLowerCase() === "public" && interaction.options.getSubcommand() != 'wallet' && interaction.options.getSubcommand() != 'bridge' && interaction.options.getSubcommand() != 'tasks') { await interaction.deferReply(); }
+                    if (authorPrivacyMode.toLowerCase() === "private" || interaction.options.getSubcommand() === 'wallet' || interaction.options.getSubcommand() === 'bridge' || interaction.options.getSubcommand() === 'tasks' && interaction.options.getSubcommand() != 'portfolio') { await interaction.deferReply({ ephemeral: true }); }
+                    if (authorPrivacyMode.toLowerCase() === "public" && interaction.options.getSubcommand() != 'wallet' && interaction.options.getSubcommand() != 'bridge' && interaction.options.getSubcommand() != 'tasks' && interaction.options.getSubcommand() != 'portfolio') { await interaction.deferReply(); }
                 }
 
 
@@ -749,12 +749,27 @@ module.exports = {
                                                     userSetAddress = decrypt(userSetup.dataValues.walletAddress).toLowerCase()
 
                                                     if (userSetAddress == userAddress) {
+                                                        await interaction.deferReply({ ephemeral: true });
                                                         isUserSetupDisable = true
                                                     }
+                                                } else {
+
+                                                    if (authorProfile === null) {
+
+                                                            await interaction.deferReply();
+                                    
+                                                    } else {
+                                                        const authorPrivacyMode = authorProfile.dataValues.privacyMode
+                                    
+                                                        if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
+                                                        if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
+                                                    }
+    
+
                                                 }
 
 
-
+                                       
 
 
 

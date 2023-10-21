@@ -341,8 +341,10 @@ module.exports = {
 
                     if (interaction.options.getSubcommand() != 'wallet' && interaction.options.getSubcommand() != 'bridge' && interaction.options.getSubcommand() != 'tasks' && interaction.options.getSubcommand() != 'portfolio') {
                         await interaction.deferReply();
-                    } else { await interaction.deferReply({ ephemeral: true }) }
-
+                    } else { 
+                        if (interaction.options.getSubcommand() != 'portfolio') {
+                            await interaction.deferReply({ ephemeral: true }) }
+                        }
                 } else {
                     const authorPrivacyMode = authorProfile.dataValues.privacyMode
 

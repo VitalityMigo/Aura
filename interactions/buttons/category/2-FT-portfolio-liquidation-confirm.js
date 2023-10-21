@@ -140,7 +140,7 @@ module.exports = {
                             gas: gas,
                             gasLimit: gasLimit,
                             to: shareContractAddress,
-                            value: valueWEI,
+                            value: 0,
                             data: data,
                             chainId: baseChainId,
 
@@ -154,15 +154,14 @@ module.exports = {
                         // On envoie
                         web3BaseBlast.eth.sendSignedTransaction(rawTransaction)
                             .then(async (receipt) => {
-                                console.log(receipt)
 
+                                
                                 let hash = receipt.transactionHash
                                 let gasPaid = receipt.gasUsed * (receipt.effectiveGasPrice / 10 ** 18)
                                 let totalReceived = parseFloat(expectedValue) - parseFloat(gasPaid)
                                 let targetPart = (totalReceived / expectedValue) * 100;
                                 let status = receipt.status
 
-                                0.000000000100237787
 
                                 if (status == true) {
 
@@ -174,7 +173,7 @@ module.exports = {
                                         .addFields(
                                             { name: " ", value: " ", inline: false },
                                             { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: true },
-                                            { name: "Action", value: "`" + action + "`", inline: true },
+                                            { name: "Action", value: "`" + actionTxn + "`", inline: true },
                                             { name: " ", value: " ", inline: false },
                                             { name: " ", value: "**Liquidated** `" + amount + "` **share(s) for** `" + totalReceived + "Ξ` **(" + parseFloat(targetPart).toFixed(0) + "%)**", inline: false },
                                             { name: " ", value: " ", inline: false },
@@ -200,7 +199,7 @@ module.exports = {
                                         .addFields(
                                             { name: " ", value: " ", inline: false },
                                             { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: true },
-                                            { name: "Action", value: "`" + action + "`", inline: true },
+                                            { name: "Action", value: "`" + actionTxn + "`", inline: true },
                                             { name: " ", value: " ", inline: false },
                                             { name: " ", value: "**Failed to liquidate** `" + amount + "` **share(s) for** `" + expectedValue + "Ξ`", inline: false },
                                             { name: " ", value: " ", inline: false },
@@ -239,7 +238,7 @@ module.exports = {
                                     .addFields(
                                         { name: " ", value: " ", inline: false },
                                         { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: true },
-                                        { name: "Action", value: "`" + action + "`", inline: true },
+                                        { name: "Action", value: "`" + actionTxn + "`", inline: true },
                                         { name: " ", value: " ", inline: false },
                                         { name: " ", value: "**Failed to liquidate** `" + amount + "` **share(s) for** `" + expectedValue + "Ξ`", inline: false },
                                         { name: " ", value: " ", inline: false },
@@ -283,200 +282,308 @@ module.exports = {
 
 
 
-                //     // On récupère les infos du trade simulé
-                //     const userSetup = await exe_friendTech.findOne({ where: { authorId: authorId, serverId: serverId, treated: null, isBuy: "liq_one" } })
+                    // On récupère les infos du trade simulé
+                    const userSetup = await exe_friendTech.findOne({ where: { authorId: authorId, serverId: serverId, treated: null, isBuy: "liq_few" } })
 
 
-                //     if (userSetup != null) {
+                    if (userSetup != null) {
 
+                        // On définit les presets de gas
+                        const gasLimit = 200000; // Limite de gaz (ajustez selon vos besoins)
+                        const gas = 21000
+                        const gasPrice = await web3BaseAlchemy.eth.getGasPrice();
 
-                //         const table = JSON.parse(userSetup.dataValues.subject)
 
-                //         const sender = decrypt(table[0].sender)
-                //         const senderPK = decrypt(table[0].senderPK)
 
-                //         const amount = table[0].amount
-                //         const subjectList = JSON.parse(table[0].subject)
-                //         const subjectName = table[0].subjectName
-                //         const actionTxn = table[0].action
 
+                        const table = JSON.parse(userSetup.dataValues.subject)
 
-                //         const valueWEI = parseFloat(userSetup.dataValues.value)
-                //         const valueETH = userSetup.dataValues.value / 10 ** 18
-                //         const expectedValue = userSetup.dataValues.expectedPrice
+                        const sender = decrypt(table[0].sender)
+                        const senderPK = decrypt(table[0].senderPK)
 
-                //         // On renvoi le premier embed
-                //         const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
-                //             .setTitle("Transaction Pending <a:AuraLoading:1134068847616458792>")
-                //             .setDescription(">>> Displaying the transaction execution")
-                //             .setAuthor({ name: authorName, iconURL: userAvatar })
-                //             .setTimestamp()
-                //             .addFields(
-                //                 { name: " ", value: " ", inline: false },
-                //                 { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: true },
-                //                 { name: "Action", value: "`" + actionTxn + "`", inline: true },
-                //                 { name: " ", value: "**Liquidating** `" + amount + "` **share(s) for** `" + expectedValue + "Ξ`", inline: false },
-                //                 { name: "Transaction hash", value: "<a:AuraLoading:1134068847616458792>", inline: false },
+                        const amount = table[0].amount
+                        const subjectList = JSON.parse(table[0].subject)
+                        const subjectName = table[0].subjectName
+                        const actionTxn = table[0].action
 
-                //             )
-                //             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                //         await interaction.reply({ embeds: [gasTrackerEmbed], ephemeral: true });
+                        const valueWEI = parseFloat(userSetup.dataValues.value)
+                        const valueETH = userSetup.dataValues.value / 10 ** 18
+                        const expectedValue = userSetup.dataValues.expectedPrice
 
 
-                //         // On encode les paramètres
-                //         const data = await shareContract.methods.sellShares(subject, amount).encodeABI();
 
-                //         // On définit les presets de gas
-                //         const gasLimit = 200000; // Limite de gaz (ajustez selon vos besoins)
-                //         const gas = 21000
-                //         const gasPrice = await web3BaseAlchemy.eth.getGasPrice();
+                        // On renvoi le premier embed
+                        const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Transaction Pending <a:AuraLoading:1134068847616458792>")
+                            .setDescription(">>> Displaying the transaction execution")
+                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                            .setTimestamp()
+                            .addFields(
+                                { name: " ", value: " ", inline: false },
+                                { name: "Targets", value: "`" + subjectList.length + "`", inline: true },
+                                { name: "Action", value: "`" + actionTxn + "`", inline: true },
+                                { name: " ", value: "**Liquidating** `" + amount + "` **share(s) for** `" + expectedValue + "Ξ`", inline: false },
+                                { name: "Transaction hash", value: "<a:AuraLoading:1134068847616458792>", inline: false },
 
-                //         //On construit l'objet de transaction
-                //         const txInfos = {
-                //             gasPrice: gasPrice,
-                //             gas: gas,
-                //             gasLimit: gasLimit,
-                //             to: shareContractAddress,
-                //             value: valueWEI,
-                //             data: data,
-                //             chainId: baseChainId,
+                            )
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                //         };
+                        await interaction.reply({ embeds: [gasTrackerEmbed], ephemeral: true });
 
-                //         // On signe
-                //         const signedTx = await web3BaseBlast.eth.accounts.signTransaction(txInfos, senderPK);
-                //         const rawTransaction = signedTx.rawTransaction
+                        const walletNonce = await web3BaseAlchemy.eth.getTransactionCount(sender);
 
 
-                //         // On envoie
-                //         web3BaseBlast.eth.sendSignedTransaction(rawTransaction)
-                //             .then(async (receipt) => {
-                //                 console.log(receipt)
+                        let hashList = ""
+                        let hashPlus = ""
+                        let hashListFormatted = ""
+                        let hashCount = 0
+                        let hashSuccess = 0
+                        let loopIndex = 0
 
-                //                 let hash = receipt.transactionHash
-                //                 let gasPaid = receipt.gasUsed * (receipt.effectiveGasPrice / 10 ** 18)
-                //                 let totalReceived = parseFloat(expectedValue) - parseFloat(gasPaid)
-                //                 let targetPart = (totalReceived / expectedValue) * 100;
-                //                 let status = receipt.status
 
-                //                 0.000000000100237787
+                        for (const subject of subjectList) {
 
-                //                 if (status == true) {
 
-                //                     const gasConfirm = new EmbedBuilder().setColor("#060A8F")
-                //                         .setTitle("Transaction Confirmed ✅")
-                //                         .setDescription(">>> Displaying the transaction execution")
-                //                         .setAuthor({ name: authorName, iconURL: userAvatar })
-                //                         .setTimestamp()
-                //                         .addFields(
-                //                             { name: " ", value: " ", inline: false },
-                //                             { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: true },
-                //                             { name: "Action", value: "`" + action + "`", inline: true },
-                //                             { name: " ", value: " ", inline: false },
-                //                             { name: " ", value: "**Liquidated** `" + amount + "` **share(s) for** `" + totalReceived + "Ξ` **(" + parseFloat(targetPart).toFixed(0) + "%)**", inline: false },
-                //                             { name: " ", value: " ", inline: false },
-                //                             { name: "Transaction hash:", value: "```" + hash + "```∟ Transaction details [here](https://basescan.org/tx/" + hash + ")", inline: false },
+                            // On encode les paramètres
+                            const data = await shareContract.methods.sellShares(subject.subject, subject.amount).encodeABI();
 
-                //                         )
-                //                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                            //On construit l'objet de transaction
+                            const txInfos = {
+                                nonce: parseInt(walletNonce) + hashCount,
+                                gasPrice: gasPrice,
+                                gas: gas,
+                                gasLimit: gasLimit,
+                                to: shareContractAddress,
+                                value: 0,
+                                data: data,
+                                chainId: baseChainId,
 
-                //                     await interaction.editReply({ embeds: [gasConfirm], ephemeral: true });
+                            };
 
 
+                            // On signe
+                            const signedTx = await web3BaseBlast.eth.accounts.signTransaction(txInfos, senderPK);
+                            const rawTransaction = signedTx.rawTransaction
 
 
-                //                 } else {
+                            // On envoie
+                            await web3BaseBlast.eth.sendSignedTransaction(rawTransaction)
+                                .then(async (receipt) => {
 
 
+                                    let hash = receipt.transactionHash
+                                    let gasPaid = receipt.gasUsed * (receipt.effectiveGasPrice / 10 ** 18)
+                                    let totalReceived = parseFloat(expectedValue) - parseFloat(gasPaid)
+                                    let targetPart = (totalReceived / expectedValue) * 100;
+                                    let status = receipt.status
 
-                //                     const gasConfirm = new EmbedBuilder().setColor("#060A8F")
-                //                         .setTitle("Transaction Failed ❌")
-                //                         .setDescription(">>> Displaying the transaction execution")
-                //                         .setAuthor({ name: authorName, iconURL: userAvatar })
-                //                         .setTimestamp()
-                //                         .addFields(
-                //                             { name: " ", value: " ", inline: false },
-                //                             { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: true },
-                //                             { name: "Action", value: "`" + action + "`", inline: true },
-                //                             { name: " ", value: " ", inline: false },
-                //                             { name: " ", value: "**Failed to liquidate** `" + amount + "` **share(s) for** `" + expectedValue + "Ξ`", inline: false },
-                //                             { name: " ", value: " ", inline: false },
-                //                             { name: "Transaction hash:", value: "```" + hash + "```Transaction details [here](https://basescan.org/tx/" + hash + ")", inline: false },
 
-                //                         )
-                //                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                //                     await interaction.editReply({ embeds: [gasConfirm], ephemeral: true });
+                                    if (status == true) {
 
+                                        hashCount++
+                                        hashSuccess++
 
+                                        if (hashCount <= 10) {
 
+                                            hashList += hash.toLowerCase() + ",\n"
+                                            hashListFormatted = hashList
+                                        } else {
 
-                //                 }
+                                            hashPlus = "and " + hashCount + " more..."
+                                            hashListFormatted = hashList + hashPlus
 
-                //                 await exe_friendTech.update({ treated: "yes", txn: hash.toString() }, { where: { authorId: authorId, serverId: serverId, treated: null } });
+                                        }
 
+                                        const gasConfirm = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle("Transaction Confirmed ✅")
+                                            .setDescription(">>> Displaying the transaction execution")
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .setTimestamp()
+                                            .addFields(
+                                                { name: " ", value: " ", inline: false },
+                                                { name: "Targets", value: "`" + hashSuccess + "` out of `" + subjectList.length + "`", inline: true },
+                                                { name: "Action", value: "`" + actionTxn + "`", inline: true },
+                                                { name: " ", value: " ", inline: false },
+                                                { name: " ", value: "**Liquidating** `" + amount + "` **share(s) for** `" + expectedValue + "Ξ`", inline: false },
+                                                { name: " ", value: " ", inline: false },
+                                                { name: "Transaction hash:", value: "```" + hashListFormatted + "```∟ Transaction list here [here](https://basescan.org/address/" + sender + ")", inline: false },
 
-                //             })
-                //             .catch(async (error) => {
+                                            )
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                                        await interaction.editReply({ embeds: [gasConfirm], ephemeral: true });
 
-                //                 let errorMessageFormatted = ""
-                //                 let message = error.message
-                //                 console.log("erreur")
-                //                 if (message.startsWith("Returned")) {
-                //                     errorMessageFormatted = message.replace("Returned error: ", "")
-                //                 }
 
 
-                //                 const gasConfirm = new EmbedBuilder().setColor("#060A8F")
-                //                     .setTitle("Transaction Failed ❌")
-                //                     .setDescription(">>> Displaying the transaction execution")
-                //                     .setAuthor({ name: authorName, iconURL: userAvatar })
-                //                     .setTimestamp()
-                //                     .addFields(
-                //                         { name: " ", value: " ", inline: false },
-                //                         { name: "Target", value: "`" + subjectName.toLowerCase() + "`", inline: true },
-                //                         { name: "Action", value: "`" + action + "`", inline: true },
-                //                         { name: " ", value: " ", inline: false },
-                //                         { name: " ", value: "**Failed to liquidate** `" + amount + "` **share(s) for** `" + expectedValue + "Ξ`", inline: false },
-                //                         { name: " ", value: " ", inline: false },
-                //                         { name: "Transaction error:", value: "```The transaction failed.\n\n" + errorMessageFormatted + "```", inline: false },
 
-                //                     )
-                //                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                    } else {
 
-                //                 await interaction.editReply({ embeds: [gasConfirm], ephemeral: true });
+                                        hashCount++
 
+                                        if (hashCount <= 10) {
 
-                //                 await exe_friendTech.destroy({ where: { authorId: authorId, serverId: serverId, treated: null } });
+                                            hashList += hash.toLowerCase() + ",\n"
+                                            hashListFormatted = hashList
+                                        } else {
 
+                                            hashPlus = "and " + hashCount + " more..."
+                                            hashListFormatted = hashList + hashPlus
 
-                //                 console.error('Erreur lors de lenvoi de la transaction signée : ', error);
-                //             });
+                                        }
 
 
-                //     } else {
+                                        const gasConfirm = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle("Transaction Failed ❌")
+                                            .setDescription(">>> Displaying the transaction execution")
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .setTimestamp()
+                                            .addFields(
+                                                { name: " ", value: " ", inline: false },
+                                                { name: "Targets", value: "`" + hashSuccess + "` out of `" + subjectList.length + "`", inline: true },
+                                                { name: "Action", value: "`" + actionTxn + "`", inline: true },
+                                                { name: " ", value: " ", inline: false },
+                                                { name: " ", value: "**Liquidating** `" + amount + "` **share(s) for** `" + expectedValue + "Ξ`", inline: false },
+                                                { name: " ", value: " ", inline: false },
+                                                { name: "Transaction hash:", value: "```" + hashListFormatted + "```∟ Transaction list here [here](https://basescan.org/address/" + sender + ")", inline: false },
 
+                                            )
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                //         const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
-                //             .setTitle("Friend.Tech")
-                //             .setDescription("You don't have any ongoing task. Please do the buy steps again or contact a team member if you need any help.")
-                //             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                //             .setTimestamp()
-                //             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                        await interaction.editReply({ embeds: [gasConfirm], ephemeral: true });
 
 
-                //         await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
 
 
+                                    }
 
 
-                //     }
 
+                                })
+                                .catch(async (error) => {
 
 
-                 }
+
+
+                                    const gasConfirm = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle("Transaction Failed ❌")
+                                        .setDescription(">>> Displaying the transaction execution")
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setTimestamp()
+                                        .addFields(
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Targets", value: "`" + hashSuccess + "` out of `" + subjectList.length + "`", inline: true },
+                                            { name: "Action", value: "`" + actionTxn + "`", inline: true },
+                                            { name: " ", value: " ", inline: false },
+                                            { name: " ", value: "**Liquidating** `" + amount + "` **share(s) for** `" + expectedValue + "Ξ`", inline: false },
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Transaction hash:", value: "```" + hashListFormatted + "```∟ Transaction list here [here](https://basescan.org/address/" + sender + ")", inline: false },
+
+                                        )
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                    await interaction.editReply({ embeds: [gasConfirm], ephemeral: true });
+
+
+
+
+                                    console.error('Erreur lors de lenvoi de la transaction signée : ', error);
+                                });
+
+                            loopIndex++
+
+                        }
+
+
+
+                        let isDone = false
+
+                        while (loopIndex == subjectList.length) {
+
+
+                            if (isDone == false) {
+
+                                isDone = true
+
+                                if (hashSuccess > 0) {
+
+                                    const gasConfirm = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle("Transactions Confirmed ✅")
+                                        .setDescription(">>> Displaying the transaction execution")
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setTimestamp()
+                                        .addFields(
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Targets", value: "`" + hashSuccess + "` out of `" + subjectList.length + "`", inline: true },
+                                            { name: "Action", value: "`" + actionTxn + "`", inline: true },
+                                            { name: " ", value: " ", inline: false },
+                                            { name: " ", value: "**Liquidated** `" + amount + "` **share(s) for** `" + expectedValue + "Ξ`", inline: false },
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Transaction hash:", value: "```" + hashListFormatted + "```∟ Transaction list here [here](https://basescan.org/address/" + sender + ")", inline: false },
+
+                                        )
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                    await interaction.editReply({ embeds: [gasConfirm], ephemeral: true });
+
+
+
+
+                                    await exe_friendTech.update({ treated: "yes", txn: JSON.stringify(hashList) }, { where: { authorId: authorId, serverId: serverId, treated: null } });
+
+                                } else {
+
+                                    const gasConfirm = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle("Transactions Failed ❌")
+                                        .setDescription(">>> Displaying the transaction execution")
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setTimestamp()
+                                        .addFields(
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Targets", value: "`" + hashSuccess + "` out of `" + subjectList.length + "`", inline: true },
+                                            { name: "Action", value: "`" + actionTxn + "`", inline: true },
+                                            { name: " ", value: " ", inline: false },
+                                            { name: " ", value: "** Failed to liquidate** `" + amount + "` **share(s) for** `" + expectedValue + "Ξ`", inline: false },
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Transaction error:", value: "```The liquidation failed, check your settings.```", inline: false },
+
+                                        )
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                    await interaction.editReply({ embeds: [gasConfirm], ephemeral: true });
+
+
+                                    await exe_friendTech.destroy({ where: { authorId: authorId, serverId: serverId, treated: null } });
+
+                                }
+
+                            } else {
+                                break
+                            }
+                        }
+
+                    } else {
+
+
+                        const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Friend.Tech")
+                            .setDescription("You don't have any ongoing task. Please do the buy steps again or contact a team member if you need any help.")
+                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                            .setTimestamp()
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+                        await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
+
+
+
+
+                    }
+
+
+
+                }
 
 
             } else {

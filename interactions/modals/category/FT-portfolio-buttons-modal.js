@@ -14,10 +14,6 @@ const { accessSql, profileData, adminsql, reportsql, exe_friendTech, infra_frien
 const fs = require('fs');
 const moment = require('moment');
 
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const friendtechApiKey = process.env.friendtechApiKey
 
 const { web3Base1RPC, web3BaseUnifra, web3BaseDRPC, web3BaseBlast } = require('../../../config/web3config');
 
@@ -27,13 +23,7 @@ const shareContractAbi = require("../../../contracts/friendtech/share.json")
 const shareContractAddress = "0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4"
 const shareContract = new web3BaseBlast.eth.Contract(shareContractAbi, shareContractAddress);
 
-const targetsJSON = './contracts/friendtech/ordertargets.json';
 
-
-const friendtechHeaders = {
-    'Authorization': friendtechApiKey, // Remplacez VOTRE_TOKEN par le token d'authentification
-    // Autres en-têtes si nécessaire
-};
 
 
 const getTwitterUserInfo = require("../../../functions/twitteruserinfo")

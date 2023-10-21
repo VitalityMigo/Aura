@@ -841,12 +841,16 @@ module.exports = {
                                                 const buttonsRowPortfolioAction2 = new ActionRowBuilder()
                                                     .addComponents(
                                                         new ButtonBuilder()
-                                                            .setCustomId('button_friendtech_portfolio_exec_userlookup')
-                                                            .setLabel('👁 User Lookup')
+                                                            .setCustomId('button_friendtech_portfolio_exec_refresh')
+                                                            .setLabel('🔁 Refresh')
                                                             .setStyle(1),
                                                         new ButtonBuilder()
                                                             .setCustomId('button_friendtech_portfolio_exec_tutorial')
                                                             .setLabel('📑 Tutorial')
+                                                            .setStyle(1),
+                                                        new ButtonBuilder()
+                                                            .setCustomId('button_friendtech_portfolio_exec_userlookup')
+                                                            .setLabel('👁 User Lookup')
                                                             .setStyle(1),
                                                         new ButtonBuilder()
                                                             .setCustomId('friendtech_exec_setup-button')

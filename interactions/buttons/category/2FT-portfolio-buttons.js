@@ -519,18 +519,48 @@ module.exports = {
 
                 } else if (action == "liqAll") {
 
+                    const userSetup = await infra_friendTech.findOne({ where: { authorId: authorId } })
 
 
-                    const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle(`${authorName}'s profit`)
-                    .setDescription("The button you try to use is currently being built and will be available in the near future. You can still use all the other button of the portfolio manager in the meantime.")
-                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                    .setTimestamp()
-                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                    if (userSetup != null) {
+    
 
-                await interaction.reply({ embeds: [availableInTheNearFuture], ephemeral: true });
+                        const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle(`${authorName}'s profit`)
+                        .setDescription("The button you try to use is currently being built and will be available in the near future. You can still use all the other button of the portfolio manager in the meantime.")
+                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                        .setTimestamp()
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+    
+                    await interaction.reply({ embeds: [availableInTheNearFuture], ephemeral: true });
+    
+    
 
+
+
+                    } else if (userSetup == null) {
+    
+    
+    
+    
+                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Friend Tech Setup")
+                            .setDescription(">>> Displaying your Friend.tech wallet setup")
+                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                            .addFields(
+                                { name: " ", value: "You don't have a wallet imported in your Friend.tech portfolio. To get started, use the button below.", inline: true },
+    
+                            )
+                            .setTimestamp()
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+    
+                        await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowNew], ephemeral: true });
+    
+    
+                    }
+    
 
 
                     // Faire simulation
@@ -539,6 +569,13 @@ module.exports = {
                 } else if (action == "liqOne") {
 
 
+
+
+                    const userSetup = await infra_friendTech.findOne({ where: { authorId: authorId } })
+
+
+                    if (userSetup != null) {
+    
 
                     const passwordAdminDashboard = new ModalBuilder()
                         .setCustomId('modal_friendtech_portfolio_exec_liqOne')
@@ -570,9 +607,39 @@ module.exports = {
 
 
 
+                } else if (userSetup == null) {
+    
+    
+    
+    
+                    const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Friend Tech Setup")
+                        .setDescription(">>> Displaying your Friend.tech wallet setup")
+                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .addFields(
+                            { name: " ", value: "You don't have a wallet imported in your Friend.tech portfolio. To get started, use the button below.", inline: true },
+
+                        )
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                    await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowNew], ephemeral: true });
+
+
+                }
+
+
                 } else if (action == "liqFew") {
 
 
+
+
+                    const userSetup = await infra_friendTech.findOne({ where: { authorId: authorId } })
+
+
+                    if (userSetup != null) {
+    
 
                     const passwordAdminDashboard = new ModalBuilder()
                         .setCustomId('modal_friendtech_portfolio_exec_liqFew')
@@ -606,6 +673,28 @@ module.exports = {
 
 
 
+                    } else if (userSetup == null) {
+    
+    
+    
+    
+                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Friend Tech Setup")
+                            .setDescription(">>> Displaying your Friend.tech wallet setup")
+                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                            .addFields(
+                                { name: " ", value: "You don't have a wallet imported in your Friend.tech portfolio. To get started, use the button below.", inline: true },
+    
+                            )
+                            .setTimestamp()
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+    
+                        await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowNew], ephemeral: true });
+    
+    
+                    }
+    
 
 
                 } else if (action == "liqOverOne") {
@@ -613,22 +702,48 @@ module.exports = {
 
 
 
-                                      // Faire simulation
+                    const userSetup = await infra_friendTech.findOne({ where: { authorId: authorId } })
+
+
+                    if (userSetup != null) {
+    
+
+                        const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle(`${authorName}'s profit`)
+                        .setDescription("The button you try to use is currently being built and will be available in the near future. You can still use all the other button of the portfolio manager in the meantime.")
+                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                        .setTimestamp()
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+    
+                    await interaction.reply({ embeds: [availableInTheNearFuture], ephemeral: true });
+    
+    
 
 
 
-                                      const availableInTheNearFuture = new EmbedBuilder().setColor("#060A8F")
-                                      .setTitle(`${authorName}'s profit`)
-                                      .setDescription("The button you try to use is currently being built and will be available in the near future. You can still use all the other button of the portfolio manager in the meantime.")
-                                      .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                      .setTimestamp()
-                                      .setAuthor({ name: authorName, iconURL: userAvatar })
-                                      .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-                  
-                                  await interaction.reply({ embeds: [availableInTheNearFuture], ephemeral: true });
-                  
-
-
+                    } else if (userSetup == null) {
+    
+    
+    
+    
+                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Friend Tech Setup")
+                            .setDescription(">>> Displaying your Friend.tech wallet setup")
+                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                            .addFields(
+                                { name: " ", value: "You don't have a wallet imported in your Friend.tech portfolio. To get started, use the button below.", inline: true },
+    
+                            )
+                            .setTimestamp()
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+    
+                        await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowNew], ephemeral: true });
+    
+    
+                    }
+    
 
                 } else if (action == "userlookup") {
 

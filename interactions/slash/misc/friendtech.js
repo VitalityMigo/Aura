@@ -348,7 +348,7 @@ module.exports = {
                 } else {
                     const authorPrivacyMode = authorProfile.dataValues.privacyMode
 
-                    if (authorPrivacyMode.toLowerCase() === "private" || interaction.options.getSubcommand() === 'wallet' || interaction.options.getSubcommand() === 'bridge' || interaction.options.getSubcommand() === 'tasks' && interaction.options.getSubcommand() != 'portfolio') { await interaction.deferReply({ ephemeral: true }); }
+                    if ((authorPrivacyMode.toLowerCase() === "private" || interaction.options.getSubcommand() === 'wallet' || interaction.options.getSubcommand() === 'bridge' || interaction.options.getSubcommand() === 'tasks') && interaction.options.getSubcommand() != 'portfolio') { await interaction.deferReply({ ephemeral: true }); }
                     if (authorPrivacyMode.toLowerCase() === "public" && interaction.options.getSubcommand() != 'wallet' && interaction.options.getSubcommand() != 'bridge' && interaction.options.getSubcommand() != 'tasks' && interaction.options.getSubcommand() != 'portfolio') { await interaction.deferReply(); }
                 }
 

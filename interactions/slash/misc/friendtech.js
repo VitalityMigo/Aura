@@ -744,6 +744,8 @@ module.exports = {
 
                                             try {
 
+
+                                                // Mechanisme pour gérer les bouttons disable et la privacy de portfolio manager perso
                                                 const userSetup = await infra_friendTech.findOne({ where: { authorId: authorId } })
                                                 let isUserSetupDisable = false
 
@@ -753,6 +755,19 @@ module.exports = {
                                                     if (userSetAddress == userAddress) {
                                                         await interaction.deferReply({ ephemeral: true });
                                                         isUserSetupDisable = true
+                                                    } else {
+                                                        if (authorProfile === null) {
+
+                                                            await interaction.deferReply();
+                                    
+                                                    } else {
+                                                        const authorPrivacyMode = authorProfile.dataValues.privacyMode
+                                    
+                                                        if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
+                                                        if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
+                                                    }
+    
+
                                                     }
                                                 } else {
 

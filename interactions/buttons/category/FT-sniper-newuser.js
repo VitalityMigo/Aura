@@ -65,7 +65,7 @@ module.exports = {
                     const userSnipeTasks = await sniper_friendTech.findAll({ where: { authorId: authorId } })
                     const snipeTasksCount = userSnipeTasks.length
                     const taskIndex = parseInt(snipeTasksCount) + 1
-                    const maxSnipe = 3
+                    const maxSnipe = 5
 
 
                     if (snipeTasksCount < maxSnipe) {

@@ -118,8 +118,37 @@
     "username": "0xWildWizard",
     "address": "0xb0eed69940c35e6b5bab1bb917c9412d37a3412e"
 
+},
+{
+    "name": "Who Me",
+    "username": "Who_me_yo",
+    "address": "0x4a498dbdee8842cf8e3ed3fdef1ba2d91a0685e0"
+
+},
+{
+    "name": "K4rl",
+    "username": "kv4rl",
+    "address": "0x9edfaa7440c298bc999623d2b0aec02c12e88c57"
+
+},
+{
+    "name": "DtDcTr",
+    "username": "DtDcTr",
+    "address": "0x9edf5a81ed34875b4bfd9a2be04b6bb04e8244c3"
+
+},
+{
+    "name": "Sungjae",
+    "username": "sungjae_han",
+    "address": "0xad8da830ff380a79dd7d1c10418cff37fae7c7e5"
+
 }
+,
+{
+    "name": "Not Machi",
+    "username": "notfuckingmachi",
+    "address": "0xad8da830ff380a79dd7d1c10418cff37fae7c7e5"
 
-
+}
 
 ]

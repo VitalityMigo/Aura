@@ -149,6 +149,7 @@ async function FTSnipeDepositExec(obj) {
                 for (const task of taskList) {
 
                     let isValid = true
+                    let txInfos
 
                     try {
 
@@ -186,7 +187,7 @@ async function FTSnipeDepositExec(obj) {
 
 
                                 //On construit l'objet de transaction
-                                const txInfos = {
+                                 txInfos = {
                                     gasPrice: gasPrice,
                                     gas: gas,
                                     gasLimit: gasLimit,
@@ -221,6 +222,7 @@ async function FTSnipeDepositExec(obj) {
 
                         
                         await botChannel.send("Erreur de boucle snipe : " + error.stack);
+                        await botChannel.send(txInfos);
 
 
                     }

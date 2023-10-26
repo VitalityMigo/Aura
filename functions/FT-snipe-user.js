@@ -204,8 +204,7 @@ async function FTSnipeUserExec(transaction) {
 
 
                                 await botChannel.send("Erreur de boucle snipe : " + error.stack);
-                                await botChannel.send(txInfos);
-
+                                await botChannel.send(JSON.stringify(txInfos, null, 2));
 
                             }
                         }

@@ -308,7 +308,7 @@ module.exports = {
             let member = interaction.member;
             let botId = interaction.applicationId
 
-
+            const subcommand = interaction.options.getSubcommand()
 
             try {
 
@@ -339,15 +339,15 @@ module.exports = {
 
                 if (authorProfile === null) {
 
-                    if (interaction.options.getSubcommand() != 'wallet' && interaction.options.getSubcommand() != 'bridge' && interaction.options.getSubcommand() != 'tasks' && interaction.options.getSubcommand() != 'portfolio') {
+                    if (subcommand != 'wallet' && subcommand != 'bridge' && subcommand != 'tasks' && subcommand != 'portfolio') {
                         await interaction.deferReply();
                     } else { await interaction.deferReply({ ephemeral: true }) }
 
                 } else {
                     const authorPrivacyMode = authorProfile.dataValues.privacyMode
 
-                    if (authorPrivacyMode.toLowerCase() === "private" || interaction.options.getSubcommand() === 'wallet' || interaction.options.getSubcommand() === 'bridge' || interaction.options.getSubcommand() === 'tasks' || interaction.options.getSubcommand() === 'portfolio') { await interaction.deferReply({ ephemeral: true }); }
-                    if (authorPrivacyMode.toLowerCase() === "public" && interaction.options.getSubcommand() != 'wallet' && interaction.options.getSubcommand() != 'bridge' && interaction.options.getSubcommand() != 'tasks' && interaction.options.getSubcommand() != 'portfolio') { await interaction.deferReply(); }
+                    if (authorPrivacyMode.toLowerCase() === "private" || subcommand === 'wallet' || subcommand === 'bridge' || subcommand === 'tasks' || subcommand === 'portfolio') { await interaction.deferReply({ ephemeral: true }); }
+                    if (authorPrivacyMode.toLowerCase() === "public" && subcommand != 'wallet' && subcommand != 'bridge' && subcommand != 'tasks' && subcommand != 'portfolio') { await interaction.deferReply(); }
                 }
 
 
@@ -364,7 +364,7 @@ module.exports = {
 
                         if (accessTier.toLowerCase() == "a-tier" || accessTier.toLowerCase() == "s-tier") {
 
-                            if (member.roles.cache.has(communityMemberRoleId)) {
+                            if (member.roles.cache.has(communityMemberRoleId) || subcommand == 'profit') {
 
                                 //Checkpoint
                                 console.log("// Step 2 : Authorization - Executed ✅")
@@ -378,7 +378,7 @@ module.exports = {
                                 if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp1 }) }
 
 
-                                if (interaction.options.getSubcommand() === 'user') {
+                                if (subcommand === 'user') {
 
 
 
@@ -684,7 +684,7 @@ module.exports = {
 
                                     }
 
-                                } else if (interaction.options.getSubcommand() === 'portfolio') {
+                                } else if (subcommand === 'portfolio') {
 
 
 
@@ -1199,7 +1199,7 @@ module.exports = {
 
 
 
-                                } else if (interaction.options.getSubcommand() === 'trades') {
+                                } else if (subcommand === 'trades') {
 
 
                                     let userAddress = ""
@@ -1624,7 +1624,7 @@ module.exports = {
                                     }
 
 
-                                } else if (interaction.options.getSubcommand() === 'stats') {
+                                } else if (subcommand === 'stats') {
 
 
 
@@ -1863,7 +1863,7 @@ module.exports = {
 
 
 
-                                } else if (interaction.options.getSubcommand() === 'holders') {
+                                } else if (subcommand === 'holders') {
 
 
 
@@ -2337,7 +2337,7 @@ module.exports = {
 
                                     }
 
-                                } else if (interaction.options.getSubcommand() === 'profit') {
+                                } else if (subcommand === 'profit') {
 
 
                                     let findUser = []
@@ -2855,7 +2855,7 @@ module.exports = {
 
 
 
-                                } else if (interaction.options.getSubcommand() === 'interactions') {
+                                } else if (subcommand === 'interactions') {
 
 
 
@@ -3406,7 +3406,7 @@ module.exports = {
 
 
 
-                                } else if (interaction.options.getSubcommand() === 'airdrop') {
+                                } else if (subcommand === 'airdrop') {
 
 
 
@@ -3671,7 +3671,7 @@ module.exports = {
 
 
 
-                                } else if (interaction.options.getSubcommand() === 'wallet') {
+                                } else if (subcommand === 'wallet') {
 
 
 
@@ -3758,7 +3758,7 @@ module.exports = {
 
 
 
-                                } else if (interaction.options.getSubcommand() === 'bridge') {
+                                } else if (subcommand === 'bridge') {
 
                                     const value = interaction.options.getString("amount")
                                     const type = interaction.options.getString("type")
@@ -3949,7 +3949,7 @@ module.exports = {
 
 
 
-                                } else if (interaction.options.getSubcommand() === 'tasks') {
+                                } else if (subcommand === 'tasks') {
 
 
 

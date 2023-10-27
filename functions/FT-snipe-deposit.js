@@ -1,6 +1,6 @@
 
 
-const { web3Base1RPC, web3BaseBlast, web3BaseUnifra } = require('../config/web3config');
+const { web3Base1RPC, web3BaseBlast, web3BaseAlchemy } = require('../config/web3config');
 
 const colors = require('colors');
 const axios = require('axios')
@@ -81,7 +81,8 @@ async function FTSnipeDepositExec(obj) {
         const hash = transaction.hash
         const action = transaction.type
 
-        const gasPricePromise = web3BaseUnifra.eth.getGasPrice()
+        const gasPricePromise = web3BaseAlchemy.eth.getGasPrice();
+
 
 
 
@@ -159,7 +160,7 @@ async function FTSnipeDepositExec(obj) {
                         let [gasPrice] = await Promise.all([gasPricePromise]);
 
                         if (task.gasPreset != null) {
-                            gasPrice = parseInt(gasPrice * (1 + (parseFloat(task.gasPreset) / 100)))
+                            gasPrice = parseInt(parseFloat(gasPrice) * (1 + (parseFloat(task.gasPreset) / 100)))
                         }
 
 

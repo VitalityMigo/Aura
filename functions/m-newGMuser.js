@@ -52,7 +52,7 @@ setTimeout(() => {
         // PROD
 
         serverId = "1108754348818845729"
-        channelNewFTUser1kId = "1167610354763833404"
+        channelNewFTUser1kId = "1167611823642660995"
         channelNewFTUser10kId = "1167610354763833404"
         channelNewFTUser100kId = "1167610435789402163"
 
@@ -87,6 +87,7 @@ async function newGMUser(obj) {
 
     try {
 
+        console.log("starting...")
         const timeStamp = Date.now();
         const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
 
@@ -130,7 +131,7 @@ async function newGMUser(obj) {
             if (holderCount > 5) { isSniped = "✅" }
 
 
-            if (testFollower >= 10000) {
+            if (testFollower >= 1000) {
 
 
                 // On récupère les infos Twitter
@@ -185,7 +186,7 @@ async function newGMUser(obj) {
                         { name: " ", value: "`" + new Intl.NumberFormat('en-US').format(followers) + "` followers", inline: true },
                         { name: " ", value: "`" + new Intl.NumberFormat('en-US').format(following) + "` following", inline: true },
                         { name: " ", value: "created <t:" + created + ":R>", inline: true },
-                        { name: " ", value: "```• Friend.Tech Metrics```", inline: true },
+                        { name: " ", value: "```• GM Metrics```", inline: true },
                         { name: " ", value: " ", inline: false },
                         { name: "Price", value: "`" + parseFloat(price).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(price * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
                         { name: "Market Cap", value: "`" + parseFloat(marketCap).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(marketCap * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
@@ -208,7 +209,11 @@ async function newGMUser(obj) {
 
 
 
-                if (followers >= 10000 && followers < 100000) {
+                if (followers >= 1000 && followers < 10000) {
+
+                    await channelNewFTUser1K.send({ embeds: [userFTEmbed], components: [] });
+
+                } else if (followers >= 10000 && followers < 100000) {
 
                     await channelNewFTUser10K.send({ embeds: [userFTEmbed], components: [] });
 

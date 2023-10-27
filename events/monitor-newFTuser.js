@@ -17,6 +17,8 @@ const FTSnipeDepositExec = require("../functions/FT-snipe-deposit")
 const FTSnipeUserExec = require('../functions/FT-snipe-user')
 const orderExecFT = require("../functions/FT-order-exec")
 
+const newGMUser = require("../functions/m-newGMuser")
+
 //Récupérer les clefs API
 const dotenv = require("dotenv")
 dotenv.config()
@@ -54,6 +56,10 @@ const transferMin = 5
 const exepectedTxnType = 126
 
 
+//GM.io
+const gmContract = "0x84a34c641b66e8823676990521421f954d7eb42b"
+const gmInviteSig = "0x6160f862"
+const gmInviteSelfSig = "0x6007f17d"
 
 
 
@@ -136,6 +142,14 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                 if (smartWalletTable.includes(from.toLowerCase()) && contract.toLowerCase() == shareContractAddress.toLowerCase() && (input.startsWith(sellSignature) || (input.startsWith(buySignature) && newValue != value))) {
 
                     newSmartMoneyTrade(transaction)
+
+                }
+
+
+                // New user GM.io
+                if ((input.startsWith(gmInviteSelfSig) || input.startsWith(gmInviteSig)) && contract.toLowerCase() == gmContract.toLowerCase()) {
+
+newGMUser(transaction)
 
                 }
 

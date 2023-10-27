@@ -108,7 +108,7 @@ async function newGMUser(obj) {
         try {
             userInfoCall = await axios.get("https://api.gm.io/twitter/profile/" + userAddress.toLowerCase())
         } catch (error) {
-
+console.log(error)
             isAvailable = false
         }
 

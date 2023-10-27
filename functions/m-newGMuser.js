@@ -131,7 +131,7 @@ async function newGMUser(obj) {
             if (holderCount > 5) { isSniped = "✅" }
 
 
-            if (testFollower >= 1000) {
+          //  if (testFollower >= 1000) {
 
 
                 // On récupère les infos Twitter
@@ -209,21 +209,21 @@ async function newGMUser(obj) {
 
 
 
-                if (followers >= 1000 && followers < 10000) {
+               // if (followers >= 1000 && followers < 10000) {
 
                     await channelNewFTUser1K.send({ embeds: [userFTEmbed], components: [] });
 
-                } else if (followers >= 10000 && followers < 100000) {
+                // } else if (followers >= 10000 && followers < 100000) {
 
-                    await channelNewFTUser10K.send({ embeds: [userFTEmbed], components: [] });
+                //     await channelNewFTUser10K.send({ embeds: [userFTEmbed], components: [] });
 
-                } else if (followers >= 100000) {
+                // } else if (followers >= 100000) {
 
-                    await channelNewFTUser100K.send({ embeds: [userFTEmbed], components: [] });
+                //     await channelNewFTUser100K.send({ embeds: [userFTEmbed], components: [] });
 
-                }
+                // }
 
-            }
+            //}
         }
 
 

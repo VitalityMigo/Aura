@@ -1054,6 +1054,50 @@ const access_friendtech = sequelize.define('access_friendtech', {
 
 
 
+//Alert up
+const tracker_friendTech = sequelize.define('tracker_friendTech', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    subjectUsername: {
+        type: Sequelize.STRING,
+    },
+    subjectName: {
+        type: Sequelize.STRING,
+    },
+    subjectWallet: {
+        type: Sequelize.STRING,
+    },
+    subjectPfp: {
+        type: Sequelize.STRING,
+    },
+    buy: {
+        type: Sequelize.STRING,
+    },
+    sell: {
+        type: Sequelize.STRING,
+    },
+    deposit: {
+        type: Sequelize.STRING,
+    },
+    withdraw: {
+        type: Sequelize.STRING,
+    },
+
+
+});
+
+
 
 
 
@@ -1082,6 +1126,7 @@ exe_friendTech.sync()
 infra_friendTech.sync()
 order_friendTech.sync()
 access_friendtech.sync()
+tracker_friendTech.sync()
 
 
 //Export the tables informations
@@ -1110,6 +1155,7 @@ module.exports = {
     sniper_friendTech,
     order_friendTech,
     access_friendtech,
+    tracker_friendTech,
     Op,
 }
 

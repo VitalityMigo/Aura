@@ -104,6 +104,10 @@ module.exports = {
 
 			command = client.buttonCommands.get("friendtech_portfolio_exec_confirm_");
 			
+		} else if (customId.startsWith("button_friendtech_tracker_list_")) {
+
+			command = client.buttonCommands.get("button_friendtech_tracker_list_");
+			
 		}
 		
 		

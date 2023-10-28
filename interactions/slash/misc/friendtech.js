@@ -284,6 +284,12 @@ module.exports = {
                 .setName("tasks")
                 .setDescription("Create and manage your Friend.Tech automation tasks")
 
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("tracker")
+                .setDescription("Create and manage your Friend.Tech tracking alerts")
+
         ),
 
 
@@ -339,15 +345,15 @@ module.exports = {
 
                 if (authorProfile === null) {
 
-                    if (subcommand != 'wallet' && subcommand != 'bridge' && subcommand != 'tasks' && subcommand != 'portfolio') {
+                    if (subcommand != 'wallet' && subcommand != 'bridge' && subcommand != 'tasks' && subcommand != 'portfolio' && subcommand != 'tracker') {
                         await interaction.deferReply();
                     } else { await interaction.deferReply({ ephemeral: true }) }
 
                 } else {
                     const authorPrivacyMode = authorProfile.dataValues.privacyMode
 
-                    if (authorPrivacyMode.toLowerCase() === "private" || subcommand === 'wallet' || subcommand === 'bridge' || subcommand === 'tasks' || subcommand === 'portfolio') { await interaction.deferReply({ ephemeral: true }); }
-                    if (authorPrivacyMode.toLowerCase() === "public" && subcommand != 'wallet' && subcommand != 'bridge' && subcommand != 'tasks' && subcommand != 'portfolio') { await interaction.deferReply(); }
+                    if (authorPrivacyMode.toLowerCase() === "private" || subcommand === 'wallet' || subcommand === 'bridge' || subcommand === 'tasks' || subcommand === 'portfolio' || subcommand === 'tracker') { await interaction.deferReply({ ephemeral: true }); }
+                    if (authorPrivacyMode.toLowerCase() === "public" && subcommand != 'wallet' && subcommand != 'bridge' && subcommand != 'tasks' && subcommand != 'portfolio' && subcommand != 'tracker') { await interaction.deferReply(); }
                 }
 
 
@@ -3664,6 +3670,61 @@ module.exports = {
 
 
                                     }
+
+
+
+
+
+
+
+                                
+                                
+                                
+                                
+                                } else if (subcommand === 'tracker') {
+
+
+
+
+
+                                    const buttonsRow = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('friendtechtrackerinfra-newtracker-button')
+                                                .setLabel('✨ Add Users')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
+                                                .setCustomId('friendtechtrackerinfra-listtracker-button')
+                                                .setLabel('🧾 List Users')
+                                                .setStyle(3),
+
+                                        );
+
+
+
+
+                                    const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                    .setTitle("Friend.Tech Tracker")
+                                    .setDescription(">>> Displaying the Friend.Tech tracker dashboard")
+                                    //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    .addFields(
+                                        { name: "Tracker Mechanism", value: "The Friend.Tech tracker is a system that allows you to track the actions made by a single or multiple Friend.Tech user(s). This panel contains two sections:\n\n**✨ Add Users**\nAdd one or few Friend Tech user to your tracker to monitor their activity live. Aura accepts a maximum of 25 users.\n\n**🧾 List Users**\nConsult, delete and manage all the user you are currently tracking. An easy way to adapt your tracker to your new strategy.", inline: true },
+                                    )
+                                    .setTimestamp()
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRow], ephemeral: true });
+
+
+
+
+
+
+
+
+
+
 
 
 

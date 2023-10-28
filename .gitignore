@@ -48,6 +48,7 @@ zzzz.json
 
 contracts/friendtech/lastid.json
 contracts/friendtech/newuser.json
+contracts/friendtech/tracker.json
 
 # Database
 data/rcadatabase.sqlite

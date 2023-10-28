@@ -17,7 +17,7 @@ const FTSnipeDepositExec = require("../functions/FT-snipe-deposit")
 const FTSnipeUserExec = require('../functions/FT-snipe-user')
 const orderExecFT = require("../functions/FT-order-exec")
 
-const newGMUser = require("../functions/m-newGMuser")
+//const newGMUser = require("../old&archive/m-newGMuser")
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -146,12 +146,12 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                 }
 
 
-                // New user GM.io
-                if ((input.startsWith(gmInviteSelfSig) || input.startsWith(gmInviteSig)) && contract.toLowerCase() == gmContract.toLowerCase()) {
+                // // New user GM.io
+                // if ((input.startsWith(gmInviteSelfSig) || input.startsWith(gmInviteSig)) && contract.toLowerCase() == gmContract.toLowerCase()) {
 
-newGMUser(transaction)
+                //     newGMUser(transaction)
 
-                }
+                // }
 
 
 

@@ -82,7 +82,7 @@ setTimeout(() => {
 async function newGMUser(obj) {
 
 
-    await addTimeout(60)
+    await addTimeout(120)
 
 
     try {

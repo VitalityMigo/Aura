@@ -13,6 +13,9 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { profileData, reportsql, accessSql, interactionData, adminsql, tracker_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
+const fs = require('fs')
+const trackerFile = "contracts/friendtech/tracker.json"
+
 
 function removeAtSymbol(word) {
     if (word.startsWith('@')) {
@@ -56,18 +59,18 @@ module.exports = {
             if (user !== null) {
 
                 await tracker_friendTech.destroy({ where: { subjectUsername: username, authorId: authorId } })
-
+                resetTrackerJson(username, authorId)
 
                 let taskEmbed = interaction.message.embeds[0].data
 
                 let dernierObjet = taskEmbed.fields[taskEmbed.fields.length - 1];
                 if (dernierObjet.name.trim() != 'Page') {
-                    dernierObjet.value = "✅ *Successfuly added the user to your Friend Tech tracker.*"
+                    dernierObjet.value = "✅ *Successfuly removed the user from your Friend Tech tracker.*"
 
                 } else {
 
                     taskEmbed.fields.push({ name: " ", value: " ", inline: false })
-                    taskEmbed.fields.push({ name: " ", value: "✅ *Successfuly added the user to your Friend Tech tracker.*", inline: true })
+                    taskEmbed.fields.push({ name: " ", value: "✅ *Successfuly removed the user from your Friend Tech tracker.*", inline: true })
     
                 }
 
@@ -189,3 +192,19 @@ module.exports = {
         }
     },
 };
+
+
+
+function resetTrackerJson(username, authorId) {
+
+    const jsonData = JSON.parse(fs.readFileSync(trackerFile, 'utf-8'));
+
+    // Étape 2 : Rechercher et supprimer l'objet
+    const newData = jsonData.filter(item => item.author !== authorId || item.username.toLowerCase() !== username.toLowerCase());
+
+    if (newData.length !== jsonData.length) {
+        // Au moins un objet a été trouvé et supprimé, enregistre le fichier JSON mis à jour
+        fs.writeFileSync(trackerFile, JSON.stringify(newData, null, 2), 'utf-8');
+    }
+
+}

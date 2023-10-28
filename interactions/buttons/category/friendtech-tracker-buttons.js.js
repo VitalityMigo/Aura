@@ -15,6 +15,11 @@ const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBu
 const { accessSql, profileData, adminsql, reportsql, tracker_friendTech, interactionData, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
+
+const fs = require('fs')
+const trackerFile = "contracts/friendtech/tracker.json"
+
+
 const reduceText = require("../../../functions/reducetext")
 
 function formatWallet(input) {
@@ -688,7 +693,9 @@ module.exports = {
 
 
                         await tracker_friendTech.destroy({ where: { authorId: authorId } })
+                        resetTrackerJson(authorId)
 
+                        
                         const maxTracked = 25
                         const formatted = "No tracked user found for your profile                  "
                         const links = '[Friendtech](https://www.friend.tech) ∙ ' + '[Twitter](https://twitter.com/friendtech) ∙ ' + '[Trending](https://www.friend.tech/search) ∙ ' + '[Dune Analytics](https://dune.com/whale_hunter/friend-tech-ultimate-analytics)'
@@ -1062,3 +1069,17 @@ module.exports = {
 
 
 
+
+function resetTrackerJson(authorId) {
+
+    const jsonData = JSON.parse(fs.readFileSync(trackerFile, 'utf-8'));
+
+    // Étape 2 : Rechercher et supprimer l'objet
+    const newData = jsonData.filter(item => item.author != authorId);
+
+    if (newData.length !== jsonData.length) {
+        // Au moins un objet a été trouvé et supprimé, enregistre le fichier JSON mis à jour
+        fs.writeFileSync(trackerFile, JSON.stringify(newData, null, 2), 'utf-8');
+    }
+
+}

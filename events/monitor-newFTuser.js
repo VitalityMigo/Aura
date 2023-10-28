@@ -16,6 +16,7 @@ const newFTDeposit = require("../functions/m-newbasedeposit")
 const FTSnipeDepositExec = require("../functions/FT-snipe-deposit")
 const FTSnipeUserExec = require('../functions/FT-snipe-user')
 const orderExecFT = require("../functions/FT-order-exec")
+const trackerHandler = require("../functions/m-FTtracker.js")
 
 //const newGMUser = require("../old&archive/m-newGMuser")
 
@@ -57,9 +58,9 @@ const exepectedTxnType = 126
 
 
 //GM.io
-const gmContract = "0x84a34c641b66e8823676990521421f954d7eb42b"
-const gmInviteSig = "0x6160f862"
-const gmInviteSelfSig = "0x6007f17d"
+// const gmContract = "0x84a34c641b66e8823676990521421f954d7eb42b"
+// const gmInviteSig = "0x6160f862"
+// const gmInviteSelfSig = "0x6007f17d"
 
 
 
@@ -131,7 +132,8 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
 
                     orderExecFT(transaction)
-
+                    
+                    trackerHandler(transaction)
 
                 }
 

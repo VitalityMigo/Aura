@@ -15,6 +15,9 @@ const moment = require('moment');
 
 
 const axios = require('axios');
+const fs = require("fs")
+
+const trackerFile = "contracts/friendtech/tracker.json"
 
 
 function removeAtSymbol(word) {
@@ -128,6 +131,8 @@ module.exports = {
                                     subjectPfp: pfp,
                                 })
 
+                                pushAddress(address, username, authorId)
+
                                 added++
 
                                 const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
@@ -179,7 +184,7 @@ module.exports = {
                                 .addFields(
                                     { name: "List", value: "```" + userFormatted + "```", inline: true },
                                     { name: " ", value: " ", inline: false },
-                                    { name: " ", value: "**→** Please open your DMs to receive the alerts*", inline: false },
+                                    { name: " ", value: "**→ Please open your DMs to receive the alerts**", inline: false },
 
                                 )
                                 .setTimestamp()
@@ -322,3 +327,29 @@ module.exports = {
         }
     },
 };
+
+
+
+// Function
+
+
+
+function pushAddress(address, username, authorId) {
+    let existingData = []
+    if (fs.existsSync(trackerFile)) {
+        const fileContent = fs.readFileSync(trackerFile, 'utf8');
+        existingData = JSON.parse(fileContent);
+    }
+
+    existingData.push({
+        username: username.toLowerCase(),
+        address: address.toLowerCase(),
+        author: authorId,
+    }
+    );
+
+    // Écrivez le fichier JSON avec la nouvelle liste
+    fs.writeFileSync(trackerFile, JSON.stringify(existingData, null, 2));
+}
+
+

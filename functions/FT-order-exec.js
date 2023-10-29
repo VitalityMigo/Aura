@@ -16,6 +16,8 @@ const shareContractAbi = require("../contracts/friendtech/share.json");
 const shareContractAddress = "0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4"
 const shareContract = new web3BaseBlast.eth.Contract(shareContractAbi, shareContractAddress);
 const baseChainId = "8453"
+const defaultBaseGas = 150000000
+
 
 let serverId
 let botChannelId
@@ -131,6 +133,10 @@ async function orderExecFT(transaction) {
                         const gasLimit = 200000;
                         const gas = 21000
                         let [gasPrice] = await Promise.all([gasPricePromise]);
+
+                        if (gasPrice == "null" || gasPrice == null) {
+                            gasPrice = defaultBaseGas
+                        }
 
                         if (task.gasPreset != null) {
                             gasPrice = parseInt(gasPrice * (1 + (parseFloat(task.gasPreset) / 100)))

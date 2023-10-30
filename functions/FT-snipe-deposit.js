@@ -59,7 +59,7 @@ setTimeout(() => {
 
     }
 
-     botGuild = client.guilds.cache.get(serverId);
+    botGuild = client.guilds.cache.get(serverId);
     botChannel = botGuild.channels.cache.get(botChannelId);
 
 }, 4000);
@@ -147,6 +147,12 @@ async function FTSnipeDepositExec(obj) {
             if (taskList.length > 0) {
 
 
+                // On définit les presets de gas
+                const gasLimit = 200000;
+                const gas = 21000
+                let [gasPrice] = await Promise.all([gasPricePromise]);
+
+
                 for (const task of taskList) {
 
                     let isValid = true
@@ -154,17 +160,9 @@ async function FTSnipeDepositExec(obj) {
 
                     try {
 
-                        // On définit les presets de gas
-                        const gasLimit = 200000;
-                        const gas = 21000
-                        let [gasPrice] = await Promise.all([gasPricePromise]);
 
-                        if (gasPrice == "null" || gasPrice == null) {
-                            gasPrice = defaultBaseGas
-                        }
-
-                        if (task.gasPreset != null) {
-                            gasPrice = parseInt(parseFloat(gasPrice) * (1 + (parseFloat(task.gasPreset) / 100)))
+                        if (task.gasPreset != null && gasPrice) {
+                            gasPrice = parseInt(gasPrice * (1 + (parseFloat(task.gasPreset) / 100)))
                         }
 
 
@@ -187,12 +185,17 @@ async function FTSnipeDepositExec(obj) {
                             }
 
 
+                            // Si erreur de gas, default gas
+                            if (!gasPrice) {
+                                gasPrice = defaultBaseGas
+                            }
+
 
                             if (isValid == true) {
 
 
                                 //On construit l'objet de transaction
-                                 txInfos = {
+                                txInfos = {
                                     gasPrice: gasPrice,
                                     gas: gas,
                                     gasLimit: gasLimit,
@@ -225,7 +228,7 @@ async function FTSnipeDepositExec(obj) {
 
                         console.log("Erreur de boucle : " + error)
 
-                        
+
                         await botChannel.send("Erreur de boucle snipe : " + error.stack);
                         await botChannel.send(JSON.stringify(txInfos, null, 2));
 

@@ -64,7 +64,7 @@ async function sniperUserTaskList(options) {
             amount: task.dataValues.amount,
             keyPrice: task.dataValues.max_total_price,
             simulation: task.dataValues.simulation,
-            gasPreset: task.dataValues.walletAddress,
+            gasPreset: task.dataValues.gas_preset,
             walletAddress: task.dataValues.walletAddress,
             walletPk: task.dataValues.privateKey,
             taskCount: task.dataValues.repeat,

@@ -134,11 +134,9 @@ async function orderExecFT(transaction) {
                         const gas = 21000
                         let [gasPrice] = await Promise.all([gasPricePromise]);
 
-                        if (gasPrice == "null" || gasPrice == null) {
-                            gasPrice = defaultBaseGas
-                        }
 
-                        if (task.gasPreset != null) {
+
+                        if (task.gasPreset != null && gasPrice) {
                             gasPrice = parseInt(gasPrice * (1 + (parseFloat(task.gasPreset) / 100)))
                         }
 
@@ -164,6 +162,10 @@ async function orderExecFT(transaction) {
                             }
 
 
+                            // Si erreur de gas, default gas
+                            if (!gasPrice) {
+                                gasPrice = defaultBaseGas
+                            }
 
                             if (isValid == true) {
 

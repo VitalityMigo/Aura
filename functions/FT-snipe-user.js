@@ -126,6 +126,12 @@ async function FTSnipeUserExec(transaction) {
                     if (taskList.length > 0) {
 
 
+                        // On définit les presets de gas
+                        const gasLimit = 200000;
+                        const gas = 21000
+                        let [gasPrice] = await Promise.all([gasPricePromise]);
+
+
                         for (const task of taskList) {
 
                             let isValid = true
@@ -133,19 +139,10 @@ async function FTSnipeUserExec(transaction) {
 
                             try {
 
-                                // On définit les presets de gas
-                                const gasLimit = 200000;
-                                const gas = 21000
-                                let [gasPrice] = await Promise.all([gasPricePromise]);
 
-                                if (gasPrice == "null" || gasPrice == null) {
-                                    gasPrice = defaultBaseGas
+                                if (task.gasPreset != null && gasPrice) {
+                                    gasPrice = parseInt(gasPrice * (1 + (parseFloat(task.gasPreset) / 100)))
                                 }
-
-                                if (task.gasPreset != null) {
-                                    gasPrice = parseInt(parseFloat(gasPrice) * (1 + (parseFloat(task.gasPreset) / 100)))
-                                }
-
 
                                 const data = await shareContract.methods.buyShares(inputAddress, parseInt(task.amount)).encodeABI();
 
@@ -165,6 +162,11 @@ async function FTSnipeUserExec(transaction) {
                                         }
                                     }
 
+
+                                    // Si erreur de gas, default gas
+                                    if (!gasPrice) {
+                                        gasPrice = defaultBaseGas
+                                    }
 
 
                                     if (isValid == true) {

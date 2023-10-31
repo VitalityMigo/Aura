@@ -2866,7 +2866,6 @@ module.exports = {
 
                                     const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                         .setTitle("Friend.Tech Interactions")
-                                        .setDescription(">>> Displaying the Friend.Tech airdrop dashboard")
                                         //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                         .addFields(
@@ -3419,7 +3418,6 @@ module.exports = {
 
                                     const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                         .setTitle("Friend.Tech Airdrop")
-                                        .setDescription(">>> Displaying the Friend.Tech airdrop dashboard")
                                         //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                         .addFields(

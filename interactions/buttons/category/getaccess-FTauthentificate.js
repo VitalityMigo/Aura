@@ -29,7 +29,9 @@ const shareContractAbi = require("../../../contracts/friendtech/share.json")
 const shareContractAddress = "0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4"
 const shareContract = new web3BaseDRPC.eth.Contract(shareContractAbi, shareContractAddress);
 
-const friendtechaccount = "0x87F9Ee054Dfcbfe0d459143A52Af81652e94173D"
+const vitality_friendtech = "0x87f9ee054dfcbfe0d459143a52af81652e94173d"
+const thegoldeneel_friendtech = "0x22172ea92b7078d449f9d40e18ea3e7de969c4e4"
+const bigfloppa_friendtech = "0x9a503c7c3752f2749085ba51fc438f5d4ac5f532"
 
 
 
@@ -146,14 +148,17 @@ module.exports = {
 
 
 
-                            const supply = await shareContract.methods.sharesBalance(friendtechaccount, userAddress).call();
+                            const vitality_supply = await shareContract.methods.sharesBalance(vitality_friendtech, userAddress).call();
+                            const bigfloppa_supply = await shareContract.methods.sharesBalance(bigfloppa_friendtech, userAddress).call();
+                            const thegoldeneel_supply = await shareContract.methods.sharesBalance(thegoldeneel_friendtech, userAddress).call();
 
-                            if (parseInt(supply) <= 0) {
+
+                            if (parseInt(vitality_supply) <= 0 && parseInt(bigfloppa_supply) <= 0 && parseInt(thegoldeneel_supply) <= 0) {
 
 
                                 const walletManager = new EmbedBuilder().setColor("#060A8F")
                                     .setTitle("Get Access")
-                                    .setDescription("Our verification system didn't find any `@Vitalitymigo` key in the Friend.Tech account you provided. Please try again using the twitter that owns the key. If you need any help, feel free to open a ticket")
+                                    .setDescription("Our verification system didn't find any `@Vitalitymigo` or partners key in the Friend.Tech account you provided. Please try again using the twitter that owns the key. If you need any help, feel free to open a ticket")
                                     .setTimestamp()
                                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -305,7 +310,7 @@ module.exports = {
 
                     const walletManager = new EmbedBuilder().setColor("#060A8F")
                         .setTitle("Get Access")
-                        .setDescription("Our verification system didn't find any `@Vitalitymigo` key in the Friend.Tech account you provided. Please try again using the twitter that owns the key. If you need any help, feel free to open a ticket")
+                        .setDescription("Our verification system didn't find any `@Vitalitymigo` or partners key in the Friend.Tech account you provided. Please try again using the twitter that owns the key. If you need any help, feel free to open a ticket")
                         .setTimestamp()
                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })

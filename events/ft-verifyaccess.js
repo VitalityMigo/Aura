@@ -1,9 +1,14 @@
 const { adminsql, reportsql, sequelize, access_friendtech } = require('./database');
 const { EmbedBuilder } = require("discord.js");
 
+const addTimeout = require("../functions/addtimeout")
+
 const axios = require("axios")
 
-const friendtechaccount = "0x87F9Ee054Dfcbfe0d459143A52Af81652e94173D"
+const vitality_friendtech = "0x87f9ee054dfcbfe0d459143a52af81652e94173d"
+const thegoldeneel_friendtech = "0x22172ea92b7078d449f9d40e18ea3e7de969c4e4"
+const bigfloppa_friendtech = "0x9a503c7c3752f2749085ba51fc438f5d4ac5f532"
+
 
 const guildId = '1108754348818845729';
 const roleId1 = '1108761632928182424'; // Remplacez par l'ID de votre rôle
@@ -26,70 +31,18 @@ async function interval_ftaccess(client) {
         // on récupère tous les users avec la clé active et accès à Aura
         const ft_access_list = await access_friendtech.findAll({ where: { active: "true" } })
 
-        // on call les holders de la clé {friendtechaccount} chez FT 
-        const holdersCall = await axios.get("https://prod-api.kosetto.com/users/" + friendtechaccount + "/token/holders")
-        const holdersTable = holdersCall.data.users
+
+        // On fait la list de tous les holders
+        await holdersList(vitality_friendtech, holdersTableAddress)
+        await addTimeout(3)
+        await holdersList(thegoldeneel_friendtech, holdersTableAddress)
+        await addTimeout(3)
+        await holdersList(bigfloppa_friendtech, holdersTableAddress)
+
+        // On enlève les doublons
+        holdersTableAddress = [...new Set(holdersTableAddress)];
 
 
-        // On construit un tableau avec les addresses
-        if (holdersTable.length > 0) {
-
-            if (holdersCall.data.nextPageStart != 50) {
-
-                for (const holding of holdersTable) {
-
-                    if (!holdersTableAddress.includes(holding.address.toLowerCase())) {
-
-                        holdersTableAddress.push(holding.address.toLowerCase())
-                    }
-                }
-
-            } else {
-
-                for (const holding of holdersTable) {
-
-                    if (!holdersTableAddress.includes(holding.address.toLowerCase())) {
-
-                        holdersTableAddress.push(holding.address.toLowerCase())
-                    }
-                }
-
-                let itemsNumber = 50
-                let callPage = ""
-
-                let continuation = holdersCall.data.nextPageStart
-
-                while (continuation != null) {
-
-
-
-
-                    callPage = await axios.get("https://prod-api.kosetto.com/users/" + userAddress + "/token/holders?pageStart=" + itemsNumber)
-
-                    continuation = callPage.data.nextPageStart
-
-                    if (continuation != null) {
-
-                        for (const holding of holdersTable) {
-
-                            if (!holdersTableAddress.includes(holding.address.toLowerCase())) {
-
-                                holdersTableAddress.push(holding.address.toLowerCase())
-                            }
-                        }
-
-
-                        itemsNumber += 50
-
-                    } else {
-                        break
-                    }
-                }
-            }
-        }
-
-
-        
         // On vérifie pour chaque user avec une sub active si ils sont dans le tableau
         for (const user of ft_access_list) {
 
@@ -250,3 +203,69 @@ async function interval_ftaccess(client) {
 }
 
 module.exports = interval_ftaccess
+
+
+async function holdersList(address, holdersTableAddress) {
+
+    // on call les holders de la clé {friendtechaccount} chez FT 
+    const holdersCall = await axios.get("https://prod-api.kosetto.com/users/" + address + "/token/holders")
+    const holdersTable = holdersCall.data.users
+
+
+    // On construit un tableau avec les addresses
+    if (holdersTable.length > 0) {
+
+        if (holdersCall.data.nextPageStart != 50) {
+
+            for (const holding of holdersTable) {
+
+                if (!holdersTableAddress.includes(holding.address.toLowerCase())) {
+
+                    holdersTableAddress.push(holding.address.toLowerCase())
+                }
+            }
+
+        } else {
+
+            for (const holding of holdersTable) {
+
+                if (!holdersTableAddress.includes(holding.address.toLowerCase())) {
+
+                    holdersTableAddress.push(holding.address.toLowerCase())
+                }
+            }
+
+            let itemsNumber = 50
+            let callPage = ""
+
+            let continuation = holdersCall.data.nextPageStart
+
+            while (continuation != null) {
+
+
+
+
+                callPage = await axios.get("https://prod-api.kosetto.com/users/" + address + "/token/holders?pageStart=" + itemsNumber)
+
+                continuation = callPage.data.nextPageStart
+
+                if (continuation != null) {
+
+                    for (const holding of holdersTable) {
+
+                        if (!holdersTableAddress.includes(holding.address.toLowerCase())) {
+
+                            holdersTableAddress.push(holding.address.toLowerCase())
+                        }
+                    }
+
+
+                    itemsNumber += 50
+
+                } else {
+                    break
+                }
+            }
+        }
+    }
+}

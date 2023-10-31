@@ -2869,8 +2869,8 @@ module.exports = {
                                         //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                         .addFields(
-                                            { name: " ", value: "This command is being optimized and is in maintenance and will be available again soon. Make sure to check our future <#1108756917414793216> to be informed when it's up again.", inline: true },
-                                        )
+                                            { name: " ", value: "We are currently optimizing this feature which is in maintenance and will be available again soon. Make sure to check our future <#1108756917414793216> to be informed when it's up again.", inline: true },
+                                            )
                                         .setTimestamp()
                                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
@@ -3421,8 +3421,8 @@ module.exports = {
                                         //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                         .addFields(
-                                            { name: " ", value: "This command is being optimized and is in maintenance and will be available again soon. Make sure to check our future <#1108756917414793216> to be informed when it's up again.", inline: true },
-                                        )
+                                            { name: " ", value: "We are currently optimizing this feature which is in maintenance and will be available again soon. Make sure to check our future <#1108756917414793216> to be informed when it's up again.", inline: true },
+                                            )
                                         .setTimestamp()
                                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 

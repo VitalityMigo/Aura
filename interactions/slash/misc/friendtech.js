@@ -2864,549 +2864,548 @@ module.exports = {
                                 } else if (subcommand === 'interactions') {
 
 
+                                    const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle("Friend.Tech Interactions")
+                                        .setDescription(">>> Displaying the Friend.Tech airdrop dashboard")
+                                        //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .addFields(
+                                            { name: " ", value: "This command is being optimized and is in maintenance and will be available again soon. Make sure to check our future <#1108756917414793216> to be informed when it's up again.", inline: true },
+                                        )
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                    await interaction.editReply({ embeds: [errorNotEthereum], components: [], ephemeral: true });
+
+
 
-                                    const buttonsRow = new ActionRowBuilder()
-                                        .addComponents(
-                                            new ButtonBuilder()
-                                                .setCustomId('friendtech-interactionfirstpage-button')
-                                                .setLabel('first page')
-                                                .setStyle(2)
-                                                .setDisabled(true),
-                                            new ButtonBuilder()
-                                                .setCustomId('friendtech-interactionpreviouspage-button')
-                                                .setLabel('previous page')
-                                                .setStyle(2)
-                                                .setDisabled(true),
-                                            new ButtonBuilder()
-                                                .setCustomId('friendtech-interactionnextpage-button')
-                                                .setLabel('next page')
-                                                .setStyle(2),
-                                            new ButtonBuilder()
-                                                .setCustomId('friendtech-interactionlastpage-button')
-                                                .setLabel('last page')
-                                                .setStyle(2),
-                                        );
+                                    // CODE DE PROF, A REMPLACER QUAND FIX
 
-                                    const buttonsRowNo = new ActionRowBuilder()
-                                        .addComponents(
-                                            new ButtonBuilder()
-                                                .setCustomId('friendtech-interactionfirstpage-button')
-                                                .setLabel('first page')
-                                                .setStyle(2)
-                                                .setDisabled(true),
-                                            new ButtonBuilder()
-                                                .setCustomId('friendtech-interactionpreviouspage-button')
-                                                .setLabel('previous page')
-                                                .setStyle(2)
-                                                .setDisabled(true),
-                                            new ButtonBuilder()
-                                                .setCustomId('friendtech-interactionnextpage-button')
-                                                .setLabel('next page')
-                                                .setStyle(2)
-                                                .setDisabled(true),
-                                            new ButtonBuilder()
-                                                .setCustomId('friendtech-interactionlastpage-button')
-                                                .setLabel('last page')
-                                                .setStyle(2)
-                                                .setDisabled(true),
-                                        );
+                                    // ++++++++++
 
+                                    // const buttonsRow = new ActionRowBuilder()
+                                    //     .addComponents(
+                                    //         new ButtonBuilder()
+                                    //             .setCustomId('friendtech-interactionfirstpage-button')
+                                    //             .setLabel('first page')
+                                    //             .setStyle(2)
+                                    //             .setDisabled(true),
+                                    //         new ButtonBuilder()
+                                    //             .setCustomId('friendtech-interactionpreviouspage-button')
+                                    //             .setLabel('previous page')
+                                    //             .setStyle(2)
+                                    //             .setDisabled(true),
+                                    //         new ButtonBuilder()
+                                    //             .setCustomId('friendtech-interactionnextpage-button')
+                                    //             .setLabel('next page')
+                                    //             .setStyle(2),
+                                    //         new ButtonBuilder()
+                                    //             .setCustomId('friendtech-interactionlastpage-button')
+                                    //             .setLabel('last page')
+                                    //             .setStyle(2),
+                                    //     );
 
+                                    // const buttonsRowNo = new ActionRowBuilder()
+                                    //     .addComponents(
+                                    //         new ButtonBuilder()
+                                    //             .setCustomId('friendtech-interactionfirstpage-button')
+                                    //             .setLabel('first page')
+                                    //             .setStyle(2)
+                                    //             .setDisabled(true),
+                                    //         new ButtonBuilder()
+                                    //             .setCustomId('friendtech-interactionpreviouspage-button')
+                                    //             .setLabel('previous page')
+                                    //             .setStyle(2)
+                                    //             .setDisabled(true),
+                                    //         new ButtonBuilder()
+                                    //             .setCustomId('friendtech-interactionnextpage-button')
+                                    //             .setLabel('next page')
+                                    //             .setStyle(2)
+                                    //             .setDisabled(true),
+                                    //         new ButtonBuilder()
+                                    //             .setCustomId('friendtech-interactionlastpage-button')
+                                    //             .setLabel('last page')
+                                    //             .setStyle(2)
+                                    //             .setDisabled(true),
+                                    //     );
 
-                                    const selectedUser1 = interaction.options.getString("twitter1").toLowerCase()
-                                    const selectedUser2 = interaction.options.getString("twitter2").toLowerCase()
 
-                                    // On formatte sans le @
-                                    const givenUsername1 = removeAtSymbol(selectedUser1)
-                                    const givenUsername2 = removeAtSymbol(selectedUser2)
 
+                                    // const selectedUser1 = interaction.options.getString("twitter1").toLowerCase()
+                                    // const selectedUser2 = interaction.options.getString("twitter2").toLowerCase()
 
+                                    // // On formatte sans le @
+                                    // const givenUsername1 = removeAtSymbol(selectedUser1)
+                                    // const givenUsername2 = removeAtSymbol(selectedUser2)
 
-                                    let findUser1 = []
-                                    let findUser2 = []
-                                    let isMatch = true
 
-                                    let user1Address = ""
-                                    let user2Address = ""
 
-                                    let user1FrenRatio = ""
-                                    let user2FrenRatio = ""
-                                    let user1FrenCount = ""
-                                    let user2FrenCount = ""
+                                    // let findUser1 = []
+                                    // let findUser2 = []
+                                    // let isMatch = true
 
-                                    let holdingFormatted = ""
+                                    // let user1Address = ""
+                                    // let user2Address = ""
 
+                                    // let user1FrenRatio = ""
+                                    // let user2FrenRatio = ""
+                                    // let user1FrenCount = ""
+                                    // let user2FrenCount = ""
 
-                                    let user1HoldingCount = 0
-                                    let user2HoldingCount = 0
+                                    // let holdingFormatted = ""
 
-                                    let fullTable = []
-                                    let infoTable = []
 
+                                    // let user1HoldingCount = 0
+                                    // let user2HoldingCount = 0
 
-                                    try {
-                                        findUser1 = await axios.get('https://prod-api.kosetto.com/search/users?username=' + givenUsername1, { headers: friendtechHeaders })
-                                        findUser2 = await axios.get('https://prod-api.kosetto.com/search/users?username=' + givenUsername2, { headers: friendtechHeaders })
+                                    // let fullTable = []
+                                    // let infoTable = []
 
-                                    } catch (error) {
-                                        isMatch = false
-                                    }
 
+                                    // try {
+                                    //     findUser1 = await axios.get('https://prod-api.kosetto.com/search/users?username=' + givenUsername1, { headers: friendtechHeaders })
+                                    //     findUser2 = await axios.get('https://prod-api.kosetto.com/search/users?username=' + givenUsername2, { headers: friendtechHeaders })
 
-                                    if (isMatch == true) {
+                                    // } catch (error) {
+                                    //     isMatch = false
+                                    // }
 
 
-                                        const user1 = findUser1.data.users.find((user) => user.twitterUsername.toLowerCase() == givenUsername1.toLowerCase());
-                                        const user2 = findUser2.data.users.find((user) => user.twitterUsername.toLowerCase() == givenUsername2.toLowerCase());
+                                    // if (isMatch == true) {
 
 
-                                        if (user1 && user2) {
+                                    //     const user1 = findUser1.data.users.find((user) => user.twitterUsername.toLowerCase() == givenUsername1.toLowerCase());
+                                    //     const user2 = findUser2.data.users.find((user) => user.twitterUsername.toLowerCase() == givenUsername2.toLowerCase());
 
 
-                                            user1Address = user1.address
-                                            user2Address = user2.address
+                                    //     if (user1 && user2) {
 
-                                            try {
 
+                                    //         user1Address = user1.address
+                                    //         user2Address = user2.address
 
-                                                let relation = ""
+                                    //         try {
 
-                                                let perPage = 50
-                                                let callPage = 1
 
+                                    //             let relation = ""
 
+                                    //             let perPage = 50
+                                    //             let callPage = 1
 
 
 
 
-                                                const user1Name = user1.twitterName
-                                                const user2Name = user2.twitterName
 
 
-                                                const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/trades.list?batch=1&input={"0":{"json":{"trader":["' + user1Address + '","' + user2Address + '"],"subject":["' + user1Address + '","' + user2Address + '"],"page":' + callPage + ',"perPage":' + perPage + ',"filter":{},"excludeSelfTrades":true,"withFriends":null},"meta":{"values":{"withFriends":["undefined"]}}}}')
+                                    //             const user1Name = user1.twitterName
+                                    //             const user2Name = user2.twitterName
 
 
-                                                // On récupère le nombre de trades
-                                                const tradeTable = frenfrenCall.data[0].result.data.json.trades
+                                    //             const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/trades.list?batch=1&input={"0":{"json":{"trader":["' + user1Address + '","' + user2Address + '"],"subject":["' + user1Address + '","' + user2Address + '"],"page":' + callPage + ',"perPage":' + perPage + ',"filter":{},"excludeSelfTrades":true,"withFriends":null},"meta":{"values":{"withFriends":["undefined"]}}}}')
 
-                                                if (tradeTable.length > 0) {
 
+                                    //             // On récupère le nombre de trades
+                                    //             const tradeTable = frenfrenCall.data[0].result.data.json.trades
 
-                                                    const tradeUser1Table = tradeTable.filter(obj => obj.ftHolder.trader.address.toLowerCase() == user1Address.toLowerCase())
-                                                    const tradeUser2Table = tradeTable.filter(obj => obj.ftHolder.trader.address.toLowerCase() == user2Address.toLowerCase())
+                                    //             if (tradeTable.length > 0) {
 
 
-                                                    // On prend les stats (3,3)
-                                                    if (tradeUser1Table.length > 0) {
-                                                        user1FrenRatio = parseFloat(tradeUser1Table[0].ftHolder.trader.frenScore * 100).toFixed(0)
-                                                        user1FrenCount = tradeUser1Table[0].ftHolder.trader.frenfrenCount
-                                                    } else {
-                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername1 + '"}}', { headers: frenfrenHeader })
-                                                        const user1Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user1Address.toLowerCase())
-                                                        user1FrenRatio = parseFloat(user1Profile.frenScore * 100).toFixed(0)
-                                                        user1FrenCount = user1Profile.frenfrenCount
+                                    //                 const tradeUser1Table = tradeTable.filter(obj => obj.ftHolder.trader.address.toLowerCase() == user1Address.toLowerCase())
+                                    //                 const tradeUser2Table = tradeTable.filter(obj => obj.ftHolder.trader.address.toLowerCase() == user2Address.toLowerCase())
 
 
-                                                    }
+                                    //                 // On prend les stats (3,3)
+                                    //                 if (tradeUser1Table.length > 0) {
+                                    //                     user1FrenRatio = parseFloat(tradeUser1Table[0].ftHolder.trader.frenScore * 100).toFixed(0)
+                                    //                     user1FrenCount = tradeUser1Table[0].ftHolder.trader.frenfrenCount
+                                    //                 } else {
+                                    //                     const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername1 + '"}}', { headers: frenfrenHeader })
+                                    //                     const user1Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user1Address.toLowerCase())
+                                    //                     user1FrenRatio = parseFloat(user1Profile.frenScore * 100).toFixed(0)
+                                    //                     user1FrenCount = user1Profile.frenfrenCount
 
-                                                    if (tradeUser2Table.length > 0) {
-                                                        user2FrenRatio = parseFloat(tradeUser2Table[0].ftHolder.trader.frenScore * 100).toFixed(0)
-                                                        user2FrenCount = tradeUser2Table[0].ftHolder.trader.frenfrenCount
-                                                    } else {
-                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername2 + '"}}', { headers: frenfrenHeader })
-                                                        const user2Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user2Address.toLowerCase())
-                                                        user2FrenRatio = parseFloat(user2Profile.frenScore * 100).toFixed(0)
-                                                        user2FrenCount = user2Profile.frenfrenCount
 
+                                    //                 }
 
-                                                    }
+                                    //                 if (tradeUser2Table.length > 0) {
+                                    //                     user2FrenRatio = parseFloat(tradeUser2Table[0].ftHolder.trader.frenScore * 100).toFixed(0)
+                                    //                     user2FrenCount = tradeUser2Table[0].ftHolder.trader.frenfrenCount
+                                    //                 } else {
+                                    //                     const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername2 + '"}}', { headers: frenfrenHeader })
+                                    //                     const user2Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user2Address.toLowerCase())
+                                    //                     user2FrenRatio = parseFloat(user2Profile.frenScore * 100).toFixed(0)
+                                    //                     user2FrenCount = user2Profile.frenfrenCount
 
 
-                                                    /////// On construit le tableau de trade
-                                                    let interactionsFormatted = "T/S           Type      Share         Value         Date\n\n"
-                                                    let index = 0
+                                    //                 }
 
-                                                    for (const trade of tradeTable) {
 
+                                    //                 /////// On construit le tableau de trade
+                                    //                 let interactionsFormatted = "T/S           Type      Share         Value         Date\n\n"
+                                    //                 let index = 0
 
+                                    //                 for (const trade of tradeTable) {
 
 
-                                                        let ethAmount = trade.ethAmount
-                                                        let feesAmount = trade.protocolEthAmount + trade.subjectEthAmount
-                                                        let txnHash = trade.txHash
-                                                        let shareAmount = trade.shareAmount
-                                                        let isBuy = trade.isBuy
-                                                        let newHeldCount = trade.ftHolder.shareAmount
-                                                        let date = new Date(trade.createdAt)
-                                                        let traderName = trade.ftHolder.trader.twitterUsername
-                                                        let subjectName = trade.ftHolder.subject.twitterUsername
-                                                        let traderAddress = trade.ftHolder.trader.address.toLowerCase()
-                                                        let subjectAddress = trade.ftHolder.subject.address.toLowerCase()
 
 
+                                    //                     let ethAmount = trade.ethAmount
+                                    //                     let feesAmount = trade.protocolEthAmount + trade.subjectEthAmount
+                                    //                     let txnHash = trade.txHash
+                                    //                     let shareAmount = trade.shareAmount
+                                    //                     let isBuy = trade.isBuy
+                                    //                     let newHeldCount = trade.ftHolder.shareAmount
+                                    //                     let date = new Date(trade.createdAt)
+                                    //                     let traderName = trade.ftHolder.trader.twitterUsername
+                                    //                     let subjectName = trade.ftHolder.subject.twitterUsername
+                                    //                     let traderAddress = trade.ftHolder.trader.address.toLowerCase()
+                                    //                     let subjectAddress = trade.ftHolder.subject.address.toLowerCase()
 
-                                                        let timestamp = Math.floor((date.setHours(date.getHours() + 2)) / 1000)
 
 
+                                    //                     let timestamp = Math.floor((date.setHours(date.getHours() + 2)) / 1000)
 
-                                                        // on definit le tag et le type d'action
-                                                        let actionType = "Buy"
-                                                        let actionTag = "Buy"
-                                                        let direction = "➡️"
-                                                        let amount = ""
 
-                                                        let isNewHolding = trade.isNewHolding
-                                                        let isLastHolding = trade.isLastHolding
-                                                        let isReciprocat = trade.isReciprocat
 
+                                    //                     // on definit le tag et le type d'action
+                                    //                     let actionType = "Buy"
+                                    //                     let actionTag = "Buy"
+                                    //                     let direction = "➡️"
+                                    //                     let amount = ""
 
-                                                        if (isBuy == false) { actionType = "Sell"; actionTag = "Sell" }
-                                                        if (isNewHolding === true) { actionTag = "Entry" }
-                                                        if (isLastHolding === true) { actionTag = "Exit" }
-                                                        if (isReciprocat === true) { actionTag = "Mutual" }
+                                    //                     let isNewHolding = trade.isNewHolding
+                                    //                     let isLastHolding = trade.isLastHolding
+                                    //                     let isReciprocat = trade.isReciprocat
 
 
+                                    //                     if (isBuy == false) { actionType = "Sell"; actionTag = "Sell" }
+                                    //                     if (isNewHolding === true) { actionTag = "Entry" }
+                                    //                     if (isLastHolding === true) { actionTag = "Exit" }
+                                    //                     if (isReciprocat === true) { actionTag = "Mutual" }
 
 
 
-                                                        // On incrémente les différents compteurs 
 
-                                                        if (isBuy == true) {
 
-                                                            amount = "+" + shareAmount
+                                    //                     // On incrémente les différents compteurs 
 
-                                                            if (traderAddress.toLowerCase() == user1Address.toLowerCase()) { user1HoldingCount += parseFloat(shareAmount) }
-                                                            else if (subjectAddress.toLowerCase() == user1Address.toLowerCase()) { user2HoldingCount += parseFloat(shareAmount); direction = "⬅️" }
+                                    //                     if (isBuy == true) {
 
-                                                        } else {
+                                    //                         amount = "+" + shareAmount
 
-                                                            amount = "-" + shareAmount
+                                    //                         if (traderAddress.toLowerCase() == user1Address.toLowerCase()) { user1HoldingCount += parseFloat(shareAmount) }
+                                    //                         else if (subjectAddress.toLowerCase() == user1Address.toLowerCase()) { user2HoldingCount += parseFloat(shareAmount); direction = "⬅️" }
 
-                                                            if (traderAddress.toLowerCase() == user1Address.toLowerCase()) { user1HoldingCount -= parseFloat(shareAmount) }
-                                                            else if (subjectAddress.toLowerCase() == user1Address.toLowerCase()) { user2HoldingCount -= parseFloat(shareAmount); direction = "⬅️" }
+                                    //                     } else {
 
-                                                        }
+                                    //                         amount = "-" + shareAmount
 
+                                    //                         if (traderAddress.toLowerCase() == user1Address.toLowerCase()) { user1HoldingCount -= parseFloat(shareAmount) }
+                                    //                         else if (subjectAddress.toLowerCase() == user1Address.toLowerCase()) { user2HoldingCount -= parseFloat(shareAmount); direction = "⬅️" }
 
-                                                        index++
+                                    //                     }
 
-                                                        if (index <= 16) {
 
-                                                            let part1 = direction
-                                                            let part2 = actionTag
-                                                            let part3 = amount.toString()
-                                                            let part4 = parseFloat(ethAmount).toFixed(3) + "Ξ"
-                                                            let part5 = getTimeAgoSmall(timestamp)
+                                    //                     index++
 
+                                    //                     if (index <= 16) {
 
-                                                            let spaceSize = 18 - (part1.length + part2.length)
-                                                            let spaceLenght = ""
-                                                            for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+                                    //                         let part1 = direction
+                                    //                         let part2 = actionTag
+                                    //                         let part3 = amount.toString()
+                                    //                         let part4 = parseFloat(ethAmount).toFixed(3) + "Ξ"
+                                    //                         let part5 = getTimeAgoSmall(timestamp)
 
-                                                            let spaceSize2 = 29 - (part1.length + part2.length + part3.length + spaceSize)
-                                                            let spaceLenght2 = ""
-                                                            for (let i = 0; i < spaceSize2; i++) { spaceLenght2 += " " }
 
-                                                            let spaceSize3 = 43 - (part1.length + part2.length + part3.length + spaceSize + part4.length + spaceSize2)
-                                                            let spaceLenght3 = ""
-                                                            for (let i = 0; i < spaceSize3; i++) { spaceLenght3 += " " }
+                                    //                         let spaceSize = 18 - (part1.length + part2.length)
+                                    //                         let spaceLenght = ""
+                                    //                         for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
 
-                                                            let spaceSize4 = 56 - (part1.length + part2.length + part3.length + spaceSize + part4.length + spaceSize2 + part5.length + spaceSize3)
-                                                            let spaceLenght4 = ""
-                                                            for (let i = 0; i < spaceSize4; i++) { spaceLenght4 += " " }
+                                    //                         let spaceSize2 = 29 - (part1.length + part2.length + part3.length + spaceSize)
+                                    //                         let spaceLenght2 = ""
+                                    //                         for (let i = 0; i < spaceSize2; i++) { spaceLenght2 += " " }
 
+                                    //                         let spaceSize3 = 43 - (part1.length + part2.length + part3.length + spaceSize + part4.length + spaceSize2)
+                                    //                         let spaceLenght3 = ""
+                                    //                         for (let i = 0; i < spaceSize3; i++) { spaceLenght3 += " " }
 
+                                    //                         let spaceSize4 = 56 - (part1.length + part2.length + part3.length + spaceSize + part4.length + spaceSize2 + part5.length + spaceSize3)
+                                    //                         let spaceLenght4 = ""
+                                    //                         for (let i = 0; i < spaceSize4; i++) { spaceLenght4 += " " }
 
-                                                            interactionsFormatted += part1 + spaceLenght + part2 + spaceLenght2 + part3 + spaceLenght3 + part4 + spaceLenght4 + part5 + "\n"
 
-                                                        }
 
-                                                        // On construit le tableau pour le stocker et les pages suivantes
-                                                        let obj = {}
-                                                        obj.traderName = traderName
-                                                        obj.traderAddress = traderAddress
-                                                        obj.subjectName = subjectName
-                                                        obj.subjectAddress = subjectAddress
-                                                        obj.amount = amount
-                                                        obj.ethAmount = ethAmount
-                                                        obj.feesAmount = feesAmount
-                                                        obj.isBuy = isBuy
-                                                        obj.actionType = actionType
-                                                        obj.actionTag = actionTag
-                                                        obj.txnHash = txnHash
-                                                        obj.newHeldCount = newHeldCount
-                                                        obj.timestamp = timestamp
-                                                        fullTable.push(obj)
+                                    //                         interactionsFormatted += part1 + spaceLenght + part2 + spaceLenght2 + part3 + spaceLenght3 + part4 + spaceLenght4 + part5 + "\n"
 
+                                    //                     }
 
+                                    //                     // On construit le tableau pour le stocker et les pages suivantes
+                                    //                     let obj = {}
+                                    //                     obj.traderName = traderName
+                                    //                     obj.traderAddress = traderAddress
+                                    //                     obj.subjectName = subjectName
+                                    //                     obj.subjectAddress = subjectAddress
+                                    //                     obj.amount = amount
+                                    //                     obj.ethAmount = ethAmount
+                                    //                     obj.feesAmount = feesAmount
+                                    //                     obj.isBuy = isBuy
+                                    //                     obj.actionType = actionType
+                                    //                     obj.actionTag = actionTag
+                                    //                     obj.txnHash = txnHash
+                                    //                     obj.newHeldCount = newHeldCount
+                                    //                     obj.timestamp = timestamp
+                                    //                     fullTable.push(obj)
 
 
 
-                                                    }
 
 
+                                    //                 }
 
-                                                    // On formatte le nom et le socre d'holding
-                                                    const user1Score = user1FrenRatio + "% (" + user1FrenCount + ")"
-                                                    const user2Score = user2FrenRatio + "% (" + user2FrenCount + ")"
 
 
-                                                    const user1Formatted = "`" + user1Name + "`\n*Score:* " + user1Score + "\n∟[<:TWs:1153688442568450148>](https://twitter.com/" + givenUsername1 + ")[<:basescan:1155624395038019616>](https://basescan.org/address/" + user1Address + ")[<:friendtech:1156421684585299988>](https://www.friend.tech/rooms/" + user1Address + ")"
-                                                    const user2Formatted = "`" + user2Name + "`\n*Score:* " + user2Score + "\n∟[<:TWs:1153688442568450148>](https://twitter.com/" + givenUsername2 + ")[<:basescan:1155624395038019616>](https://basescan.org/address/" + user2Address + ")[<:friendtech:1156421684585299988>](https://www.friend.tech/rooms/" + user2Address + ")"
+                                    //                 // On formatte le nom et le socre d'holding
+                                    //                 const user1Score = user1FrenRatio + "% (" + user1FrenCount + ")"
+                                    //                 const user2Score = user2FrenRatio + "% (" + user2FrenCount + ")"
 
 
-                                                    holdingFormatted = "`" + user1HoldingCount + " | " + user2HoldingCount + "`"
+                                    //                 const user1Formatted = "`" + user1Name + "`\n*Score:* " + user1Score + "\n∟[<:TWs:1153688442568450148>](https://twitter.com/" + givenUsername1 + ")[<:basescan:1155624395038019616>](https://basescan.org/address/" + user1Address + ")[<:friendtech:1156421684585299988>](https://www.friend.tech/rooms/" + user1Address + ")"
+                                    //                 const user2Formatted = "`" + user2Name + "`\n*Score:* " + user2Score + "\n∟[<:TWs:1153688442568450148>](https://twitter.com/" + givenUsername2 + ")[<:basescan:1155624395038019616>](https://basescan.org/address/" + user2Address + ")[<:friendtech:1156421684585299988>](https://www.friend.tech/rooms/" + user2Address + ")"
 
-                                                    if (user1HoldingCount > 0 && user2HoldingCount > 0) { relation = "`(3, 3)`" }
-                                                    else if (user1HoldingCount > 0 && user2HoldingCount <= 0) { relation = "`(3, 0)`" }
-                                                    else if (user1HoldingCount <= 0 && user2HoldingCount > 0) { relation = "`(0, 3)`" }
-                                                    else { relation = "`(0, 0)`" }
 
+                                    //                 holdingFormatted = "`" + user1HoldingCount + " | " + user2HoldingCount + "`"
 
+                                    //                 if (user1HoldingCount > 0 && user2HoldingCount > 0) { relation = "`(3, 3)`" }
+                                    //                 else if (user1HoldingCount > 0 && user2HoldingCount <= 0) { relation = "`(3, 0)`" }
+                                    //                 else if (user1HoldingCount <= 0 && user2HoldingCount > 0) { relation = "`(0, 3)`" }
+                                    //                 else { relation = "`(0, 0)`" }
 
-                                                    const tradeCount = fullTable.length
-                                                    const itemsPerPage = 16; // Nombre d'objets par page
-                                                    const pageIndex = Math.ceil(tradeCount / itemsPerPage);
 
 
-                                                    const links = '[Friendtech](https://www.friend.tech/)' + " ∙ " + '[Twitter](https://twitter.com/' + ") ∙ " + '[Basescan](https://basescan.org/address/' + user1Address + "?toaddress=" + user2Address + ") ∙ " + '[Chart 1](https://www.degenz.finance/friendtech/portfolio?address=' + user1Address + ") ∙ " + '[Chart 2](https://www.degenz.finance/friendtech/portfolio?address=' + user2Address + ") ∙ " + '[FrenFren](https://preview.frenfren.pro/trades/exchanges/' + user1Address + "/" + user2Address + ")"
+                                    //                 const tradeCount = fullTable.length
+                                    //                 const itemsPerPage = 16; // Nombre d'objets par page
+                                    //                 const pageIndex = Math.ceil(tradeCount / itemsPerPage);
 
 
-                                                    const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
-                                                        .setTitle("Friend.Tech Interactions")
-                                                        .setDescription(">>> Displaying the friend.tech interactions")
-                                                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                        .setTimestamp()
-                                                        .addFields(
-                                                            { name: " ", value: " ", inline: false },
-                                                            { name: "User 1", value: user1Formatted, inline: true },
-                                                            { name: "User 2", value: user2Formatted, inline: true },
-                                                            { name: " ", value: " ", inline: false },
-                                                            { name: "Trades", value: "`" + tradeCount + "`", inline: true },
-                                                            { name: "Relation", value: relation, inline: true },
-                                                            { name: "Holding", value: holdingFormatted, inline: true },
-                                                            { name: "Interactions:", value: "```" + interactionsFormatted + "```", inline: false },
-                                                            { name: " ", value: "*The T/S field shows who is the trader and who is the seller*", inline: false },
-                                                            { name: "Links", value: links, inline: false },
-                                                            { name: "Page", value: "`[1/" + pageIndex + "]`", inline: false },
+                                    //                 const links = '[Friendtech](https://www.friend.tech/)' + " ∙ " + '[Twitter](https://twitter.com/' + ") ∙ " + '[Basescan](https://basescan.org/address/' + user1Address + "?toaddress=" + user2Address + ") ∙ " + '[Chart 1](https://www.degenz.finance/friendtech/portfolio?address=' + user1Address + ") ∙ " + '[Chart 2](https://www.degenz.finance/friendtech/portfolio?address=' + user2Address + ") ∙ " + '[FrenFren](https://preview.frenfren.pro/trades/exchanges/' + user1Address + "/" + user2Address + ")"
 
 
+                                    //                 const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
+                                    //                     .setTitle("Friend.Tech Interactions")
+                                    //                     .setDescription(">>> Displaying the friend.tech interactions")
+                                    //                     .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    //                     .setTimestamp()
+                                    //                     .addFields(
+                                    //                         { name: " ", value: " ", inline: false },
+                                    //                         { name: "User 1", value: user1Formatted, inline: true },
+                                    //                         { name: "User 2", value: user2Formatted, inline: true },
+                                    //                         { name: " ", value: " ", inline: false },
+                                    //                         { name: "Trades", value: "`" + tradeCount + "`", inline: true },
+                                    //                         { name: "Relation", value: relation, inline: true },
+                                    //                         { name: "Holding", value: holdingFormatted, inline: true },
+                                    //                         { name: "Interactions:", value: "```" + interactionsFormatted + "```", inline: false },
+                                    //                         { name: " ", value: "*The T/S field shows who is the trader and who is the seller*", inline: false },
+                                    //                         { name: "Links", value: links, inline: false },
+                                    //                         { name: "Page", value: "`[1/" + pageIndex + "]`", inline: false },
 
-                                                        )
-                                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-                                                    if (pageIndex <= 1) { await interaction.editReply({ embeds: [userFTEmbed], components: [buttonsRowNo] }); }
-                                                    else { await interaction.editReply({ embeds: [userFTEmbed], components: [buttonsRow] }); }
+                                    //                     )
+                                    //                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
+                                    //                 if (pageIndex <= 1) { await interaction.editReply({ embeds: [userFTEmbed], components: [buttonsRowNo] }); }
+                                    //                 else { await interaction.editReply({ embeds: [userFTEmbed], components: [buttonsRow] }); }
 
-                                                    // On crée le tableau d'infos
-                                                    let infoObj = {}
-                                                    infoObj.user1Name = user1Name
-                                                    infoObj.user1Address = user1Address
-                                                    infoObj.user1Formatted = user1Formatted
-                                                    infoObj.user2Name = user2Name
-                                                    infoObj.user2Address = user1Address
-                                                    infoObj.user2Formatted = user2Formatted
-                                                    infoObj.relation = relation
-                                                    infoObj.holding = holdingFormatted
-                                                    infoObj.tradeCount = tradeCount
-                                                    infoObj.links = links
-                                                    infoTable.push(infoObj)
 
 
+                                    //                 // On crée le tableau d'infos
+                                    //                 let infoObj = {}
+                                    //                 infoObj.user1Name = user1Name
+                                    //                 infoObj.user1Address = user1Address
+                                    //                 infoObj.user1Formatted = user1Formatted
+                                    //                 infoObj.user2Name = user2Name
+                                    //                 infoObj.user2Address = user1Address
+                                    //                 infoObj.user2Formatted = user2Formatted
+                                    //                 infoObj.relation = relation
+                                    //                 infoObj.holding = holdingFormatted
+                                    //                 infoObj.tradeCount = tradeCount
+                                    //                 infoObj.links = links
+                                    //                 infoTable.push(infoObj)
 
 
-                                                    //On fait le call àbn  la base SQL
-                                                    await interactionData.destroy({ where: { authorId: authorId, commandName: "friendtech-interactions", serverId: serverId } })
 
-                                                    await interactionData.create({
 
-                                                        authorId: authorId,
-                                                        authorName: authorName,
-                                                        serverId: serverId,
-                                                        commandName: "friendtech-interactions",
-                                                        interactionId: interaction.id,
-                                                        walletAddress: "N/A",
-                                                        walletCategory: "collection",
-                                                        embed1: JSON.stringify(fullTable),
-                                                        embed2: JSON.stringify(infoTable),
-                                                        embed3: "N/A",
-                                                        pageIndex: pageIndex.toString(),
-                                                        actualPage: "1",
-                                                        walletName: "N/A",
-                                                        selecedTimestamp: "N/A",
-                                                        selectedCollection: "N/A",
-                                                        collectionSlug: "N/A",
-                                                        collectionBanner: "N/A",
-                                                        avgDeriskPrice: "N/A",
-                                                        floorPrice: "N/A",
-                                                        lowerMarketlace: "N/A",
-                                                        collectionName: "N/A",
-                                                        buyCount: "N/A",
-                                                        soldCount: "N/A",
-                                                        remaining: "N/A",
-                                                        avgBuy: "N/A",
-                                                        avgSold: "N/A",
-                                                        realisedProfit: "N/A",
-                                                        potentialProfit: "N/A",
-                                                        roi: "N/A",
-                                                        visualTitle: "N/A",
-                                                        userAvatar: "N/A",
-                                                        nbMembersInvolved: "N/A",
-                                                        totalTradeCount: "N/A",
-                                                    })
+                                    //                 //On fait le call àbn  la base SQL
+                                    //                 await interactionData.destroy({ where: { authorId: authorId, commandName: "friendtech-interactions", serverId: serverId } })
 
+                                    //                 await interactionData.create({
 
+                                    //                     authorId: authorId,
+                                    //                     authorName: authorName,
+                                    //                     serverId: serverId,
+                                    //                     commandName: "friendtech-interactions",
+                                    //                     interactionId: interaction.id,
+                                    //                     walletAddress: "N/A",
+                                    //                     walletCategory: "collection",
+                                    //                     embed1: JSON.stringify(fullTable),
+                                    //                     embed2: JSON.stringify(infoTable),
+                                    //                     embed3: "N/A",
+                                    //                     pageIndex: pageIndex.toString(),
+                                    //                     actualPage: "1",
+                                    //                     walletName: "N/A",
+                                    //                     selecedTimestamp: "N/A",
+                                    //                     selectedCollection: "N/A",
+                                    //                     collectionSlug: "N/A",
+                                    //                     collectionBanner: "N/A",
+                                    //                     avgDeriskPrice: "N/A",
+                                    //                     floorPrice: "N/A",
+                                    //                     lowerMarketlace: "N/A",
+                                    //                     collectionName: "N/A",
+                                    //                     buyCount: "N/A",
+                                    //                     soldCount: "N/A",
+                                    //                     remaining: "N/A",
+                                    //                     avgBuy: "N/A",
+                                    //                     avgSold: "N/A",
+                                    //                     realisedProfit: "N/A",
+                                    //                     potentialProfit: "N/A",
+                                    //                     roi: "N/A",
+                                    //                     visualTitle: "N/A",
+                                    //                     userAvatar: "N/A",
+                                    //                     nbMembersInvolved: "N/A",
+                                    //                     totalTradeCount: "N/A",
+                                    //                 })
 
 
 
 
 
-                                                } else {
 
 
+                                    //             } else {
 
-                                                    // On va chercher les infos manquantes
-                                                    // const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/trades.list?batch=1&input={"0":{"json":{"trader":["' + user1Address + '","' + user2Address + '"],page":' + callPage + ',"perPage":' + perPage + ',"filter":{},"excludeSelfTrades":true,"withFriends":null},"meta":{"values":{"withFriends":["undefined"]}}}}')
-                                                    const lastCall = await axios.get('https://preview.frenfren.pro/api/trpc/trades.list?batch=1&input={"0":{"json":{"trader":["' + user1Address + '","' + user2Address + '"],"subject":["' + user1Address + '","' + user2Address + '"],"page":' + callPage + ',"perPage":' + perPage + ',"filter":{},"excludeSelfTrades":true,"withFriends":null},"meta":{"values":{"withFriends":["undefined"]}}}}')
 
-                                                    const tradeTable2 = lastCall.data[0].result.data.json.trades
-                                                    const tradeUser1Table = tradeTable2.filter(obj => obj.ftHolder.trader.address.toLowerCase() == user1Address.toLowerCase())
-                                                    const tradeUser2Table = tradeTable2.filter(obj => obj.ftHolder.trader.address.toLowerCase() == user2Address.toLowerCase())
 
-                                                    // On prend les stats (3,3)
-                                                    if (tradeUser1Table.length > 0) {
-                                                        user1FrenRatio = parseFloat(tradeUser1Table[0].ftHolder.trader.frenScore * 100).toFixed(0)
-                                                        user1FrenCount = tradeUser1Table[0].ftHolder.trader.frenfrenCount
-                                                    } else {
+                                    //                 // On va chercher les infos manquantes
+                                    //                 // const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/trades.list?batch=1&input={"0":{"json":{"trader":["' + user1Address + '","' + user2Address + '"],page":' + callPage + ',"perPage":' + perPage + ',"filter":{},"excludeSelfTrades":true,"withFriends":null},"meta":{"values":{"withFriends":["undefined"]}}}}')
+                                    //                 const lastCall = await axios.get('https://preview.frenfren.pro/api/trpc/trades.list?batch=1&input={"0":{"json":{"trader":["' + user1Address + '","' + user2Address + '"],"subject":["' + user1Address + '","' + user2Address + '"],"page":' + callPage + ',"perPage":' + perPage + ',"filter":{},"excludeSelfTrades":true,"withFriends":null},"meta":{"values":{"withFriends":["undefined"]}}}}')
 
-                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername1 + '"}}', { headers: frenfrenHeader })
-                                                        const user1Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user1Address.toLowerCase())
-                                                        user1FrenRatio = parseFloat(user1Profile.frenScore * 100).toFixed(0)
-                                                        user1FrenCount = user1Profile.frenfrenCount
-                                                    }
+                                    //                 const tradeTable2 = lastCall.data[0].result.data.json.trades
+                                    //                 const tradeUser1Table = tradeTable2.filter(obj => obj.ftHolder.trader.address.toLowerCase() == user1Address.toLowerCase())
+                                    //                 const tradeUser2Table = tradeTable2.filter(obj => obj.ftHolder.trader.address.toLowerCase() == user2Address.toLowerCase())
 
-                                                    if (tradeUser2Table.length > 0) {
-                                                        user2FrenRatio = parseFloat(tradeUser2Table[0].ftHolder.trader.frenScore * 100).toFixed(0)
-                                                        user2FrenCount = tradeUser2Table[0].ftHolder.trader.frenfrenCount
-                                                    } else {
+                                    //                 // On prend les stats (3,3)
+                                    //                 if (tradeUser1Table.length > 0) {
+                                    //                     user1FrenRatio = parseFloat(tradeUser1Table[0].ftHolder.trader.frenScore * 100).toFixed(0)
+                                    //                     user1FrenCount = tradeUser1Table[0].ftHolder.trader.frenfrenCount
+                                    //                 } else {
 
-                                                        const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername2 + '"}}', { headers: frenfrenHeader })
-                                                        const user2Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user2Address.toLowerCase())
-                                                        user2FrenRatio = parseFloat(user2Profile.frenScore * 100).toFixed(0)
-                                                        user2FrenCount = user2Profile.frenfrenCount
-                                                    }
+                                    //                     const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername1 + '"}}', { headers: frenfrenHeader })
+                                    //                     const user1Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user1Address.toLowerCase())
+                                    //                     user1FrenRatio = parseFloat(user1Profile.frenScore * 100).toFixed(0)
+                                    //                     user1FrenCount = user1Profile.frenfrenCount
+                                    //                 }
 
+                                    //                 if (tradeUser2Table.length > 0) {
+                                    //                     user2FrenRatio = parseFloat(tradeUser2Table[0].ftHolder.trader.frenScore * 100).toFixed(0)
+                                    //                     user2FrenCount = tradeUser2Table[0].ftHolder.trader.frenfrenCount
+                                    //                 } else {
 
-                                                    const user1Score = user1FrenRatio + "% (" + user1FrenCount + ")"
-                                                    const user2Score = user2FrenRatio + "% (" + user2FrenCount + ")"
+                                    //                     const frenfrenCall = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername2 + '"}}', { headers: frenfrenHeader })
+                                    //                     const user2Profile = frenfrenCall.data[0].result.data.json.find(obj => obj.address.toLowerCase() === user2Address.toLowerCase())
+                                    //                     user2FrenRatio = parseFloat(user2Profile.frenScore * 100).toFixed(0)
+                                    //                     user2FrenCount = user2Profile.frenfrenCount
+                                    //                 }
 
 
-                                                    const user1Formatted = "`" + user1Name + "`\n*Score:* " + user1Score + "\n∟[<:TWs:1153688442568450148>](https://twitter.com/" + givenUsername1 + ")[<:basescan:1155624395038019616>](https://basescan.org/address/" + user1Address + ")[<:friendtech:1156421684585299988>](https://www.friend.tech/rooms/" + user1Address + ")"
-                                                    const user2Formatted = "`" + user2Name + "`\n*Score:* " + user2Score + "\n∟[<:TWs:1153688442568450148>](https://twitter.com/" + givenUsername2 + ")[<:basescan:1155624395038019616>](https://basescan.org/address/" + user2Address + ")[<:friendtech:1156421684585299988>](https://www.friend.tech/rooms/" + user2Address + ")"
+                                    //                 const user1Score = user1FrenRatio + "% (" + user1FrenCount + ")"
+                                    //                 const user2Score = user2FrenRatio + "% (" + user2FrenCount + ")"
 
 
+                                    //                 const user1Formatted = "`" + user1Name + "`\n*Score:* " + user1Score + "\n∟[<:TWs:1153688442568450148>](https://twitter.com/" + givenUsername1 + ")[<:basescan:1155624395038019616>](https://basescan.org/address/" + user1Address + ")[<:friendtech:1156421684585299988>](https://www.friend.tech/rooms/" + user1Address + ")"
+                                    //                 const user2Formatted = "`" + user2Name + "`\n*Score:* " + user2Score + "\n∟[<:TWs:1153688442568450148>](https://twitter.com/" + givenUsername2 + ")[<:basescan:1155624395038019616>](https://basescan.org/address/" + user2Address + ")[<:friendtech:1156421684585299988>](https://www.friend.tech/rooms/" + user2Address + ")"
 
-                                                    const links = '[Friendtech](https://www.friend.tech/)' + " ∙ " + '[Twitter](https://twitter.com/' + ") ∙ " + '[Basescan](https://basescan.org/address/' + user1Address + "?toaddress=" + user2Address + ") ∙ " + '[Chart 1](https://www.degenz.finance/friendtech/portfolio?address=' + user1Address + ") ∙ " + '[Chart 2](https://www.degenz.finance/friendtech/portfolio?address=' + user2Address + ") ∙ " + '[FrenFren](https://preview.frenfren.pro/trades/exchanges/' + user1Address + "/" + user2Address + ")"
 
 
-                                                    let interactionsFormatted = "No interaction found between these two users            "
+                                    //                 const links = '[Friendtech](https://www.friend.tech/)' + " ∙ " + '[Twitter](https://twitter.com/' + ") ∙ " + '[Basescan](https://basescan.org/address/' + user1Address + "?toaddress=" + user2Address + ") ∙ " + '[Chart 1](https://www.degenz.finance/friendtech/portfolio?address=' + user1Address + ") ∙ " + '[Chart 2](https://www.degenz.finance/friendtech/portfolio?address=' + user2Address + ") ∙ " + '[FrenFren](https://preview.frenfren.pro/trades/exchanges/' + user1Address + "/" + user2Address + ")"
 
 
-                                                    const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
-                                                        .setTitle("Friend.Tech Interactions")
-                                                        .setDescription(">>> Displaying the friend.tech interactions")
-                                                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                        .setTimestamp()
-                                                        .addFields(
-                                                            { name: " ", value: " ", inline: false },
-                                                            { name: "User 1", value: user1Formatted, inline: true },
-                                                            { name: "User 2", value: user2Formatted, inline: true },
-                                                            { name: " ", value: " ", inline: false },
-                                                            { name: "Relation", value: "`(0, 0)`", inline: true },
-                                                            { name: "Trades", value: "`0`", inline: true },
-                                                            { name: "Holding", value: "`0 | 0`", inline: true },
-                                                            { name: "Interactions:", value: "```" + interactionsFormatted + "```", inline: false },
-                                                            { name: "Links", value: links, inline: false },
+                                    //                 let interactionsFormatted = "No interaction found between these two users            "
 
 
-                                                        )
-                                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                    //                 const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
+                                    //                     .setTitle("Friend.Tech Interactions")
+                                    //                     .setDescription(">>> Displaying the friend.tech interactions")
+                                    //                     .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    //                     .setTimestamp()
+                                    //                     .addFields(
+                                    //                         { name: " ", value: " ", inline: false },
+                                    //                         { name: "User 1", value: user1Formatted, inline: true },
+                                    //                         { name: "User 2", value: user2Formatted, inline: true },
+                                    //                         { name: " ", value: " ", inline: false },
+                                    //                         { name: "Relation", value: "`(0, 0)`", inline: true },
+                                    //                         { name: "Trades", value: "`0`", inline: true },
+                                    //                         { name: "Holding", value: "`0 | 0`", inline: true },
+                                    //                         { name: "Interactions:", value: "```" + interactionsFormatted + "```", inline: false },
+                                    //                         { name: "Links", value: links, inline: false },
 
-                                                    await interaction.editReply({ embeds: [userFTEmbed], components: [buttonsRowNo] });
 
+                                    //                     )
+                                    //                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                                    //                 await interaction.editReply({ embeds: [userFTEmbed], components: [buttonsRowNo] });
 
-                                                }
 
 
-                                            } catch (error) {
+                                    //             }
 
 
-                                                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle("Friend Tech")
-                                                    .setDescription("An error occured while gathering your data. Please try again or contact a team member")
-                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                    .setTimestamp()
-                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                    //         } catch (error) {
 
-                                                await interaction.editReply({ embeds: [errorNotEthereum] });
 
+                                    //             const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                    //                 .setTitle("Friend Tech")
+                                    //                 .setDescription("An error occured while gathering your data. Please try again or contact a team member")
+                                    //                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                    //                 .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    //                 .setTimestamp()
+                                    //                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                                    //             await interaction.editReply({ embeds: [errorNotEthereum] });
 
-                                                console.log("erreur try catch: " + error.stack)
-                                            }
 
 
-                                        } else {
+                                    //             console.log("erreur try catch: " + error.stack)
+                                    //         }
 
-                                            const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle("Friend Tech")
-                                                .setDescription("One or both of the twitter username(s) you entered isn't registered in Friend.tech. Please try again with valid usernames.")
-                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                .setTimestamp()
-                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                            await interaction.editReply({ embeds: [errorNotEthereum] });
+                                    //     } else {
 
+                                    //         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                    //             .setTitle("Friend Tech")
+                                    //             .setDescription("One or both of the twitter username(s) you entered isn't registered in Friend.tech. Please try again with valid usernames.")
+                                    //             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                    //             .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    //             .setTimestamp()
+                                    //             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                        }
-                                    } else {
+                                    //         await interaction.editReply({ embeds: [errorNotEthereum] });
 
-                                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                                            .setTitle("Friend Tech")
-                                            .setDescription("One or both of the twitter username(s) you entered isn't registered in Friend.tech. Please try again with valid usernames.")
-                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                                            .setTimestamp()
-                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                        await interaction.editReply({ embeds: [errorNotEthereum] });
+                                    //     }
+                                    // } else {
 
-                                    }
+                                    //     const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                    //         .setTitle("Friend Tech")
+                                    //         .setDescription("One or both of the twitter username(s) you entered isn't registered in Friend.tech. Please try again with valid usernames.")
+                                    //         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                    //         .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    //         .setTimestamp()
+                                    //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                                    //     await interaction.editReply({ embeds: [errorNotEthereum] });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                                    // }
 
 
 
@@ -3416,271 +3415,294 @@ module.exports = {
 
 
 
-                                    let userAddress = ""
 
-                                    let findUser = []
-                                    let isMatch = true
 
-                                    const usernameProvided = interaction.options.getString("twitter").toLowerCase()
+                                    const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle("Friend.Tech Airdrop")
+                                        .setDescription(">>> Displaying the Friend.Tech airdrop dashboard")
+                                        //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .addFields(
+                                            { name: " ", value: "This command is being optimized and is in maintenance and will be available again soon. Make sure to check our future <#1108756917414793216> to be informed when it's up again.", inline: true },
+                                        )
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                    const givenUsername = removeAtSymbol(usernameProvided)
+                                    await interaction.editReply({ embeds: [errorNotEthereum], components: [butonsRow], ephemeral: true });
 
 
-                                    try {
-                                        findUser = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername + '"}}', { headers: frenfrenHeader })
 
-                                    } catch (error) {
 
-                                        isMatch = false
-                                    }
 
+                                    // CODE PROD, A REMPLACER QUAND FIX
 
-                                    if (isMatch == true) {
+                                    //  +++++++
 
+                                    // let userAddress = ""
 
-                                        const user = findUser.data[0].result.data.json.find(obj => obj.twitterUsername.toLowerCase() == givenUsername.toLowerCase())
+                                    // let findUser = []
+                                    // let isMatch = true
 
+                                    // const usernameProvided = interaction.options.getString("twitter").toLowerCase()
 
-                                        if (user) {
+                                    // const givenUsername = removeAtSymbol(usernameProvided)
 
 
-                                            userAddress = user.address
+                                    // try {
+                                    //     findUser = await axios.get('https://preview.frenfren.pro/api/trpc/users.autocomplete?batch=1&input={"0":{"json":"' + givenUsername + '"}}', { headers: frenfrenHeader })
 
+                                    // } catch (error) {
 
-                                            try {
+                                    //     isMatch = false
+                                    // }
 
 
-                                                const buttonsRow = new ActionRowBuilder()
-                                                    .addComponents(
-                                                        new ButtonBuilder()
-                                                            .setCustomId('friendtechairdrop-frenfrenmenu-button')
-                                                            .setLabel('Fren Analyzer')
-                                                            .setStyle(3),
-                                                        new ButtonBuilder()
-                                                            .setCustomId('friendtechairdrop-leaderboardbyfren-button')
-                                                            .setLabel('Leaderboard')
-                                                            .setStyle(1),
+                                    // if (isMatch == true) {
 
-                                                    );
 
+                                    //     const user = findUser.data[0].result.data.json.find(obj => obj.twitterUsername.toLowerCase() == givenUsername.toLowerCase())
 
-                                                const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
 
+                                    //     if (user) {
 
-                                                const twitterName = user.twitterName
-                                                const twitterUsername = user.twitterUsername
-                                                const twitterPfp = userInfoCall.data.twitterPfpUrl
 
-                                                const keyPrice = user.keyPrice
-                                                const shareSupply = user.shareSupply
-                                                const holdingCount = user.holdingCount
-                                                const holderCount = user.holderCount
+                                    //         userAddress = user.address
 
-                                                const portfolioValue = user.portfolioValue.value
-                                                const feesCollected = user.feesCollected
-                                                const subjectFees = 0.05
-                                                const volume = feesCollected / subjectFees
 
+                                    //         try {
 
-                                                const airdropTier = user.tier
-                                                const airdropPoints = user.totalPoints
-                                                const expiredPoints = user.expiredPoints
 
-                                                const frenScore = user.frenScore * 100
-                                                const frenCount = user.frenfrenCount
+                                    //             const buttonsRow = new ActionRowBuilder()
+                                    //                 .addComponents(
+                                    //                     new ButtonBuilder()
+                                    //                         .setCustomId('friendtechairdrop-frenfrenmenu-button')
+                                    //                         .setLabel('Fren Analyzer')
+                                    //                         .setStyle(3),
+                                    //                     new ButtonBuilder()
+                                    //                         .setCustomId('friendtechairdrop-leaderboardbyfren-button')
+                                    //                         .setLabel('Leaderboard')
+                                    //                         .setStyle(1),
 
+                                    //                 );
 
-                                                let active = "❌ No"
-                                                if (expiredPoints == false) { active = "✅ Yes" }
 
+                                    //             const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
 
 
-                                                const airdropFTBase = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle(twitterName + "'s Airdrop")
-                                                    .setDescription(">>> Displaying Friend.Tech airdrop metrics")
-                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                    .setThumbnail(twitterPfp)
-                                                    .setTimestamp()
-                                                    .addFields(
-                                                        { name: "Name", value: "`" + twitterName + "`", inline: true },
-                                                        { name: "Username", value: "`" + twitterUsername + "`", inline: true },
-                                                        { name: " ", value: " ", inline: true },
-                                                        { name: " ", value: " ", inline: false },
-                                                        { name: "Supply", value: "`" + shareSupply + "`", inline: true },
-                                                        { name: "Holders", value: "`" + holderCount + "`", inline: true },
-                                                        { name: "Holding", value: "`" + holdingCount + "`", inline: true },
-                                                        { name: "Portfolio", value: "`" + parseFloat(portfolioValue).toFixed(3) + "Ξ`", inline: true },
-                                                        { name: "Volume", value: "`" + parseFloat(volume).toFixed(3) + "Ξ`", inline: true },
-                                                        { name: "Fees Collected", value: "`" + parseFloat(feesCollected).toFixed(3) + "Ξ`", inline: true },
-                                                        { name: "Airdrop Points", value: "`" + airdropPoints + " pts`", inline: true },
-                                                        { name: "Airdrop Tier", value: "`" + airdropTier + "`", inline: true },
-                                                        { name: "Active", value: "`" + active + "`", inline: true },
-                                                        { name: "Fren Count", value: "`" + frenCount + "`", inline: true },
-                                                        { name: "Fren Score", value: "`" + parseFloat(frenScore).toFixed(2) + "%`", inline: true },
-                                                        { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ") ∙ " + '[Airdrop](https://www.friend.tech/airdrop)' + " ∙ " + '[Search](https://twitter.com/search?q=friendtech%20airdrop)', inline: false }
+                                    //             const twitterName = user.twitterName
+                                    //             const twitterUsername = user.twitterUsername
+                                    //             const twitterPfp = userInfoCall.data.twitterPfpUrl
 
+                                    //             const keyPrice = user.keyPrice
+                                    //             const shareSupply = user.shareSupply
+                                    //             const holdingCount = user.holdingCount
+                                    //             const holderCount = user.holderCount
 
-                                                    )
-                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                    //             const portfolioValue = user.portfolioValue.value
+                                    //             const feesCollected = user.feesCollected
+                                    //             const subjectFees = 0.05
+                                    //             const volume = feesCollected / subjectFees
 
 
+                                    //             const airdropTier = user.tier
+                                    //             const airdropPoints = user.totalPoints
+                                    //             const expiredPoints = user.expiredPoints
 
-                                                await interaction.editReply({ embeds: [airdropFTBase], components: [buttonsRow] });
+                                    //             const frenScore = user.frenScore * 100
+                                    //             const frenCount = user.frenfrenCount
 
 
+                                    //             let active = "❌ No"
+                                    //             if (expiredPoints == false) { active = "✅ Yes" }
 
-                                                // On construit l'info table
-                                                let infoTable = []
-                                                let obj = {}
-                                                obj.userAddress = userAddress
-                                                obj.twitterName = twitterName
-                                                obj.twitterUsername = twitterUsername
-                                                obj.twitterPfp = twitterPfp
-                                                obj.shareSupply = shareSupply
-                                                obj.holderCount = holderCount
-                                                obj.holdingCount = holdingCount
-                                                obj.portfolioValue = portfolioValue
-                                                obj.volume = volume
-                                                obj.feesCollected = feesCollected
-                                                obj.airdropPoints = airdropPoints
-                                                obj.airdropTier = airdropTier
-                                                obj.active = active
-                                                obj.frenScore = frenScore
-                                                obj.frenCount = frenCount
-                                                infoTable.push(obj)
 
 
+                                    //             const airdropFTBase = new EmbedBuilder().setColor("#060A8F")
+                                    //                 .setTitle(twitterName + "'s Airdrop")
+                                    //                 .setDescription(">>> Displaying Friend.Tech airdrop metrics")
+                                    //                 .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    //                 .setThumbnail(twitterPfp)
+                                    //                 .setTimestamp()
+                                    //                 .addFields(
+                                    //                     { name: "Name", value: "`" + twitterName + "`", inline: true },
+                                    //                     { name: "Username", value: "`" + twitterUsername + "`", inline: true },
+                                    //                     { name: " ", value: " ", inline: true },
+                                    //                     { name: " ", value: " ", inline: false },
+                                    //                     { name: "Supply", value: "`" + shareSupply + "`", inline: true },
+                                    //                     { name: "Holders", value: "`" + holderCount + "`", inline: true },
+                                    //                     { name: "Holding", value: "`" + holdingCount + "`", inline: true },
+                                    //                     { name: "Portfolio", value: "`" + parseFloat(portfolioValue).toFixed(3) + "Ξ`", inline: true },
+                                    //                     { name: "Volume", value: "`" + parseFloat(volume).toFixed(3) + "Ξ`", inline: true },
+                                    //                     { name: "Fees Collected", value: "`" + parseFloat(feesCollected).toFixed(3) + "Ξ`", inline: true },
+                                    //                     { name: "Airdrop Points", value: "`" + airdropPoints + " pts`", inline: true },
+                                    //                     { name: "Airdrop Tier", value: "`" + airdropTier + "`", inline: true },
+                                    //                     { name: "Active", value: "`" + active + "`", inline: true },
+                                    //                     { name: "Fren Count", value: "`" + frenCount + "`", inline: true },
+                                    //                     { name: "Fren Score", value: "`" + parseFloat(frenScore).toFixed(2) + "%`", inline: true },
+                                    //                     { name: "Links", value: '[Friendtech](https://www.friend.tech/rooms/' + userAddress + ") ∙ " + '[Twitter](https://twitter.com/' + twitterUsername.toLowerCase() + ") ∙ " + '[Basescan](https://basescan.org/address/' + userAddress + ") ∙ " + '[Holders](https://www.friend.tech/trades/' + userAddress + ") ∙ " + '[Chart](https://www.degenz.finance/friendtech/portfolio?address=' + userAddress + ") ∙ " + '[Airdrop](https://www.friend.tech/airdrop)' + " ∙ " + '[Search](https://twitter.com/search?q=friendtech%20airdrop)', inline: false }
 
-                                                //On fait le call àbn  la base SQL
-                                                await interactionData.destroy({ where: { authorId: authorId, commandName: "friendtech-airdrop", serverId: serverId } })
 
-                                                await interactionData.create({
+                                    //                 )
+                                    //                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                                    authorId: authorId,
-                                                    authorName: authorName,
-                                                    serverId: serverId,
-                                                    commandName: "friendtech-airdrop",
-                                                    interactionId: interaction.id,
-                                                    walletAddress: "N/A",
-                                                    walletCategory: "collection",
-                                                    embed1: 'N/A',
-                                                    embed2: JSON.stringify(infoTable),
-                                                    embed3: JSON.stringify(airdropFTBase),
-                                                    pageIndex: "N/A",
-                                                    actualPage: "N/A",
-                                                    walletName: "N/A",
-                                                    selecedTimestamp: "N/A",
-                                                    selectedCollection: "N/A",
-                                                    collectionSlug: "N/A",
-                                                    collectionBanner: "N/A",
-                                                    avgDeriskPrice: "N/A",
-                                                    floorPrice: "N/A",
-                                                    lowerMarketlace: "N/A",
-                                                    collectionName: "N/A",
-                                                    buyCount: "N/A",
-                                                    soldCount: "N/A",
-                                                    remaining: "N/A",
-                                                    avgBuy: "N/A",
-                                                    avgSold: "N/A",
-                                                    realisedProfit: "N/A",
-                                                    potentialProfit: "N/A",
-                                                    roi: "N/A",
-                                                    visualTitle: "N/A",
-                                                    userAvatar: "N/A",
-                                                    nbMembersInvolved: "N/A",
-                                                    totalTradeCount: "N/A",
-                                                })
 
 
+                                    //             await interaction.editReply({ embeds: [airdropFTBase], components: [buttonsRow] });
 
 
 
+                                    //             // On construit l'info table
+                                    //             let infoTable = []
+                                    //             let obj = {}
+                                    //             obj.userAddress = userAddress
+                                    //             obj.twitterName = twitterName
+                                    //             obj.twitterUsername = twitterUsername
+                                    //             obj.twitterPfp = twitterPfp
+                                    //             obj.shareSupply = shareSupply
+                                    //             obj.holderCount = holderCount
+                                    //             obj.holdingCount = holdingCount
+                                    //             obj.portfolioValue = portfolioValue
+                                    //             obj.volume = volume
+                                    //             obj.feesCollected = feesCollected
+                                    //             obj.airdropPoints = airdropPoints
+                                    //             obj.airdropTier = airdropTier
+                                    //             obj.active = active
+                                    //             obj.frenScore = frenScore
+                                    //             obj.frenCount = frenCount
+                                    //             infoTable.push(obj)
 
 
 
+                                    //             //On fait le call àbn  la base SQL
+                                    //             await interactionData.destroy({ where: { authorId: authorId, commandName: "friendtech-airdrop", serverId: serverId } })
 
+                                    //             await interactionData.create({
 
-                                            } catch (error) {
+                                    //                 authorId: authorId,
+                                    //                 authorName: authorName,
+                                    //                 serverId: serverId,
+                                    //                 commandName: "friendtech-airdrop",
+                                    //                 interactionId: interaction.id,
+                                    //                 walletAddress: "N/A",
+                                    //                 walletCategory: "collection",
+                                    //                 embed1: 'N/A',
+                                    //                 embed2: JSON.stringify(infoTable),
+                                    //                 embed3: JSON.stringify(airdropFTBase),
+                                    //                 pageIndex: "N/A",
+                                    //                 actualPage: "N/A",
+                                    //                 walletName: "N/A",
+                                    //                 selecedTimestamp: "N/A",
+                                    //                 selectedCollection: "N/A",
+                                    //                 collectionSlug: "N/A",
+                                    //                 collectionBanner: "N/A",
+                                    //                 avgDeriskPrice: "N/A",
+                                    //                 floorPrice: "N/A",
+                                    //                 lowerMarketlace: "N/A",
+                                    //                 collectionName: "N/A",
+                                    //                 buyCount: "N/A",
+                                    //                 soldCount: "N/A",
+                                    //                 remaining: "N/A",
+                                    //                 avgBuy: "N/A",
+                                    //                 avgSold: "N/A",
+                                    //                 realisedProfit: "N/A",
+                                    //                 potentialProfit: "N/A",
+                                    //                 roi: "N/A",
+                                    //                 visualTitle: "N/A",
+                                    //                 userAvatar: "N/A",
+                                    //                 nbMembersInvolved: "N/A",
+                                    //                 totalTradeCount: "N/A",
+                                    //             })
 
-                                                console.log(error)
 
-                                                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle("Friend Tech")
-                                                    .setDescription("An error occured while gathering your data. Please try again or contact a team member")
-                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                    .setTimestamp()
-                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                                await interaction.editReply({ embeds: [errorNotEthereum] });
 
 
-                                            }
 
 
 
 
-                                        } else {
 
-                                            let usernameSuggestionFormatted = ""
+                                    //         } catch (error) {
 
-                                            let index = 0
-                                            for (const suggestion of findUser.data[0].result.data.json) {
-                                                index++
-                                                if (index <= 5) {
+                                    //             console.log(error)
 
-                                                    usernameSuggestionFormatted += "∙ " + suggestion.twitterUsername + "\n"
-                                                } else {
+                                    //             const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                    //                 .setTitle("Friend Tech")
+                                    //                 .setDescription("An error occured while gathering your data. Please try again or contact a team member")
+                                    //                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                    //                 .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    //                 .setTimestamp()
+                                    //                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                                    break
-                                                }
+                                    //             await interaction.editReply({ embeds: [errorNotEthereum] });
 
-                                            }
 
+                                    //         }
 
-                                            const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle("Friend Tech")
-                                                .setDescription("The exact twitter username you entered isn't registered in Friend.tech.\n\n**Maybe you are looking for:** \n\n" + usernameSuggestionFormatted)
-                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                .setTimestamp()
-                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                            await interaction.editReply({ embeds: [errorNotEthereum] });
 
 
+                                    //     } else {
 
+                                    //         let usernameSuggestionFormatted = ""
 
+                                    //         let index = 0
+                                    //         for (const suggestion of findUser.data[0].result.data.json) {
+                                    //             index++
+                                    //             if (index <= 5) {
 
-                                        }
+                                    //                 usernameSuggestionFormatted += "∙ " + suggestion.twitterUsername + "\n"
+                                    //             } else {
 
-                                    } else {
+                                    //                 break
+                                    //             }
 
+                                    //         }
 
-                                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                                            .setTitle("Friend Tech")
-                                            .setDescription("The twitter username you entered isn't registered in Friend.tech. Please try again with a valid username.")
-                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                                            .setTimestamp()
-                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                        await interaction.editReply({ embeds: [errorNotEthereum] });
+                                    //         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                    //             .setTitle("Friend Tech")
+                                    //             .setDescription("The exact twitter username you entered isn't registered in Friend.tech.\n\n**Maybe you are looking for:** \n\n" + usernameSuggestionFormatted)
+                                    //             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                    //             .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    //             .setTimestamp()
+                                    //             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                                    //         await interaction.editReply({ embeds: [errorNotEthereum] });
 
 
-                                    }
 
 
 
+                                    //     }
 
+                                    // } else {
 
 
+                                    //     const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                    //         .setTitle("Friend Tech")
+                                    //         .setDescription("The twitter username you entered isn't registered in Friend.tech. Please try again with a valid username.")
+                                    //         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                    //         .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    //         .setTimestamp()
+                                    //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                
-                                
-                                
-                                
+                                    //     await interaction.editReply({ embeds: [errorNotEthereum] });
+
+
+
+                                    // }
+
+
+
+
+
+
+
+
+
+
+
                                 } else if (subcommand === 'tracker') {
 
 
@@ -3704,17 +3726,17 @@ module.exports = {
 
 
                                     const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                                    .setTitle("Friend.Tech Tracker")
-                                    .setDescription(">>> Displaying the Friend.Tech tracker dashboard")
-                                    //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    .addFields(
-                                        { name: "Tracker Mechanism", value: "The Friend.Tech tracker is a system that allows you to track the actions made by a single or multiple Friend.Tech user(s). This panel contains two sections:\n\n**✨ Add Users**\nAdd one or few Friend Tech user to your tracker to monitor their activity live. Aura accepts a maximum of 25 users.\n\n**🧾 List Users**\nConsult, delete and manage all the user you are currently tracking. An easy way to adapt your tracker to your new strategy.", inline: true },
-                                    )
-                                    .setTimestamp()
-                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                        .setTitle("Friend.Tech Tracker")
+                                        .setDescription(">>> Displaying the Friend.Tech tracker dashboard")
+                                        //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .addFields(
+                                            { name: "Tracker Mechanism", value: "The Friend.Tech tracker is a system that allows you to track the actions made by a single or multiple Friend.Tech user(s). This panel contains two sections:\n\n**✨ Add Users**\nAdd one or few Friend Tech user to your tracker to monitor their activity live. Aura accepts a maximum of 25 users.\n\n**🧾 List Users**\nConsult, delete and manage all the user you are currently tracking. An easy way to adapt your tracker to your new strategy.", inline: true },
+                                        )
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRow], ephemeral: true });
+                                    await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRow], ephemeral: true });
 
 
 

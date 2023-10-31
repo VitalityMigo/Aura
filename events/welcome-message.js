@@ -30,7 +30,7 @@ client.on('guildMemberAdd', async (member) => {
 
         const memberEmbed = new EmbedBuilder().setColor("#060A8F")
             .setTitle("Aura Analytics")
-            .setDescription("Hey " + username + ", welcome to Aura 💫.\n\n")
+            .setDescription("Hey " + username + ", welcome to Aura 💫.Come back here after completing the first verification.\n\n")
             .addFields(
                 { name: " ", value: " ", inline: false },
                 { name: "Want to know more about Aura ?", value: "You can visit our [Gitbook](https://rolls-chasers.gitbook.io/aura/the-tool/presentation), the tutorial section <#1162832027687587961>, or even read a short resume using `/guide`.", inline: false },

@@ -33,7 +33,7 @@ module.exports = {
 
             try {
 
-                const tweetLink = ""
+                const tweetLink = "https://x.com/AuraAnalytics/status/1720096849011573107?s=20"
 
                 const guild = interaction.guild
 

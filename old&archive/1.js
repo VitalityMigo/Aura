@@ -6,7 +6,7 @@
 // Bouh
 
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-const { accessSql, profileData, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
+const { accessSql, profileData, adminsql, reportsql, usersql, sequelize } = require('../events/database');
 const moment = require('moment');
 
 module.exports = {
@@ -114,7 +114,7 @@ module.exports = {
 
 
 
-            const reduceText = require("../../../functions/reducetext")
+            const reduceText = require("../functions/reducetext")
             const roleTag = "1121510423687090186"
 
 

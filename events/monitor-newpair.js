@@ -155,7 +155,7 @@ factoryContract.events.PairCreated()
 
                 const tokenContract = new web3.eth.Contract(erc20Standard, tokenAddress.toLowerCase());
 
-                
+
                 const symbol = await tokenContract.methods.symbol().call();
                 const name = await tokenContract.methods.name().call();
                 const decimals = await tokenContract.methods.decimals().call();
@@ -245,6 +245,13 @@ factoryContract.events.PairCreated()
 
                 createdSince = "<t:" + actualTimestamp + ":R>"
 
+                const buttonsRow = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId('button_exec_open_panel_' + tokenAddress.toLowerCase())
+                            .setLabel(':bar_chart: Trade Panel')
+                            .setStyle(1),
+                    );
 
 
                 /// RENVOI DE L'EMBED
@@ -276,18 +283,18 @@ factoryContract.events.PairCreated()
 
 
 
-                await channelNewPair.send({ embeds: [newPair] });
+                await channelNewPair.send({ embeds: [newPair], components: [buttonsRow] });
 
 
 
 
                 if (ownership == "✅ Renounced" && liquidity >= 10 && (deployerBalance + ownerBalance) <= 0) {
 
-                    
+
                     newPair.setDescription(">>> A new filtered pair has been created. Filtered pairs have : ownership renounced, no balance owns by contract owner or deployer, and at least 10k of liquidity.")
 
 
-                    await channelFilteredPair.send({ embeds: [newPair] });
+                    await channelFilteredPair.send({ embeds: [newPair], components: [buttonsRow] });
 
 
                 }

@@ -1694,8 +1694,6 @@ module.exports = {
 
                                             if (values.length > 0) {
 
-                                                console.log(values[0].holders)
-
                                                 owner = values[0].owner_address;
                                                 deployerBalance = values[0].creator_balance;
                                                 deployer = values[0].creator_address
@@ -1707,12 +1705,7 @@ module.exports = {
                                                 holdersTable = values[0].holders
                                             }
 
-                                            console.log("ici")
-                                            console.log("dep " + deployerBalance)
-                                            console.log("own " + ownerBalance)
-                                            console.log("price " + coinActualPriceUsd)
-                                            console.log("supply " + supply)
-
+                                            
                                             if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dead") {
 
                                                 ownership = "✅ Renounced"

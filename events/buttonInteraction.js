@@ -116,6 +116,10 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_infra_coin_walletsetup_");
 			
+		} else if (customId.startsWith("button_exec_open_panel_")) {
+
+			command = client.buttonCommands.get("button_exec_open_panel_");
+			
 		}
 		
 		

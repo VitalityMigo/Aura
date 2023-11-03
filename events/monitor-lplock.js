@@ -468,7 +468,13 @@ unxcContract.events.onDeposit()
 
             }
 
-
+            const buttonsRow = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                .setCustomId('button_exec_open_panel_' + tokenAddress.toLowerCase())
+                .setLabel(':bar_chart: Trade Panel')
+                .setStyle(1),
+            );
 
 
             /// RENVOI DE L'EMBED
@@ -503,7 +509,7 @@ unxcContract.events.onDeposit()
 
 
 
-            await channelLPLocks.send({ embeds: [newPair] });
+            await channelLPLocks.send({ embeds: [newPair], components: [buttonsRow] });
 
 
 

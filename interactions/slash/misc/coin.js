@@ -166,15 +166,23 @@ module.exports = {
                     accessTier = communityRolePerms.dataValues.accessTier
                 }
 
+                const subcommand = interaction.options.getSubcommand()
+
 
 
                 const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
 
-                if (authorProfile === null) { await interaction.deferReply(); } else {
+                if (authorProfile === null) {
+
+                    if (subcommand != 'wallet') {
+                        await interaction.deferReply();
+                    } else { await interaction.deferReply({ ephemeral: true }) }
+
+                } else {
                     const authorPrivacyMode = authorProfile.dataValues.privacyMode
 
-                    if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
-                    if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
+                    if (authorPrivacyMode.toLowerCase() === "private" || subcommand === 'wallet') { await interaction.deferReply({ ephemeral: true }); }
+                    if (authorPrivacyMode.toLowerCase() === "public" && subcommand != 'wallet') { await interaction.deferReply(); }
                 }
 
                 //Checkpoint
@@ -191,7 +199,6 @@ module.exports = {
 
 
 
-                                const subcommand = interaction.options.getSubcommand()
 
 
                                 if (subcommand === 'profit') {
@@ -1783,8 +1790,13 @@ module.exports = {
                                                     new ButtonBuilder()
                                                         .setCustomId('button_coin_tradepanel_refresh_' + coinTicker.toLowerCase())
                                                         .setLabel('🔁 Refresh')
+                                                        .setStyle(1),
+                                                    new ButtonBuilder()
+                                                        .setCustomId('button_coin_tradepanel_setup')
+                                                        .setLabel('💻 Setup')
                                                         .setStyle(1)
                                                 );
+
 
                                             const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
                                                 .setTitle(reduceText(coinName, 40) + " (" + coinSymbol.toUpperCase() + ")")

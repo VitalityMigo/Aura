@@ -21,7 +21,7 @@ const etherscanApiKey = process.env.etherscanApiKey
 
 
 const Web3 = require('web3');
-const web3Call = new Web3("https://cloudflare-eth.com")
+//const web3 = new Web3("https://cloudflare-eth.com")
 const web3 = new Web3('wss://mainnet.infura.io/ws/v3/' + infuraApiKey);
 
 const axios = require('axios')
@@ -168,7 +168,7 @@ pinklockContract.events.LockAdded()
 
 
             // On récupère les infos du token
-            const tokenContract = new web3Call.eth.Contract(erc20Standard, tokenAddress.toLowerCase());
+            const tokenContract = new web3.eth.Contract(erc20Standard, tokenAddress.toLowerCase());
 
             const symbol = await tokenContract.methods.symbol().call();
             const name = await tokenContract.methods.name().call();
@@ -389,7 +389,7 @@ unxcContract.events.onDeposit()
 
 
             // On récupère les infos du token
-            const tokenContract = new web3Call.eth.Contract(erc20Standard, tokenAddress.toLowerCase());
+            const tokenContract = new web3.eth.Contract(erc20Standard, tokenAddress.toLowerCase());
 
             const symbol = await tokenContract.methods.symbol().call();
             const name = await tokenContract.methods.name().call();

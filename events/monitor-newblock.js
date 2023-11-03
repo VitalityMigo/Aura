@@ -29,7 +29,7 @@ const etherscanApiKey = process.env.etherscanApiKey
 
 
 const Web3 = require('web3');
-const web3Call = new Web3("https://cloudflare-eth.com")
+//const web3 = new Web3("https://cloudflare-eth.com")
 const web3 = new Web3(new Web3.providers.WebsocketProvider(`wss://mainnet.infura.io/ws/v3/${infuraApiKey}`, {
     clientConfig: {
         // Ajustez la taille maximale des trames et des messages selon vos besoins.
@@ -182,7 +182,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
                                     if (type == "ERC20") {
 
-                                        const tokenContract = await new web3Call.eth.Contract(erc20Standard, contract);
+                                        const tokenContract = await new web3.eth.Contract(erc20Standard, contract);
                                         decimals = await tokenContract.methods.decimals().call();
                                         owner = await tokenContract.methods.owner().call();
                                         name = await tokenContract.methods.name().call();
@@ -254,7 +254,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
 
 
-                                        const tokenContract = await new web3Call.eth.Contract(erc721Standard, contract);
+                                        const tokenContract = await new web3.eth.Contract(erc721Standard, contract);
                                         owner = await tokenContract.methods.owner().call();
                                         name = await tokenContract.methods.name().call();
                                         symbol = await tokenContract.methods.symbol().call();

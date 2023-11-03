@@ -15,7 +15,7 @@ const roleId1 = '1108761632928182424'; // Remplacez par l'ID de votre rôle
 const roleId2 = '1154424757299724459'; // Remplacez par l'ID de votre rôle
 const ffrole = "1121519916873433148"
 const logChannelUser = "1121482045839908945"
-
+const botId = '1074328639165964368'
 
 
 async function interval_ftaccess(client) {

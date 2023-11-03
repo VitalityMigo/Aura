@@ -17,7 +17,7 @@ const etherscanApiKey = process.env.etherscanApiKey
 
 
 const Web3 = require('web3');
-const web3Call = new Web3("https://cloudflare-eth.com")
+//const web3 = new Web3("https://cloudflare-eth.com")
 const web3 = new Web3('wss://mainnet.infura.io/ws/v3/' + infuraApiKey);
 
 const axios = require('axios')
@@ -147,13 +147,13 @@ factoryContract.events.PairCreated()
                 //const tokenABI = await axios.get(`https://api.etherscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=${etherscanApiKey}`)
 
 
-                const pairContract = new web3Call.eth.Contract(pairContractAbi, pairAddress);
+                const pairContract = new web3.eth.Contract(pairContractAbi, pairAddress);
 
                 const reserves = await pairContract.methods.getReserves().call();
                 //const circulatingSupplyCall = await pairContract.methods.totalSupply().call();
 
 
-                const tokenContract = new web3Call.eth.Contract(erc20Standard, tokenAddress.toLowerCase());
+                const tokenContract = new web3.eth.Contract(erc20Standard, tokenAddress.toLowerCase());
 
                 
                 const symbol = await tokenContract.methods.symbol().call();
@@ -215,7 +215,7 @@ factoryContract.events.PairCreated()
 
 
                 // Utilisez web3 pour obtenir les détails de la transaction
-                const creationTxnCall = await web3Call.eth.getTransaction(txnHash)
+                const creationTxnCall = await web3.eth.getTransaction(txnHash)
 
                 const devAddress = creationTxnCall.from; // Adresse de l'expéditeur (owner) de la transaction
 

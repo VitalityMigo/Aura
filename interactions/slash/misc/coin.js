@@ -7,13 +7,15 @@
 
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
-const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize } = require('../../../events/database');
+const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize, infra_coin } = require('../../../events/database');
 const moment = require('moment');
 
 const reduceText = require("../../../functions/reducetext")
 const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
 const getApprovals = require("../../../functions/getApprovals")
 const getEthPrice = require('../../../functions/getethprice')
+const decrypt = require("../../../functions/decrypt")
+const encrypt = require("../../../functions/encrypt")
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -119,6 +121,12 @@ module.exports = {
                         .setRequired(true)
                         .setAutocomplete(true)
                 ),
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("wallet")
+                .setDescription("Manage your buy and sell coin wallet")
+
         ),
 
     async execute(interaction) {
@@ -1851,7 +1859,98 @@ module.exports = {
 
 
 
+                                } else if (subcommand === 'wallet') {
+
+
+
+
+                                    const buttonsRowNew = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('button_infra_coin_walletsetup_import')
+                                                .setLabel('import wallet')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_infra_coin_walletsetup_generate')
+                                                .setLabel('generate wallet')
+                                                .setStyle(3),
+
+                                        );
+
+
+                                    const buttonsRowModify = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('button_infra_coin_walletsetup_import')
+                                                .setLabel('modify wallet')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_infra_coin_walletsetup_export')
+                                                .setLabel('export')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_infra_coin_walletsetup_delete')
+                                                .setLabel('delete wallet')
+                                                .setStyle(4)
+                                        );
+
+
+
+                                    const userSetup = await infra_coin.findOne({ where: { authorId: authorId } })
+
+                                    if (userSetup != null) {
+
+
+                                        const walletAddress = decrypt(userSetup.dataValues.walletAddress)
+
+                                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle("Coin Setup")
+                                            .setDescription(">>> Displaying your coin wallet setup")
+                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .addFields(
+                                                { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
+
+                                            )
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                        await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowModify], ephemeral: true });
+
+
+                                    } else if (userSetup == null) {
+
+
+
+
+                                        const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle("Coin Setup")
+                                            .setDescription(">>> Displaying your coin wallet setup")
+                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .addFields(
+                                                { name: " ", value: "You don't have a wallet imported in your coin portfolio. To get started, use the button below.", inline: true },
+
+                                            )
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                        await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowNew], ephemeral: true });
+
+
+                                    }
+
+
+
+
+
+
+
                                 }
+
+
+
+
 
 
                             } else if (!member.roles.cache.has(communityMemberRoleId)) {

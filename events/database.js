@@ -1100,6 +1100,36 @@ const tracker_friendTech = sequelize.define('tracker_friendTech', {
 
 
 
+//Alert up
+const infra_coin = sequelize.define('infra_coin', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    walletAddress: {
+        type: Sequelize.STRING,
+    },
+    privateKey: {
+        type: Sequelize.STRING,
+    },
+    password: {
+        type: Sequelize.STRING,
+    },
+    
+
+
+});
+
+
 
 //Synching the tables
 
@@ -1127,6 +1157,7 @@ infra_friendTech.sync()
 order_friendTech.sync()
 access_friendtech.sync()
 tracker_friendTech.sync()
+infra_coin.sync()
 
 
 //Export the tables informations
@@ -1156,6 +1187,7 @@ module.exports = {
     order_friendTech,
     access_friendtech,
     tracker_friendTech,
+    infra_coin,
     Op,
 }
 

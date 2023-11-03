@@ -112,6 +112,10 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_coin_tradepanel_refresh_");
 			
+		} else if (customId.startsWith("button_infra_coin_walletsetup_")) {
+
+			command = client.buttonCommands.get("button_infra_coin_walletsetup_");
+			
 		}
 		
 		

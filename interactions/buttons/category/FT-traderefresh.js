@@ -303,7 +303,7 @@ module.exports = {
 
 
                 const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Profile")
+                    .setTitle("Friend Tech")
                     .setDescription("An error occured while retreiving the subject's Friend.Tech address. Please try again using `/friendtech user` or contact a team member if you need help.")
                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                     .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })

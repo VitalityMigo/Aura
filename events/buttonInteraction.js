@@ -108,6 +108,10 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_friendtech_tracker_list_");
 			
+		} else if (customId.startsWith("button_coin_tradepanel_refresh_")) {
+
+			command = client.buttonCommands.get("button_coin_tradepanel_refresh_");
+			
 		}
 		
 		

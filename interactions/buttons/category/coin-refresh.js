@@ -104,320 +104,302 @@ module.exports = {
 
 
 
-                //Checkpoint
-                console.log("// Step 2 : Authorization - Executed ✅")
+            //Checkpoint
+            console.log("// Step 2 : Authorization - Executed ✅")
 
 
 
-                const customId = interaction.customId
+            const customId = interaction.customId
 
 
-                // Utilisation d'une expression régulière pour extraire l'adresse Ethereum
-                const regex = /_0x([0-9a-fA-F]{40})/;
-                const matches = customId.match(regex);
+            // Utilisation d'une expression régulière pour extraire l'adresse Ethereum
+            const regex = /_0x([0-9a-fA-F]{40})/;
+            const matches = customId.match(regex);
 
-                if (matches && matches[1]) {
+            if (matches && matches[1]) {
 
-                    await interaction.deferUpdate({ ephemeral: true })
+                await interaction.deferUpdate({ ephemeral: true })
 
 
-                    // On récupère l'addresse du subject et défini le quickbuy à 1
-                    const coinTicker = "0x" + matches[1]
+                // On récupère l'addresse du subject et défini le quickbuy à 1
+                const coinTicker = "0x" + matches[1]
 
 
-                    const ethPriceUsdPromise = getEthPrice()
+                const ethPriceUsdPromise = getEthPrice()
 
-                    const timeStamp = Date.now();
+                const timeStamp = Date.now();
 
 
 
 
-                    let volume1h = "N/A"
-                    let volume6h = "N/A"
-                    let volume1d = "N/A"
-                    let evolution1h = "N/A"
-                    let evolution6h = "N/A"
-                    let evolution1d = "N/A"
-                    let liquidity = "N/A"
-                    let currentSupply = "N/A"
-                    let poolGrowth = "N/A"
-                    let fdv = "N/A"
-                    let inTrades = "N/A"
-                    let outTrades = "N/A"
-                    let ownership = "N/A"
-                    let holdersFormatted = ""
-                    let holdersCount = "N/A"
-                    let holdersTable = []
+                let volume1h = "N/A"
+                let volume6h = "N/A"
+                let volume1d = "N/A"
+                let evolution1h = "N/A"
+                let evolution6h = "N/A"
+                let evolution1d = "N/A"
+                let liquidity = "N/A"
+                let currentSupply = "N/A"
+                let poolGrowth = "N/A"
+                let fdv = "N/A"
+                let inTrades = "N/A"
+                let outTrades = "N/A"
+                let ownership = "N/A"
+                let holdersFormatted = ""
+                let holdersCount = "N/A"
+                let holdersTable = []
 
-                    let owner = "N/A"
-                    let deployer = "N/A"
-                    let deployerBalance = 0
-                    let supply = 0
-                    let marketcap = 0
-                    let honeypot
-                    let isHoneyPot = "N/A"
-                    let devBalance = 0
-                    let mintable
-                    let isMintable = "N/A"
-                    let pairAddress = ""
-                    let coinActualPriceUsd = 0
-                    let coinActualPriceEth = 0
+                let owner = "N/A"
+                let deployer = "N/A"
+                let deployerBalance = 0
+                let supply = 0
+                let marketcap = 0
+                let honeypot
+                let isHoneyPot = "N/A"
+                let devBalance = 0
+                let mintable
+                let isMintable = "N/A"
+                let pairAddress = ""
+                let coinActualPriceUsd = 0
+                let coinActualPriceEth = 0
 
-                    //On récupère les infos du coin
-                    const coinInfos = await alchemy.core.getTokenMetadata(coinTicker)
+                //On récupère les infos du coin
+                const coinInfos = await alchemy.core.getTokenMetadata(coinTicker)
 
-                    if (coinInfos.symbol !== "") {
+                if (coinInfos.symbol !== "") {
 
 
-                        coinName = coinInfos.name
-                        coinSymbol = coinInfos.symbol
-                        coinDecimal = coinInfos.decimals
+                    coinName = coinInfos.name
+                    coinSymbol = coinInfos.symbol
+                    coinDecimal = coinInfos.decimals
 
 
-                        //On load l'image et fait les calls API de base
-                        const chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
+                    //On load l'image et fait les calls API de base
+                    const chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
 
-                        const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinTicker.toLowerCase())
+                    const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinTicker.toLowerCase())
 
-                        const goPlusCallPromise = axios.get("https://api.gopluslabs.io/api/v1/token_security/1?contract_addresses=" + coinTicker)
+                    const goPlusCallPromise = axios.get("https://api.gopluslabs.io/api/v1/token_security/1?contract_addresses=" + coinTicker)
 
-                        const [ethPriceUsd] = await Promise.all([ethPriceUsdPromise]);
+                    const [ethPriceUsd] = await Promise.all([ethPriceUsdPromise]);
 
 
-                        if (coinPriceHistory.data.pairs !== null) {
+                    if (coinPriceHistory.data.pairs !== null) {
 
-                            const pairWeth = coinPriceHistory.data.pairs.filter((item) => item.quoteToken.address === '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2');
+                        const pairWeth = coinPriceHistory.data.pairs.filter((item) => item.quoteToken.address === '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2');
 
 
 
-                            coinActualPriceUsd = pairWeth[0].priceUsd
-                            coinActualPriceEth = 1 / (ethPriceUsd / coinActualPriceUsd)
+                        coinActualPriceUsd = pairWeth[0].priceUsd
+                        coinActualPriceEth = 1 / (ethPriceUsd / coinActualPriceUsd)
 
 
 
-                            volume1h = pairWeth[0].volume.h1
-                            volume6h = pairWeth[0].volume.h6
-                            volume1d = pairWeth[0].volume.h24
-                            pairAddress = pairWeth[0].pairAddress
+                        volume1h = pairWeth[0].volume.h1
+                        volume6h = pairWeth[0].volume.h6
+                        volume1d = pairWeth[0].volume.h24
+                        pairAddress = pairWeth[0].pairAddress
 
-                            evolution1h = pairWeth[0].priceChange.h1
-                            evolution6h = pairWeth[0].priceChange.h6
-                            evolution1d = pairWeth[0].priceChange.h24
+                        evolution1h = pairWeth[0].priceChange.h1
+                        evolution6h = pairWeth[0].priceChange.h6
+                        evolution1d = pairWeth[0].priceChange.h24
 
-                            if (evolution1h > 0) { evolution1h = "+" + evolution1h }
-                            if (evolution6h > 0) { evolution6h = "+" + evolution6h }
-                            if (evolution1d > 0) { evolution1d = "+" + evolution1d }
+                        if (evolution1h > 0) { evolution1h = "+" + evolution1h }
+                        if (evolution6h > 0) { evolution6h = "+" + evolution6h }
+                        if (evolution1d > 0) { evolution1d = "+" + evolution1d }
 
-                            liquidity = new Intl.NumberFormat('en-US').format((pairWeth[0].liquidity.usd).toFixed(0))
-                            initialLiquidity = Intl.NumberFormat('en-US').format((pairWeth[0].liquidity.base).toFixed(0))
-                            poolGrowth = parseFloat(pairWeth[0].liquidity.quote).toFixed(3)
+                        liquidity = new Intl.NumberFormat('en-US').format((pairWeth[0].liquidity.usd).toFixed(0))
+                        initialLiquidity = Intl.NumberFormat('en-US').format((pairWeth[0].liquidity.base).toFixed(0))
+                        poolGrowth = parseFloat(pairWeth[0].liquidity.quote).toFixed(3)
 
-                            fdv = pairWeth[0].fdv
+                        fdv = pairWeth[0].fdv
 
-                            inTrades = pairWeth[0].txns.h24.buys
-                            outTrades = pairWeth[0].txns.h24.sells
+                        inTrades = pairWeth[0].txns.h24.buys
+                        outTrades = pairWeth[0].txns.h24.sells
 
-                            coinActualPriceUsd = pairWeth[0].priceUsd
+                        coinActualPriceUsd = pairWeth[0].priceUsd
 
-                        }
+                    }
 
 
 
-                        const [goPlusCall] = await Promise.all([goPlusCallPromise]);
+                    const [goPlusCall] = await Promise.all([goPlusCallPromise]);
 
-                        const contractAudit = goPlusCall.data.result
+                    const contractAudit = goPlusCall.data.result
 
 
-                        const values = Object.values(contractAudit)
+                    const values = Object.values(contractAudit)
 
 
-                        if (values.length > 0) {
+                    if (values.length > 0) {
 
-                            console.log(values[0].holders)
+                        console.log(values[0].holders)
 
-                            owner = values[0].owner_address;
-                            deployerBalance = values[0].creator_balance;
-                            deployer = values[0].creator_address
-                            ownerBalance = values[0].owner_balance
-                            honeypot = values[0].is_honeypot
-                            supply = values[0].total_supply
-                            mintable = values[0].is_mintable
-                            holdersCount = values[0].holder_count
-                            holdersTable = values[0].holders
-                        }
+                        owner = values[0].owner_address;
+                        deployerBalance = values[0].creator_balance;
+                        deployer = values[0].creator_address
+                        ownerBalance = values[0].owner_balance
+                        honeypot = values[0].is_honeypot
+                        supply = values[0].total_supply
+                        mintable = values[0].is_mintable
+                        holdersCount = values[0].holder_count
+                        holdersTable = values[0].holders
+                    }
 
-                        console.log("ici")
-                        console.log("dep " + deployerBalance)
-                        console.log("own " + ownerBalance)
-                        console.log("price " + coinActualPriceUsd)
-                        console.log("supply " + supply)
+                    console.log("ici")
+                    console.log("dep " + deployerBalance)
+                    console.log("own " + ownerBalance)
+                    console.log("price " + coinActualPriceUsd)
+                    console.log("supply " + supply)
 
-                        if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dead") {
+                    if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dead") {
 
-                            ownership = "✅ Renounced"
-                            devBalance = parseFloat((deployerBalance * coinActualPriceUsd) / ethPriceUsd).toFixed(3) + "Ξ (" + parseFloat((deployerBalance / supply) * 100).toFixed(1) + "%)"
-
-                        } else {
-
-                            ownership = "❌ Not renounced"
-                            devBalance = parseFloat(((deployerBalance + ownerBalance) * coinActualPriceUsd) / ethPriceUsd).toFixed(3) + "Ξ (" + parseFloat(((deployerBalance + ownerBalance) / supply) * 100).toFixed(1) + "%)"
-
-                        }
-
-
-                        if (devBalance.startsWith("NaN")) {
-                            devBalance = "0.000Ξ (0.0%)"
-                            console.log("bug dev balance")
-                        }
-
-                        if (honeypot == "0") { isHoneyPot = "✅ No" }
-                        else if (honeypot == "1") { isHoneyPot = "❌ Yes" }
-                        else { isHoneyPot = "⚠️ No data" }
-
-                        if (mintable == "0") { isMintable = "✅ No" }
-                        else if (mintable == "1") { isMintable = "❌ Yes" }
-                        else { isMintable = "⚠️ No data" }
-
-
-
-
-                        for (const holder of holdersTable) {
-
-                            let sign = ""
-                            if ((holder.address).toLowerCase() == pairAddress.toLowerCase()) { sign = " 🦄" }
-                            else if ((holder.address).toLowerCase() == owner.toLowerCase() || (holder.address).toLowerCase() == deployer.toLowerCase()) { sign = " 💻" }
-
-
-                            let wallet = formatWallet(holder.address) + sign
-                            let amount = formatCoinValueSign(holder.balance, 2)
-                            let value = formatCoinValueSign(holder.balance * coinActualPriceUsd, 2)
-                            let share = parseFloat((holder.balance / supply) * 100).toFixed(1)
-
-
-
-                            //Formattage
-                            let part1 = "`" + wallet.toLowerCase()
-                            let part2 = amount
-                            let part3 = value + "$ (" + share + "%)`\n"
-
-                            let spaceSize = 16 - ((part2.toString()).length)
-                            if (sign !== "") { spaceSize = 13 - ((part2.toString()).length) }
-                            let spaceLenght = ""
-                            for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
-
-                            let spaceSize2 = 28 - (part3.toString()).length
-                            let spaceLenght2 = ""
-                            for (let i = 0; i < spaceSize2; i++) { spaceLenght2 += " " }
-
-
-
-                            holdersFormatted += part1 + spaceLenght + part2 + spaceLenght2 + part3
-
-                        }
-
-
-
-
-
-                        marketcap = supply * coinActualPriceUsd
-
-                        if (holdersFormatted == "") { holdersFormatted = "No holders found for this token" }
-
-
-                        const buttonsRow = new ActionRowBuilder()
-                            .addComponents(
-                                new ButtonBuilder()
-                                    .setCustomId('button_coin_tradepanel_refresh_' + coinTicker.toLowerCase())
-                                    .setLabel('🔁 Refresh')
-                                    .setStyle(1)
-                            );
-
-                        const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle(reduceText(coinName, 40) + " (" + coinSymbol.toUpperCase() + ")")
-                            .setDescription(">>> Displaying data for `$" + coinSymbol.toUpperCase() + "`.")
-                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                            .setImage(chartImageLink)
-                            .addFields(
-                                { name: "Contract", value: "`" + coinTicker.toLowerCase() + "`", inline: false },
-                                { name: "ETH Price", value: "`" + parseFloat(coinActualPriceEth).toFixed(5) + "Ξ`", inline: true },
-                                { name: "USD Price", value: "`" + coinActualPriceUsd + "$`", inline: true },
-                                { name: " ", value: " ", inline: true },
-                                { name: "Supply", value: "`" + formatCoinValueSign(supply, 2) + "`", inline: true },
-                                { name: "Circulating Supply", value: "`" + formatCoinValueSign(supply, 2) + "`", inline: true },
-                                { name: "Buys 24h | Sells 24h", value: "`📈" + inTrades + "|📉" + outTrades + "`", inline: true },
-                                { name: "Market Cap", value: "`" + formatCoinValueSign(marketcap) + "$`", inline: true },
-                                { name: "FDV", value: "`" + formatCoinValueSign(fdv) + "$`", inline: true },
-                                { name: "Holders Count", value: "`" + holdersCount + "`", inline: true },
-                                { name: "Liquidity", value: "`" + liquidity + "$`", inline: true },
-                                { name: "Pooled ETH", value: "`" + poolGrowth + "Ξ`", inline: true },
-                                { name: "Dev. Balance", value: "`" + devBalance + "`", inline: true },
-                                { name: "Mintable", value: "`" + isMintable + "`", inline: true },
-                                { name: "Honeypot", value: "`" + isHoneyPot + "`", inline: true },
-                                { name: "Ownership", value: "`" + ownership + "`", inline: true },
-                                { name: "1H Volume", value: "`" + parseFloat(volume1h / ethPriceUsd).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume1h).toFixed(0)) + "$)`", inline: true },
-                                { name: "6H Volume", value: "`" + parseFloat(volume6h / ethPriceUsd).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume6h).toFixed(0)) + "$)`", inline: true },
-                                { name: "1D Volume", value: "`" + parseFloat(volume1d / ethPriceUsd).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume1d).toFixed(0)) + "$)`", inline: true },
-                                { name: "1H Price Change", value: "`" + evolution1h + "%`", inline: true },
-                                { name: "6H Price Change", value: "`" + evolution6h + "%`", inline: true },
-                                { name: "1D Price Change", value: "`" + evolution1d + "%`", inline: true },
-                                { name: "Holders:", value: holdersFormatted, inline: false },
-                                { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinTicker + ") ∙ " + '[Etherscan LP](https://etherscan.io/address/' + pairAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + coinTicker + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + coinTicker + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + coinTicker + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + coinTicker + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + coinTicker + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinTicker + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + coinTicker + ")", inline: false },
-                                { name: "Quicktasks", value: '[Thunder](http://localhost:7777/quickTask?module=defi&contract=' + coinTicker + "&action=buy&blockchain=ethereum&platform=uniswapv2) ∙ " + '[Maestro]( https://t.me/MaestroSniperBot?start=' + coinTicker + ") ∙ " + '[Sensei](https://app.thornhill.fun/defi?token=' + coinTicker + "&venue=UNISWAP_V2&valueEth=0.05) ∙ " + '[Waifu]( http://localhost:7780/uniswapqt?contractAddress=' + coinTicker + "&group=Default)", inline: false },
-
-
-                            )
-                            .setTimestamp()
-                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-                        await interaction.editReply({ embeds: [getDataCollectionAddress], components: [buttonsRow] });
-
-
-
-
-                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getTokenMetadata", apiProvider: "alchemy", timestamp: timeStamp.toString() })
-                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getTokenPrice", apiProvider: "moralis", timestamp: timeStamp.toString() })
-                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getChart", apiProvider: "chart", timestamp: timeStamp.toString() })
-                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getPriceHistoryETH", apiProvider: "dexScreener", timestamp: timeStamp.toString() })
-                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getTokenSupply", apiProvider: "etherscan", timestamp: timeStamp.toString() })
-
-
+                        ownership = "✅ Renounced"
+                        devBalance = parseFloat((deployerBalance * coinActualPriceUsd) / ethPriceUsd).toFixed(3) + "Ξ (" + parseFloat((deployerBalance / supply) * 100).toFixed(1) + "%)"
 
                     } else {
 
-
-
-
-                        const notMember = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle(`Token Data`)
-                            .setDescription("The coin address or ticker you entered can't be retreive. This can happen for few reasons :\n\n• The token address (ERC20) or symbol (BRC20) doesn't exist\n• The coin isn't available anymore or is suspicious\n• You entered a symbol for a ERC20 and not a token address, double check.\n\nIf you think the problem is on our end, please use `/report` or contact an admin.")
-                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                            .setTimestamp()
-                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-                        await interaction.editReply({ embeds: [notMember] });
-
-
-
+                        ownership = "❌ Not renounced"
+                        devBalance = parseFloat(((deployerBalance + ownerBalance) * coinActualPriceUsd) / ethPriceUsd).toFixed(3) + "Ξ (" + parseFloat(((deployerBalance + ownerBalance) / supply) * 100).toFixed(1) + "%)"
 
                     }
+
+
+                    if (devBalance.startsWith("NaN")) {
+                        devBalance = "0.000Ξ (0.0%)"
+                        console.log("bug dev balance")
+                    }
+
+                    if (honeypot == "0") { isHoneyPot = "✅ No" }
+                    else if (honeypot == "1") { isHoneyPot = "❌ Yes" }
+                    else { isHoneyPot = "⚠️ No data" }
+
+                    if (mintable == "0") { isMintable = "✅ No" }
+                    else if (mintable == "1") { isMintable = "❌ Yes" }
+                    else { isMintable = "⚠️ No data" }
+
+
+
+
+                    for (const holder of holdersTable) {
+
+                        let sign = ""
+                        if ((holder.address).toLowerCase() == pairAddress.toLowerCase()) { sign = " 🦄" }
+                        else if ((holder.address).toLowerCase() == owner.toLowerCase() || (holder.address).toLowerCase() == deployer.toLowerCase()) { sign = " 💻" }
+
+
+                        let wallet = formatWallet(holder.address) + sign
+                        let amount = formatCoinValueSign(holder.balance, 2)
+                        let value = formatCoinValueSign(holder.balance * coinActualPriceUsd, 2)
+                        let share = parseFloat((holder.balance / supply) * 100).toFixed(1)
+
+
+
+                        //Formattage
+                        let part1 = "`" + wallet.toLowerCase()
+                        let part2 = amount
+                        let part3 = value + "$ (" + share + "%)`\n"
+
+                        let spaceSize = 16 - ((part2.toString()).length)
+                        if (sign !== "") { spaceSize = 13 - ((part2.toString()).length) }
+                        let spaceLenght = ""
+                        for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+
+                        let spaceSize2 = 28 - (part3.toString()).length
+                        let spaceLenght2 = ""
+                        for (let i = 0; i < spaceSize2; i++) { spaceLenght2 += " " }
+
+
+
+                        holdersFormatted += part1 + spaceLenght + part2 + spaceLenght2 + part3
+
+                    }
+
+
+
+
+
+                    marketcap = supply * coinActualPriceUsd
+
+                    if (holdersFormatted == "") { holdersFormatted = "No holders found for this token" }
+
+
+                    const buttonsRow = new ActionRowBuilder()
+                        .addComponents(
+                            new ButtonBuilder()
+                                .setCustomId('button_coin_tradepanel_refresh_' + coinTicker.toLowerCase())
+                                .setLabel('🔁 Refresh')
+                                .setStyle(1),
+                            new ButtonBuilder()
+                                .setCustomId('button_coin_tradepanel_setup')
+                                .setLabel('💻 Setup')
+                                .setStyle(1)
+                        );
+
+                    const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle(reduceText(coinName, 40) + " (" + coinSymbol.toUpperCase() + ")")
+                        .setDescription(">>> Displaying data for `$" + coinSymbol.toUpperCase() + "`.")
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .setImage(chartImageLink)
+                        .addFields(
+                            { name: "Contract", value: "`" + coinTicker.toLowerCase() + "`", inline: false },
+                            { name: "ETH Price", value: "`" + parseFloat(coinActualPriceEth).toFixed(5) + "Ξ`", inline: true },
+                            { name: "USD Price", value: "`" + coinActualPriceUsd + "$`", inline: true },
+                            { name: " ", value: " ", inline: true },
+                            { name: "Supply", value: "`" + formatCoinValueSign(supply, 2) + "`", inline: true },
+                            { name: "Circulating Supply", value: "`" + formatCoinValueSign(supply, 2) + "`", inline: true },
+                            { name: "Buys 24h | Sells 24h", value: "`📈" + inTrades + "|📉" + outTrades + "`", inline: true },
+                            { name: "Market Cap", value: "`" + formatCoinValueSign(marketcap) + "$`", inline: true },
+                            { name: "FDV", value: "`" + formatCoinValueSign(fdv) + "$`", inline: true },
+                            { name: "Holders Count", value: "`" + holdersCount + "`", inline: true },
+                            { name: "Liquidity", value: "`" + liquidity + "$`", inline: true },
+                            { name: "Pooled ETH", value: "`" + poolGrowth + "Ξ`", inline: true },
+                            { name: "Dev. Balance", value: "`" + devBalance + "`", inline: true },
+                            { name: "Mintable", value: "`" + isMintable + "`", inline: true },
+                            { name: "Honeypot", value: "`" + isHoneyPot + "`", inline: true },
+                            { name: "Ownership", value: "`" + ownership + "`", inline: true },
+                            { name: "1H Volume", value: "`" + parseFloat(volume1h / ethPriceUsd).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume1h).toFixed(0)) + "$)`", inline: true },
+                            { name: "6H Volume", value: "`" + parseFloat(volume6h / ethPriceUsd).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume6h).toFixed(0)) + "$)`", inline: true },
+                            { name: "1D Volume", value: "`" + parseFloat(volume1d / ethPriceUsd).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume1d).toFixed(0)) + "$)`", inline: true },
+                            { name: "1H Price Change", value: "`" + evolution1h + "%`", inline: true },
+                            { name: "6H Price Change", value: "`" + evolution6h + "%`", inline: true },
+                            { name: "1D Price Change", value: "`" + evolution1d + "%`", inline: true },
+                            { name: "Holders:", value: holdersFormatted, inline: false },
+                            { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinTicker + ") ∙ " + '[Etherscan LP](https://etherscan.io/address/' + pairAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + coinTicker + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + coinTicker + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + coinTicker + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + coinTicker + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + coinTicker + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinTicker + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + coinTicker + ")", inline: false },
+                            { name: "Quicktasks", value: '[Thunder](http://localhost:7777/quickTask?module=defi&contract=' + coinTicker + "&action=buy&blockchain=ethereum&platform=uniswapv2) ∙ " + '[Maestro]( https://t.me/MaestroSniperBot?start=' + coinTicker + ") ∙ " + '[Sensei](https://app.thornhill.fun/defi?token=' + coinTicker + "&venue=UNISWAP_V2&valueEth=0.05) ∙ " + '[Waifu]( http://localhost:7780/uniswapqt?contractAddress=' + coinTicker + "&group=Default)", inline: false },
+
+
+                        )
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                    await interaction.editReply({ embeds: [getDataCollectionAddress], components: [buttonsRow] });
+
+
+
+
+                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getTokenMetadata", apiProvider: "alchemy", timestamp: timeStamp.toString() })
+                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getTokenPrice", apiProvider: "moralis", timestamp: timeStamp.toString() })
+                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getChart", apiProvider: "chart", timestamp: timeStamp.toString() })
+                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getPriceHistoryETH", apiProvider: "dexScreener", timestamp: timeStamp.toString() })
+                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getTokenSupply", apiProvider: "etherscan", timestamp: timeStamp.toString() })
+
 
 
                 } else {
 
 
-                    const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("Coin Data")
-                        .setDescription("An error occured while retreiving the coin address. Please try again using `/coin data` or contact a team member if you need help.")
+
+
+                    const notMember = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle(`Token Data`)
+                        .setDescription("The coin address or ticker you entered can't be retreive. This can happen for few reasons :\n\n• The token address (ERC20) or symbol (BRC20) doesn't exist\n• The coin isn't available anymore or is suspicious\n• You entered a symbol for a ERC20 and not a token address, double check.\n\nIf you think the problem is on our end, please use `/report` or contact an admin.")
                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
                         .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-
-
-
-                    await interaction.reply({ embeds: [gasTrackerEmbed2], ephemeral: true });
+                    await interaction.editReply({ embeds: [notMember] });
 
 
 
@@ -425,11 +407,33 @@ module.exports = {
                 }
 
 
+            } else {
+
+
+                const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Coin Data")
+                    .setDescription("An error occured while retreiving the coin address. Please try again using `/coin data` or contact a team member if you need help.")
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
 
 
-            
+                await interaction.reply({ embeds: [gasTrackerEmbed2], ephemeral: true });
+
+
+
+
+            }
+
+
+
+
+
+
+
 
 
         } catch (error) {

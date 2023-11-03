@@ -250,7 +250,7 @@ factoryContract.events.PairCreated()
                     .addComponents(
                         new ButtonBuilder()
                             .setCustomId('button_exec_open_panel_' + tokenAddress.toLowerCase())
-                            .setLabel(':bar_chart: Trade Panel')
+                            .setLabel('📊 Trade Panel')
                             .setStyle(1),
                     );
 

@@ -248,7 +248,13 @@ pinklockContract.events.LockAdded()
             }
 
 
-
+            const buttonsRow = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                .setCustomId('button_exec_open_panel_' + tokenAddress.toLowerCase())
+                .setLabel('📊 Trade Panel')
+                .setStyle(1),
+            );
 
             /// RENVOI DE L'EMBED
             const newPair = new EmbedBuilder().setColor("#060A8F")
@@ -282,7 +288,7 @@ pinklockContract.events.LockAdded()
 
 
 
-            await channelLPLocks.send({ embeds: [newPair] });
+            await channelLPLocks.send({ embeds: [newPair], components: [buttonsRow] });
 
 
 
@@ -472,7 +478,7 @@ unxcContract.events.onDeposit()
             .addComponents(
                 new ButtonBuilder()
                 .setCustomId('button_exec_open_panel_' + tokenAddress.toLowerCase())
-                .setLabel(':bar_chart: Trade Panel')
+                .setLabel('📊 Trade Panel')
                 .setStyle(1),
             );
 

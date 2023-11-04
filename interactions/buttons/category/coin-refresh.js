@@ -252,11 +252,7 @@ module.exports = {
                         if (holdersCount) { holdersCount = values[0].holder_count }
                     }
 
-                    console.log("ici")
-                    console.log("dep " + deployerBalance)
-                    console.log("own " + ownerBalance)
-                    console.log("price " + coinActualPriceUsd)
-                    console.log("supply " + supply)
+                
 
                     if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dead") {
 

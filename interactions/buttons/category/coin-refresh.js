@@ -135,13 +135,13 @@ module.exports = {
                 let volume1h = "N/A"
                 let volume6h = "N/A"
                 let volume1d = "N/A"
-                let evolution1h = "N/A"
-                let evolution6h = "N/A"
-                let evolution1d = "N/A"
-                let liquidity = "N/A"
+                let evolution1h = 0
+                let evolution6h = 0
+                let evolution1d = 0
+                let liquidity = 0
                 let currentSupply = "N/A"
-                let poolGrowth = "N/A"
-                let fdv = "N/A"
+                let poolGrowth = 0
+                let fdv = 0
                 let inTrades = "N/A"
                 let outTrades = "N/A"
                 let ownership = "N/A"
@@ -162,6 +162,11 @@ module.exports = {
                 let pairAddress = ""
                 let coinActualPriceUsd = 0
                 let coinActualPriceEth = 0
+
+                let volume1hFormatted = "0.000Ξ (0$)"
+                let volume6hFormatted = "0.000Ξ (0$)"
+                let volume1dFormatted = "0.000Ξ (0$)"
+
 
                 //On récupère les infos du coin
                 const coinInfos = await alchemy.core.getTokenMetadata(coinTicker)
@@ -279,49 +284,58 @@ module.exports = {
                     else { isMintable = "⚠️ No data" }
 
 
+                    if (holdersTable) {
+
+                        for (const holder of holdersTable) {
+
+                            let sign = ""
+                            if ((holder.address).toLowerCase() == pairAddress.toLowerCase()) { sign = " 🦄" }
+                            else if ((holder.address).toLowerCase() == owner.toLowerCase() || (holder.address).toLowerCase() == deployer.toLowerCase()) { sign = " 💻" }
 
 
-                    for (const holder of holdersTable) {
-
-                        let sign = ""
-                        if ((holder.address).toLowerCase() == pairAddress.toLowerCase()) { sign = " 🦄" }
-                        else if ((holder.address).toLowerCase() == owner.toLowerCase() || (holder.address).toLowerCase() == deployer.toLowerCase()) { sign = " 💻" }
-
-
-                        let wallet = formatWallet(holder.address) + sign
-                        let amount = formatCoinValueSign(holder.balance, 2)
-                        let value = formatCoinValueSign(holder.balance * coinActualPriceUsd, 2)
-                        let share = parseFloat((holder.balance / supply) * 100).toFixed(1)
-
-
-
-                        //Formattage
-                        let part1 = "`" + wallet.toLowerCase()
-                        let part2 = amount
-                        let part3 = value + "$ (" + share + "%)`\n"
-
-                        let spaceSize = 16 - ((part2.toString()).length)
-                        if (sign !== "") { spaceSize = 13 - ((part2.toString()).length) }
-                        let spaceLenght = ""
-                        for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
-
-                        let spaceSize2 = 28 - (part3.toString()).length
-                        let spaceLenght2 = ""
-                        for (let i = 0; i < spaceSize2; i++) { spaceLenght2 += " " }
+                            let wallet = formatWallet(holder.address) + sign
+                            let amount = formatCoinValueSign(holder.balance, 2)
+                            let value = formatCoinValueSign(holder.balance * coinActualPriceUsd, 2)
+                            let share = parseFloat((holder.balance / supply) * 100).toFixed(1)
 
 
 
-                        holdersFormatted += part1 + spaceLenght + part2 + spaceLenght2 + part3
+                            //Formattage
+                            let part1 = "`" + wallet.toLowerCase()
+                            let part2 = amount
+                            let part3 = value + "$ (" + share + "%)`\n"
+
+                            let spaceSize = 16 - ((part2.toString()).length)
+                            if (sign !== "") { spaceSize = 13 - ((part2.toString()).length) }
+                            let spaceLenght = ""
+                            for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+
+                            let spaceSize2 = 28 - (part3.toString()).length
+                            let spaceLenght2 = ""
+                            for (let i = 0; i < spaceSize2; i++) { spaceLenght2 += " " }
+
+
+
+                            holdersFormatted += part1 + spaceLenght + part2 + spaceLenght2 + part3
+
+                        }
 
                     }
-
-
 
 
 
                     marketcap = supply * coinActualPriceUsd
 
                     if (holdersFormatted == "") { holdersFormatted = "No holders found for this token" }
+                    if (!inTrades) { inTrades = 0 }
+                    if (!outTrades) { outTrades = 0 }
+
+
+
+                    if (volume1h != 'N/A' || !volume1h) { volume1hFormatted = "`" + parseFloat(volume1h / ethPriceUsd).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume1h).toFixed(0)) + "$)`" }
+                    if (volume6h != 'N/A' || !volume6h) { volume6hFormatted = "`" + parseFloat(volume6h / ethPriceUsd).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume6h).toFixed(0)) + "$)`" }
+                    if (volume1d != 'N/A' || !volume1d) { volume1dFormatted = "`" + parseFloat(volume1d / ethPriceUsd).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume1d).toFixed(0)) + "$)`" }
+
 
 
                     const buttonsRow = new ActionRowBuilder()
@@ -358,9 +372,9 @@ module.exports = {
                             { name: "Mintable", value: "`" + isMintable + "`", inline: true },
                             { name: "Honeypot", value: "`" + isHoneyPot + "`", inline: true },
                             { name: "Ownership", value: "`" + ownership + "`", inline: true },
-                            { name: "1H Volume", value: "`" + parseFloat(volume1h / ethPriceUsd).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume1h).toFixed(0)) + "$)`", inline: true },
-                            { name: "6H Volume", value: "`" + parseFloat(volume6h / ethPriceUsd).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume6h).toFixed(0)) + "$)`", inline: true },
-                            { name: "1D Volume", value: "`" + parseFloat(volume1d / ethPriceUsd).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume1d).toFixed(0)) + "$)`", inline: true },
+                            { name: "1H Volume", value: volume1hFormatted, inline: true },
+                            { name: "6H Volume", value: volume6hFormatted, inline: true },
+                            { name: "1D Volume", value: volume1dFormatted, inline: true },
                             { name: "1H Price Change", value: "`" + evolution1h + "%`", inline: true },
                             { name: "6H Price Change", value: "`" + evolution6h + "%`", inline: true },
                             { name: "1D Price Change", value: "`" + evolution1d + "%`", inline: true },

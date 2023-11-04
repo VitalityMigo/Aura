@@ -1121,6 +1121,15 @@ const infra_coin = sequelize.define('infra_coin', {
     privateKey: {
         type: Sequelize.STRING,
     },
+    value_preset: {
+        type: Sequelize.STRING,
+    },
+    gas_preset: {
+        type: Sequelize.STRING,
+    },
+    slippage: {
+        type: Sequelize.STRING,
+    },
     password: {
         type: Sequelize.STRING,
     },

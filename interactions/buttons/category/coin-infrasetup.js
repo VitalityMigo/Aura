@@ -34,34 +34,50 @@ module.exports = {
 
 
             const buttonsRowNew = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_import')
-                    .setLabel('import wallet')
-                    .setStyle(1),
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_generate')
-                    .setLabel('generate wallet')
-                    .setStyle(3),
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_import')
+                        .setLabel('import wallet')
+                        .setStyle(1),
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_generate')
+                        .setLabel('generate wallet')
+                        .setStyle(3),
 
-            );
+                );
 
 
-        const buttonsRowModify = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_import')
-                    .setLabel('modify wallet')
-                    .setStyle(1),
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_export')
-                    .setLabel('export')
-                    .setStyle(1),
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_delete')
-                    .setLabel('delete wallet')
-                    .setStyle(4)
-            );
+            const buttonsRowModify = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_import')
+                        .setLabel('modify wallet')
+                        .setStyle(1),
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_export')
+                        .setLabel('export')
+                        .setStyle(1),
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_delete')
+                        .setLabel('delete wallet')
+                        .setStyle(4)
+                );
+
+            const buttonsRowConfig = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_valuepreset')
+                        .setLabel('Set Buy/Sell Preset')
+                        .setStyle(2),
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_gaspreset')
+                        .setLabel('Set Gas Preset')
+                        .setStyle(2),
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_slippage')
+                        .setLabel('Set Slippage')
+                        .setStyle(2)
+                );
 
 
 
@@ -72,19 +88,30 @@ module.exports = {
 
                 const walletAddress = decrypt(userSetup.dataValues.walletAddress)
 
+                let gasPreset = userSetup.dataValues.gas_preset
+                let valuePreset = parseFloat(userSetup.dataValues.value_preset).toFixed(3)
+                let slippage = userSetup.dataValues.slippage
+
+                if (gasPreset == null) { gasPreset = "Auto" } else { gasPreset = "+" + parseFloat(gasPreset).toFixed(0) }
+                if (slippage == null) { slippage = "Auto" } else { slippage = "+" + parseFloat(gasPreset).toFixed(0) }
+
                 const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("Coin Setup")
                     .setDescription(">>> Displaying your coin wallet setup")
                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                     .setAuthor({ name: authorName, iconURL: userAvatar })
                     .addFields(
-                        { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
+                        { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "Buy/Sell Preset:", value: "`" + valuePreset + "Ξ`", inline: true },
+                        { name: "Gas Preset:", value: "`" + gasPreset + "`", inline: true },
+                        { name: "Slippage:", value: "`" + slippage + "`", inline: true },
 
                     )
                     .setTimestamp()
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                await interaction.reply({ embeds: [errorNotEthereum], components: [buttonsRowModify], ephemeral: true });
+                await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowModify, buttonsRowConfig], ephemeral: true });
 
 
             } else if (userSetup == null) {

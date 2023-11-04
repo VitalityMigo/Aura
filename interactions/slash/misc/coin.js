@@ -1546,13 +1546,6 @@ module.exports = {
                                                 await interaction.editReply({ embeds: [getDataCollectionAddress] });
 
 
-
-
-                                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinInfo", apiProvider: "coinranking", timestamp: timeStamp.toString() })
-                                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinStats", apiProvider: "coinranking", timestamp: timeStamp.toString() })
-                                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinPriceHistory", apiProvider: "coinranking", timestamp: timeStamp.toString() })
-
-
                                             } else {
 
                                                 const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
@@ -1778,16 +1771,41 @@ module.exports = {
                                             if (holdersFormatted == "") { holdersFormatted = "No holders found for this token" }
 
 
+                                            
                                             const buttonsRow = new ActionRowBuilder()
                                                 .addComponents(
                                                     new ButtonBuilder()
-                                                        .setCustomId('button_coin_tradepanel_refresh_' + coinTicker.toLowerCase())
-                                                        .setLabel('🔁 Refresh')
-                                                        .setStyle(1),
+                                                        .setCustomId('button_coin_exec_buy_' + coinTicker)
+                                                        .setLabel('📈 Buy')
+                                                        .setStyle(3),
+                                                    new ButtonBuilder()
+                                                        .setCustomId('button_coin_exec_quickbuy_' + coinTicker)
+                                                        .setLabel('💫 Flash Buy')
+                                                        .setStyle(3),
+                                                    new ButtonBuilder()
+                                                        .setCustomId('button_coin_exec_sell_' + coinTicker)
+                                                        .setLabel('📉 Sell')
+                                                        .setStyle(4),
+                                                    new ButtonBuilder()
+                                                        .setCustomId('button_coin_exec_quicksell_' + coinTicker)
+                                                        .setLabel('❄️ Flash Sell')
+                                                        .setStyle(4),
                                                     new ButtonBuilder()
                                                         .setCustomId('button_coin_tradepanel_setup')
                                                         .setLabel('💻 Setup')
                                                         .setStyle(1)
+                                                );
+
+                                            const buttonsRow2 = new ActionRowBuilder()
+                                                .addComponents(
+                                                    new ButtonBuilder()
+                                                        .setCustomId('button_coin_tradepanel_refresh_' + coinTicker)
+                                                        .setLabel('🔁 Refresh')
+                                                        .setStyle(1),
+                                                        new ButtonBuilder()
+                                                        .setCustomId('coin_infra_tradepanel_help-button')
+                                                        .setLabel('📑 Tutorial')
+                                                        .setStyle(1),
                                                 );
 
 
@@ -1828,17 +1846,7 @@ module.exports = {
                                                 .setTimestamp()
                                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                                            await interaction.editReply({ embeds: [getDataCollectionAddress], components: [buttonsRow] });
-
-
-
-
-                                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getTokenMetadata", apiProvider: "alchemy", timestamp: timeStamp.toString() })
-                                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getTokenPrice", apiProvider: "moralis", timestamp: timeStamp.toString() })
-                                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getChart", apiProvider: "chart", timestamp: timeStamp.toString() })
-                                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getPriceHistoryETH", apiProvider: "dexScreener", timestamp: timeStamp.toString() })
-                                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getTokenSupply", apiProvider: "etherscan", timestamp: timeStamp.toString() })
-
+                                            await interaction.editReply({ embeds: [getDataCollectionAddress], components: [buttonsRow, buttonsRow2] });
 
 
                                         } else {
@@ -1899,7 +1907,7 @@ module.exports = {
                                                 .setStyle(4)
                                         );
 
-                                        const buttonsRowConfig = new ActionRowBuilder()
+                                    const buttonsRowConfig = new ActionRowBuilder()
                                         .addComponents(
                                             new ButtonBuilder()
                                                 .setCustomId('button_infra_coin_walletsetup_valuepreset')
@@ -1928,8 +1936,8 @@ module.exports = {
                                         let valuePreset = parseFloat(userSetup.dataValues.value_preset).toFixed(3)
                                         let slippage = userSetup.dataValues.slippage
 
-                                        if (gasPreset == null) { gasPreset = "Auto"} else { gasPreset = "+" + parseFloat(gasPreset).toFixed(0) }
-                                        if (slippage == null) { slippage = "Auto"} else { slippage = "+" + parseFloat(gasPreset).toFixed(0) }
+                                        if (gasPreset == null) { gasPreset = "Auto" } else { gasPreset = "+" + parseFloat(gasPreset).toFixed(0) }
+                                        if (slippage == null) { slippage = "Auto" } else { slippage = "+" + parseFloat(gasPreset).toFixed(0) }
 
                                         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                             .setTitle("Coin Setup")

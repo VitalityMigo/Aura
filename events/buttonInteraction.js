@@ -120,6 +120,22 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_exec_open_panel_");
 			
+		} else if (customId.startsWith("button_coin_exec_buy_")) {
+
+			command = client.buttonCommands.get("button_coin_exec_buy_");
+			
+		} else if (customId.startsWith("button_coin_exec_sell_")) {
+
+			command = client.buttonCommands.get("button_coin_exec_sell_");
+			
+		} else if (customId.startsWith("button_coin_exec_quickbuy_")) {
+
+			command = client.buttonCommands.get("button_coin_exec_quickbuy_");
+			
+		} else if (customId.startsWith("button_coin_exec_quicksell_")) {
+
+			command = client.buttonCommands.get("button_coin_exec_quicksell_");
+			
 		}
 		
 		

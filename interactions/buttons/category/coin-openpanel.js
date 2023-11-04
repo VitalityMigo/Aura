@@ -337,14 +337,40 @@ module.exports = {
                         const buttonsRow = new ActionRowBuilder()
                             .addComponents(
                                 new ButtonBuilder()
-                                    .setCustomId('button_coin_tradepanel_refresh_' + coinTicker.toLowerCase())
-                                    .setLabel('🔁 Refresh')
-                                    .setStyle(1),
+                                    .setCustomId('button_coin_exec_buy_' + coinTicker)
+                                    .setLabel('📈 Buy')
+                                    .setStyle(3),
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_exec_quickbuy_' + coinTicker)
+                                    .setLabel('💫 Flash Buy')
+                                    .setStyle(3),
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_exec_sell_' + coinTicker)
+                                    .setLabel('📉 Sell')
+                                    .setStyle(4),
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_exec_quicksell_' + coinTicker)
+                                    .setLabel('❄️ Flash Sell')
+                                    .setStyle(4),
                                 new ButtonBuilder()
                                     .setCustomId('button_coin_tradepanel_setup')
                                     .setLabel('💻 Setup')
                                     .setStyle(1)
                             );
+
+                        const buttonsRow2 = new ActionRowBuilder()
+                            .addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_tradepanel_refresh_' + coinTicker)
+                                    .setLabel('🔁 Refresh')
+                                    .setStyle(1),
+                                new ButtonBuilder()
+                                    .setCustomId('coin_infra_tradepanel_help-button')
+                                    .setLabel('📑 Tutorial')
+                                    .setStyle(1),
+                            );
+
+
 
                         const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
                             .setTitle(reduceText(coinName, 40) + " (" + coinSymbol.toUpperCase() + ")")
@@ -383,7 +409,7 @@ module.exports = {
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                        await interaction.editReply({ embeds: [getDataCollectionAddress], components: [buttonsRow] });
+                        await interaction.editReply({ embeds: [getDataCollectionAddress], components: [buttonsRow, buttonsRow2] });
 
 
 

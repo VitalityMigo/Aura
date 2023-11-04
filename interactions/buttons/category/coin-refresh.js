@@ -146,7 +146,7 @@ module.exports = {
                 let outTrades = "N/A"
                 let ownership = "N/A"
                 let holdersFormatted = ""
-                let holdersCount = "N/A"
+                let holdersCount = 0
                 let holdersTable = []
 
                 let owner = "N/A"
@@ -163,9 +163,9 @@ module.exports = {
                 let coinActualPriceUsd = 0
                 let coinActualPriceEth = 0
 
-                let volume1hFormatted = "0.000Ξ (0$)"
-                let volume6hFormatted = "0.000Ξ (0$)"
-                let volume1dFormatted = "0.000Ξ (0$)"
+                let volume1hFormatted = "`0.000Ξ (0$)`"
+                let volume6hFormatted = "`0.000Ξ (0$)`"
+                let volume1dFormatted = "`0.000Ξ (0$)`"
 
 
                 //On récupère les infos du coin
@@ -247,8 +247,9 @@ module.exports = {
                         honeypot = values[0].is_honeypot
                         supply = values[0].total_supply
                         mintable = values[0].is_mintable
-                        holdersCount = values[0].holder_count
                         holdersTable = values[0].holders
+
+                        if (holdersCount) { holdersCount = values[0].holder_count }
                     }
 
                     console.log("ici")
@@ -323,10 +324,14 @@ module.exports = {
                     }
 
 
+                    if (supply) {
+                        marketcap = supply * coinActualPriceUsd
+                    } else {
+                        marketcap = 0
+                        supply = 0
+                    }
 
-                    marketcap = supply * coinActualPriceUsd
-
-                    if (holdersFormatted == "") { holdersFormatted = "No holders found for this token" }
+                    if (holdersFormatted == "") { holdersFormatted = "```No holders found for this token              ```" }
                     if (!inTrades) { inTrades = 0 }
                     if (!outTrades) { outTrades = 0 }
 

@@ -1,4 +1,3 @@
-
 /**
  * @file Sample button interaction
  * @author JAYZHVJ
@@ -12,16 +11,16 @@
 
 
 const { ButtonInteraction } = require('discord.js');
-const { ActionRowBuilder, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
+const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
 const { accessSql, profileData, adminsql, reportsql, sequelize } = require('../../../events/database');
 const moment = require('moment');
-const FFList = require("../../../welcome/f&f.json")
-const fs = require('fs');
 
+const fs = require("fs")
 
+const userList = require('../../../welcome/pof.json')
 
 module.exports = {
-    id: 'getaccessFFpage-button',
+    id: 'getaccessPOFpage-button',
 
     async execute(interaction) {
         if (!(interaction instanceof ButtonInteraction)) return;
@@ -30,56 +29,56 @@ module.exports = {
         let authorName = interaction.user.username;
         let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
         let serverId = interaction.member.guild.id
+        let botId = interaction.applicationId
 
         try {
 
-        //Checkpoint
-        console.log("// Step 1 : Initialization - Executed ✅")
-
-        //Checkpoint
-        console.log("// Step 2 : Authorization - Executed ✅")
-
-
-
-        const isInFFList = FFList.some((item) => item.id === authorId);
-
-
-        if (isInFFList) {
-
-            const roleId1 = '1108761632928182424'; // Remplacez par l'ID de votre rôle
-            const role1 = interaction.guild.roles.cache.get(roleId1);
-            interaction.member.roles.add(role1)
-
-            const roleId2 = '1121519916873433148'; // Remplacez par l'ID de votre rôle
-            const role2 = interaction.guild.roles.cache.get(roleId2);
-            interaction.member.roles.add(role2)
-
-
-
-            const walletManager = new EmbedBuilder().setColor("#060A8F")
-                .setTitle("Get Access")
-                .setDescription("Welcome to Aura and to the F&F council " + authorName + " !\n\nWe'd like to thank you for your trust and hope you'll profit from Aura. Feel free to ask any question to our team if you need.\n\nYour member and F&F role has been granted 👑.")
-                .setTimestamp()
-                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-            await interaction.reply({ embeds: [walletManager], ephemeral: true });
-
-
-        } else {
-
-
-            const walletManager = new EmbedBuilder().setColor("#060A8F")
-                .setTitle("Get Access")
-                .setDescription("Sorry, you are not part of the Friends & Family list.\n\nYou can still access the bot by taking our monthly subscription.\n\nIf you encounter any problem or need help, feel free to open a ticket.")
-                .setTimestamp()
-                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-            await interaction.reply({ embeds: [walletManager], ephemeral: true });
+            //Checkpoint
+            console.log("// Step 1 : Initialization - Executed ✅")
 
 
 
 
-        }
+            //Checkpoint
+            console.log("// Step 2 : Authorization - Executed ✅")
+
+
+            
+
+            if (userList.includes(authorId)) {
+
+                const roleId1 = '1108761632928182424'; // Remplacez par l'ID de votre rôle
+                const role1 = interaction.guild.roles.cache.get(roleId1);
+                interaction.member.roles.add(role1)
+    
+                
+    
+    
+    
+                const walletManager = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Get Access")
+                    .setDescription("Welcome to Aura " + authorName + " !\n\nWe'd like to thank you for your trust and hope you'll profit from Aura. Feel free to ask any question to our team if you need.\n\nYour member role has been granted 👑.")
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+    
+                await interaction.reply({ embeds: [walletManager], ephemeral: true });
+    
+    
+            } else {
+    
+    
+                const walletManager = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Get Access")
+                    .setDescription("Sorry, you are not part of the Proof Of French list.\n\nYou can still access the bot by taking our monthly subscription.\n\nIf you encounter any problem or need help, feel free to open a ticket.")
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+    
+                await interaction.reply({ embeds: [walletManager], ephemeral: true });
+    
+    
+    
+    
+            }
 
 
 
@@ -103,7 +102,7 @@ module.exports = {
             const userRoleList = interaction.member._roles
             let userHighestRole = "Member"
             if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-            let reportCommand = "getaccess-FFpage"
+            let reportCommand = "/admin-botOff"
 
             const timeStamp = Date.now();
             const date = new Date(timeStamp);
@@ -169,10 +168,8 @@ module.exports = {
 
 
         }
-
     },
 };
-
 
 
 

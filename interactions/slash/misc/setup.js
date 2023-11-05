@@ -132,10 +132,10 @@ module.exports = {
 
                             const buttons1Row = new ActionRowBuilder()
                                 .addComponents(
-                                    new ButtonBuilder()
-                                        .setCustomId('getaccess1monthsubpage-button')
-                                        .setLabel('1 month (0.02Ξ)')
-                                        .setStyle(3),
+                                    // new ButtonBuilder()
+                                    //     .setCustomId('getaccess1monthsubpage-button')
+                                    //     .setLabel('1 month (0.02Ξ)')
+                                    //     .setStyle(3),
                                     new ButtonBuilder()
                                         .setCustomId('getaccessRCpage-button')
                                         .setLabel('RC Member')
@@ -147,6 +147,10 @@ module.exports = {
                                     new ButtonBuilder()
                                         .setCustomId('getaccessFTech-button')
                                         .setLabel('Friend.Tech')
+                                        .setStyle(3),
+                                    new ButtonBuilder()
+                                        .setCustomId('getaccessPartner-button')
+                                        .setLabel('Partners')
                                         .setStyle(3),
                                     new ButtonBuilder()
                                         .setCustomId('getaccess1monthsubconfirm-button')
@@ -171,7 +175,7 @@ module.exports = {
                                 // .setImage("https://media.discordapp.net/attachments/972981318134661130/1118294913449214094/Group_5.png?width=2206&height=736")
                                 .addFields(
                                     { name: ' ', value: " ", inline: false },
-                                    { name: 'Steps:', value: "• Choose your subscription plan below\n• Send the amount precised by the bot\n• Click on the button and paste the validated transaction's hash\n• Verify the wallet ownership and gain access to the bot.", inline: true },
+                                    { name: 'Steps:', value: "• Choose your subscription plan below\n• Send the transaction exactly like described\n• Click on the verify button and paste the validated transaction's hash\n• Gain access to the bot.", inline: true },
                                     { name: ' ', value: " ", inline: false },
                                     { name: ' ', value: "If you encounter any issue, please open a ticket : <#1121110417368956958>", inline: false },
                                     { name: ' ', value: " ", inline: false },

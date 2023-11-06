@@ -127,8 +127,6 @@ module.exports = {
 
                 const ethPriceUsdPromise = getEthPrice()
 
-                const timeStamp = Date.now();
-
 
 
 
@@ -339,17 +337,79 @@ module.exports = {
 
 
 
+                    
                     const buttonsRow = new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId('button_coin_tradepanel_refresh_' + coinTicker.toLowerCase())
-                                .setLabel('🔁 Refresh')
-                                .setStyle(1),
-                            new ButtonBuilder()
-                                .setCustomId('button_coin_tradepanel_setup')
-                                .setLabel('💻 Setup')
-                                .setStyle(1)
-                        );
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId('button_coin_exec_buy_' + coinTicker + "@xETH")
+                            .setLabel('Buy x ETH')
+                            .setStyle(3),
+                        new ButtonBuilder()
+                            .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.05ETH")
+                            .setLabel('Buy 0.05 ETH')
+                            .setStyle(3),
+                        new ButtonBuilder()
+                            .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.1ETH")
+                            .setLabel('Buy 0.1 ETH')
+                            .setStyle(3),
+                        new ButtonBuilder()
+                            .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.2ETH")
+                            .setLabel('Buy 0.2 ETH')
+                            .setStyle(3),
+                        new ButtonBuilder()
+                            .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.5ETH")
+                            .setLabel('Buy 0.5 ETH')
+                            .setStyle(3),
+
+                    );
+
+
+                    const buttonsRow1 = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId('button_coin_exec_sell_' + coinTicker + "@x%")
+                            .setLabel('Sell x %')
+                            .setStyle(4),
+                        new ButtonBuilder()
+                            .setCustomId('button_coin_exec_sell_' + coinTicker + "@25%")
+                            .setLabel('Sell 25%')
+                            .setStyle(4),
+                        new ButtonBuilder()
+                            .setCustomId('button_coin_exec_sell_' + coinTicker + "@50%")
+                            .setLabel('Sell 50%')
+                            .setStyle(4),
+                        new ButtonBuilder()
+                            .setCustomId('button_coin_exec_sell_' + coinTicker + "@75%")
+                            .setLabel('Sell 75%')
+                            .setStyle(4),
+                        new ButtonBuilder()
+                            .setCustomId('button_coin_exec_sell_' + coinTicker + "@100%")
+                            .setLabel('Sell 100%')
+                            .setStyle(4),
+
+                    );
+
+                const buttonsRow2 = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId('button_coin_tradepanel_refresh_' + coinTicker)
+                            .setLabel('🔁 Refresh')
+                            .setStyle(1),
+                        new ButtonBuilder()
+                            .setCustomId('coin_infra_tradepanel_help-button')
+                            .setLabel('📑 Tutorial')
+                            .setStyle(1),
+                        new ButtonBuilder()
+                            .setCustomId('coin_infra_tradepanel_audit-button')
+                            .setLabel('📡 Audit')
+                            .setStyle(1),
+                        new ButtonBuilder()
+                            .setCustomId('button_coin_tradepanel_setup')
+                            .setLabel('💻 Setup')
+                            .setStyle(1)
+                    );
+
+
 
                     const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
                         .setTitle(reduceText(coinName, 40) + " (" + coinSymbol.toUpperCase() + ")")
@@ -388,16 +448,9 @@ module.exports = {
                         .setTimestamp()
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                    await interaction.editReply({ embeds: [getDataCollectionAddress], components: [buttonsRow] });
+                    await interaction.editReply({ embeds: [getDataCollectionAddress], components: [buttonsRow, buttonsRow1, buttonsRow2] });
 
 
-
-
-                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getTokenMetadata", apiProvider: "alchemy", timestamp: timeStamp.toString() })
-                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getTokenPrice", apiProvider: "moralis", timestamp: timeStamp.toString() })
-                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getChart", apiProvider: "chart", timestamp: timeStamp.toString() })
-                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getPriceHistoryETH", apiProvider: "dexScreener", timestamp: timeStamp.toString() })
-                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getTokenSupply", apiProvider: "etherscan", timestamp: timeStamp.toString() })
 
 
 

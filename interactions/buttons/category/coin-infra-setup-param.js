@@ -27,6 +27,22 @@ const web3 = new Web3("https://cloudflare-eth.com")
 
 
 
+
+
+const buttonsRowNew = new ActionRowBuilder()
+    .addComponents(
+        new ButtonBuilder()
+            .setCustomId('button_infra_coin_walletsetup_import')
+            .setLabel('import wallet')
+            .setStyle(1),
+        new ButtonBuilder()
+            .setCustomId('button_infra_coin_walletsetup_generate')
+            .setLabel('generate wallet')
+            .setStyle(3),
+
+    );
+
+
 const buttonsRowModify = new ActionRowBuilder()
     .addComponents(
         new ButtonBuilder()
@@ -43,35 +59,43 @@ const buttonsRowModify = new ActionRowBuilder()
             .setStyle(4)
     );
 
-
-const buttonsRowNew = new ActionRowBuilder()
-    .addComponents(
-        new ButtonBuilder()
-            .setCustomId('button_infra_coin_walletsetup_import')
-            .setLabel('import wallet')
-            .setStyle(1),
-        new ButtonBuilder()
-            .setCustomId('button_infra_coin_walletsetup_generate')
-            .setLabel('generate wallet')
-            .setStyle(3),
-
-    );
-
 const buttonsRowConfig = new ActionRowBuilder()
     .addComponents(
         new ButtonBuilder()
-            .setCustomId('button_infra_coin_walletsetup_valuepreset')
-            .setLabel('Set Buy/Sell Preset')
+            .setCustomId('button_infra_coin_walletsetup_buy')
+            .setLabel('Set Buy Value')
+            .setStyle(2),
+        new ButtonBuilder()
+            .setCustomId('button_infra_coin_walletsetup_sell')
+            .setLabel('Set Sell %')
             .setStyle(2),
         new ButtonBuilder()
             .setCustomId('button_infra_coin_walletsetup_gaspreset')
             .setLabel('Set Gas Preset')
             .setStyle(2),
         new ButtonBuilder()
+            .setCustomId('button_infra_coin_walletsetup_maxgwei')
+            .setLabel('Set Max Gwei')
+            .setStyle(2),
+        new ButtonBuilder()
             .setCustomId('button_infra_coin_walletsetup_slippage')
             .setLabel('Set Slippage')
             .setStyle(2)
     );
+
+const buttonsRowConfig2 = new ActionRowBuilder()
+    .addComponents(
+        new ButtonBuilder()
+            .setCustomId('button_infra_coin_walletsetup_apemode')
+            .setLabel('Set Ape Mode')
+            .setStyle(2),
+        new ButtonBuilder()
+            .setCustomId('button_infra_coin_walletsetup_autoapproval')
+            .setLabel('Set Auto Approval')
+            .setStyle(2),
+    );
+
+
 
 
 module.exports = {
@@ -179,7 +203,10 @@ module.exports = {
                         authorName: authorName,
                         walletAddress: encryptWA,
                         privateKey: encryptPK,
-                        value_preset: "0.05",
+                        buy_preset: "0.05",
+                        sell_preset: "100",
+                        ape_mode: 'false',
+                        auto_approval: 'false',
 
 
                     })
@@ -191,23 +218,30 @@ module.exports = {
                     const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                         .setTitle("Coin Setup")
                         .setDescription(">>> Displaying your Coin wallet setup")
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                        .setImage('https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png')
                         .setAuthor({ name: authorName, iconURL: userAvatar })
                         .addFields(
                             { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
                             { name: " ", value: " ", inline: false },
-                            { name: "Buy/Sell Preset:", value: "`0.050Ξ`", inline: true },
-                            { name: "Gas Preset:", value: "`Auto`", inline: true },
-                            { name: "Slippage:", value: "`Auto`", inline: true },
+                            { name: "Default Buy Value:", value: "`0.050Ξ`", inline: true },
+                            { name: "Default Sell %:", value: "`100%`", inline: true },
+                            { name: " ", value: " ", inline: false },
+                            { name: "Default Gas:", value: "`Auto`", inline: true },
+                            { name: "Default Max Gwei:", value: "`Auto`", inline: true },
+                            { name: "Default Slippage:", value: "`Auto`", inline: true },
+                            { name: " ", value: " ", inline: false },
+                            { name: "Ape Mode", value: "`❌`", inline: true },
+                            { name: "Auto Approval", value: "`❌`", inline: true },
                             { name: " ", value: " ", inline: false },
                             { name: " ", value: "*✅ Your wallet has been succesfuly generated, encrypted and registered to your profile. Use export to donwload the private key.*", inline: false },
+
 
 
                         )
                         .setTimestamp()
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                    await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowModify, buttonsRowConfig] });
+                    await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowModify, buttonsRowConfig, buttonsRowConfig2] });
 
 
 
@@ -239,19 +273,29 @@ module.exports = {
                 } else if (action === "export") {
 
 
-
-
                     const userSetup = await infra_coin.findOne({ where: { authorId: authorId } })
 
+                    // On définit les valeurs de l'embed
                     const walletAddress = decrypt(userSetup.dataValues.walletAddress)
                     const privateKey = decrypt(userSetup.dataValues.privateKey)
 
+                    let buy_preset = parseFloat(userSetup.dataValues.buy_preset).toFixed(3)
+                    let sell_preset = parseFloat(userSetup.dataValues.sell_preset).toFixed(0)
+
                     let gasPreset = userSetup.dataValues.gas_preset
-                    let valuePreset = parseFloat(userSetup.dataValues.value_preset).toFixed(3)
+                    let max_gwei = userSetup.dataValues.max_gwei
                     let slippage = userSetup.dataValues.slippage
 
-                    if (gasPreset == null) { gasPreset = "Auto" } else { gasPreset = "+" + parseFloat(gasPreset).toFixed(0) }
-                    if (slippage == null) { slippage = "Auto" } else { slippage = "+" + parseFloat(gasPreset).toFixed(0) }
+                    let ape_mode = userSetup.dataValues.ape_mode
+                    let auto_approval = userSetup.dataValues.auto_approval
+
+                    if (gasPreset == null) { gasPreset = "Auto" } else { gasPreset = "+" + parseFloat(gasPreset).toFixed(0) + "%" }
+                    if (slippage == null) { slippage = "Auto" } else { slippage = parseFloat(gasPreset).toFixed(0) + "%" }
+                    if (max_gwei == null) { max_gwei = "Auto" } else { max_gwei = parseFloat(max_gwei).toFixed(0) + " gwei" }
+
+                    if (ape_mode == "true") { ape_mode = "✅" } else { ape_mode = "❌" }
+                    if (auto_approval == "true") { auto_approval = "✅" } else { auto_approval = "❌" }
+
 
 
                     const exportTable = []
@@ -268,7 +312,7 @@ module.exports = {
                     const dataArrays = [['Address', 'Private Key', 'Chain']];
 
                     exportTable.forEach(obj => {
-                        const arr = [obj.walletAddress, obj.privateKey, "Base"];
+                        const arr = [obj.walletAddress, obj.privateKey, "Ethereum"];
                         dataArrays.push(arr)
 
                     });
@@ -317,15 +361,20 @@ module.exports = {
                         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                             .setTitle("Coin Setup")
                             .setDescription(">>> Displaying your Coin wallet setup")
-                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                            .setImage('https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png')
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .addFields(
-                                { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
+                                { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: false },
                                 { name: " ", value: " ", inline: false },
-                                { name: "Buy/Sell Preset:", value: "`" + valuePreset + "Ξ`", inline: true },
-                                { name: "Gas Preset:", value: "`" + gasPreset + "`", inline: true },
-                                { name: "Slippage:", value: "`" + slippage + "`", inline: true },
-
+                                { name: "Default Buy Value:", value: "`" + buy_preset + "Ξ`", inline: true },
+                                { name: "Default Sell %:", value: "`" + sell_preset + "%`", inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Default Gas:", value: "`" + gasPreset + "`", inline: true },
+                                { name: "Default Max Gwei:", value: "`" + max_gwei + "`", inline: true },
+                                { name: "Default Slippage:", value: "`" + slippage + "`", inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Ape Mode", value: "`" + ape_mode + "`", inline: true },
+                                { name: "Auto Approval", value: "`" + auto_approval + "`", inline: true },
                                 { name: " ", value: " ", inline: false },
                                 { name: " ", value: "*✅ The wallets infos have been sent to your DMs. Private keys are crypted.*", inline: false },
 
@@ -333,7 +382,7 @@ module.exports = {
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                        await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowModify, buttonsRowConfig] });
+                        await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowModify, buttonsRowConfig, buttonsRowConfig2] });
 
 
 
@@ -344,14 +393,20 @@ module.exports = {
                         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                             .setTitle("Coin Setup")
                             .setDescription(">>> Displaying your Coin wallet setup")
-                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                            .setImage('https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png')
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .addFields(
-                                { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
+                                { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: false },
                                 { name: " ", value: " ", inline: false },
-                                { name: "Buy/Sell Preset:", value: "`" + valuePreset + "Ξ`", inline: true },
-                                { name: "Gas Preset:", value: "`" + gasPreset + "`", inline: true },
-                                { name: "Slippage:", value: "`" + slippage + "`", inline: true },
+                                { name: "Default Buy Value:", value: "`" + buy_preset + "Ξ`", inline: true },
+                                { name: "Default Sell %:", value: "`" + sell_preset + "%`", inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Default Gas:", value: "`" + gasPreset + "`", inline: true },
+                                { name: "Default Max Gwei:", value: "`" + max_gwei + "`", inline: true },
+                                { name: "Default Slippage:", value: "`" + slippage + "`", inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Ape Mode", value: "`" + ape_mode + "`", inline: true },
+                                { name: "Auto Approval", value: "`" + auto_approval + "`", inline: true },
                                 { name: " ", value: " ", inline: false },
                                 { name: " ", value: "*❌ Your DMs are closed. Please unable server DMs to receive your wallets.*", inline: false },
 
@@ -359,26 +414,60 @@ module.exports = {
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                        await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowModify, buttonsRowConfig] });
+                        await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowModify, buttonsRowConfig, buttonsRowConfig2] });
 
                     }
 
 
-                } else if (action === "valuepreset") {
+                } else if (action === "buy") {
 
 
 
                     const passwordAdminDashboard = new ModalBuilder()
-                        .setCustomId('modal_infra_coin_walletsetup_valuepreset')
-                        .setTitle('Set Buy/Sell Value');
+                        .setCustomId('modal_infra_coin_walletsetup_buy')
+                        .setTitle('Set Default Buy Value');
 
                     // Add components to modal
 
                     // Create the text input components
                     const channel = new TextInputBuilder()
-                        .setCustomId('modal_infra_coin_walletsetup_valuepresetR1')
+                        .setCustomId('modal_infra_coin_walletsetup_buyR1')
                         .setLabel("Value")
-                        .setPlaceholder("The default buy and sell value to use")
+                        .setPlaceholder("The default buy value to use")
+                        .setStyle(TextInputStyle.Short)
+                        .setRequired(true)
+
+
+
+                    // An action row only holds one text input,
+                    // so you need one action row per text input.
+                    const firstActionRowSetProfile = new ActionRowBuilder().addComponents(channel);
+
+
+                    // Add inputs to the modal
+                    passwordAdminDashboard.addComponents(firstActionRowSetProfile)
+
+                    // Show the modal to the user
+                    await interaction.showModal(passwordAdminDashboard);
+
+
+
+
+                } else if (action === "sell") {
+
+
+
+                    const passwordAdminDashboard = new ModalBuilder()
+                        .setCustomId('modal_infra_coin_walletsetup_sell')
+                        .setTitle('Set Default Sell %');
+
+                    // Add components to modal
+
+                    // Create the text input components
+                    const channel = new TextInputBuilder()
+                        .setCustomId('modal_infra_coin_walletsetup_sellR1')
+                        .setLabel("Ratio (e.g 20 will set 20%)")
+                        .setPlaceholder("The default holding part to sell")
                         .setStyle(TextInputStyle.Short)
                         .setRequired(true)
 
@@ -436,7 +525,7 @@ module.exports = {
                 } else if (action === "slippage") {
 
 
-                    
+
                     const passwordAdminDashboard = new ModalBuilder()
                         .setCustomId('modal_infra_coin_walletsetup_slippage')
                         .setTitle('Set Slippage');
@@ -468,7 +557,88 @@ module.exports = {
 
 
 
-                } 
+                } else if (action === "maxgwei") {
+
+
+
+                    const passwordAdminDashboard = new ModalBuilder()
+                        .setCustomId('modal_infra_coin_walletsetup_maxgwei')
+                        .setTitle('Set Max Gwei');
+
+                    // Add components to modal
+
+                    // Create the text input components
+                    const channel = new TextInputBuilder()
+                        .setCustomId('modal_infra_coin_walletsetup_maxgweiR1')
+                        .setLabel("Gwei Limit")
+                        .setPlaceholder("The maximum Gwei the bot is allowed to use")
+                        .setStyle(TextInputStyle.Short)
+
+
+
+                    // An action row only holds one text input,
+                    // so you need one action row per text input.
+                    const firstActionRowSetProfile = new ActionRowBuilder().addComponents(channel);
+
+
+                    // Add inputs to the modal
+                    passwordAdminDashboard.addComponents(firstActionRowSetProfile)
+
+                    // Show the modal to the user
+                    await interaction.showModal(passwordAdminDashboard);
+
+
+
+
+                } else if (action === "apemode") {
+
+
+
+                    let taskEmbed = interaction.message.embeds[0].data
+
+
+                    if (taskEmbed.fields.find(obj => obj.name === "Ape Mode").value == "`✅`") {
+
+                        taskEmbed.fields.find(obj => obj.name === "Ape Mode").value = "`❌`";
+
+                        await infra_coin.update({ ape_mode: "false", }, { where: { authorId: authorId } });
+                        await interaction.update({ embeds: [taskEmbed], ephemeral: true });
+
+                    } else {
+
+                        taskEmbed.fields.find(obj => obj.name === "Ape Mode").value = "`✅`";
+
+                        await infra_coin.update({ ape_mode: "true", }, { where: { authorId: authorId } });
+                        await interaction.update({ embeds: [taskEmbed], ephemeral: true });
+
+                    }
+
+
+
+                } else if (action === "autoapproval") {
+
+
+                    let taskEmbed = interaction.message.embeds[0].data
+
+
+                    if (taskEmbed.fields.find(obj => obj.name === "Auto Approval").value == "`✅`") {
+
+                        taskEmbed.fields.find(obj => obj.name === "Auto Approval").value = "`❌`";
+
+                        await infra_coin.update({ auto_approval: "false", }, { where: { authorId: authorId } });
+                        await interaction.update({ embeds: [taskEmbed], ephemeral: true });
+
+                    } else {
+
+                        taskEmbed.fields.find(obj => obj.name === "Auto Approval").value = "`✅`";
+
+                        await infra_coin.update({ auto_approval: "true", }, { where: { authorId: authorId } });
+                        await interaction.update({ embeds: [taskEmbed], ephemeral: true });
+
+                    }
+
+
+                }
 
 
             } else {

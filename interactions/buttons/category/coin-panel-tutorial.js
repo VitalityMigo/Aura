@@ -50,13 +50,11 @@ module.exports = {
                 .setDescription(">>> The coin trade panel has several easy-to-use features.")
                 .addFields(
                     { name: " ", value: " ", inline: false },
-                    { name: "📈 Buy", value: "Enter the amount of token to buy (in ETH) and the bot will simulate the transaction to check that it is valid and also to estimate the fees. All you have to do is confirm if it looks good for you. The bot will return you with the executed transaction infos.", inline: false },
+                    { name: "📈 Buy", value: "Enter the amount of token to buy (in ETH) or select a preset option. If Ape Mode is activated, the bot will simulate the transaction and ask for your confirmation before triggering. The bot will return you with the executed transaction infos.", inline: false },
                     { name: " ", value: " ", inline: false },
-                    { name: "💫 Flash Buy", value: "Buy the desired token for your default buy amount of ETH (`/coin wallet) in just one click. The bot will automatically simulate the transaction and launch it if valid. It's perfect for moving fast and overtaking others.", inline: false },
+                    { name: "📉 Sell", value: "Enter the portion of token to sell (in %) or select a preset option. If Ape Mode is activated, the bot will simulate the transaction and ask for your confirmation before triggering. The bot will return you with the executed transaction infos.", inline: false },
                     { name: " ", value: " ", inline: false },
-                    { name: "📉 Sell", value: "Enter the amount of token to sell (in ETH) and the bot will simulate the transaction to check that it is valid and also to estimate the fees. All you have to do is confirm if it looks good for you. The bot will return you with the executed transaction infos.", inline: false },
-                    { name: " ", value: " ", inline: false },
-                    { name: "❄️ Flash Sell", value: "Sell the desired token for your default sell amount of ETH (`/coin wallet) in just one click. The bot will automatically simulate the transaction and launch it if valid. It's perfect for moving fast and overtaking others.", inline: false },
+                    { name: "📡 Audit", value: "Perform a quick and complete audit of the token. The bot will return important information about the token's developers, the contract, as well as any potential ruggedness or security risks.", inline: false },
                     { name: " ", value: " ", inline: false },
                     { name: "💻 Setup", value: "Create and modify your coin trade setup. You can add a trade address, modify it, delete it or export its information. This section is also accessible in `/coin wallet`.", inline: false },
 

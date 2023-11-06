@@ -1771,29 +1771,56 @@ module.exports = {
                                             if (holdersFormatted == "") { holdersFormatted = "No holders found for this token" }
 
 
-                                            
+
                                             const buttonsRow = new ActionRowBuilder()
                                                 .addComponents(
                                                     new ButtonBuilder()
-                                                        .setCustomId('button_coin_exec_buy_' + coinTicker)
-                                                        .setLabel('📈 Buy')
+                                                        .setCustomId('button_coin_exec_buy_' + coinTicker + "@xETH")
+                                                        .setLabel('Buy x ETH')
                                                         .setStyle(3),
                                                     new ButtonBuilder()
-                                                        .setCustomId('button_coin_exec_quickbuy_' + coinTicker)
-                                                        .setLabel('💫 Flash Buy')
+                                                        .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.05ETH")
+                                                        .setLabel('Buy 0.05 ETH')
                                                         .setStyle(3),
                                                     new ButtonBuilder()
-                                                        .setCustomId('button_coin_exec_sell_' + coinTicker)
-                                                        .setLabel('📉 Sell')
+                                                        .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.1ETH")
+                                                        .setLabel('Buy 0.1 ETH')
+                                                        .setStyle(3),
+                                                    new ButtonBuilder()
+                                                        .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.2ETH")
+                                                        .setLabel('Buy 0.2 ETH')
+                                                        .setStyle(3),
+                                                    new ButtonBuilder()
+                                                        .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.5ETH")
+                                                        .setLabel('Buy 0.5 ETH')
+                                                        .setStyle(3),
+
+                                                );
+
+
+                                                const buttonsRow1 = new ActionRowBuilder()
+                                                .addComponents(
+                                                    new ButtonBuilder()
+                                                        .setCustomId('button_coin_exec_sell_' + coinTicker + "@x%")
+                                                        .setLabel('Sell x %')
                                                         .setStyle(4),
                                                     new ButtonBuilder()
-                                                        .setCustomId('button_coin_exec_quicksell_' + coinTicker)
-                                                        .setLabel('❄️ Flash Sell')
+                                                        .setCustomId('button_coin_exec_sell_' + coinTicker + "@25%")
+                                                        .setLabel('Sell 25%')
                                                         .setStyle(4),
                                                     new ButtonBuilder()
-                                                        .setCustomId('button_coin_tradepanel_setup')
-                                                        .setLabel('💻 Setup')
-                                                        .setStyle(1)
+                                                        .setCustomId('button_coin_exec_sell_' + coinTicker + "@50%")
+                                                        .setLabel('Sell 50%')
+                                                        .setStyle(4),
+                                                    new ButtonBuilder()
+                                                        .setCustomId('button_coin_exec_sell_' + coinTicker + "@75%")
+                                                        .setLabel('Sell 75%')
+                                                        .setStyle(4),
+                                                    new ButtonBuilder()
+                                                        .setCustomId('button_coin_exec_sell_' + coinTicker + "@100%")
+                                                        .setLabel('Sell 100%')
+                                                        .setStyle(4),
+
                                                 );
 
                                             const buttonsRow2 = new ActionRowBuilder()
@@ -1802,10 +1829,18 @@ module.exports = {
                                                         .setCustomId('button_coin_tradepanel_refresh_' + coinTicker)
                                                         .setLabel('🔁 Refresh')
                                                         .setStyle(1),
-                                                        new ButtonBuilder()
+                                                    new ButtonBuilder()
                                                         .setCustomId('coin_infra_tradepanel_help-button')
                                                         .setLabel('📑 Tutorial')
                                                         .setStyle(1),
+                                                    new ButtonBuilder()
+                                                        .setCustomId('coin_infra_tradepanel_audit-button')
+                                                        .setLabel('📡 Audit')
+                                                        .setStyle(1),
+                                                    new ButtonBuilder()
+                                                        .setCustomId('button_coin_tradepanel_setup')
+                                                        .setLabel('💻 Setup')
+                                                        .setStyle(1)
                                                 );
 
 
@@ -1846,7 +1881,7 @@ module.exports = {
                                                 .setTimestamp()
                                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                                            await interaction.editReply({ embeds: [getDataCollectionAddress], components: [buttonsRow, buttonsRow2] });
+                                            await interaction.editReply({ embeds: [getDataCollectionAddress], components: [buttonsRow, buttonsRow1, buttonsRow2] });
 
 
                                         } else {
@@ -1910,18 +1945,39 @@ module.exports = {
                                     const buttonsRowConfig = new ActionRowBuilder()
                                         .addComponents(
                                             new ButtonBuilder()
-                                                .setCustomId('button_infra_coin_walletsetup_valuepreset')
-                                                .setLabel('Set Buy/Sell Preset')
+                                                .setCustomId('button_infra_coin_walletsetup_buy')
+                                                .setLabel('Set Buy Value')
+                                                .setStyle(2),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_infra_coin_walletsetup_sell')
+                                                .setLabel('Set Sell %')
                                                 .setStyle(2),
                                             new ButtonBuilder()
                                                 .setCustomId('button_infra_coin_walletsetup_gaspreset')
                                                 .setLabel('Set Gas Preset')
                                                 .setStyle(2),
                                             new ButtonBuilder()
+                                                .setCustomId('button_infra_coin_walletsetup_maxgwei')
+                                                .setLabel('Set Max Gwei')
+                                                .setStyle(2),
+                                            new ButtonBuilder()
                                                 .setCustomId('button_infra_coin_walletsetup_slippage')
                                                 .setLabel('Set Slippage')
                                                 .setStyle(2)
                                         );
+
+                                    const buttonsRowConfig2 = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('button_infra_coin_walletsetup_apemode')
+                                                .setLabel('Set Ape Mode')
+                                                .setStyle(2),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_infra_coin_walletsetup_autoapproval')
+                                                .setLabel('Set Auto Approval')
+                                                .setStyle(2),
+                                        );
+
 
 
 
@@ -1932,30 +1988,46 @@ module.exports = {
 
                                         const walletAddress = decrypt(userSetup.dataValues.walletAddress)
 
+                                        let buy_preset = parseFloat(userSetup.dataValues.buy_preset).toFixed(3)
+                                        let sell_preset = parseFloat(userSetup.dataValues.sell_preset).toFixed(0)
+
                                         let gasPreset = userSetup.dataValues.gas_preset
-                                        let valuePreset = parseFloat(userSetup.dataValues.value_preset).toFixed(3)
+                                        let max_gwei = userSetup.dataValues.max_gwei
                                         let slippage = userSetup.dataValues.slippage
 
-                                        if (gasPreset == null) { gasPreset = "Auto" } else { gasPreset = "+" + parseFloat(gasPreset).toFixed(0) }
-                                        if (slippage == null) { slippage = "Auto" } else { slippage = "+" + parseFloat(gasPreset).toFixed(0) }
+                                        let ape_mode = userSetup.dataValues.ape_mode
+                                        let auto_approval = userSetup.dataValues.auto_approval
+
+                                        if (gasPreset == null) { gasPreset = "Auto" } else { gasPreset = "+" + parseFloat(gasPreset).toFixed(0) + "%" }
+                                        if (slippage == null) { slippage = "Auto" } else { slippage = parseFloat(gasPreset).toFixed(0) + "%" }
+                                        if (max_gwei == null) { max_gwei = "Auto" } else { max_gwei = parseFloat(max_gwei).toFixed(0) + " gwei" }
+
+                                        if (ape_mode == "true") { ape_mode = "✅" } else { ape_mode = "❌" }
+                                        if (auto_approval == "true") { auto_approval = "✅" } else { auto_approval = "❌" }
 
                                         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                             .setTitle("Coin Setup")
                                             .setDescription(">>> Displaying your coin wallet setup")
-                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                            .setImage('https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png')
                                             .setAuthor({ name: authorName, iconURL: userAvatar })
                                             .addFields(
                                                 { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: false },
                                                 { name: " ", value: " ", inline: false },
-                                                { name: "Buy/Sell Preset:", value: "`" + valuePreset + "Ξ`", inline: true },
-                                                { name: "Gas Preset:", value: "`" + gasPreset + "`", inline: true },
-                                                { name: "Slippage:", value: "`" + slippage + "`", inline: true },
-
+                                                { name: "Default Buy Value:", value: "`" + buy_preset + "Ξ`", inline: true },
+                                                { name: "Default Sell %:", value: "`" + sell_preset + "%`", inline: true },
+                                                { name: " ", value: " ", inline: false },
+                                                { name: "Default Gas:", value: "`" + gasPreset + "`", inline: true },
+                                                { name: "Default Max Gwei:", value: "`" + max_gwei + "`", inline: true },
+                                                { name: "Default Slippage:", value: "`" + slippage + "`", inline: true },
+                                                { name: " ", value: " ", inline: false },
+                                                { name: "Ape Mode", value: "`" + ape_mode + "`", inline: true },
+                                                { name: "Auto Approval", value: "`" + auto_approval + "`", inline: true },
+                                                { name: " ", value: " ", inline: false },
                                             )
                                             .setTimestamp()
                                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                        await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowModify, buttonsRowConfig], ephemeral: true });
+                                        await interaction.editReply({ embeds: [errorNotEthereum], components: [buttonsRowModify, buttonsRowConfig, buttonsRowConfig2], ephemeral: true });
 
 
                                     } else if (userSetup == null) {
@@ -2199,3 +2271,40 @@ module.exports = {
     }
 }
 
+
+
+// const buttonsRow = new ActionRowBuilder()
+// .addComponents(
+//     new ButtonBuilder()
+//         .setCustomId('button_coin_exec_buy_' + coinTicker)
+//         .setLabel('📈 Buy')
+//         .setStyle(3),
+//     new ButtonBuilder()
+//         .setCustomId('button_coin_exec_quickbuy_' + coinTicker)
+//         .setLabel('💫 Flash Buy')
+//         .setStyle(3),
+//     new ButtonBuilder()
+//         .setCustomId('button_coin_exec_sell_' + coinTicker)
+//         .setLabel('📉 Sell')
+//         .setStyle(4),
+//     new ButtonBuilder()
+//         .setCustomId('button_coin_exec_quicksell_' + coinTicker)
+//         .setLabel('❄️ Flash Sell')
+//         .setStyle(4),
+//     new ButtonBuilder()
+//         .setCustomId('button_coin_tradepanel_setup')
+//         .setLabel('💻 Setup')
+//         .setStyle(1)
+// );
+
+// const buttonsRow2 = new ActionRowBuilder()
+// .addComponents(
+//     new ButtonBuilder()
+//         .setCustomId('button_coin_tradepanel_refresh_' + coinTicker)
+//         .setLabel('🔁 Refresh')
+//         .setStyle(1),
+//     new ButtonBuilder()
+//         .setCustomId('coin_infra_tradepanel_help-button')
+//         .setLabel('📑 Tutorial')
+//         .setStyle(1),
+// );

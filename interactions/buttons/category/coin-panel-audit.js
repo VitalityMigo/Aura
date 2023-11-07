@@ -181,8 +181,8 @@ module.exports = {
                     else if (anti_whale == "1") { anti_whale = "Yes ✅" }
                     else { anti_whale = "❓" }
 
-                    if (buy_tax) { buy_tax = parseFloat(buy_tax) * 100 + "%"}
-                    if (sell_tax) { sell_tax = parseFloat(sell_tax) * 100  + "%" }
+                    if (buy_tax) { buy_tax = (parseFloat(buy_tax) * 100).toFixed(0) + "%"}
+                    if (sell_tax) { sell_tax = (parseFloat(sell_tax) * 100).toFixed(0)  + "%" }
 
                     if (!owner) { owner = "❓" }
                     if (!deployer) { deployer = "❓" }
@@ -272,7 +272,7 @@ module.exports = {
                     let lp_holders = values[0].lp_holder_count
                     let lp_teamSupply = 0
 
-                    if (lp_holders) {
+                    if (lp_holders > 0) {
 
                         let lp_teamTable = values[0].lp_holders.filter(obj => obj.address.toLowerCase() == owner.toLowerCase() || obj.address.toLowerCase() == deployer.toLowerCase())
 
@@ -291,7 +291,7 @@ module.exports = {
                     let lp_holder = values[0].holders
                     let lp_locked = 0
 
-                    if (lp_holder) {
+                    if (lp_holder > 0) {
                        
                         let lp_lockedTable = lp_holder.filter(obj => obj.is_locked == 1)
                         

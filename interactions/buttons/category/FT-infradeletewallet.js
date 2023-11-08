@@ -1,7 +1,7 @@
 
 const { ButtonInteraction } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, infra_friendTech, sniper_friendTech, sequelize } = require('../../../events/database');
+const { accessSql, profileData, adminsql, reportsql, infra_friendTech, sniper_friendTech, farmer_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 
@@ -66,6 +66,7 @@ module.exports = {
 
             // On update les tasks du sniper
             await sniper_friendTech.update({ walletAddress: null, privateKey: null, active: "false" }, { where: { authorId: authorId } });
+            await farmer_friendTech.destroy({ where: { authorId: authorId} })
 
 
 

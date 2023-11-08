@@ -831,7 +831,7 @@ const infra_friendTech = sequelize.define('infra_friendtech', {
     password: {
         type: Sequelize.STRING,
     },
-    
+
 
 
 });
@@ -935,8 +935,8 @@ const sniper_friendTech = sequelize.define('sniper_friendtech', {
     take_profit: {
         type: Sequelize.STRING,
     },
-   
-    
+
+
 
 
 });
@@ -1009,8 +1009,8 @@ const order_friendTech = sequelize.define('order_friendTech', {
     taskNb: {
         type: Sequelize.STRING,
     },
-   
-    
+
+
 
 
 });
@@ -1049,7 +1049,7 @@ const access_friendtech = sequelize.define('access_friendtech', {
     timestamp: {
         type: Sequelize.STRING,
     },
-   
+
 });
 
 
@@ -1145,11 +1145,75 @@ const infra_coin = sequelize.define('infra_coin', {
     password: {
         type: Sequelize.STRING,
     },
-    
+
 
 
 });
 
+
+
+//Alert up
+const farmer_friendTech = sequelize.define('farmer_friendTech', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    type: {
+        type: Sequelize.STRING,
+    },
+    authorWallet: {
+        type: Sequelize.STRING,
+    },
+    buy_0_3: {
+        type: Sequelize.STRING,
+    },
+    max_key_price: {
+        type: Sequelize.REAL,
+    },
+    sell_3_0: {
+        type: Sequelize.STRING,
+    },
+    min_key_price: {
+        type: Sequelize.REAL,
+    },
+    gas_preset: {
+        type: Sequelize.STRING,
+    },
+    simulation: {
+        type: Sequelize.STRING,
+    },
+    walletAddress: {
+        type: Sequelize.STRING,
+    },
+    privateKey: {
+        type: Sequelize.STRING,
+    },
+    active: {
+        type: Sequelize.STRING,
+    },
+    created: {
+        type: Sequelize.STRING,
+    },
+    randomId: {
+        type: Sequelize.STRING,
+    },
+    taskNb: {
+        type: Sequelize.STRING,
+    },
+
+
+
+
+});
 
 
 //Synching the tables
@@ -1179,6 +1243,7 @@ order_friendTech.sync()
 access_friendtech.sync()
 tracker_friendTech.sync()
 infra_coin.sync()
+farmer_friendTech.sync()
 
 
 //Export the tables informations
@@ -1209,6 +1274,7 @@ module.exports = {
     access_friendtech,
     tracker_friendTech,
     infra_coin,
+    farmer_friendTech,
     Op,
 }
 

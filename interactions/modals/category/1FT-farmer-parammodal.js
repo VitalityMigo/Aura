@@ -1,124 +1,147 @@
 /**
- * @file Sample button interaction
+ * @file Sample modal interaction
  * @author JAYZHVJ
- * @since 3.0.0
+ * @since 3.2.0
  * @version 3.2.2
  */
 
 /**
- * @type {import('../../../typings').ButtonInteractionCommand}
+ * @type {import('../../../typings').ModalInteractionCommand}
  */
 
-
-const { ButtonInteraction } = require('discord.js');
-const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
+const { accessSql, profileData, adminsql, reportsql, sniper_friendTech, order_friendTech, farmer_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
+
+
+function removeCharacter(str, charToRemove) {
+    return str.split(charToRemove).filter(char => char !== charToRemove).join('');
+}
 
 
 
 
 
 module.exports = {
-    id: 'friendtechtasksinfra-mainmenu-button',
+    id: "modal-friendtechtasksinfra-farmer-param-",
 
     async execute(interaction) {
-        if (!(interaction instanceof ButtonInteraction)) return;
 
+
+        //Récupérer informations de l'utilisateur de la commande
         let authorId = interaction.user.id;
         let authorName = interaction.user.username;
         let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
-        let serverId = interaction.member.guild.id
         let botId = interaction.applicationId
+        let serverId = interaction.member.guild.id
+
 
         try {
 
             //Checkpoint
             console.log("// Step 1 : Initialization - Executed ✅")
-
-
-
-            if (interaction.message.interaction.user.id === authorId) {
-
-                //Checkpoint
-                console.log("// Step 2 : Authorization - Executed ✅")
-
-
-
-                const buttonsRow = new ActionRowBuilder()
-                    .addComponents(
-                        new ButtonBuilder()
-                            .setCustomId('friendtechtasksinfra-snipermenu-button')
-                            .setLabel('🥷 Sniper')
-                            .setStyle(1),
-                        new ButtonBuilder()
-                            .setCustomId('friendtechtasksinfra-ordermenu-button')
-                            .setLabel('🔮 Order')
-                            .setStyle(1),
-                        new ButtonBuilder()
-                            .setCustomId('friendtechtasksinfra-farmermenu-button')
-                            .setLabel('👨🏽‍🌾 Farmer')
-                            .setStyle(1),
-                        new ButtonBuilder()
-                            .setCustomId('friendtech_exec_setup-button')
-                            .setLabel('💻 Setup')
-                            .setStyle(3),
-
-                    );
-
-
-                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Friend.Tech Tasks")
-                    .setDescription(">>> Displaying the Friend.Tech task dashboard")
-                    //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                    .addFields(
-                        { name: "Tasks Mechanism", value: "Friend.Tech tasks are all actions that allow you to automate certain actions so that you don't miss any opportunities. There are two types of tasks:\n\n**🥷 Sniper**\nSnipe tasks let you use Aura to automatically buy keys when a specific event occurs.\n\n**🔮 Order**\nOrder tasks allow you to automate the purchase or sale of keys when certain conditions are met, just as in conventional finance.\n\n**👨🏽‍🌾 Farmer**\nFarmer tasks allows you to fully automate your friendtech farming with numerous customization options.", inline: true },
-                    )
-                    .setTimestamp()
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRow], ephemeral: true });
+            //Checkpoint
+            console.log("// Step 2 : Authorization - Executed ✅")
 
 
 
 
 
+            const customId = interaction.customId
+            const action = customId.split("-").pop()
 
 
 
 
+            if (action == "maxprice") {
+
+                let max_price = interaction.fields.getTextInputValue('modal-friendtechtasksinfra-farmer-param-maxpriceR1');
+
+                max_price = removeCharacter(max_price, "+")
+                max_price = removeCharacter(max_price, " ")
+
+
+                let max_price_formmated = parseFloat(max_price).toFixed(3) + "Ξ"
+
+                if (max_price == "") { max_price = null, max_price_formmated = "Any" }
+
+                let taskEmbed = interaction.message.embeds[0].data
+                taskEmbed.fields.find(obj => obj.name === "Max. Buy Value").value = "`" + max_price_formmated + "`";
+
+                await farmer_friendTech.update({ max_key_price: max_price }, { where: { authorId: authorId } });
+                await interaction.update({ embeds: [taskEmbed], ephemeral: true });
+
+
+            } else if (action == "minprice") {
+
+
+                let min_price = interaction.fields.getTextInputValue('modal-friendtechtasksinfra-farmer-param-minpriceR1');
+
+                min_price = removeCharacter(min_price, "+")
+                min_price = removeCharacter(min_price, " ")
+
+
+                let min_price_formmated = parseFloat(min_price).toFixed(3) + "Ξ"
+
+                if (min_price == "") { min_price = null, min_price_formmated = "Any" }
+
+                let taskEmbed = interaction.message.embeds[0].data
+                taskEmbed.fields.find(obj => obj.name === "Min. Sell Value").value = "`" + min_price_formmated + "`";
+
+                await farmer_friendTech.update({ min_key_price: min_price }, { where: { authorId: authorId } });
+                await interaction.update({ embeds: [taskEmbed], ephemeral: true });
+
+
+            } else if (action == "gaspreset") {
+
+
+
+                let gas = interaction.fields.getTextInputValue('modal-friendtechtasksinfra-farmer-param-gaspresetR1');
+
+                gas = removeCharacter(gas, "%")
 
 
 
 
+                let gasFormat = "+" + gas + "%"
+
+                if (gas == "" || parseFloat(gas) <= 0) { gas = null; gasFormat = 'Classic' }
+
+                let taskEmbed = interaction.message.embeds[0].data
+                taskEmbed.fields.find(obj => obj.name === "Gas Preset").value = "`" + gasFormat + "`";
 
 
-            } else {
+                await farmer_friendTech.update({ gas_preset: gas }, { where: { authorId: authorId } });
+                await interaction.update({ embeds: [taskEmbed], ephemeral: true });
 
-                const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Bot Access")
-                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                    .setDescription("This button is not for you. You can only click on buttons generated by your commands. Please try again with your personal data.")
-                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                    .setTimestamp()
-                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                await interaction.reply({ embeds: [setfpEmbedNotForYou], ephemeral: true });
 
 
 
             }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+            return;
+
         } catch (error) {
+
 
 
             console.log("// Error - sent in report ❌")
 
             //On envoi une notif
-            let botId = interaction.applicationId
             const botAdmins = await adminsql.findOne({ where: { botId: botId } })
             const mainServerId = botAdmins.dataValues.mainServerId
             const logChannelId = botAdmins.dataValues.logChannelId
@@ -132,7 +155,7 @@ module.exports = {
             const userRoleList = interaction.member._roles
             let userHighestRole = "Member"
             if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-            let reportCommand = "/snipe-menu"
+            let reportCommand = "/ft-farmer-parammodal"
 
             const timeStamp = Date.now();
             const date = new Date(timeStamp);
@@ -156,7 +179,6 @@ module.exports = {
                 reportPriority: "5",
                 reportState: "Not treated",
             })
-
 
 
             console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
@@ -185,7 +207,6 @@ module.exports = {
             await channel.send({ embeds: [updateEmbed] });
 
 
-
             const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("An error occured")
                 .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
@@ -200,6 +221,3 @@ module.exports = {
         }
     },
 };
-
-
-

@@ -136,6 +136,10 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_coin_exec_quicksell_");
 			
+		} else if (customId.startsWith("button-friendtechtasksinfra-farmer-param-")) {
+
+			command = client.buttonCommands.get("button-friendtechtasksinfra-farmer-param-");
+			
 		}
 		
 		

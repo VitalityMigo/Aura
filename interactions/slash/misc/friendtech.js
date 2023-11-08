@@ -2870,7 +2870,7 @@ module.exports = {
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                         .addFields(
                                             { name: " ", value: "We are currently optimizing this feature which is in maintenance and will be available again soon. Make sure to check our future <#1108756917414793216> to be informed when it's up again.", inline: true },
-                                            )
+                                        )
                                         .setTimestamp()
                                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
@@ -3422,7 +3422,7 @@ module.exports = {
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                         .addFields(
                                             { name: " ", value: "We are currently optimizing this feature which is in maintenance and will be available again soon. Make sure to check our future <#1108756917414793216> to be informed when it's up again.", inline: true },
-                                            )
+                                        )
                                         .setTimestamp()
                                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
@@ -4047,6 +4047,10 @@ module.exports = {
                                                 .setLabel('🔮 Order')
                                                 .setStyle(1),
                                             new ButtonBuilder()
+                                                .setCustomId('friendtechtasksinfra-farmermenu-button')
+                                                .setLabel('👨🏽‍🌾 Farmer')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
                                                 .setCustomId('friendtech_exec_setup-button')
                                                 .setLabel('💻 Setup')
                                                 .setStyle(3),
@@ -4060,7 +4064,7 @@ module.exports = {
                                         //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                         .addFields(
-                                            { name: "Tasks Mechanism", value: "Friend.Tech tasks are all actions that allow you to automate certain actions so that you don't miss any opportunities. There are two types of tasks:\n\n**🥷 Sniper**\nSnipe tasks let you use Aura to automatically buy keys when a specific event occurs.\n\n**🔮 Order**\nOrder tasks allow you to automate the purchase or sale of keys when certain conditions are met, just as in conventional finance.", inline: true },
+                                            { name: "Tasks Mechanism", value: "Friend.Tech tasks are all actions that allow you to automate certain actions so that you don't miss any opportunities. There are two types of tasks:\n\n**🥷 Sniper**\nSnipe tasks let you use Aura to automatically buy keys when a specific event occurs.\n\n**🔮 Order**\nOrder tasks allow you to automate the purchase or sale of keys when certain conditions are met, just as in conventional finance.\n\n**👨🏽‍🌾 Farmer**\nFarmer tasks allows you to fully automate your friendtech farming with numerous customization options.", inline: true },
                                         )
                                         .setTimestamp()
                                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })

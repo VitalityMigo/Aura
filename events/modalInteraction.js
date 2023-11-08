@@ -40,6 +40,8 @@ module.exports = {
 			command = client.modalCommands.get("modal_friendtech_portfolio_exec_");
 		} else if (customId.startsWith("modal_infra_coin_walletsetup_")) {
 			command = client.modalCommands.get("modal_infra_coin_walletsetup_");
+		} else if (customId.startsWith("modal-friendtechtasksinfra-farmer-param-")) {
+			command = client.modalCommands.get("modal-friendtechtasksinfra-farmer-param-");
 		} 
 		
 		

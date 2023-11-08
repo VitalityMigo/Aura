@@ -355,7 +355,37 @@ module.exports = {
 
             } else if (action == "tutorial") {
 
-                
+
+                const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Friend.Tech Farmer Tutorial")
+                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setDescription(">>> The Friend.Tech farmer task has several easy-to-use features.")
+                    .addFields(
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Status*", value: "Indicates whether the task is active or not. If it is active, the task runs within the set conditions. If not, it is not monitoring.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Buy 0,3*", value: "Enable or disable reciprocal purchases. When this option is selected, the bot will buy all users who buy your key if they meet the conditions.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Sell 3,0*", value: "Enable or disable reciprocal sell. When this option is selected, the bot will sell all users who sell your key if they meet the conditions.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Max. Buy Value*", value: "The maximum price at which the bot will make a reciprocal purchase. This prevents overpriced purchases.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Min. Sell Value*", value: "The minimum price at which the bot will make a reciprocal sell. This prevents useless liquidation.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Gas Preset*", value: "The gas settings to use. Classic (or 0) represents the basic setting, which can be modulated in % to make the order transactions more aggressive (10%, 30% etc).", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: "*Simulation*", value: "Select whether you want the transaction to be simulated internally before being launched or not. This allows to prevent a failed transaction from being launched, thus reducing the chances of losing gas fees.", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: " ", value: "*⚠️ All conditions are defaulted to any. To reset a field, press the corresponding button and leave the field empty.*", inline: false },
+
+                    )
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                await interaction.reply({ embeds: [setfpEmbedNotForYou], ephemeral: true });
+
+
 
 
             }

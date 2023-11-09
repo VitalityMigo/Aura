@@ -81,6 +81,7 @@ setTimeout(() => {
 
 async function FTSnipeUserExec(transaction) {
 
+    let options
 
     try {
 
@@ -107,7 +108,7 @@ async function FTSnipeUserExec(transaction) {
                     const supply = await shareContract.methods.sharesSupply(inputAddress).call();
                     const buyPriceAfterFees = getBuyPriceAfterFees(parseInt(supply), 1) / 10 ** 18
 
-                    const options = {
+                    options = {
                         target: user.username.toLowerCase(), // Remplacez par le nom d'utilisateur ou null
                         price: buyPriceAfterFees.toString(), // Remplacez par la valeur souhaitée ou null
                         supply: supply.toString(), // Remplacez par la valeur souhaitée ou null
@@ -232,8 +233,9 @@ async function FTSnipeUserExec(transaction) {
         console.log("Erreur globale du snipe new user")
         console.log(error.stack)
         await botChannel.send("Erreur globale snipe : " + error.stack);
+        await botChannel.send(JSON.stringify(options, null, 2));
+    } 
 
-    }
 }
 
 module.exports = FTSnipeUserExec

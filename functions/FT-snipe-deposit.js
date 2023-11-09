@@ -70,6 +70,7 @@ setTimeout(() => {
 
 async function FTSnipeDepositExec(obj) {
 
+    let options
 
     try {
 
@@ -126,7 +127,7 @@ async function FTSnipeDepositExec(obj) {
 
 
 
-            const options = {
+             options = {
                 target: twitterUsername.toLowerCase(), // Remplacez par le nom d'utilisateur ou null
                 price: buyPriceAfterFees.toString(), // Remplacez par la valeur souhaitée ou null
                 supply: supply.toString(), // Remplacez par la valeur souhaitée ou null
@@ -263,6 +264,7 @@ async function FTSnipeDepositExec(obj) {
 
         console.log("Error when sniping the new deposit : " + error.stack)
         await botChannel.send("<@&1121510423687090186> Erreur global snipe : " + error.stack);
+        await botChannel.send(JSON.stringify(options, null, 2));
 
 
 

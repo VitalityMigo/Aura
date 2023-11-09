@@ -158,9 +158,11 @@ module.exports = {
 
                     if (taskEmbed.fields.find(obj => obj.name === "Sell 3,0").value == "`❌`") {
 
-                        taskEmbed.fields.find(obj => obj.name === "Status").value = "`🔴 Not active`";
-                        component3.components.find(obj => obj.data.label === "🔴 Disable").data.label = "🟢 Activate"
 
+                        if (component3.components.find(obj => obj.data.label === "🔴 Disable")) {
+                            taskEmbed.fields.find(obj => obj.name === "Status").value = "`🔴 Not active`";
+                            component3.components.find(obj => obj.data.label === "🔴 Disable").data.label = "🟢 Activate"
+                        }
                         await farmer_friendTech.update({ buy_0_3: "false", active: "false" }, { where: { authorId: authorId } });
                         await interaction.update({ embeds: [taskEmbed], components: [component1, component2, component3], ephemeral: true });
 
@@ -200,8 +202,10 @@ module.exports = {
 
                     if (taskEmbed.fields.find(obj => obj.name === "Buy 0,3").value == "`❌`") {
 
-                        taskEmbed.fields.find(obj => obj.name === "Status").value = "`🔴 Not active`";
-                        component3.components.find(obj => obj.data.label === "🔴 Disable").data.label = "🟢 Activate"
+                        if (component3.components.find(obj => obj.data.label === "🔴 Disable")) {
+                            taskEmbed.fields.find(obj => obj.name === "Status").value = "`🔴 Not active`";
+                            component3.components.find(obj => obj.data.label === "🔴 Disable").data.label = "🟢 Activate"
+                        }
 
                         await farmer_friendTech.update({ sell_3_0: "false", active: "false" }, { where: { authorId: authorId } });
                         await interaction.update({ embeds: [taskEmbed], components: [component1, component2, component3], ephemeral: true });

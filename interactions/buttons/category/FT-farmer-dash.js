@@ -60,6 +60,8 @@ module.exports = {
             let gas_preset
             let simulation
             let status
+            let wallet
+
 
 
             // On set la base
@@ -79,6 +81,7 @@ module.exports = {
 
             if (userSetup != null) {
 
+                wallet = userSetup.dataValues.authorWallet
                 isBuyActive = userSetup.dataValues.buy_0_3
                 isSellActive = userSetup.dataValues.sell_3_0
                 max_key_price = userSetup.dataValues.max_key_price
@@ -96,7 +99,7 @@ module.exports = {
 
                 if (userSetup != null) {
 
-                    const wallet = userSetup.dataValues.walletAddress
+                    wallet = userSetup.dataValues.walletAddress
                     const pk = userSetup.dataValues.privateKey
 
                     await farmer_friendTech.destroy({ where: { authorId: authorId } })
@@ -123,129 +126,137 @@ module.exports = {
 
             if (isSet == true) {
 
-            // On met en forme
-            if (status == "true") { statusFormatted = "🟢 Active" }
-            if (isBuyActive == "true") { buyActivate = "✅" }
-            if (isSellActive == "true") { sellActivate = "✅" }
-            if (min_key_price != null) { sellActivate = parseFloat(min_key_price).toFixed(3) + "Ξ " }
-            if (max_key_price != null) { sellActivate = parseFloat(max_key_price).toFixed(3) + "Ξ " }
-            if (gas_preset != null) { gasPresetFormatted = "+" + gas_preset + "%" }
-            if (simulation == "false") { simulationFormatted = "❌" }
-            if (status == "true") { statusLabel = "🔴 Disable" }
+                // On met en forme
+                if (status == "true") { statusFormatted = "🟢 Active" }
+                if (isBuyActive == "true") { buyActivate = "✅" }
+                if (isSellActive == "true") { sellActivate = "✅" }
+                if (min_key_price != null) { sellActivate = parseFloat(min_key_price).toFixed(3) + "Ξ " }
+                if (max_key_price != null) { sellActivate = parseFloat(max_key_price).toFixed(3) + "Ξ " }
+                if (gas_preset != null) { gasPresetFormatted = "+" + gas_preset + "%" }
+                if (simulation == "false") { simulationFormatted = "❌" }
+                if (status == "true") { statusLabel = "🔴 Disable" }
 
 
 
 
 
 
-            // On construit les bouttons
-            const buttonsRow = new ActionRowBuilder()
-                .addComponents(
+                // On construit les bouttons
+                const buttonsRow = new ActionRowBuilder()
+                    .addComponents(
 
-                    new ButtonBuilder()
-                        .setCustomId('button-friendtechtasksinfra-farmer-param-buyactivate')
-                        .setLabel('Toggle 0,3')
-                        .setStyle(2),
-                    new ButtonBuilder()
-                        .setCustomId('button-friendtechtasksinfra-farmer-param-maxprice')
-                        .setLabel('Set Max. Price')
-                        .setStyle(2),
-                    new ButtonBuilder()
-                        .setCustomId('button-friendtechtasksinfra-farmer-param-sellactivate')
-                        .setLabel('Toggle 3,0')
-                        .setStyle(2),
-                    new ButtonBuilder()
-                        .setCustomId('button-friendtechtasksinfra-farmer-param-minprice')
-                        .setLabel('Set Min. Price')
-                        .setStyle(2),
+                        new ButtonBuilder()
+                            .setCustomId('button-friendtechtasksinfra-farmer-param-buyactivate')
+                            .setLabel('Toggle 0,3')
+                            .setStyle(2),
+                        new ButtonBuilder()
+                            .setCustomId('button-friendtechtasksinfra-farmer-param-maxprice')
+                            .setLabel('Set Max. Price')
+                            .setStyle(2),
+                        new ButtonBuilder()
+                            .setCustomId('button-friendtechtasksinfra-farmer-param-sellactivate')
+                            .setLabel('Toggle 3,0')
+                            .setStyle(2),
+                        new ButtonBuilder()
+                            .setCustomId('button-friendtechtasksinfra-farmer-param-minprice')
+                            .setLabel('Set Min. Price')
+                            .setStyle(2),
 
-                );
-                
-                
-            const buttonsRow2 = new ActionRowBuilder()
-                .addComponents(
-                    new ButtonBuilder()
-                        .setCustomId('button-friendtechtasksinfra-farmer-param-gaspreset')
-                        .setLabel('Set Gas Preset')
-                        .setStyle(2),
-                    new ButtonBuilder()
-                        .setCustomId('button-friendtechtasksinfra-farmer-param-simulation')
-                        .setLabel('Set Simulation')
-                        .setStyle(2),
-                );
+                    );
 
 
-            const buttonsRow3 = new ActionRowBuilder()
-                .addComponents(
+                const buttonsRow2 = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId('button-friendtechtasksinfra-farmer-param-gaspreset')
+                            .setLabel('Set Gas Preset')
+                            .setStyle(2),
+                        new ButtonBuilder()
+                            .setCustomId('button-friendtechtasksinfra-farmer-param-simulation')
+                            .setLabel('Set Simulation')
+                            .setStyle(2),
+                    );
 
 
-                    new ButtonBuilder()
-                        .setCustomId('button-friendtechtasksinfra-farmer-param-status')
-                        .setLabel(statusLabel)
-                        .setStyle(3),
-                    new ButtonBuilder()
-                        .setCustomId('button-friendtechtasksinfra-farmer-param-tutorial')
-                        .setLabel('📑 Tutorial')
-                        .setStyle(1),
-                    new ButtonBuilder()
-                        .setCustomId('friendtechtasksinfra-mainmenu-button')
-                        .setLabel('🏠')
-                        .setStyle(1),
+                const buttonsRow3 = new ActionRowBuilder()
+                    .addComponents(
 
 
-                );
+                        new ButtonBuilder()
+                            .setCustomId('button-friendtechtasksinfra-farmer-param-status')
+                            .setLabel(statusLabel)
+                            .setStyle(3),
+                        new ButtonBuilder()
+                            .setCustomId('button-friendtechtasksinfra-farmer-param-tutorial')
+                            .setLabel('📑 Tutorial')
+                            .setStyle(1),
+                        new ButtonBuilder()
+                            .setCustomId('button_friendtech_airdrop_analysis_' + wallet)
+                            .setLabel('💦 Airdrop')
+                            .setStyle(1),
+                        new ButtonBuilder()
+                            .setCustomId('button_friendtech_portfolio_exec_myportfolio')
+                            .setLabel('👝 My Portfolio')
+                            .setStyle(1),
+                        new ButtonBuilder()
+                            .setCustomId('friendtechtasksinfra-mainmenu-button')
+                            .setLabel('🏠')
+                            .setStyle(1),
 
 
-
-
-            const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                .setTitle("Friend.Tech Tasks")
-                .setDescription(">>> Displaying your farmer task")
-                .setAuthor({ name: authorName, iconURL: userAvatar })
-                .addFields(
-                    { name: "Status", value: "`" + statusFormatted + "`", inline: false },
-                    { name: " ", value: " ", inline: false },
-                    { name: " ", value: "**👫 FREN STRATEGY** ", inline: false },
-                    { name: "Buy 0,3", value: "`" + buyActivate + "`", inline: true },
-                    { name: "Max. Buy Value", value: "`" + maxKeyValue + "`", inline: true },
-                    { name: " ", value: " ", inline: false },
-                    { name: "Sell 3,0", value: "`" + sellActivate + "`", inline: true },
-                    { name: "Min. Sell Value", value: "`" + minKeyValue + "`", inline: true },
-                    { name: " ", value: " ", inline: false },
-                    { name: " ", value: "**😈 EXPERT MODE**", inline: false },
-                    { name: "Gas Preset", value: "`" + gasPresetFormatted + "`", inline: true },
-                    { name: "Simulation", value: "`" + simulationFormatted + "`", inline: true },
-                    { name: " ", value: " ", inline: false },
-                    { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings and open your server DMs before activating.*", inline: false },
+                    );
 
 
 
 
-                )
-                .setTimestamp()
-                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-            await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRow, buttonsRow2, buttonsRow3], ephemeral: true });
-
-        } else {
-
-
-            const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-            .setTitle("Friend Tech Setup")
-            .setDescription(">>> Displaying your Friend.tech wallet setup")
-            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-            .setAuthor({ name: authorName, iconURL: userAvatar })
-            .addFields(
-                { name: " ", value: "You don't have a wallet imported in your Friend.tech portfolio. To get started, use the button below.", inline: true },
-
-            )
-            .setTimestamp()
-            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-        await interaction.reply({ embeds: [errorNotEthereum], components: [buttonsRowNew], ephemeral: true });
+                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Friend.Tech Tasks")
+                    .setDescription(">>> Displaying your farmer task")
+                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                    .addFields(
+                        { name: "Status", value: "`" + statusFormatted + "`", inline: false },
+                        { name: " ", value: " ", inline: false },
+                        { name: " ", value: "**👫 FREN STRATEGY** ", inline: false },
+                        { name: "Buy 0,3", value: "`" + buyActivate + "`", inline: true },
+                        { name: "Max. Buy Value", value: "`" + maxKeyValue + "`", inline: true },
+                        { name: " ", value: " ", inline: false },
+                        { name: "Sell 3,0", value: "`" + sellActivate + "`", inline: true },
+                        { name: "Min. Sell Value", value: "`" + minKeyValue + "`", inline: true },
+                        { name: " ", value: " ", inline: false },
+                        { name: " ", value: "**😈 EXPERT MODE**", inline: false },
+                        { name: "Gas Preset", value: "`" + gasPresetFormatted + "`", inline: true },
+                        { name: "Simulation", value: "`" + simulationFormatted + "`", inline: true },
+                        { name: " ", value: " ", inline: false },
+                        { name: " ", value: "*Automated tasks are sensitive operations. Please check your settings and open your server DMs before activating.*", inline: false },
 
 
-        }
+
+
+                    )
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRow, buttonsRow2, buttonsRow3], ephemeral: true });
+
+            } else {
+
+
+                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle("Friend Tech Setup")
+                    .setDescription(">>> Displaying your Friend.tech wallet setup")
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                    .addFields(
+                        { name: " ", value: "You don't have a wallet imported in your Friend.tech portfolio. To get started, use the button below.", inline: true },
+
+                    )
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                await interaction.reply({ embeds: [errorNotEthereum], components: [buttonsRowNew], ephemeral: true });
+
+
+            }
 
 
 
@@ -344,13 +355,13 @@ module.exports = {
 
 
 
-  function addTarget(address, authorId) {
-      // Charger le contenu du fichier JSON
-      let contenuFichier = fs.readFileSync(targetsJSON);
-      let existingData = JSON.parse(contenuFichier);
-    
-      // Vérifier si l'adresse n'est pas déjà présente dans le tableau
-      if (!existingData.some(item => item.authorId == authorId)) {
+function addTarget(address, authorId) {
+    // Charger le contenu du fichier JSON
+    let contenuFichier = fs.readFileSync(targetsJSON);
+    let existingData = JSON.parse(contenuFichier);
+
+    // Vérifier si l'adresse n'est pas déjà présente dans le tableau
+    if (!existingData.some(item => item.authorId == authorId)) {
         // Ajouter la nouvelle adresse au tableau
         const obj = {
             user: authorId,
@@ -358,9 +369,8 @@ module.exports = {
         }
 
         existingData.push(obj);
-    
+
         // Écrire le tableau mis à jour dans le fichier JSON
         fs.writeFileSync(targetsJSON, JSON.stringify(existingData, null, 2));
-      } 
     }
-    
+}

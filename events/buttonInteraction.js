@@ -140,6 +140,10 @@ module.exports = {
 
 			command = client.buttonCommands.get("button-friendtechtasksinfra-farmer-param-");
 			
+		}  else if (customId.startsWith("button_friendtech_airdrop_analysis_")) {
+
+			command = client.buttonCommands.get("button_friendtech_airdrop_analysis_");
+			
 		}
 		
 		

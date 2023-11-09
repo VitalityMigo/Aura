@@ -17,6 +17,7 @@ const FTSnipeDepositExec = require("../functions/FT-snipe-deposit")
 const FTSnipeUserExec = require('../functions/FT-snipe-user')
 const orderExecFT = require("../functions/FT-order-exec")
 const trackerHandler = require("../functions/m-FTtracker.js")
+const farmerExecFT = require('../functions/FT-farmer-exec.js')
 
 //const newGMUser = require("../old&archive/m-newGMuser")
 
@@ -134,6 +135,8 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                     orderExecFT(transaction)
                     
                     trackerHandler(transaction)
+
+                    farmerExecFT(transaction)
 
                 }
 

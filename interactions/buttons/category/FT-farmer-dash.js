@@ -105,7 +105,7 @@ module.exports = {
 
                         authorId: authorId,
                         authorName: authorName,
-                        authorWallet: decrypt(wallet),
+                        authorWallet: decrypt(wallet).toLowerCase(),
                         type: "farmer",
                         buy_0_3: "false",
                         sell_3_0: "false",

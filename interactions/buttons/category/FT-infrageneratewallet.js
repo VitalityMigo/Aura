@@ -1,7 +1,7 @@
 
 const { ButtonInteraction } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, infra_friendTech, sniper_friendTech, sequelize } = require('../../../events/database');
+const { accessSql, profileData, adminsql, reportsql, infra_friendTech, sniper_friendTech, farmer_friendTech, order_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 const decrypt = require("../../../functions/decrypt")
@@ -100,9 +100,10 @@ module.exports = {
             await interaction.update({ embeds: [errorNotEthereum], components: [buttonsRowModify] });
 
 
-            // On update les tasks du sniper
+            // On update les tasks
             await sniper_friendTech.update({ walletAddress: encryptWA, privateKey: encryptPK }, { where: { authorId: authorId } });
-
+            await order_friendTech.update({ walletAddress: encryptWA, privateKey: encryptPK }, { where: { authorId: authorId } });
+            await farmer_friendTech.update({ authorWallet: walletAddress.toLowerCase(), walletAddress: encryptWA, privateKey: encryptPK }, { where: { authorId: authorId } });
 
 
 

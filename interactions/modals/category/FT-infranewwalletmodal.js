@@ -10,15 +10,19 @@
  */
 
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-const { profileData, reportsql, watchlistSql, walletsgenerated, vouchData, wallets, accessSql, interactionData, adminsql, sniper_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
+const { profileData, reportsql, watchlistSql, walletsgenerated, vouchData, wallets, accessSql, interactionData, adminsql, sniper_friendTech, infra_friendTech, order_friendTech, farmer_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
+
+const { web3Base1RPC, web3BaseUnifra } = require('../../../config/web3config');
+
 
 const encrypt = require("../../../functions/encrypt")
 const decrypt = require("../../../functions/decrypt")
 
+const fs = require("fs")
+const farmerJson = 'contracts/friendtech/farmer.json'
 
 
-const { web3Base1RPC, web3BaseUnifra } = require('../../../config/web3config');
 
 
 function isPrivateKeyValid(privateKey) {
@@ -150,7 +154,10 @@ module.exports = {
 
                 // On update les tasks du sniper
                 await sniper_friendTech.update({ walletAddress: encryptWA, privateKey: encryptPK }, { where: { authorId: authorId } });
-
+                await order_friendTech.update({ walletAddress: encryptWA, privateKey: encryptPK }, { where: { authorId: authorId } });
+                await farmer_friendTech.update({ authorWallet: walletAddress.toLowerCase(), walletAddress: encryptWA, privateKey: encryptPK }, { where: { authorId: authorId } });
+                replaceAddressFarmer(farmerJson, authorId, walletAddress)
+    
 
             } else {
 
@@ -292,3 +299,22 @@ module.exports = {
         }
     },
 };
+
+ 
+  function replaceAddressFarmer(farmerJson, authorId, address) {
+    // Lire le contenu du fichier JSON
+    let file = fs.readFileSync(farmerJson);
+    let farmers = JSON.parse(file);
+  
+    // Trouver l'objet avec l'idAuteur spécifié
+    const object = farmers.find(objet => objet.authorId === authorId);
+  
+    if (object) {
+      // Modifier l'adresse de l'objet trouvé
+      object.adresse = address.toLowerCase();
+  
+      // Écrire le contenu modifié dans le fichier JSON
+      fs.writeFileSync(farmerJson, JSON.stringify(farmers, null, 2));
+
+    } 
+  }  

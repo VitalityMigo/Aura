@@ -4,6 +4,8 @@ const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBu
 const { accessSql, profileData, adminsql, reportsql, infra_friendTech, sniper_friendTech, farmer_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
+const fs = require('fs')
+const targetsJSON = 'contracts/friendtech/farmer.json'
 
 const buttonsRowNew = new ActionRowBuilder()
     .addComponents(
@@ -66,8 +68,8 @@ module.exports = {
 
             // On update les tasks du sniper
             await sniper_friendTech.update({ walletAddress: null, privateKey: null, active: "false" }, { where: { authorId: authorId } });
-            await farmer_friendTech.destroy({ where: { authorId: authorId} })
-
+            await farmer_friendTech.destroy({ where: { authorId: authorId } })
+            deleteTarget(authorId)
 
 
         } catch (error) {
@@ -162,4 +164,16 @@ module.exports = {
 
 
 
+
+function deleteTarget(authorId) {
+    // Charger le contenu du fichier JSON
+    const contenuFichier = fs.readFileSync(targetsJSON);
+    const tableauAdresses = JSON.parse(contenuFichier);
+
+    const newArray = tableauAdresses.filter(obj => obj.user != authorId)
+
+    // Écrire le tableau mis à jour dans le fichier JSON
+    fs.writeFileSync(targetsJSON, JSON.stringify(newArray, null, 2));
+
+}
 

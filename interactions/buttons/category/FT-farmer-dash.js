@@ -15,6 +15,9 @@ const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBu
 const { accessSql, profileData, adminsql, reportsql, farmer_friendTech, sequelize, infra_friendTech } = require('../../../events/database');
 const moment = require('moment');
 
+const fs = require('fs')
+const targetsJSON = 'contracts/friendtech/farmer.json'
+
 const decrypt = require("../../../functions/decrypt")
 
 
@@ -113,6 +116,7 @@ module.exports = {
                     })
 
                     isSet = true
+                    addTarget(decrypt(wallet), authorId)
                 }
             }
 
@@ -340,3 +344,23 @@ module.exports = {
 
 
 
+  function addTarget(address, authorId) {
+      // Charger le contenu du fichier JSON
+      let contenuFichier = fs.readFileSync(targetsJSON);
+      let existingData = JSON.parse(contenuFichier);
+    
+      // Vérifier si l'adresse n'est pas déjà présente dans le tableau
+      if (!existingData.some(item => item.authorId == authorId)) {
+        // Ajouter la nouvelle adresse au tableau
+        const obj = {
+            user: authorId,
+            address: address.toLowerCase()
+        }
+
+        existingData.push(obj);
+    
+        // Écrire le tableau mis à jour dans le fichier JSON
+        fs.writeFileSync(targetsJSON, JSON.stringify(existingData, null, 2));
+      } 
+    }
+    

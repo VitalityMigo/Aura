@@ -160,7 +160,7 @@ module.exports = {
 
                         taskEmbed.fields.find(obj => obj.name === "Status").value = "`🔴 Not active`";
                         component3.components.find(obj => obj.data.label === "🔴 Disable").data.label = "🟢 Activate"
-    
+
                         await farmer_friendTech.update({ buy_0_3: "false", active: "false" }, { where: { authorId: authorId } });
                         await interaction.update({ embeds: [taskEmbed], components: [component1, component2, component3], ephemeral: true });
 
@@ -168,12 +168,12 @@ module.exports = {
 
                         await farmer_friendTech.update({ buy_0_3: "false", }, { where: { authorId: authorId } });
                         await interaction.update({ embeds: [taskEmbed], ephemeral: true });
-    
+
 
                     }
 
 
-                   
+
                 } else {
 
                     taskEmbed.fields.find(obj => obj.name === "Buy 0,3").value = "`✅`";
@@ -202,7 +202,7 @@ module.exports = {
 
                         taskEmbed.fields.find(obj => obj.name === "Status").value = "`🔴 Not active`";
                         component3.components.find(obj => obj.data.label === "🔴 Disable").data.label = "🟢 Activate"
-    
+
                         await farmer_friendTech.update({ sell_3_0: "false", active: "false" }, { where: { authorId: authorId } });
                         await interaction.update({ embeds: [taskEmbed], components: [component1, component2, component3], ephemeral: true });
 
@@ -211,12 +211,12 @@ module.exports = {
 
                         await farmer_friendTech.update({ sell_3_0: "false", }, { where: { authorId: authorId } });
                         await interaction.update({ embeds: [taskEmbed], ephemeral: true });
-    
+
 
                     }
 
 
-                  
+
                 } else {
 
                     taskEmbed.fields.find(obj => obj.name === "Sell 3,0").value = "`✅`";
@@ -265,7 +265,7 @@ module.exports = {
 
 
 
-               
+
 
                 const passwordAdminDashboard = new ModalBuilder()
                     .setCustomId('modal-friendtechtasksinfra-farmer-param-minprice')
@@ -297,7 +297,7 @@ module.exports = {
 
 
 
-            }else if (action == "gaspreset") {
+            } else if (action == "gaspreset") {
 
 
 
@@ -482,6 +482,5 @@ module.exports = {
         }
     },
 };
-
 
 

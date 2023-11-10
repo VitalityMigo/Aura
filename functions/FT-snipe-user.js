@@ -108,12 +108,24 @@ async function FTSnipeUserExec(transaction) {
                     const supply = await shareContract.methods.sharesSupply(inputAddress).call();
                     const buyPriceAfterFees = getBuyPriceAfterFees(parseInt(supply), 1) / 10 ** 18
 
+                   
+                    // options = {
+                    //     target: user.username.toLowerCase(), // Remplacez par le nom d'utilisateur ou null
+                    //     price: buyPriceAfterFees.toString(), // Remplacez par la valeur souhaitée ou null
+                    //     supply: supply.toString(), // Remplacez par la valeur souhaitée ou null
+                    //     followers: user.followers.toString(), // Remplacez par la valeur souhaitée ou null
+                    //     twitterScore: user.score.toString(), // Remplacez par la valeur souhaitée ou null
+                    //     uniqueHolders: "100", // Remplacez par la valeur souhaitée ou null
+
+                    // };
+
+                    // FIX TEMPO TWITTER API 
                     options = {
                         target: user.username.toLowerCase(), // Remplacez par le nom d'utilisateur ou null
                         price: buyPriceAfterFees.toString(), // Remplacez par la valeur souhaitée ou null
                         supply: supply.toString(), // Remplacez par la valeur souhaitée ou null
-                        followers: user.followers.toString(), // Remplacez par la valeur souhaitée ou null
-                        twitterScore: user.score.toString(), // Remplacez par la valeur souhaitée ou null
+                        followers: "1", // Remplacez par la valeur souhaitée ou null
+                        twitterScore: "1", // Remplacez par la valeur souhaitée ou null
                         uniqueHolders: "100", // Remplacez par la valeur souhaitée ou null
 
                     };

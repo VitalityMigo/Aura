@@ -117,17 +117,19 @@ async function FTSnipeDepositExec(obj) {
 
 
 
-
-            const twitterAudit = await getTwitterScore(twitterUsername)
-            const score = twitterAudit.capital
-            const followers = twitterAudit.data.follower
+            // FIX TEMPO TWITTER API 
+            // const twitterAudit = await getTwitterScore(twitterUsername)
+            // const score = twitterAudit.capital
+            // const followers = twitterAudit.data.follower
+            const score = 1
+            const followers = 1
 
 
             const buyPriceAfterFees = getBuyPriceAfterFees(parseInt(supply), 1) / 10 ** 18
 
 
 
-             options = {
+            options = {
                 target: twitterUsername.toLowerCase(), // Remplacez par le nom d'utilisateur ou null
                 price: buyPriceAfterFees.toString(), // Remplacez par la valeur souhaitée ou null
                 supply: supply.toString(), // Remplacez par la valeur souhaitée ou null

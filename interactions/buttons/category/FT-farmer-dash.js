@@ -87,7 +87,7 @@ module.exports = {
                 max_key_price = userSetup.dataValues.max_key_price
                 min_key_price = userSetup.dataValues.min_key_price
                 gas_preset = userSetup.dataValues.gas_preset
-                simulation = userSetup.dataValues.min_key_price
+                simulation = userSetup.dataValues.simulation
                 status = userSetup.dataValues.active
 
                 isSet = true
@@ -130,8 +130,8 @@ module.exports = {
                 if (status == "true") { statusFormatted = "🟢 Active" }
                 if (isBuyActive == "true") { buyActivate = "✅" }
                 if (isSellActive == "true") { sellActivate = "✅" }
-                if (min_key_price != null) { sellActivate = parseFloat(min_key_price).toFixed(3) + "Ξ " }
-                if (max_key_price != null) { sellActivate = parseFloat(max_key_price).toFixed(3) + "Ξ " }
+                if (min_key_price != null) { minKeyValue = parseFloat(min_key_price).toFixed(3) + "Ξ " }
+                if (max_key_price != null) { maxKeyValue = parseFloat(max_key_price).toFixed(3) + "Ξ " }
                 if (gas_preset != null) { gasPresetFormatted = "+" + gas_preset + "%" }
                 if (simulation == "false") { simulationFormatted = "❌" }
                 if (status == "true") { statusLabel = "🔴 Disable" }

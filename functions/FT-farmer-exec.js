@@ -225,8 +225,10 @@ async function farmerExecFT(transaction) {
 
                                 const holdingRaw = await shareContract.methods.sharesBalance(from, task.address).call()
                                 const holding = parseInt(holdingRaw)
+                                const fromHoldingRaw = await shareContract.methods.sharesBalance(task.address, from).call()
+                                const fromHolding = parseInt(fromHoldingRaw)
 
-                                if (holding > 0) {
+                                if (holding > 0 && fromHolding <= 0) {
 
                                     const data = await shareContract.methods.sellShares(from, holding).encodeABI();
                                     const valueWEI = 0

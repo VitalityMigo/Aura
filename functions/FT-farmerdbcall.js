@@ -26,7 +26,7 @@ async function farmerTaskListFT(options) {
 
         };
 
-        const allTasks = await farmer_friendTech.findOne({ where: whereClause });
+        const allTasks = await farmer_friendTech.findAll({ where: whereClause });
 
 
         for (const task of allTasks) {
@@ -64,7 +64,7 @@ async function farmerTaskListFT(options) {
 
         };
 
-        const allTasks = await farmer_friendTech.findOne({ where: whereClause });
+        const allTasks = await farmer_friendTech.findAll({ where: whereClause });
 
 
         for (const task of allTasks) {

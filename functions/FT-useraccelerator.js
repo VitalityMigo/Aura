@@ -95,8 +95,8 @@ async function formatTradesData(userAddress) {
 
             if (index2 <= 6) {
 
-                let username = trade.twitterUsername
-                let name = trade.twitterName
+                let username = trade.subject.username
+                let name = trade.subject.name
 
                 let amount = trade.shareAmount
                 let price = parseFloat(trade.ethAmount / 10 ** 18).toFixed(3)

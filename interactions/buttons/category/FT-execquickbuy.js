@@ -183,9 +183,9 @@ module.exports = {
                             }
                         }
 
+
+                        
                         if (simulationState == true) {
-
-
 
 
                             const gasPrice = await web3BaseUnifra.eth.getGasPrice()

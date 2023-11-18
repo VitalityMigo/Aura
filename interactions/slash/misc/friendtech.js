@@ -1395,8 +1395,8 @@ module.exports = {
 
                                                     if (index2 <= 15) {
 
-                                                        let name = trade.twitterName
-                                                        let username = trade.twitterUsername
+                                                        let name = trade.subject.name
+                                                        let username = trade.subject.username
                                                         let isBuy = trade.isBuy
                                                         let amount = trade.shareAmount
                                                         let time = Math.floor(trade.createdAt / 1000)
@@ -2465,14 +2465,11 @@ module.exports = {
 
                                                     for (const holding of holdersTable) {
 
-                                                        let name = holding.twitterName
-                                                        let username = holding.twitterUsername
-                                                        let subjectAddress = holding.subject
+                                                        let subjectAddress = holding.subject.address
                                                         let isBuy = holding.isBuy
                                                         let amount = holding.shareAmount
                                                         let price = holding.ethAmount / 10 ** 18
                                                         let time = holding.createdAt
-
 
                                                         // C'est un in
                                                         if (isBuy == true) {
@@ -2511,9 +2508,8 @@ module.exports = {
 
                                                     for (const holding of holdersTable) {
 
-                                                        let name = holding.twitterName
-                                                        let username = holding.twitterUsername
-                                                        let subjectAddress = holding.subject
+
+                                                        let subjectAddress = holding.subject.address
                                                         let isBuy = holding.isBuy
                                                         let amount = holding.shareAmount
                                                         let price = holding.ethAmount / 10 ** 18
@@ -2573,14 +2569,11 @@ module.exports = {
 
                                                             for (const holding of callPageFiltered) {
 
-                                                                let name = holding.twitterName
-                                                                let username = holding.twitterUsername
-                                                                let subjectAddress = holding.subject
+                                                                let subjectAddress = holding.subject.address
                                                                 let isBuy = holding.isBuy
                                                                 let amount = holding.shareAmount
                                                                 let price = holding.ethAmount / 10 ** 18
                                                                 let time = holding.createdAt
-
 
                                                                 // C'est un in
                                                                 if (isBuy == true) {

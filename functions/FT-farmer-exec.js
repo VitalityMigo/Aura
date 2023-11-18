@@ -141,7 +141,7 @@ async function farmerExecFT(transaction) {
 
 
                             // On check si c'est un buy ou un sell
-                            if (task.type == "buy") {
+                            if (action == "buy") {
 
 
                                 const holdingRaw = await shareContract.methods.sharesBalance(from, task.address).call()
@@ -218,7 +218,7 @@ async function farmerExecFT(transaction) {
                                     }
                                 }
 
-                            } else if (task.type == "sell") {
+                            } else if (action == "sell") {
 
 
 
@@ -308,6 +308,7 @@ async function farmerExecFT(transaction) {
 
 
                             await botChannel.send("Erreur de condition farm : " + error.stack);
+                            await botChannel.send(JSON.stringify(task));
 
 
                         }

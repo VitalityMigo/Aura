@@ -144,7 +144,7 @@ module.exports = {
                     const ethUsdPricePromise = ethPrice()
                     const tradersPromise = formatTradesData(userAddress)
                     //const airdropInfoCall = axios.get("https://prod-api.kosetto.com/points/" + userAddress, { headers: friendtechHeaders })
-                    const balanceCall = web3BaseDRPC.eth.getBalance(userAddress)
+                    const balanceCall = web3BaseUnifra.eth.getBalance(userAddress)
 
 
                     const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)

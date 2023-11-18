@@ -38,7 +38,7 @@ const friendtechHeaders = {
 const axios = require('axios')
 
 
-const { web3Base1RPC, web3BaseUnifra, web3BaseDRPC } = require('../../../config/web3config');
+const { web3Base1RPC, web3BaseUnifra } = require('../../../config/web3config');
 
 
 // On crée des instances des contrats
@@ -469,7 +469,7 @@ module.exports = {
                                                 const twitterPromise = getTwitterUserInfo(user.twitterUsername)
                                                 const tradersPromise = formatTradesData(userAddress)
                                                 // const airdropInfoCall = axios.get("https://prod-api.kosetto.com/points/" + userAddress, { headers: friendtechHeaders })
-                                                const balanceCall = web3BaseDRPC.eth.getBalance(userAddress)
+                                                const balanceCall = web3BaseUnifra.eth.getBalance(userAddress)
 
 
                                                 const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
@@ -869,7 +869,7 @@ module.exports = {
 
 
 
-                                                const userBalance = parseFloat(await web3Base1RPC.eth.getBalance(userAddress)) / 10 ** 18
+                                                const userBalance = parseFloat(await web3BaseUnifra.eth.getBalance(userAddress)) / 10 ** 18
                                                 //{}
 
 
@@ -1305,8 +1305,8 @@ module.exports = {
 
                                                     if (index <= 15) {
 
-                                                        let name = trade.twitterName
-                                                        let username = trade.twitterUsername
+                                                        let name = trade.trader.name
+                                                        let username = trade.trader.username
                                                         let isBuy = trade.isBuy
                                                         let amount = trade.shareAmount
                                                         let time = Math.floor(trade.createdAt / 1000)

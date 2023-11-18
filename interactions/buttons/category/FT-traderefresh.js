@@ -120,8 +120,8 @@ module.exports = {
 
                         if (index <= 15) {
 
-                            let name = trade.twitterName
-                            let username = trade.twitterUsername
+                            let name = trade.trader.name
+                            let username = trade.trader.username
                             let isBuy = trade.isBuy
                             let amount = trade.shareAmount
                             let time = Math.floor(trade.createdAt / 1000)

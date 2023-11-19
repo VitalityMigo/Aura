@@ -495,7 +495,8 @@ module.exports = {
 
                     let gasFormat = slippage + "%"
 
-                    if (slippage == "" || parseFloat(slippage) < 0) { slippage = null; gasFormat = 'Auto' }
+                    if (slippage == "" || parseFloat(slippage) <= 0) { slippage = null; gasFormat = 'Auto' }
+                    if (parseFloat(slippage) > 0 && parseFloat(slippage) <= 0.5) { slippage = 0.5; gasFormat = '0.5%' }
 
 
 

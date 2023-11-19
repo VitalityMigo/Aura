@@ -144,6 +144,10 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_friendtech_airdrop_analysis_");
 			
+		}  else if (customId.startsWith("button_coin_exec_approve_")) {
+
+			command = client.buttonCommands.get("button_coin_exec_approve_");
+			
 		}
 		
 		

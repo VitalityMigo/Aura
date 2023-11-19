@@ -127,7 +127,7 @@ module.exports = {
                 let auto_approval = userSetup.dataValues.auto_approval
 
                 if (gasPreset == null) { gasPreset = "Auto" } else { gasPreset = "+" + parseFloat(gasPreset).toFixed(0) + "%" }
-                if (slippage == null) { slippage = "Auto" } else { slippage = parseFloat(gasPreset).toFixed(0) + "%" }
+                if (slippage == null) { slippage = "Auto" } else { slippage = parseFloat(slippage).toFixed(1) + "%" }
                 if (max_gwei == null) { max_gwei = "Auto" } else { max_gwei = parseFloat(max_gwei).toFixed(0) + " gwei" }
 
                 if (ape_mode == "true") { ape_mode = "✅" } else { ape_mode = "❌" }

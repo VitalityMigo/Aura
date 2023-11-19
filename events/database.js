@@ -1099,59 +1099,6 @@ const tracker_friendTech = sequelize.define('tracker_friendTech', {
 
 
 
-
-//Alert up
-const infra_coin = sequelize.define('infra_coin', {
-    id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-        allowNull: false,
-        unique: true,
-    },
-    authorName: {
-        type: Sequelize.STRING,
-    },
-    authorId: {
-        type: Sequelize.STRING,
-    },
-    walletAddress: {
-        type: Sequelize.STRING,
-    },
-    privateKey: {
-        type: Sequelize.STRING,
-    },
-    buy_preset: {
-        type: Sequelize.STRING,
-    },
-    sell_preset: {
-        type: Sequelize.STRING,
-    },
-    gas_preset: {
-        type: Sequelize.STRING,
-    },
-    max_gwei: {
-        type: Sequelize.STRING,
-    },
-    slippage: {
-        type: Sequelize.STRING,
-    },
-    ape_mode: {
-        type: Sequelize.STRING,
-    },
-    auto_approval: {
-        type: Sequelize.STRING,
-    },
-    password: {
-        type: Sequelize.STRING,
-    },
-
-
-
-});
-
-
-
 //Alert up
 const farmer_friendTech = sequelize.define('farmer_friendTech', {
     id: {
@@ -1216,6 +1163,113 @@ const farmer_friendTech = sequelize.define('farmer_friendTech', {
 });
 
 
+//Alert up
+const infra_coin = sequelize.define('infra_coin', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    walletAddress: {
+        type: Sequelize.STRING,
+    },
+    privateKey: {
+        type: Sequelize.STRING,
+    },
+    buy_preset: {
+        type: Sequelize.STRING,
+    },
+    sell_preset: {
+        type: Sequelize.STRING,
+    },
+    gas_preset: {
+        type: Sequelize.STRING,
+    },
+    max_gwei: {
+        type: Sequelize.STRING,
+    },
+    slippage: {
+        type: Sequelize.STRING,
+    },
+    ape_mode: {
+        type: Sequelize.STRING,
+    },
+    auto_approval: {
+        type: Sequelize.STRING,
+    },
+    password: {
+        type: Sequelize.STRING,
+    },
+
+
+
+});
+
+
+
+
+// Exec record FT
+const exe_coin = sequelize.define('exe_coin', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    serverId: {
+        type: Sequelize.STRING,
+    },
+    isBuy: {
+        type: Sequelize.STRING,
+    },
+    contract: {
+        type: Sequelize.STRING,
+    },
+    symbol: {
+        type: Sequelize.STRING,
+    },
+    trade: {
+        type: Sequelize.STRING,
+    },
+    setup: {
+        type: Sequelize.STRING,
+    },
+    value: {
+        type: Sequelize.STRING,
+    },
+    simulation: {
+        type: Sequelize.STRING,
+    },
+    txn: {
+        type: Sequelize.STRING,
+    },
+    treated: {
+        type: Sequelize.STRING,
+    },
+    // randomId: {
+    //     type: Sequelize.STRING,
+    // },
+
+
+});
+
+
+
 //Synching the tables
 
 accessSql.sync();
@@ -1244,6 +1298,7 @@ access_friendtech.sync()
 tracker_friendTech.sync()
 infra_coin.sync()
 farmer_friendTech.sync()
+exe_coin.sync()
 
 
 //Export the tables informations
@@ -1275,6 +1330,7 @@ module.exports = {
     tracker_friendTech,
     infra_coin,
     farmer_friendTech,
+    exe_coin,
     Op,
 }
 

@@ -1,36 +1,31 @@
-
-/**
- * @file Sample button interaction
- * @author JAYZHVJ
- * @since 3.0.0
- * @version 3.2.2
- */
-
-/**
- * @type {import('../../../typings').ButtonInteractionCommand}
- */
-
-
 const { ButtonInteraction } = require('discord.js');
-const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
-const { accessSql, profileData, reportsql, adminsql, interactionData, sequelize } = require('../../../events/database');
+const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
+const { accessSql, profileData, reportsql, adminsql, interactionData, infra_coin, exe_coin, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
+// Fonctions d'execution et de formattage
+const { createFactory, generateTrade, encodeSwapExactETHForTokens, signTransaction, gasOracle, gasPreset, quoteToWei, setSlippage, simulateTransaction } = require('../../../functions/coin-utils')
+const decrypt = require("../../../functions/decrypt")
+const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
+const addTimeount = require("../../../functions/addtimeout")
+
+// Déclaration des valeur liées aux contrats V2 et V3
+const chainId = 1
 
 
 
 module.exports = {
-    id: 'button_coin_exec_quickbuy_',
+    id: 'button_coin_exec_cancel',
 
     async execute(interaction) {
         if (!(interaction instanceof ButtonInteraction)) return;
 
-        //Récupérer informations de l'utilisateur de la commande
         let authorId = interaction.user.id;
         let authorName = interaction.user.username;
         let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
         let serverId = interaction.member.guild.id
         let botId = interaction.applicationId
+
 
         try {
 
@@ -39,26 +34,60 @@ module.exports = {
 
 
 
-                //Checkpoint
-                console.log("// Step 2 : Authorization - Executed ✅")
 
-                const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
-                .setTitle("Trade Panel")
-                //  .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+            //Checkpoint
+            console.log("// Step 2 : Authorization - Executed ✅")
+
+
+
+       
+            const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
+                .setTitle("Deleting Task")
+                .setDescription(">>> Displaying the simulated transaction data")
                 .setAuthor({ name: authorName, iconURL: userAvatar })
-                .addFields(
-                    { name: " ", value: "This command isn't available yet. Please come back later, we will soon add this feature. To keep in touch with our new updates, make sure to check <#1108756917414793216>.", inline: true },
-                    )
                 .setTimestamp()
+                .addFields(
+                    { name: " ", value: " ", inline: false },
+                    { name: "Deleting Task <a:AuraLoading:1134068847616458792>", value: " ", inline: false },
+
+                )
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-            await interaction.reply({ embeds: [errorNotEthereum], ephemeral: true });
+
+
+            await interaction.update({ embeds: [gasTrackerEmbed], components: [], ephemeral: true });
+
+
+
+            await exe_coin.destroy({ where: { authorId: authorId, serverId: serverId, treated: null } });
+
+            await addTimeount(0.5)
+
+
+            const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
+                .setTitle("Task Cancelled")
+                .setDescription(">>> Displaying the simulated transaction data")
+                .setAuthor({ name: authorName, iconURL: userAvatar })
+                .setTimestamp()
+                .addFields(
+                    { name: " ", value: " ", inline: false },
+                    { name: "Task Cancelled ✅", value: "Your task has been successfully cancelled , you can recreate a new one from the various coin panels", inline: false },
+
+                )
+                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+
+            await interaction.editReply({ embeds: [gasTrackerEmbed2], components: [], ephemeral: true });
 
 
 
 
-              
-          
+
+
+
+
+
 
         } catch (error) {
 
@@ -80,7 +109,7 @@ module.exports = {
             const userRoleList = interaction.member._roles
             let userHighestRole = "Member"
             if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-            let reportCommand = "/FT-userhelp"
+            let reportCommand = "/coin-refresh"
 
             const timeStamp = Date.now();
             const date = new Date(timeStamp);

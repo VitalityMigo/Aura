@@ -42,6 +42,10 @@ module.exports = {
 			command = client.modalCommands.get("modal_infra_coin_walletsetup_");
 		} else if (customId.startsWith("modal-friendtechtasksinfra-farmer-param-")) {
 			command = client.modalCommands.get("modal-friendtechtasksinfra-farmer-param-");
+		} else if (customId.startsWith("modal_coin_exec_buy_")) {
+			command = client.modalCommands.get("modal_coin_exec_buy_");
+		} else if (customId.startsWith("modal_coin_exec_sell_")) {
+			command = client.modalCommands.get("modal_coin_exec_sell_");
 		} 
 		
 		

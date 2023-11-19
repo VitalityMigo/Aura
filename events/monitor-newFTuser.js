@@ -53,7 +53,7 @@ const depositBridgerL2AddressB = "0x4200000000000000000000000000000000000010"
 const transferSig = "0x"
 
 const depositMin = 2
-const transferMin = 5
+const transferMin = 2
 
 const exepectedTxnType = 126
 

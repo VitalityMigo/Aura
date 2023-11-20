@@ -8,7 +8,6 @@ const { farmer_friendTech, sequelize, Op } = require('../events/database');
 
 async function farmerTaskListFT(options) {
 
-    const taskTable = []
 
     if (options.action == "buy") {
 
@@ -28,24 +27,25 @@ async function farmerTaskListFT(options) {
 
         const task = await farmer_friendTech.findOne({ where: whereClause });
 
+        if (task != null) {
 
+            const obj = {
+                authorName: task.dataValues.authorName,
+                authorId: task.dataValues.authorId,
+                address: task.dataValues.authorWallet,
+                type: "buy",
+                buy_status: task.dataValues.buy_0_3,
+                max_key_price: task.dataValues.max_key_price,
+                simulation: task.dataValues.simulation,
+                gasPreset: task.dataValues.gas_preset,
+                walletAddress: task.dataValues.walletAddress,
+                walletPk: task.dataValues.privateKey,
+            }
 
-        const obj = {
-            authorName: task.dataValues.authorName,
-            authorId: task.dataValues.authorId,
-            address: task.dataValues.authorWallet,
-            type: "buy",
-            buy_status: task.dataValues.buy_0_3,
-            max_key_price: task.dataValues.max_key_price,
-            simulation: task.dataValues.simulation,
-            gasPreset: task.dataValues.gas_preset,
-            walletAddress: task.dataValues.walletAddress,
-            walletPk: task.dataValues.privateKey,
+            return obj
+        } else {
+            return null
         }
-
-        taskTable.push(obj)
-
-
 
     } else if (options.action == "sell") {
 
@@ -65,30 +65,32 @@ async function farmerTaskListFT(options) {
 
         const task = await farmer_friendTech.findOne({ where: whereClause });
 
+        if (task != null) {
 
 
-        const obj = {
-            authorName: task.dataValues.authorName,
-            authorId: task.dataValues.authorId,
-            address: task.dataValues.authorWallet,
-            type: "sell",
-            sell_status: task.dataValues.sell_3_0,
-            min_key_price: task.dataValues.min_key_price,
-            simulation: task.dataValues.simulation,
-            gasPreset: task.dataValues.gas_preset,
-            walletAddress: task.dataValues.walletAddress,
-            walletPk: task.dataValues.privateKey,
+            const obj = {
+                authorName: task.dataValues.authorName,
+                authorId: task.dataValues.authorId,
+                address: task.dataValues.authorWallet,
+                type: "sell",
+                sell_status: task.dataValues.sell_3_0,
+                min_key_price: task.dataValues.min_key_price,
+                simulation: task.dataValues.simulation,
+                gasPreset: task.dataValues.gas_preset,
+                walletAddress: task.dataValues.walletAddress,
+                walletPk: task.dataValues.privateKey,
+            }
+
+            return obj
+        } else {
+            return null
         }
 
-        taskTable.push(obj)
 
-
-
-
-
+    } else {
+        return null
     }
 
-    return taskTable
 
 }
 

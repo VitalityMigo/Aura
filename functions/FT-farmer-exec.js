@@ -127,13 +127,12 @@ async function farmerExecFT(transaction) {
                         action: action
                     }
 
-                    const taskList = await farmerTaskListFT(options)
+                    const task = await farmerTaskListFT(options)
 
                     // Construction fini, on passe à la txn
 
-                    if (taskList != null) {
+                    if (task != null) {
 
-                        const task = taskList.dataValues
 
                         let isValid = true
 

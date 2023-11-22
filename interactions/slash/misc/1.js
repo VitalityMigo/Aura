@@ -32,7 +32,7 @@ module.exports = {
             //Lancement du try
             try {
 
-            const tweetLink = "https://x.com/AuraAnalytics/status/1720096849011573107?s=20"
+            const tweetLink = "https://x.com/AuraAnalytics/status/1727410941019709553?s=20"
 
             const guild = interaction.guild
 
@@ -48,7 +48,7 @@ module.exports = {
 
                         const memberEmbed = new EmbedBuilder().setColor("#060A8F")
                             .setTitle("Aura just Tweeted !")
-                            .setDescription("Hey " + authorName + ", we hope you are doing great 👑.\n\nWe just posted our first tweet and would highly appreciate your support. Share it with your friend & familly !\n\nSee the tweet[here](" + tweetLink + ")\n\nHave a nice day or evening !")
+                            .setDescription("Hey " + authorName + ", we hope you are doing great 👑.\n\nWe just posted our new tweet and would highly appreciate your support. Share it with your friend & familly !\n\nSee the tweet[here](" + tweetLink + ")\n\nHave a nice day or evening !")
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })

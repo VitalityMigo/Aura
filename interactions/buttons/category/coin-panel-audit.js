@@ -181,13 +181,13 @@ module.exports = {
                     else if (anti_whale == "1") { anti_whale = "Yes ✅" }
                     else { anti_whale = "❓" }
 
-                    if (buy_tax) { buy_tax = (parseFloat(buy_tax) * 100).toFixed(0) + "%"}
-                    if (sell_tax) { sell_tax = (parseFloat(sell_tax) * 100).toFixed(0)  + "%" }
+                    if (buy_tax) { buy_tax = (parseFloat(buy_tax) * 100).toFixed(0) + "%" }
+                    if (sell_tax) { sell_tax = (parseFloat(sell_tax) * 100).toFixed(0) + "%" }
 
                     if (!owner) { owner = "❓" }
                     if (!deployer) { deployer = "❓" }
 
-                    
+
 
 
                     //while (true) { }
@@ -292,9 +292,9 @@ module.exports = {
                     let lp_locked = 0
 
                     if (lp_holder > 0) {
-                       
+
                         let lp_lockedTable = lp_holder.filter(obj => obj.is_locked == 1)
-                        
+
                         if (lp_lockedTable.length > 0) {
 
                             for (const lock of lp_lockedTable) {
@@ -305,8 +305,10 @@ module.exports = {
                         }
                     }
 
-                    let liquidity = interaction.message.embeds[0].data.fields.find(obj => obj.name == "Liquidity").value
-
+                    let liquidity = "❓"
+                    if (interaction.message.embeds[0].data.fields.find(obj => obj.name == "Liquidity")) {
+                        liquidity = interaction.message.embeds[0].data.fields.find(obj => obj.name == "Liquidity").value
+                    }
 
 
                     poolFormatted = "∙ Liquidity: `" + liquidity + "`\n∙ LP Holders: `" + lp_holders + "` | Team LP: `" + parseFloat(lp_teamSupply).toFixed(2) + "%`\n∙ Locked: `" + parseFloat(lp_locked).toFixed(2) + "%`"

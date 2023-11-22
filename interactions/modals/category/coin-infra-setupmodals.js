@@ -184,13 +184,15 @@ module.exports = {
                             })
 
 
+                            const balance = await web3.eth.getBalance(walletAddress) / 10 ** 18
+
                             const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle("Coin Setup")
-                                .setDescription(">>> Displaying your coin wallet setup")
+                                .setDescription(">>> Displaying your Coin wallet setup")
                                 .setImage('https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png')
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                 .addFields(
-                                    { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: true },
+                                    { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`\n∟ Balance: " + parseFloat(balance).toFixed(3) + "Ξ", inline: true },
                                     { name: " ", value: " ", inline: false },
                                     { name: "Default Buy Value:", value: "`0.050Ξ`", inline: true },
                                     { name: "Default Sell %:", value: "`100%`", inline: true },
@@ -244,14 +246,15 @@ module.exports = {
 
 
 
+                            const balance = await web3.eth.getBalance(walletAddress) / 10 ** 18
 
                             const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle("Coin Setup")
-                                .setDescription(">>> Displaying your coin wallet setup")
+                                .setDescription(">>> Displaying your Coin wallet setup")
                                 .setImage('https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png')
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                 .addFields(
-                                    { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: false },
+                                    { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`\n∟ Balance: " + parseFloat(balance).toFixed(3) + "Ξ", inline: true },
                                     { name: " ", value: " ", inline: false },
                                     { name: "Default Buy Value:", value: "`" + buy_preset + "Ξ`", inline: true },
                                     { name: "Default Sell %:", value: "`" + sell_preset + "%`", inline: true },
@@ -306,13 +309,15 @@ module.exports = {
 
 
 
+                            const balance = await web3.eth.getBalance(walletAddress) / 10 ** 18
+
                             const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle("Coin Setup")
-                                .setDescription(">>> Displaying your coin wallet setup")
+                                .setDescription(">>> Displaying your Coin wallet setup")
                                 .setImage('https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png')
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                 .addFields(
-                                    { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: false },
+                                    { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`\n∟ Balance: " + parseFloat(balance).toFixed(3) + "Ξ", inline: true },
                                     { name: " ", value: " ", inline: false },
                                     { name: "Default Buy Value:", value: "`" + buy_preset + "Ξ`", inline: true },
                                     { name: "Default Sell %:", value: "`" + sell_preset + "%`", inline: true },
@@ -429,8 +434,8 @@ module.exports = {
 
                     value = removeCharacter(value, "%")
 
-                    if (parseFloat(value) > 100) {  value = "100" }
-                    if (parseFloat(value) < 0) {  value = 0 }
+                    if (parseFloat(value) > 100) { value = "100" }
+                    if (parseFloat(value) < 0) { value = 0 }
 
 
                     let taskEmbed = interaction.message.embeds[0].data

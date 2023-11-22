@@ -148,6 +148,10 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_coin_exec_approve_");
 			
+		} else if (customId.startsWith("button_coin_tradelist_refresh_")) {
+
+			command = client.buttonCommands.get("button_coin_tradelist_refresh_");
+			
 		}
 		
 		

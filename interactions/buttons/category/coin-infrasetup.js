@@ -6,6 +6,10 @@ const moment = require('moment');
 const decrypt = require("../../../functions/decrypt")
 
 
+//Web3 API + Cloudfare Provider
+var Web3 = require("web3")
+const web3 = new Web3("https://cloudflare-eth.com")
+
 
 module.exports = {
     id: 'button_coin_tradepanel_setup',
@@ -133,13 +137,15 @@ module.exports = {
                 if (ape_mode == "true") { ape_mode = "✅" } else { ape_mode = "❌" }
                 if (auto_approval == "true") { auto_approval = "✅" } else { auto_approval = "❌" }
 
+                const balance = await web3.eth.getBalance(walletAddress) / 10**18
+
                 const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("Coin Setup")
                     .setDescription(">>> Displaying your coin wallet setup")
                     .setImage('https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png')
                     .setAuthor({ name: authorName, iconURL: userAvatar })
                     .addFields(
-                        { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: false },
+                        { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`\n∟ Balance: " + parseFloat(balance).toFixed(3) + "Ξ" , inline: true },
                         { name: " ", value: " ", inline: false },
                         { name: "Default Buy Value:", value: "`" + buy_preset + "Ξ`", inline: true },
                         { name: "Default Sell %:", value: "`" + sell_preset + "%`", inline: true },

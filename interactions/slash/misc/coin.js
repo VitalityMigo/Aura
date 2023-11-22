@@ -10,6 +10,9 @@ const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize, infra_coin } = require('../../../events/database');
 const moment = require('moment');
 
+// Fonctions d'execution et de formattage
+const { createFactory } = require('../../../functions/coin-utils')
+
 const reduceText = require("../../../functions/reducetext")
 const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
 const getApprovals = require("../../../functions/getApprovals")
@@ -59,6 +62,9 @@ const settings = {
 const alchemy = new Alchemy(settings);
 const alchemy2 = require('api')('@alchemy-docs/v1.0#24zcsa23lfbpdnv5');
 
+// Initialisation du contrat de pair
+const wETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+
 
 // Fonctions
 function isValidEthereumAddress(address) {
@@ -74,6 +80,10 @@ function isBRC20BitcoinWallet(wallet) {
 
 function formatWallet(input) {
     return input.length > 35 ? `${input.substring(0, 6)}…${input.substring(input.length - 6)}` : input;
+}
+
+function formatWallet2(input) {
+    return input.length > 35 ? `${input.substring(0, 4)}…${input.substring(input.length - 4)}` : input;
 }
 
 
@@ -126,6 +136,24 @@ module.exports = {
             subcommand
                 .setName("wallet")
                 .setDescription("Manage your buy and sell coin wallet")
+
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("trades")
+                .setDescription("Display the last trades made on a coin")
+                .addStringOption(option =>
+                    option
+                        .setName("coin")
+                        .setDescription("The token's contract address (ERC20)")
+                        .setRequired(true)
+                        .setAutocomplete(false)
+                ),
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("transfer")
+                .setDescription("Batch transfer ETH or ERC20 token")
 
         ),
 
@@ -1376,213 +1404,7 @@ module.exports = {
 
 
 
-                                    if (!isValidEthereumAddress(coinTicker)) {
-
-                                        //Calculer les timestamp
-                                        const timestamp1d = actualTimestamp - 86400
-                                        const timestamp3d = actualTimestamp - 259200
-                                        const timestamp7d = actualTimestamp - 604800
-
-
-
-                                        const symbolLookup = await axios.get(" https://api.coinranking.com/v2/coins?search=" + coinTicker + "&referenceCurrencyUuid=razxDUgYGNAdQ")
-
-
-                                        if (symbolLookup.data.data.coins.length > 0) {
-
-
-
-                                            let coinId = symbolLookup.data.data.coins[0].uuid
-                                            let coinSymbol = symbolLookup.data.data.coins[0].symbol
-                                            let coinName = symbolLookup.data.data.coins[0].name
-                                            let coinIcon = symbolLookup.data.data.coins[0].iconUrl
-                                            let coinMarketcap = symbolLookup.data.data.coins[0].marketCap
-                                            let coinPriceEth = symbolLookup.data.data.coins[0].price
-                                            let coinPriceBtc = symbolLookup.data.data.coins[0].btcPrice
-                                            let coinPriceUsd = (ethPriceUsd * coinPriceEth).toFixed(5)
-                                            let coinVolume24h = symbolLookup.data.data.coins[0]['24hVolume']
-
-
-                                            const coinStats = await axios.get("https://api.coinranking.com/v2/coin/" + coinId)
-
-                                            if (coinStats.data.data.coin.tags.includes("brc-20")) {
-
-                                                let actualSupply = coinStats.data.data.coin.supply.total
-                                                let circulatingSupply = Intl.NumberFormat('en-US').format(parseFloat(coinStats.data.data.coin.supply.circulating).toFixed(0))
-                                                let maxSupply = Intl.NumberFormat('en-US').format(parseFloat(coinStats.data.data.coin.supply.max).toFixed(0))
-                                                let coinath = coinStats.data.data.coin.allTimeHigh.price
-                                                let description = coinStats.data.data.coin.description
-                                                let change = coinStats.data.data.coin.supply.change
-                                                let exchange = coinStats.data.data.coin.numberOfExchanges
-                                                let pairs = coinStats.data.data.coin.numberOfMarkets
-                                                let coinRankingLink = coinStats.data.data.coin.coinrankingUrl
-                                                let inscriptionId = "not available"
-
-
-
-
-                                                //On calcule le prix historique pour 1d, 3d et 7d
-                                                const coinPriceHistory = await axios.get("https://api.coinranking.com/v2/coin/" + coinId + "/history?timePeriod=3m")
-
-                                                let price1d = 0
-                                                let price3d = 0
-                                                let price7d = 0
-                                                let differenceMin = Infinity;
-                                                let differenceMin2 = Infinity;
-                                                let differenceMin3 = Infinity;
-
-
-                                                //Price 1d
-                                                coinPriceHistory.data.data.history.forEach(item => {
-                                                    const difference = Math.abs(item.timestamp - timestamp1d);
-                                                    if (difference < differenceMin) {
-                                                        differenceMin = difference;
-                                                        price1d = item.price;
-                                                    }
-                                                });
-                                                let evolution1d = parseFloat(((coinPriceUsd - price1d) / price1d) * 100).toFixed(2)
-                                                if (evolution1d > 0) { evolution1d = "+" + evolution1d }
-
-
-                                                //Price 3d
-                                                coinPriceHistory.data.data.history.forEach(item => {
-                                                    const difference = Math.abs(item.timestamp - timestamp3d);
-                                                    if (difference < differenceMin2) {
-                                                        differenceMin2 = difference;
-                                                        price3d = item.price;
-                                                    }
-                                                });
-                                                let evolution3d = parseFloat(((coinPriceUsd - price3d) / price3d) * 100).toFixed(2)
-                                                if (evolution3d > 0) { evolution3d = "+" + evolution3d }
-
-
-                                                //Price 7d
-                                                coinPriceHistory.data.data.history.forEach(item => {
-                                                    const difference = Math.abs(item.timestamp - timestamp7d);
-                                                    if (difference < differenceMin3) {
-                                                        differenceMin3 = difference;
-                                                        price7d = item.price;
-                                                    }
-                                                });
-                                                let evolution7d = parseFloat(((coinPriceUsd - price7d) / price7d) * 100).toFixed(2)
-                                                if (evolution7d > 0) { evolution7d = "+" + evolution7d }
-
-
-
-
-
-
-
-                                                if (description == null) { description = ">>> Displaying key data of " + "`$" + coinSymbol.toUpperCase() + "`" }
-                                                if (maxSupply == "NaN") { maxSupply = "No limit." }
-                                                if (circulatingSupply == "NaN") { circulatingSupply = Intl.NumberFormat('en-US').format(parseFloat(coinStats.data.data.coin.supply.total).toFixed(0)) }
-
-
-                                                //On met en forme les liens
-                                                let linksFormatted = "[satswatcher](https://satswatcher.io/token/" + coinTicker.toUpperCase() + ") ∙ "
-                                                for (const links of coinStats.data.data.coin.links) {
-
-                                                    let name = links.name
-                                                    let url = links.url
-                                                    let type = links.type
-
-                                                    if (name.includes("ordiscan")) {
-
-                                                        type = "ordiscan"
-
-                                                        let inscriptionLink = url.split("/")
-                                                        inscriptionId = inscriptionLink[inscriptionLink.length - 1]
-                                                    }
-
-                                                    linksFormatted += '[' + type + '](' + url + ") ∙ "
-
-
-
-                                                }
-
-                                                linksFormatted += '[coinranking](' + coinRankingLink + ") ∙ " + '[twitter search](https://twitter.com/search?q=' + coinSymbol + "&src=typed_query)"
-
-                                                const [ethPriceUsd] = await Promise.all([ethPriceUsdPromise]);
-
-
-
-
-
-                                                const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle(coinName + " (" + coinSymbol.toUpperCase() + ")")
-                                                    .setDescription(description)
-                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                    .setThumbnail(coinIcon)
-                                                    .addFields(
-                                                        { name: " ", value: " ", inline: false },
-                                                        { name: "Inscription", value: "`" + inscriptionId + "`", inline: false },
-                                                        { name: "BTC Price", value: "`" + parseFloat(coinPriceBtc).toFixed(5) + "₿`", inline: true },
-                                                        { name: "ETH Price", value: "`" + parseFloat(coinPriceEth).toFixed(5) + "Ξ`", inline: true },
-                                                        { name: "USD Price", value: "`" + new Intl.NumberFormat('en-US').format((ethPriceUsd * coinPriceEth).toFixed(5)) + "$`", inline: true },
-                                                        { name: "Supply", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(actualSupply).toFixed(0)) + "`", inline: true },
-                                                        { name: "Circulating Supply", value: "`" + circulatingSupply + "`", inline: true },
-                                                        { name: "Max Supply", value: "`" + maxSupply + "`", inline: true },
-                                                        { name: "1D Volume", value: "`" + parseFloat(coinVolume24h).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format((ethPriceUsd * coinVolume24h).toFixed(0)) + "$)`", inline: true },
-                                                        { name: "Market Cap", value: "`" + parseFloat(coinMarketcap).toFixed(5) + "Ξ\n(" + new Intl.NumberFormat('en-US').format((ethPriceUsd * coinMarketcap).toFixed(0)) + "$)`", inline: true },
-                                                        { name: "ATH", value: "`" + parseFloat(coinath / ethPriceUsd).toFixed(5) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(coinath).toFixed(0)) + "$)`", inline: true },
-                                                        { name: "1D Price", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(price1d).toFixed(5)) + "$`", inline: true },
-                                                        { name: "1D Evolution", value: "`" + evolution1d + "%`", inline: true },
-                                                        { name: " ", value: " ", inline: true },
-                                                        { name: "3D Price", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(price3d).toFixed(5)) + "$`", inline: true },
-                                                        { name: "3D Evolution", value: "`" + evolution3d + "%`", inline: true },
-                                                        { name: " ", value: " ", inline: true },
-                                                        { name: "7D Price", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(price7d).toFixed(5)) + "$`", inline: true },
-                                                        { name: "7D Evolution", value: "`" + evolution7d + "%`", inline: true },
-                                                        { name: " ", value: " ", inline: true },
-                                                        { name: "Exchanges", value: "`" + exchange + "`", inline: true },
-                                                        { name: "Pairs", value: "`" + pairs + "`", inline: true },
-                                                        { name: "Links", value: linksFormatted, inline: false },
-
-
-                                                    )
-                                                    .setTimestamp()
-                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                                await interaction.editReply({ embeds: [getDataCollectionAddress] });
-
-
-                                            } else {
-
-                                                const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle("Coin")
-                                                    .setDescription("The token symbol you entered `" + coinTicker + "` isn't a valid BRC20 token symbol. If the token you'd like to analyze is an ERC20 token, please enter the Ethereum token address instead. If it's a BRC20 token, please enter a valid token symbol.")
-                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                    .setTimestamp()
-                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                                await interaction.editReply({ embeds: [getDataCollectionAddress] });
-
-
-
-                                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinInfo", apiProvider: "coinranking", timestamp: timeStamp.toString() })
-
-                                            }
-
-                                        } else {
-
-                                            const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle("Coin")
-                                                .setDescription("The token symbol you entered `" + coinTicker + "` isn't a valid BRC20 token symbol. If the token you'd like to analyze is an ERC20 token, please enter the Ethereum token address instead. If it's a BRC20 token, please enter a valid token symbol.")
-                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                .setTimestamp()
-                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                            await interaction.editReply({ embeds: [getDataCollectionAddress] });
-
-
-
-                                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/coin", apiCallName: "getCoinInfo", apiProvider: "coinranking", timestamp: timeStamp.toString() })
-
-                                        }
-
-                                    } else {
+                                    if (isValidEthereumAddress(coinTicker)) {
 
 
                                         let volume1h = "N/A"
@@ -1798,7 +1620,7 @@ module.exports = {
                                                 );
 
 
-                                                const buttonsRow1 = new ActionRowBuilder()
+                                            const buttonsRow1 = new ActionRowBuilder()
                                                 .addComponents(
                                                     new ButtonBuilder()
                                                         .setCustomId('button_coin_exec_sell_' + coinTicker + "@x%")
@@ -1907,6 +1729,317 @@ module.exports = {
 
 
 
+                                } else if (subcommand === 'trades') {
+
+
+                                    const date = Date.now()
+                                    const timestamp = parseInt(date / 1000)
+
+
+                                    const contract = interaction.options.getString("coin").toLowerCase()
+
+                                    const random_address = "0x862284B87b774bbEC86c4f13bA6c283C4552AfAB"
+                                    const random_slippage = 0
+                                    const transfer_events = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+
+                                    // On crée la paire grâce à la factory
+                                    const factory = await createFactory(
+                                        "swap_eth_to_token",
+                                        contract,
+                                        random_address,
+                                        random_slippage
+                                    )
+
+                                    const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle(factory.toToken.symbol)
+                                        .setDescription(">>> Displaying the last trades on`" + factory.toToken.symbol + "`.")
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setTimestamp()
+                                        .addFields(
+                                            { name: "Symbol", value: "`" + factory.toToken.symbol + "`", inline: false },
+                                            { name: "Contract", value: "`" + contract + "`", inline: false },
+                                            { name: " ", value: " ", inline: false },
+                                        )
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+
+                                    const coinData = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + contract)
+
+                                    if (coinData.data.pairs != null) {
+
+                                        const pairData = coinData.data.pairs.filter((item) => item.quoteToken.address.toLowerCase() === wETH.toLowerCase() && item.dexId === "uniswap")[0]
+
+
+                                        //const pool = pairData.pairAddress
+                                        const version = pairData.labels[0]
+                                        const tokenDecimals = factory.toToken.decimals
+                                        const pool = pairData.pairAddress
+
+                                        // Définition des deux topics uniswap de swap
+                                        const uniswap_swap_topicV2 = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822'; // Remplacez par le vrai topic V2
+                                        const uniswap_swap_topicV3 = '0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67'; // Remplacez par le vrai topic V3
+
+                                        // On séléctionne le topic approprié
+                                        let uniswap_topic = uniswap_swap_topicV2
+                                        if (version == "v3") { uniswap_topic = uniswap_swap_topicV3 }
+
+                                        if (version == 'v2') {
+
+
+                                            // Dernier bloc
+                                            const blockRange = 799
+                                            const toBlock = await web3.eth.getBlockNumber();
+                                            const fromBlock = toBlock - blockRange
+
+
+                                            // Obtenez les événements avec les deux topics
+                                            // On regarde les derniers évênements
+                                            const eventsCall = await web3.eth.getPastLogs({
+                                                fromBlock: fromBlock,
+                                                toBlock: toBlock,
+                                                address: pool,
+                                                topics: [uniswap_topic],
+                                            })
+
+                                            const events = eventsCall.reverse()
+
+                                            const eventsCount = events.length
+
+
+
+                                            // INDEX
+                                            let index = 0
+                                            let trades = ""
+                                            let trades2 = ""
+                                            let trades3 = ""
+                                            let trades4 = ""
+                                            let trades5 = ""
+                                            let trades6 = ""
+
+                                            for (const swap of events) {
+
+                                                const decode = await decodeUniswapSwapEventV2(swap.data, swap.topics, swap.blockNumber, toBlock, contract, wETH, tokenDecimals, timestamp)
+
+                                                // Formattage
+                                                let act1 = "🟢"
+                                                let act2 = "bought"
+                                                if (decode.action == "sell") {
+                                                    act1 = "🔴"
+                                                    act2 = "sold"
+                                                }
+
+                                                if (index <= 5) {
+
+                                                    trades += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+                                                    if (index == 5 || index == eventsCount) {
+
+
+                                                        userFTEmbed.addFields(
+                                                            { name: 'Coin Trades:', value: trades, inline: false },
+
+                                                        );
+
+                                                    }
+
+
+                                                } else if (index <= 10) {
+
+                                                    trades2 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+                                                    if (index == 10 || index == eventsCount) {
+
+                                                        userFTEmbed.addFields(
+                                                            { name: ' ', value: trades2, inline: false },
+
+                                                        );
+
+                                                    }
+
+
+                                                } else if (index <= 15) {
+
+                                                    trades3 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+
+                                                    if (index == 15 || index == eventsCount) {
+
+                                                        userFTEmbed.addFields(
+                                                            { name: ' ', value: trades3, inline: false },
+
+                                                        );
+
+                                                    }
+
+                                                } else if (index <= 20) {
+
+                                                    trades4 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+
+                                                    if (index == 20 || index == eventsCount) {
+
+                                                        userFTEmbed.addFields(
+                                                            { name: ' ', value: trades4, inline: false },
+
+                                                        );
+
+                                                    }
+
+                                                } else if (index <= 25) {
+
+                                                    trades5 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+
+                                                    if (index == 25 || index == eventsCount) {
+
+                                                        userFTEmbed.addFields(
+                                                            { name: ' ', value: trades5, inline: false },
+
+                                                        );
+
+                                                    }
+
+                                                } else if (index <= 30) {
+
+                                                    trades6 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+
+                                                    if (index == 30 || index == eventsCount) {
+
+                                                        userFTEmbed.addFields(
+                                                            { name: ' ', value: trades6, inline: false },
+
+                                                        );
+
+                                                    }
+
+                                                } else {
+                                                    break
+
+                                                }
+
+
+                                                index++
+
+                                            }
+
+
+
+
+
+                                        }
+
+
+                                        const buttonsRow = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_exec_buy_' + contract + "@xETH")
+                                                .setLabel('Buy x ETH')
+                                                .setStyle(3),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_exec_buy_' + contract + "@0.05ETH")
+                                                .setLabel('Buy 0.05 ETH')
+                                                .setStyle(3),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_exec_buy_' + contract + "@0.1ETH")
+                                                .setLabel('Buy 0.1 ETH')
+                                                .setStyle(3),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_exec_buy_' + contract + "@0.2ETH")
+                                                .setLabel('Buy 0.2 ETH')
+                                                .setStyle(3),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_exec_buy_' + contract + "@0.5ETH")
+                                                .setLabel('Buy 0.5 ETH')
+                                                .setStyle(3),
+
+                                        );
+
+
+                                    const buttonsRow1 = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_exec_sell_' + contract + "@x%")
+                                                .setLabel('Sell x %')
+                                                .setStyle(4),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_exec_sell_' + contract + "@25%")
+                                                .setLabel('Sell 25%')
+                                                .setStyle(4),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_exec_sell_' + contract + "@50%")
+                                                .setLabel('Sell 50%')
+                                                .setStyle(4),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_exec_sell_' + contract + "@75%")
+                                                .setLabel('Sell 75%')
+                                                .setStyle(4),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_exec_sell_' + contract + "@100%")
+                                                .setLabel('Sell 100%')
+                                                .setStyle(4),
+
+                                        );
+
+                                    const buttonsRow2 = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_tradelist_refresh_' + contract)
+                                                .setLabel('🔁 Refresh')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
+                                                .setCustomId('coin_infra_tradepanel_help-button')
+                                                .setLabel('📑 Tutorial')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
+                                                .setCustomId('coin_infra_tradepanel_audit-button')
+                                                .setLabel('📡 Audit')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_tradepanel_setup')
+                                                .setLabel('💻 Setup')
+                                                .setStyle(1)
+                                        );
+
+
+                                        await interaction.editReply({ embeds: [userFTEmbed], components: [buttonsRow, buttonsRow1, buttonsRow2]  });
+
+
+
+                                    } else {
+
+                                        const notMember = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle(`Token Data`)
+                                            .setDescription("The coin address you entered can't be retreive. This can happen for few reasons :\n\n• The token address (ERC20) doesn't exist\n• The coin isn't available anymore or is suspicious\n• You entered a symbol for a ERC20 and not a token address, double check.\n\nIf you think the problem is on our end, please use `/report` or contact an admin.")
+                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                        await interaction.editReply({ embeds: [notMember] });
+
+                                    }
+
+
+
+
+
+
+
+
+                                } else if (subcommand === 'portfolio') {
+
+                                    const botOff = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle(`Bot Access`)
+                                        .setDescription("This command isn't released yet and will be available in the near feature.")
+                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                    await interaction.editReply({ embeds: [botOff] });
+
                                 } else if (subcommand === 'wallet') {
 
 
@@ -2005,13 +2138,15 @@ module.exports = {
                                         if (ape_mode == "true") { ape_mode = "✅" } else { ape_mode = "❌" }
                                         if (auto_approval == "true") { auto_approval = "✅" } else { auto_approval = "❌" }
 
+                                        const balance = await web3.eth.getBalance(walletAddress) / 10 ** 18
+
                                         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                             .setTitle("Coin Setup")
                                             .setDescription(">>> Displaying your coin wallet setup")
                                             .setImage('https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png')
                                             .setAuthor({ name: authorName, iconURL: userAvatar })
                                             .addFields(
-                                                { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`", inline: false },
+                                                { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`\n∟ Balance: " + parseFloat(balance).toFixed(3) + "Ξ", inline: true },
                                                 { name: " ", value: " ", inline: false },
                                                 { name: "Default Buy Value:", value: "`" + buy_preset + "Ξ`", inline: true },
                                                 { name: "Default Sell %:", value: "`" + sell_preset + "%`", inline: true },
@@ -2272,39 +2407,124 @@ module.exports = {
 }
 
 
+// On crée quelques fonctions utiles
+async function decodeUniswapSwapEventV2(input, topics, block, toBlock, contract, wETH, decimals, timestamp) {
 
-// const buttonsRow = new ActionRowBuilder()
-// .addComponents(
-//     new ButtonBuilder()
-//         .setCustomId('button_coin_exec_buy_' + coinTicker)
-//         .setLabel('📈 Buy')
-//         .setStyle(3),
-//     new ButtonBuilder()
-//         .setCustomId('button_coin_exec_quickbuy_' + coinTicker)
-//         .setLabel('💫 Flash Buy')
-//         .setStyle(3),
-//     new ButtonBuilder()
-//         .setCustomId('button_coin_exec_sell_' + coinTicker)
-//         .setLabel('📉 Sell')
-//         .setStyle(4),
-//     new ButtonBuilder()
-//         .setCustomId('button_coin_exec_quicksell_' + coinTicker)
-//         .setLabel('❄️ Flash Sell')
-//         .setStyle(4),
-//     new ButtonBuilder()
-//         .setCustomId('button_coin_tradepanel_setup')
-//         .setLabel('💻 Setup')
-//         .setStyle(1)
-// );
+    // On définit les valeurs finales
+    let action
+    let eth
+    let token
+    let from
+    let price
 
-// const buttonsRow2 = new ActionRowBuilder()
-// .addComponents(
-//     new ButtonBuilder()
-//         .setCustomId('button_coin_tradepanel_refresh_' + coinTicker)
-//         .setLabel('🔁 Refresh')
-//         .setStyle(1),
-//     new ButtonBuilder()
-//         .setCustomId('coin_infra_tradepanel_help-button')
-//         .setLabel('📑 Tutorial')
-//         .setStyle(1),
-// );
+    const ethprice = 2000
+
+    // On isole les valeurs qui nous importent
+    const input2 = input.slice(2)
+    const amount0In = parseInt(input2.substring(0, 64), 16)
+    const amount1In = parseInt(input2.substring(64, 128), 16)
+    const amount0Out = parseInt(input2.substring(128, 192), 16)
+    const amount1Out = parseInt(input2.substring(192, 256), 16)
+
+    const sender = topics[1]
+    const to = topics[2]
+
+    // On définit lequel est A et lequel est B
+    const a1 = contract.toLowerCase();
+    const a2 = wETH.toLowerCase();
+    const token0 = a1 < a2 ? contract : wETH;
+    const token1 = a1 < a2 ? wETH : contract;
+
+
+    //Calcul du timestamp a retravailler ! 
+
+    const time = blockFromBlock(block, toBlock, timestamp)
+
+
+    // // GET CODE POUR TAG (Est ce que c'est un bot ?)
+    // const code = await web3.eth.getCode(sender);
+    // let tag = ""
+    // if (code != "0x") { tag = "🤖" }
+
+    // Le 0 est le token
+    if (token0.toLowerCase() == a1) {
+
+        // Il n'y a pas de token qui rentre ni de wETH qui sort
+        if (amount0In <= 0 && amount1Out <= 0) {
+
+            action = "buy"
+            eth = amount1In / 10 ** 18
+            token = amount0Out / 10 ** decimals
+            from = "0x" + to.substring(26, 66)
+            price = (eth / token) * ethprice
+
+        } else {
+
+            // Il n'y a pas de wETH qui rentre ni de token qui sort
+
+            action = "sell"
+            eth = amount1Out / 10 ** 18
+            token = amount0In / 10 ** decimals
+            from = "0x" + sender.substring(26, 66)
+            price = (eth / token) * ethprice
+
+
+        }
+
+
+    } else {
+        // Le 1 est le token
+
+        // Il n'y a pas de token qui rentre ni de wETH qui sort
+        if (amount0In <= 0 && amount1Out <= 0) {
+
+            action = "sell"
+            eth = amount0Out / 10 ** 18
+            token = amount1In / 10 ** decimals
+            from = "0x" + sender.substring(26, 66)
+            price = (eth / token) * ethprice
+
+        } else {
+
+            // Il n'y a pas de wETH qui rentre ni de token qui sort
+
+            action = "buy"
+            eth = amount0In / 10 ** 18
+            token = amount1Out / 10 ** decimals
+            from = "0x" + to.substring(26, 66)
+            price = (eth / token) * ethprice
+
+
+        }
+
+    }
+
+
+    return {
+        action: action,
+        eth: eth,
+        coin: token,
+        sender: from,
+        timestamp: time,
+        price: price
+    }
+
+
+}
+
+
+function blockFromBlock(targetBlock, currentBlock, currentTimestamp) {
+    const averageBlockTime = 12
+
+    // Calculer la différence de blocs entre le bloc actuel et le bloc cible
+    const blockDifference = targetBlock - currentBlock;
+
+    // Calculer le temps écoulé en secondes
+    const timeElapsed = blockDifference * averageBlockTime;
+
+    // Estimer le timestamp du bloc cible
+    const estimatedTimestamp = currentTimestamp + timeElapsed;
+
+    return estimatedTimestamp;
+}
+

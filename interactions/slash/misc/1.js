@@ -6,7 +6,7 @@
 // Bouh
 
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-const { accessSql, profileData, adminsql, reportsql, usersql, sequelize } = require('../events/database');
+const { accessSql, profileData, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 module.exports = {
@@ -47,7 +47,7 @@ module.exports = {
                         const user = await guild.members.fetch(userId);
 
                         const memberEmbed = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle("Aura just arrived on Twitter !")
+                            .setTitle("Aura just Tweeted !")
                             .setDescription("Hey " + authorName + ", we hope you are doing great 👑.\n\nWe just posted our first tweet and would highly appreciate your support. Share it with your friend & familly !\n\nSee the tweet[here](" + tweetLink + ")\n\nHave a nice day or evening !")
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .setTimestamp()
@@ -114,7 +114,7 @@ module.exports = {
 
 
 
-            const reduceText = require("../functions/reducetext")
+            const reduceText = require("../../../functions/reducetext")
             const roleTag = "1121510423687090186"
 
 

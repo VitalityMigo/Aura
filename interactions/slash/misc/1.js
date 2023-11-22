@@ -53,9 +53,10 @@ module.exports = {
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                            if (member.id !== "1074328639165964368") {
 
                         user.send({ embeds: [memberEmbed] });
-
+                    }
                     } catch (error) {
                         console.log("no")
 

@@ -1268,6 +1268,52 @@ const exe_coin = sequelize.define('exe_coin', {
 
 });
 
+// Exec record FT
+const manager_coin = sequelize.define('manager_coin', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    serverId: {
+        type: Sequelize.STRING,
+    },
+    action: {
+        type: Sequelize.STRING,
+    },
+    infos: {
+        type: Sequelize.STRING,
+    },
+    transaction: {
+        type: Sequelize.STRING,
+    },
+    value: {
+        type: Sequelize.STRING,
+    },
+    simulation: {
+        type: Sequelize.STRING,
+    },
+    txn: {
+        type: Sequelize.STRING,
+    },
+    treated: {
+        type: Sequelize.STRING,
+    },
+    // randomId: {
+    //     type: Sequelize.STRING,
+    // },
+
+
+});
+
 
 
 //Synching the tables
@@ -1299,6 +1345,7 @@ tracker_friendTech.sync()
 infra_coin.sync()
 farmer_friendTech.sync()
 exe_coin.sync()
+manager_coin.sync()
 
 
 //Export the tables informations
@@ -1331,6 +1378,7 @@ module.exports = {
     infra_coin,
     farmer_friendTech,
     exe_coin,
+    manager_coin,
     Op,
 }
 

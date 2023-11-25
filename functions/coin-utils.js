@@ -640,44 +640,44 @@ async function getAllowance(factory, owner, spender, direction) {
 
         if (direction == "to_token") {
 
-        const erc20Token = await factory._toTokenFactory._erc20TokenContract
-        const callList = erc20Token.callStatic
-        const decimals = factory._uniswapPairFactoryContext.toToken.decimals
+            const erc20Token = await factory._toTokenFactory._erc20TokenContract
+            const callList = erc20Token.callStatic
+            const decimals = factory._uniswapPairFactoryContext.toToken.decimals
 
-        const allowance_call = await callList.allowance(owner, spender)
-        const allowance_raw = allowance_call.toString()
-        console.log(allowance_call)
+            const allowance_call = await callList.allowance(owner, spender)
+            const allowance_raw = allowance_call.toString()
+            console.log(allowance_call)
 
-        if (parseInt(allowance_raw) > 0) {
+            if (parseInt(allowance_raw) > 0) {
 
-            const allowance = parseInt(allowance_raw) / 10 ** decimals
+                const allowance = parseInt(allowance_raw) / 10 ** decimals
 
-            return allowance
+                return allowance
 
-        } else {
-            return 0
+            } else {
+                return 0
+            }
+
+        } else if (direction == "from_token") {
+
+            const erc20Token = await factory._fromTokenFactory._erc20TokenContract
+            const callList = erc20Token.callStatic
+            const decimals = factory._uniswapPairFactoryContext.fromToken.decimals
+
+            const allowance_call = await callList.allowance(owner, spender)
+            const allowance_raw = allowance_call.toString()
+
+            if (parseInt(allowance_raw) > 0) {
+
+                const allowance = parseInt(allowance_raw) / 10 ** decimals
+
+                return allowance.toString()
+
+            } else {
+                return 0
+            }
+
         }
-
-    } else if (direction == "from_token") {
-
-        const erc20Token = await factory._fromTokenFactory._erc20TokenContract
-        const callList = erc20Token.callStatic
-        const decimals = factory._uniswapPairFactoryContext.fromToken.decimals
-
-        const allowance_call = await callList.allowance(owner, spender)
-        const allowance_raw = allowance_call.toString()
-
-        if (parseInt(allowance_raw) > 0) {
-
-            const allowance = parseInt(allowance_raw) / 10 ** decimals
-
-            return allowance.toString()
-
-        } else {
-            return 0
-        }
-
-    }
 
 
 
@@ -697,7 +697,66 @@ async function getGasPrice() {
     return gas_price
 
 }
-//priceImpactV2("i", "i", "i")
+
+
+function encodeTransfer(receiver, value, decimals) {
+
+    try {
+
+        const sig = "0xa9059cbb"
+
+        // Convertir le nombre flottant en BigNumber
+        const valueBN = new BigNumber(parseFloat(value));
+
+        // Multiplier par 10^18 pour obtenir le nombre entier avec la précision des décimales souhaitée
+        const valueDecimals = valueBN.times(new BigNumber(10).pow(decimals));
+
+
+        const input = web3.eth.abi.encodeFunctionCall({
+            name: 'transfer',
+            type: 'function',
+            inputs: [{
+                type: 'address',
+                name: 'to'
+            }, {
+                type: 'uint256',
+                name: 'amount'
+            }]
+        }, [receiver, valueDecimals]);
+
+        return input
+
+    } catch (error) {
+
+        return null
+
+
+    }
+
+}
+
+function encodeApproval(spender) {
+
+    const approvalHex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    const sig = '0x095ea7b3'
+    const sigAndAddress = sig + '0'.repeat(24) + spender.slice(2);
+    const data = sigAndAddress + approvalHex
+
+    return data
+
+}
+
+function encodeRevoke(spender) {
+
+    const approvalHex = "0000000000000000000000000000000000000000000000000000000000000000"
+    const sig = '0x095ea7b3'
+    const sigAndAddress = sig + '0'.repeat(24) + spender.slice(2);
+    const data = sigAndAddress + approvalHex
+
+    return data
+
+}
+
 
 module.exports = {
     createFactory,
@@ -712,5 +771,8 @@ module.exports = {
     approveMaxToken,
     balanceOfToken,
     getGasPrice,
-    getAllowance
+    getAllowance,
+    encodeTransfer,
+    encodeApproval,
+    encodeRevoke
 }

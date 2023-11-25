@@ -152,8 +152,8 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName("transfer")
-                .setDescription("Batch transfer ETH or ERC20 token")
+                .setName("manager")
+                .setDescription("Manage your ETH and ERC20 token")
 
         ),
 
@@ -1776,6 +1776,12 @@ module.exports = {
                                         const tokenDecimals = factory.toToken.decimals
                                         const pool = pairData.pairAddress
 
+                                        // Dernier bloc
+                                        const blockRange = 799
+                                        const toBlock = await web3.eth.getBlockNumber();
+                                        const fromBlock = toBlock - blockRange
+
+
                                         // Définition des deux topics uniswap de swap
                                         const uniswap_swap_topicV2 = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822'; // Remplacez par le vrai topic V2
                                         const uniswap_swap_topicV3 = '0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67'; // Remplacez par le vrai topic V3
@@ -1784,226 +1790,216 @@ module.exports = {
                                         let uniswap_topic = uniswap_swap_topicV2
                                         if (version == "v3") { uniswap_topic = uniswap_swap_topicV3 }
 
-                                        if (version == 'v2') {
-
-
-                                            // Dernier bloc
-                                            const blockRange = 799
-                                            const toBlock = await web3.eth.getBlockNumber();
-                                            const fromBlock = toBlock - blockRange
-
-
-                                            // Obtenez les événements avec les deux topics
-                                            // On regarde les derniers évênements
-                                            const eventsCall = await web3.eth.getPastLogs({
-                                                fromBlock: fromBlock,
-                                                toBlock: toBlock,
-                                                address: pool,
-                                                topics: [uniswap_topic],
-                                            })
-
-                                            const events = eventsCall.reverse()
-
-                                            const eventsCount = events.length
+                                        const eventsCall = await web3.eth.getPastLogs({
+                                            fromBlock: fromBlock,
+                                            toBlock: toBlock,
+                                            address: pool,
+                                            topics: [uniswap_topic],
+                                        })
 
 
 
-                                            // INDEX
-                                            let index = 0
-                                            let trades = ""
-                                            let trades2 = ""
-                                            let trades3 = ""
-                                            let trades4 = ""
-                                            let trades5 = ""
-                                            let trades6 = ""
-
-                                            for (const swap of events) {
-
-                                                const decode = await decodeUniswapSwapEventV2(swap.data, swap.topics, swap.blockNumber, toBlock, contract, wETH, tokenDecimals, timestamp)
-
-                                                // Formattage
-                                                let act1 = "🟢"
-                                                let act2 = "bought"
-                                                if (decode.action == "sell") {
-                                                    act1 = "🔴"
-                                                    act2 = "sold"
-                                                }
-
-                                                if (index <= 5) {
-
-                                                    trades += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
-
-                                                    if (index == 5 || index == eventsCount) {
+                                        const events = eventsCall.reverse()
+                                        const eventsCount = events.length
 
 
-                                                        userFTEmbed.addFields(
-                                                            { name: 'Coin Trades:', value: trades, inline: false },
 
-                                                        );
+                                        // INDEX
+                                        let index = 0
+                                        let trades = ""
+                                        let trades2 = ""
+                                        let trades3 = ""
+                                        let trades4 = ""
+                                        let trades5 = ""
+                                        let trades6 = ""
 
-                                                    }
+                                        for (const swap of events) {
 
+                                            const decode = await decodeUniswapSwapEvent(version, swap.data, swap.topics, swap.blockNumber, toBlock, contract, wETH, tokenDecimals, timestamp)
+console.log(decode)
+                                            // Formattage
+                                            let act1 = "🟢"
+                                            let act2 = "bought"
+                                            if (decode.action == "sell") {
+                                                act1 = "🔴"
+                                                act2 = "sold"
+                                            }
 
-                                                } else if (index <= 10) {
+                                            if (index <= 5) {
 
-                                                    trades2 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+                                                trades += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
 
-                                                    if (index == 10 || index == eventsCount) {
-
-                                                        userFTEmbed.addFields(
-                                                            { name: ' ', value: trades2, inline: false },
-
-                                                        );
-
-                                                    }
-
-
-                                                } else if (index <= 15) {
-
-                                                    trades3 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
-
-
-                                                    if (index == 15 || index == eventsCount) {
-
-                                                        userFTEmbed.addFields(
-                                                            { name: ' ', value: trades3, inline: false },
-
-                                                        );
-
-                                                    }
-
-                                                } else if (index <= 20) {
-
-                                                    trades4 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+                                                if (index == 5 || index == eventsCount) {
 
 
-                                                    if (index == 20 || index == eventsCount) {
+                                                    userFTEmbed.addFields(
+                                                        { name: 'Coin Trades:', value: trades, inline: false },
 
-                                                        userFTEmbed.addFields(
-                                                            { name: ' ', value: trades4, inline: false },
-
-                                                        );
-
-                                                    }
-
-                                                } else if (index <= 25) {
-
-                                                    trades5 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
-
-
-                                                    if (index == 25 || index == eventsCount) {
-
-                                                        userFTEmbed.addFields(
-                                                            { name: ' ', value: trades5, inline: false },
-
-                                                        );
-
-                                                    }
-
-                                                } else if (index <= 30) {
-
-                                                    trades6 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
-
-
-                                                    if (index == 30 || index == eventsCount) {
-
-                                                        userFTEmbed.addFields(
-                                                            { name: ' ', value: trades6, inline: false },
-
-                                                        );
-
-                                                    }
-
-                                                } else {
-                                                    break
+                                                    );
 
                                                 }
 
 
-                                                index++
+                                            } else if (index <= 10) {
+
+                                                trades2 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+                                                if (index == 10 || index == eventsCount) {
+
+                                                    userFTEmbed.addFields(
+                                                        { name: ' ', value: trades2, inline: false },
+
+                                                    );
+
+                                                }
+
+
+                                            } else if (index <= 15) {
+
+                                                trades3 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+
+                                                if (index == 15 || index == eventsCount) {
+
+                                                    userFTEmbed.addFields(
+                                                        { name: ' ', value: trades3, inline: false },
+
+                                                    );
+
+                                                }
+
+                                            } else if (index <= 20) {
+
+                                                trades4 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+
+                                                if (index == 20 || index == eventsCount) {
+
+                                                    userFTEmbed.addFields(
+                                                        { name: ' ', value: trades4, inline: false },
+
+                                                    );
+
+                                                }
+
+                                            } else if (index <= 25) {
+
+                                                trades5 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+
+                                                if (index == 25 || index == eventsCount) {
+
+                                                    userFTEmbed.addFields(
+                                                        { name: ' ', value: trades5, inline: false },
+
+                                                    );
+
+                                                }
+
+                                            } else if (index <= 30) {
+
+                                                trades6 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+
+                                                if (index == 30 || index == eventsCount) {
+
+                                                    userFTEmbed.addFields(
+                                                        { name: ' ', value: trades6, inline: false },
+
+                                                    );
+
+                                                }
+
+                                            } else {
+                                                break
 
                                             }
 
 
-
-
+                                            index++
 
                                         }
 
 
+
+
+
+
+
+
                                         const buttonsRow = new ActionRowBuilder()
-                                        .addComponents(
-                                            new ButtonBuilder()
-                                                .setCustomId('button_coin_exec_buy_' + contract + "@xETH")
-                                                .setLabel('Buy x ETH')
-                                                .setStyle(3),
-                                            new ButtonBuilder()
-                                                .setCustomId('button_coin_exec_buy_' + contract + "@0.05ETH")
-                                                .setLabel('Buy 0.05 ETH')
-                                                .setStyle(3),
-                                            new ButtonBuilder()
-                                                .setCustomId('button_coin_exec_buy_' + contract + "@0.1ETH")
-                                                .setLabel('Buy 0.1 ETH')
-                                                .setStyle(3),
-                                            new ButtonBuilder()
-                                                .setCustomId('button_coin_exec_buy_' + contract + "@0.2ETH")
-                                                .setLabel('Buy 0.2 ETH')
-                                                .setStyle(3),
-                                            new ButtonBuilder()
-                                                .setCustomId('button_coin_exec_buy_' + contract + "@0.5ETH")
-                                                .setLabel('Buy 0.5 ETH')
-                                                .setStyle(3),
+                                            .addComponents(
+                                                new ButtonBuilder()
+                                                    .setCustomId('button_coin_exec_buy_' + contract + "@xETH")
+                                                    .setLabel('Buy x ETH')
+                                                    .setStyle(3),
+                                                new ButtonBuilder()
+                                                    .setCustomId('button_coin_exec_buy_' + contract + "@0.05ETH")
+                                                    .setLabel('Buy 0.05 ETH')
+                                                    .setStyle(3),
+                                                new ButtonBuilder()
+                                                    .setCustomId('button_coin_exec_buy_' + contract + "@0.1ETH")
+                                                    .setLabel('Buy 0.1 ETH')
+                                                    .setStyle(3),
+                                                new ButtonBuilder()
+                                                    .setCustomId('button_coin_exec_buy_' + contract + "@0.2ETH")
+                                                    .setLabel('Buy 0.2 ETH')
+                                                    .setStyle(3),
+                                                new ButtonBuilder()
+                                                    .setCustomId('button_coin_exec_buy_' + contract + "@0.5ETH")
+                                                    .setLabel('Buy 0.5 ETH')
+                                                    .setStyle(3),
 
-                                        );
-
-
-                                    const buttonsRow1 = new ActionRowBuilder()
-                                        .addComponents(
-                                            new ButtonBuilder()
-                                                .setCustomId('button_coin_exec_sell_' + contract + "@x%")
-                                                .setLabel('Sell x %')
-                                                .setStyle(4),
-                                            new ButtonBuilder()
-                                                .setCustomId('button_coin_exec_sell_' + contract + "@25%")
-                                                .setLabel('Sell 25%')
-                                                .setStyle(4),
-                                            new ButtonBuilder()
-                                                .setCustomId('button_coin_exec_sell_' + contract + "@50%")
-                                                .setLabel('Sell 50%')
-                                                .setStyle(4),
-                                            new ButtonBuilder()
-                                                .setCustomId('button_coin_exec_sell_' + contract + "@75%")
-                                                .setLabel('Sell 75%')
-                                                .setStyle(4),
-                                            new ButtonBuilder()
-                                                .setCustomId('button_coin_exec_sell_' + contract + "@100%")
-                                                .setLabel('Sell 100%')
-                                                .setStyle(4),
-
-                                        );
-
-                                    const buttonsRow2 = new ActionRowBuilder()
-                                        .addComponents(
-                                            new ButtonBuilder()
-                                                .setCustomId('button_coin_tradelist_refresh_' + contract)
-                                                .setLabel('🔁 Refresh')
-                                                .setStyle(1),
-                                            new ButtonBuilder()
-                                                .setCustomId('coin_infra_tradepanel_help-button')
-                                                .setLabel('📑 Tutorial')
-                                                .setStyle(1),
-                                            new ButtonBuilder()
-                                                .setCustomId('coin_infra_tradepanel_audit-button')
-                                                .setLabel('📡 Audit')
-                                                .setStyle(1),
-                                            new ButtonBuilder()
-                                                .setCustomId('button_coin_tradepanel_setup')
-                                                .setLabel('💻 Setup')
-                                                .setStyle(1)
-                                        );
+                                            );
 
 
-                                        await interaction.editReply({ embeds: [userFTEmbed], components: [buttonsRow, buttonsRow1, buttonsRow2]  });
+                                        const buttonsRow1 = new ActionRowBuilder()
+                                            .addComponents(
+                                                new ButtonBuilder()
+                                                    .setCustomId('button_coin_exec_sell_' + contract + "@x%")
+                                                    .setLabel('Sell x %')
+                                                    .setStyle(4),
+                                                new ButtonBuilder()
+                                                    .setCustomId('button_coin_exec_sell_' + contract + "@25%")
+                                                    .setLabel('Sell 25%')
+                                                    .setStyle(4),
+                                                new ButtonBuilder()
+                                                    .setCustomId('button_coin_exec_sell_' + contract + "@50%")
+                                                    .setLabel('Sell 50%')
+                                                    .setStyle(4),
+                                                new ButtonBuilder()
+                                                    .setCustomId('button_coin_exec_sell_' + contract + "@75%")
+                                                    .setLabel('Sell 75%')
+                                                    .setStyle(4),
+                                                new ButtonBuilder()
+                                                    .setCustomId('button_coin_exec_sell_' + contract + "@100%")
+                                                    .setLabel('Sell 100%')
+                                                    .setStyle(4),
+
+                                            );
+
+                                        const buttonsRow2 = new ActionRowBuilder()
+                                            .addComponents(
+                                                new ButtonBuilder()
+                                                    .setCustomId('button_coin_tradelist_refresh_' + contract)
+                                                    .setLabel('🔁 Refresh')
+                                                    .setStyle(1),
+                                                new ButtonBuilder()
+                                                    .setCustomId('coin_infra_tradepanel_help-button')
+                                                    .setLabel('📑 Tutorial')
+                                                    .setStyle(1),
+                                                new ButtonBuilder()
+                                                    .setCustomId('coin_infra_tradepanel_audit-button')
+                                                    .setLabel('📡 Audit')
+                                                    .setStyle(1),
+                                                new ButtonBuilder()
+                                                    .setCustomId('button_coin_tradepanel_setup')
+                                                    .setLabel('💻 Setup')
+                                                    .setStyle(1)
+                                            );
+
+
+                                        await interaction.editReply({ embeds: [userFTEmbed], components: [buttonsRow, buttonsRow1, buttonsRow2] });
 
 
 
@@ -2028,17 +2024,46 @@ module.exports = {
 
 
 
-                                } else if (subcommand === 'portfolio') {
+                                } else if (subcommand === 'manager') {
+
+
+                                    const buttonsRow = new ActionRowBuilder()
+                                    .addComponents(
+                                        new ButtonBuilder()
+                                            .setCustomId('button_coin_manager_exec_transferETH')
+                                            .setLabel('Transfer ETH')
+                                            .setStyle(3),
+                                            new ButtonBuilder()
+                                            .setCustomId('button_coin_manager_exec_transferERC20')
+                                            .setLabel('Transfer Token')
+                                            .setStyle(3),
+                                            new ButtonBuilder()
+                                            .setCustomId('button_coin_manager_exec_approveToken')
+                                            .setLabel('Approve Token')
+                                            .setStyle(1),
+                                            new ButtonBuilder()
+                                            .setCustomId('button_coin_manager_exec_revokeToken')
+                                            .setLabel('Revoke Token')
+                                            .setStyle(1),
+                                            new ButtonBuilder()
+                                            .setCustomId('button_coin_tradepanel_setup')
+                                            .setLabel('💻 Setup')
+                                            .setStyle(1)
+                                    );
+
 
                                     const botOff = new EmbedBuilder().setColor("#060A8F")
-                                        .setTitle(`Bot Access`)
-                                        .setDescription("This command isn't released yet and will be available in the near feature.")
+                                        .setTitle(`Coin Manager`)
+                                        .setDescription("The coin manager allows you to manage your coin portfolio.\n\n**Fund Manager**\nSend, dispatch and manage your ETH or ERC20 tokens accross multiple wallets\n\n**Approval Manager**\nManage your token approvals : revoke, approve, modify an existing approval and more.")
                                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                         .setTimestamp()
                                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                                    await interaction.editReply({ embeds: [botOff] });
+                                    await interaction.editReply({ embeds: [botOff], components: [buttonsRow] });
+
+
+
 
                                 } else if (subcommand === 'wallet') {
 
@@ -2408,107 +2433,213 @@ module.exports = {
 
 
 // On crée quelques fonctions utiles
-async function decodeUniswapSwapEventV2(input, topics, block, toBlock, contract, wETH, decimals, timestamp) {
+async function decodeUniswapSwapEvent(version, input, topics, block, toBlock, contract, wETH, decimals, timestamp) {
 
-    // On définit les valeurs finales
-    let action
-    let eth
-    let token
-    let from
-    let price
+    if (version == "v2") {
+        // On définit les valeurs finales
+        let action
+        let eth
+        let token
+        let from
+        let price
 
-    const ethprice = 2000
+        const ethprice = 2000
 
-    // On isole les valeurs qui nous importent
-    const input2 = input.slice(2)
-    const amount0In = parseInt(input2.substring(0, 64), 16)
-    const amount1In = parseInt(input2.substring(64, 128), 16)
-    const amount0Out = parseInt(input2.substring(128, 192), 16)
-    const amount1Out = parseInt(input2.substring(192, 256), 16)
+        // On isole les valeurs qui nous importent
+        const input2 = input.slice(2)
+        const amount0In = parseInt(input2.substring(0, 64), 16)
+        const amount1In = parseInt(input2.substring(64, 128), 16)
+        const amount0Out = parseInt(input2.substring(128, 192), 16)
+        const amount1Out = parseInt(input2.substring(192, 256), 16)
 
-    const sender = topics[1]
-    const to = topics[2]
+        const sender = topics[1]
+        const to = topics[2]
 
-    // On définit lequel est A et lequel est B
-    const a1 = contract.toLowerCase();
-    const a2 = wETH.toLowerCase();
-    const token0 = a1 < a2 ? contract : wETH;
-    const token1 = a1 < a2 ? wETH : contract;
-
-
-    //Calcul du timestamp a retravailler ! 
-
-    const time = blockFromBlock(block, toBlock, timestamp)
+        // On définit lequel est A et lequel est B
+        const a1 = contract.toLowerCase();
+        const a2 = wETH.toLowerCase();
+        const token0 = a1 < a2 ? contract : wETH;
+        const token1 = a1 < a2 ? wETH : contract;
 
 
-    // // GET CODE POUR TAG (Est ce que c'est un bot ?)
-    // const code = await web3.eth.getCode(sender);
-    // let tag = ""
-    // if (code != "0x") { tag = "🤖" }
+        //Calcul du timestamp a retravailler ! 
 
-    // Le 0 est le token
-    if (token0.toLowerCase() == a1) {
+        const time = blockFromBlock(block, toBlock, timestamp)
 
-        // Il n'y a pas de token qui rentre ni de wETH qui sort
-        if (amount0In <= 0 && amount1Out <= 0) {
 
-            action = "buy"
-            eth = amount1In / 10 ** 18
-            token = amount0Out / 10 ** decimals
-            from = "0x" + to.substring(26, 66)
-            price = (eth / token) * ethprice
+        // // GET CODE POUR TAG (Est ce que c'est un bot ?)
+        // const code = await web3.eth.getCode(sender);
+        // let tag = ""
+        // if (code != "0x") { tag = "🤖" }
+
+        // Le 0 est le token
+        if (token0.toLowerCase() == a1) {
+
+            // Il n'y a pas de token qui rentre ni de wETH qui sort
+            if (amount0In <= 0 && amount1Out <= 0) {
+
+                action = "buy"
+                eth = amount1In / 10 ** 18
+                token = amount0Out / 10 ** decimals
+                from = "0x" + to.substring(26, 66)
+                price = (eth / token) * ethprice
+
+            } else {
+
+                // Il n'y a pas de wETH qui rentre ni de token qui sort
+
+                action = "sell"
+                eth = amount1Out / 10 ** 18
+                token = amount0In / 10 ** decimals
+                from = "0x" + sender.substring(26, 66)
+                price = (eth / token) * ethprice
+
+
+            }
+
 
         } else {
+            // Le 1 est le token
 
-            // Il n'y a pas de wETH qui rentre ni de token qui sort
+            // Il n'y a pas de token qui rentre ni de wETH qui sort
+            if (amount0In <= 0 && amount1Out <= 0) {
 
-            action = "sell"
-            eth = amount1Out / 10 ** 18
-            token = amount0In / 10 ** decimals
-            from = "0x" + sender.substring(26, 66)
-            price = (eth / token) * ethprice
+                action = "sell"
+                eth = amount0Out / 10 ** 18
+                token = amount1In / 10 ** decimals
+                from = "0x" + sender.substring(26, 66)
+                price = (eth / token) * ethprice
 
+            } else {
+
+                // Il n'y a pas de wETH qui rentre ni de token qui sort
+
+                action = "buy"
+                eth = amount0In / 10 ** 18
+                token = amount1Out / 10 ** decimals
+                from = "0x" + to.substring(26, 66)
+                price = (eth / token) * ethprice
+
+
+            }
 
         }
 
+const result = {
+    action: action,
+    eth: eth,
+    coin: token,
+    sender: from,
+    timestamp: time,
+    price: price
+}
+console.log(result)
+        return result
 
     } else {
-        // Le 1 est le token
 
-        // Il n'y a pas de token qui rentre ni de wETH qui sort
-        if (amount0In <= 0 && amount1Out <= 0) {
 
-            action = "sell"
-            eth = amount0Out / 10 ** 18
-            token = amount1In / 10 ** decimals
-            from = "0x" + sender.substring(26, 66)
-            price = (eth / token) * ethprice
+        // On définit les valeurs finales
+        let action
+        let eth
+        let token
+        let from
+        let price
+
+        const ethprice = 2000
+
+        // On isole les valeurs qui nous importent
+        const input2 = input.slice(2)
+        const amount0 = parseInt(input2.substring(0, 64), 16).toFixed(0)
+        const amount1  = parseInt(input2.substring(64, 128), 16)
+        // const priceX96 = parseInt(input2.substring(128, 192), 16)
+        // const liquidity = parseInt(input2.substring(192, 256), 16)
+        // const tick = parseInt(input2.substring(256, 320), 16)
+
+        const sender = topics[1]
+        const to = topics[2]
+
+        // On définit lequel est A et lequel est B
+        const a1 = contract.toLowerCase();
+        const a2 = wETH.toLowerCase();
+        const token0 = a1 < a2 ? contract : wETH;
+        const token1 = a1 < a2 ? wETH : contract;
+
+
+        //Calcul du timestamp a retravailler ! 
+
+        const time = blockFromBlock(block, toBlock, timestamp)
+
+
+        // // GET CODE POUR TAG (Est ce que c'est un bot ?)
+        // const code = await web3.eth.getCode(sender);
+        // let tag = ""
+        // if (code != "0x") { tag = "🤖" }
+
+        // Le 0 est le token
+        console.log(amount0)
+        console.log(amount1)
+
+        if (token0.toLowerCase() == a1) {
+
+            // Il n'y a pas de token qui rentre ni de wETH qui sort
+            if (amount0 < 0 && amount1 > 0) {
+
+                action = "buy"
+                eth = parseFloat(amount1 / 10 ** 18).toFixed(5)
+                token = Math.abs(amount0) / 10 ** decimals
+                from = "0x" + to.substring(26, 66)
+                price = (eth / token) * ethprice
+
+            } else {
+
+                // Il n'y a pas de wETH qui rentre ni de token qui sort
+
+                action = "sell"
+                eth = parseFloat(amount1 / 10 ** 18).toFixed(5)
+                token = Math.abs(amount0) / 10 ** decimals
+                from = "0x" + to.substring(26, 66)
+                price = (eth / token) * ethprice
+
+            }
+
 
         } else {
+            // Le 1 est le token
 
-            // Il n'y a pas de wETH qui rentre ni de token qui sort
+            if (amount0 < 0 && amount1 > 0) {
 
-            action = "buy"
-            eth = amount0In / 10 ** 18
-            token = amount1Out / 10 ** decimals
-            from = "0x" + to.substring(26, 66)
-            price = (eth / token) * ethprice
+                action = "sell"
+                eth = parseFloat(amount0 / 10 ** decimals).toFixed(5)
+                token =  Math.abs(amount1) / 10 ** 18
+                from = "0x" + to.substring(26, 66)
+                price = (eth / token) * ethprice
 
+            } else {
+
+                // Il n'y a pas de wETH qui rentre ni de token qui sort
+
+                action = "buy"
+                eth = parseFloat(amount0 / 10 ** decimals).toFixed(5)
+                token = Math.abs(amount1)  / 10 ** 18
+                from = "0x" + to.substring(26, 66)
+                price = (eth / token) * ethprice
+
+            }
 
         }
 
+
+        return {
+            action: action,
+            eth: eth,
+            coin: token,
+            sender: from,
+            timestamp: time,
+            price: price
+        }
+
     }
-
-
-    return {
-        action: action,
-        eth: eth,
-        coin: token,
-        sender: from,
-        timestamp: time,
-        price: price
-    }
-
 
 }
 

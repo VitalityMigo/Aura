@@ -152,8 +152,11 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_coin_tradelist_refresh_");
 			
+		} else if (customId.startsWith("button_coin_manager_exec_")) {
+
+			command = client.buttonCommands.get("button_coin_manager_exec_");
+			
 		}
-		
 		
 		
 		
@@ -163,7 +166,7 @@ module.exports = {
 		else  {
 			command = client.buttonCommands.get(customId);
 		}
-	
+
 		// If the interaction is not a command in cache, return error message.
 		// You can modify the error message at ./messages/defaultButtonError.js file!
 

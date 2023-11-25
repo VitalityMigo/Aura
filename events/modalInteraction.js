@@ -46,6 +46,8 @@ module.exports = {
 			command = client.modalCommands.get("modal_coin_exec_buy_");
 		} else if (customId.startsWith("modal_coin_exec_sell_")) {
 			command = client.modalCommands.get("modal_coin_exec_sell_");
+		} else if (customId.startsWith("modal_coin_manager_exec_")) {
+			command = client.modalCommands.get("modal_coin_manager_exec_");
 		} 
 		
 		

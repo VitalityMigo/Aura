@@ -122,7 +122,7 @@ module.exports = {
                                 const balance = await web3.eth.getBalance(decrypt(sender))
                                 const gasPriceRaw = await web3.eth.getGasPrice()
                                 const gasMargin = 1.1
-                                const gasPrice = gasPriceRaw * gasMargin
+                                const gasPrice = Math.ceil(gasPriceRaw * gasMargin)
                                 const valueRaw = await web3.utils.toWei(amount.toString(), 'ether');
                                 const value = parseInt(valueRaw)
 
@@ -322,7 +322,7 @@ module.exports = {
 
                                 const gasPriceRaw = await web3.eth.getGasPrice()
                                 const gasMargin = 1.1
-                                const gasPrice = gasPriceRaw * gasMargin
+                                const gasPrice = Math.ceil(gasPriceRaw * gasMargin)
                                 const value = 0
                                 const data = encodeTransfer(decrypt(sender), amount, decimals)
 

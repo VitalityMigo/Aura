@@ -120,7 +120,9 @@ module.exports = {
                             if (addressCount > 0) {
 
                                 const balance = await web3.eth.getBalance(decrypt(sender))
-                                const gasPrice = await web3.eth.getGasPrice()
+                                const gasPriceRaw = await web3.eth.getGasPrice()
+                                const gasMargin = 1.1
+                                const gasPrice = gasPriceRaw * gasMargin
                                 const valueRaw = await web3.utils.toWei(amount.toString(), 'ether');
                                 const value = parseInt(valueRaw)
 
@@ -149,7 +151,7 @@ module.exports = {
                                     const totalPrice = totalGasPrice + value
                                     const totalPriceMargin = totalPrice + (totalGasPrice * 1.1)
 
-                              
+
 
                                     if (totalPriceMargin < balance) {
 
@@ -318,7 +320,9 @@ module.exports = {
                                 const balanceToken = await balanceOfToken(factory, decrypt(sender))
                                 const amount = parseFloat(balanceToken * (1 - (ratio / 100))).toFixed(decimals)
 
-                                const gasPrice = await web3.eth.getGasPrice()
+                                const gasPriceRaw = await web3.eth.getGasPrice()
+                                const gasMargin = 1.1
+                                const gasPrice = gasPriceRaw * gasMargin
                                 const value = 0
                                 const data = encodeTransfer(decrypt(sender), amount, decimals)
 

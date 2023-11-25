@@ -68,6 +68,7 @@ module.exports = {
                     const data = txnTable.data
                     const value = txnTable.value
                     const addresses = infoTable.addresses
+                    const gasPrice = txnTable.gasPrice
 
                     const gasExpected = txnTable.gas_fees / 10 ** 18
 
@@ -104,6 +105,7 @@ module.exports = {
                         //On construit l'objet de transaction
                         const txn_param = {
                             gasLimit: gasLimit,
+                            gasPrice: gasPrice,
                             to: address,
                             value: value,
                             data: data,
@@ -283,6 +285,7 @@ module.exports = {
                     const contract = txnTable.contract
                     const tokenAmount = txnTable.amount_token
                     const addresses = infoTable.addresses
+                    const gasPrice = txnTable.gasPrice
 
                     const gasExpected = txnTable.gas_fees / 10 ** 18
 
@@ -319,6 +322,7 @@ module.exports = {
                         //On construit l'objet de transaction
                         const txn_param = {
                             gasLimit: gasLimit,
+                            gasPrice: gasPrice,
                             to: contract,
                             value: value,
                             data: data,

@@ -1316,6 +1316,46 @@ const manager_coin = sequelize.define('manager_coin', {
 
 
 
+//Alert up
+const tracker_coin = sequelize.define('tracker_coin', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    subjectUsername: {
+        type: Sequelize.STRING,
+    },
+    address: {
+        type: Sequelize.STRING,
+    },
+    buy: {
+        type: Sequelize.STRING,
+    },
+    sell: {
+        type: Sequelize.STRING,
+    },
+    mint: {
+        type: Sequelize.STRING,
+    },
+    approval: {
+        type: Sequelize.STRING,
+    },
+    deployment: {
+        type: Sequelize.STRING,
+    },
+
+
+});
+
 //Synching the tables
 
 accessSql.sync();
@@ -1346,7 +1386,7 @@ infra_coin.sync()
 farmer_friendTech.sync()
 exe_coin.sync()
 manager_coin.sync()
-
+tracker_coin.sync()
 
 //Export the tables informations
 module.exports = {
@@ -1379,6 +1419,7 @@ module.exports = {
     farmer_friendTech,
     exe_coin,
     manager_coin,
+    tracker_coin,
     Op,
 }
 

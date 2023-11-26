@@ -7,7 +7,7 @@
 
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
-const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize, infra_coin } = require('../../../events/database');
+const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize, infra_coin, tracker_coin } = require('../../../events/database');
 const moment = require('moment');
 
 // Fonctions d'execution et de formattage
@@ -154,6 +154,12 @@ module.exports = {
             subcommand
                 .setName("manager")
                 .setDescription("Manage your ETH and ERC20 token")
+
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("tracker")
+                .setDescription("Manage your coin wallet tracker")
 
         ),
 
@@ -1816,7 +1822,7 @@ module.exports = {
                                         for (const swap of events) {
 
                                             const decode = await decodeUniswapSwapEvent(version, swap.data, swap.topics, swap.blockNumber, toBlock, contract, wETH, tokenDecimals, timestamp)
-console.log(decode)
+                                            console.log(decode)
                                             // Formattage
                                             let act1 = "🟢"
                                             let act2 = "bought"
@@ -2028,28 +2034,28 @@ console.log(decode)
 
 
                                     const buttonsRow = new ActionRowBuilder()
-                                    .addComponents(
-                                        new ButtonBuilder()
-                                            .setCustomId('button_coin_manager_exec_transferETH')
-                                            .setLabel('Transfer ETH')
-                                            .setStyle(3),
+                                        .addComponents(
                                             new ButtonBuilder()
-                                            .setCustomId('button_coin_manager_exec_transferERC20')
-                                            .setLabel('Transfer Token')
-                                            .setStyle(3),
+                                                .setCustomId('button_coin_manager_exec_transferETH')
+                                                .setLabel('Transfer ETH')
+                                                .setStyle(3),
                                             new ButtonBuilder()
-                                            .setCustomId('button_coin_manager_exec_approveToken')
-                                            .setLabel('Approve Token')
-                                            .setStyle(1),
+                                                .setCustomId('button_coin_manager_exec_transferERC20')
+                                                .setLabel('Transfer Token')
+                                                .setStyle(3),
                                             new ButtonBuilder()
-                                            .setCustomId('button_coin_manager_exec_revokeToken')
-                                            .setLabel('Revoke Token')
-                                            .setStyle(1),
+                                                .setCustomId('button_coin_manager_exec_approveToken')
+                                                .setLabel('Approve Token')
+                                                .setStyle(1),
                                             new ButtonBuilder()
-                                            .setCustomId('button_coin_tradepanel_setup')
-                                            .setLabel('💻 Setup')
-                                            .setStyle(1)
-                                    );
+                                                .setCustomId('button_coin_manager_exec_revokeToken')
+                                                .setLabel('Revoke Token')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_tradepanel_setup')
+                                                .setLabel('💻 Setup')
+                                                .setStyle(1)
+                                        );
 
 
                                     const botOff = new EmbedBuilder().setColor("#060A8F")
@@ -2215,6 +2221,113 @@ console.log(decode)
 
 
 
+
+
+
+                                } else if (subcommand === 'tracker') {
+
+
+                                    const buttonsRow = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_infra_tracker_add')
+                                                .setLabel('Add Addresses')
+                                                .setStyle(3),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_infra_tracker_remove')
+                                                .setLabel('Remove Address')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_infra_tracker_reset')
+                                                .setLabel('Reset')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_infra_tracker_refresh')
+                                                .setLabel('🔁')
+                                                .setStyle(1),
+                                        );
+
+
+
+
+
+
+                                    const userList = await tracker_coin.findAll({ where: { authorId: authorId } })
+
+                                    let addressFormatted = "Address\n\n"
+                                    const maxAddress = 15
+                                    const spotLeft = maxAddress - userList.length
+
+                                    let buys = "❌"
+                                    let sells = "❌"
+                                    let mints = "❌"
+
+                                    if (userList.length > 0) {
+
+                                        if (userList[0].dataValues.buy == "true") { buys = "✅" }
+                                        if (userList[0].dataValues.sell == "true") { sells = "✅" }
+                                        if (userList[0].dataValues.mint == "true") { mints = "✅" }
+
+
+                                        const userListSliced = userList.slice(0, 16)
+                                        for (const object of userListSliced) {
+
+
+                                            addressFormatted += object.dataValues.address.toLowerCase() + "              \n"
+
+                                        }
+
+
+
+                                    } else {
+
+                                        addressFormatted = "No tracked address found in your profile             "
+
+                                    }
+
+                                    const buttonsRow2 = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_infra_tracker_buys')
+                                                .setLabel('Toggle Buys')
+                                                .setStyle(2)
+                                                .setDisabled(userList.length == 0),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_infra_tracker_sells')
+                                                .setLabel('Toggle Sells')
+                                                .setStyle(2)
+                                                .setDisabled(userList.length == 0),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_coin_infra_tracker_mints')
+                                                .setLabel('Toggle Mints')
+                                                .setStyle(2)
+                                                .setDisabled(userList.length == 0),
+                                        );
+
+
+                                    const botOff = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle(`Coin Tracker`)
+                                        .setDescription(">>> Displaying your coin wallet tracker")
+                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                        .addFields(
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Address Count", value: "`" + userList.length + "`", inline: true },
+                                            { name: "Spots Left", value: "`" + spotLeft + "`", inline: true },
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Address Tracked:", value: "```" +addressFormatted + "```", inline: false },
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Buys", value: "`" + buys + "`", inline: true },
+                                            { name: "Sells", value: "`" + sells + "`", inline: true },
+                                            { name: "Mints", value: "`" + mints + "`", inline: true },
+
+
+                                        )
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                        
+                                    await interaction.editReply({ embeds: [botOff], components: [buttonsRow, buttonsRow2] });
 
 
 
@@ -2525,15 +2638,15 @@ async function decodeUniswapSwapEvent(version, input, topics, block, toBlock, co
 
         }
 
-const result = {
-    action: action,
-    eth: eth,
-    coin: token,
-    sender: from,
-    timestamp: time,
-    price: price
-}
-console.log(result)
+        const result = {
+            action: action,
+            eth: eth,
+            coin: token,
+            sender: from,
+            timestamp: time,
+            price: price
+        }
+        console.log(result)
         return result
 
     } else {
@@ -2551,7 +2664,7 @@ console.log(result)
         // On isole les valeurs qui nous importent
         const input2 = input.slice(2)
         const amount0 = parseInt(input2.substring(0, 64), 16).toFixed(0)
-        const amount1  = parseInt(input2.substring(64, 128), 16)
+        const amount1 = parseInt(input2.substring(64, 128), 16)
         // const priceX96 = parseInt(input2.substring(128, 192), 16)
         // const liquidity = parseInt(input2.substring(192, 256), 16)
         // const tick = parseInt(input2.substring(256, 320), 16)
@@ -2611,7 +2724,7 @@ console.log(result)
 
                 action = "sell"
                 eth = parseFloat(amount0 / 10 ** decimals).toFixed(5)
-                token =  Math.abs(amount1) / 10 ** 18
+                token = Math.abs(amount1) / 10 ** 18
                 from = "0x" + to.substring(26, 66)
                 price = (eth / token) * ethprice
 
@@ -2621,7 +2734,7 @@ console.log(result)
 
                 action = "buy"
                 eth = parseFloat(amount0 / 10 ** decimals).toFixed(5)
-                token = Math.abs(amount1)  / 10 ** 18
+                token = Math.abs(amount1) / 10 ** 18
                 from = "0x" + to.substring(26, 66)
                 price = (eth / token) * ethprice
 

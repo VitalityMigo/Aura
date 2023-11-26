@@ -156,6 +156,10 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_coin_manager_exec_");
 			
+		} else if (customId.startsWith("button_coin_infra_tracker_")) {
+
+			command = client.buttonCommands.get("button_coin_infra_tracker_");
+			
 		}
 		
 		

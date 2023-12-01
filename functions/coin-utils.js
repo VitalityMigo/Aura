@@ -1,4 +1,4 @@
-const { ChainId, TradeContext, UniswapPair, UniswapPairSettings, ETH } = require('simple-uniswap-sdk')
+const { ChainId, TradeContext, TokensFactoryPublic, UniswapPair, UniswapPairSettings, ETH } = require('simple-uniswap-sdk')
 const colors = require("colors")
 const BigNumber = require('bignumber.js');
 const decrypt = require("./decrypt")
@@ -17,7 +17,8 @@ const wETH = "0xbcF9C3e618702Ab4a0D2055687C37A2846019C56"
 const wETH_decimals = 18
 
 // On initialise uniswap router V2
-const uniswapV2_router2_ABI = require('../contracts/uniswap/router2-v2.json')
+const uniswapV2_router2_ABI = require('../contracts/uniswap/router2-v2.json');
+
 const uniswapV2_router2_address = "0x7a250d5630b4cf539739df2c5dacb4c659f2488d"
 const routerV2 = new web3.eth.Contract(uniswapV2_router2_ABI, uniswapV2_router2_address);
 
@@ -98,6 +99,7 @@ async function createFactory(type, tokenOut, sender, slippage) {
     }
 
 }
+
 
 
 
@@ -211,7 +213,7 @@ async function generateTrade(type, factory, amountIn) {
                 approve_txn: approve_txn,
 
             }
-            console.log(trade)
+
             trade.destroy()
 
             return trade_param
@@ -646,8 +648,8 @@ async function getAllowance(factory, owner, spender, direction) {
 
             const allowance_call = await callList.allowance(owner, spender)
             const allowance_raw = allowance_call.toString()
-            console.log(allowance_call)
 
+            
             if (parseInt(allowance_raw) > 0) {
 
                 const allowance = parseInt(allowance_raw) / 10 ** decimals
@@ -758,8 +760,29 @@ function encodeRevoke(spender) {
 }
 
 
+async function getToken(tokenArray) {
+
+    try {
+
+    const tokensFactoryPublic = new TokensFactoryPublic(
+        { chainId: ChainId.MAINNET }
+    );
+
+    const tokens = await tokensFactoryPublic.getTokens(tokenArray);
+
+    return tokens
+
+    } catch (error) {
+        console.log(error.stack)
+        return null
+    }
+}
+
+
+
 module.exports = {
     createFactory,
+    getToken,
     generateTrade,
     encodeSwapExactETHForTokens,
     signTransaction,

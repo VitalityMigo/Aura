@@ -2260,13 +2260,13 @@ module.exports = {
 
                                     let buys = "❌"
                                     let sells = "❌"
-                                    let mints = "❌"
+                                    let approvals = "❌"
 
                                     if (userList.length > 0) {
 
                                         if (userList[0].dataValues.buy == "true") { buys = "✅" }
                                         if (userList[0].dataValues.sell == "true") { sells = "✅" }
-                                        if (userList[0].dataValues.mint == "true") { mints = "✅" }
+                                        if (userList[0].dataValues.mint == "true") { approvals = "✅" }
 
 
                                         const userListSliced = userList.slice(0, 16)
@@ -2298,8 +2298,8 @@ module.exports = {
                                                 .setStyle(2)
                                                 .setDisabled(userList.length == 0),
                                             new ButtonBuilder()
-                                                .setCustomId('button_coin_infra_tracker_mints')
-                                                .setLabel('Toggle Mints')
+                                                .setCustomId('button_coin_infra_tracker_approvals')
+                                                .setLabel('Toggle Approvals')
                                                 .setStyle(2)
                                                 .setDisabled(userList.length == 0),
                                         );
@@ -2318,7 +2318,7 @@ module.exports = {
                                             { name: " ", value: " ", inline: false },
                                             { name: "Buys", value: "`" + buys + "`", inline: true },
                                             { name: "Sells", value: "`" + sells + "`", inline: true },
-                                            { name: "Mints", value: "`" + mints + "`", inline: true },
+                                            { name: "Approvals", value: "`" + approvals + "`", inline: true },
 
 
                                         )

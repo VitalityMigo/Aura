@@ -15,6 +15,9 @@ const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBu
 const { accessSql, profileData, adminsql, reportsql, tracker_coin, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
+const fs = require('fs')
+const targetsJSON = 'contracts/uniswap/tracker.json';
+
 
 module.exports = {
     id: 'button_coin_infra_tracker_',
@@ -153,13 +156,13 @@ module.exports = {
 
                         let buys = "❌"
                         let sells = "❌"
-                        let mints = "❌"
+                        let approvals = "❌"
 
                         if (userList.length > 0) {
 
                             if (userList[0].dataValues.buy == "true") { buys = "✅" }
                             if (userList[0].dataValues.sell == "true") { sells = "✅" }
-                            if (userList[0].dataValues.mint == "true") { mints = "✅" }
+                            if (userList[0].dataValues.mint == "true") { approvals = "✅" }
 
 
                             const userListSliced = userList.slice(0, 16)
@@ -191,8 +194,8 @@ module.exports = {
                                     .setStyle(2)
                                     .setDisabled(userList.length == 0),
                                 new ButtonBuilder()
-                                    .setCustomId('button_coin_infra_tracker_mints')
-                                    .setLabel('Toggle Mints')
+                                    .setCustomId('button_coin_infra_tracker_approvals')
+                                    .setLabel('Toggle Approvals')
                                     .setStyle(2)
                                     .setDisabled(userList.length == 0),
                             );
@@ -211,9 +214,7 @@ module.exports = {
                                 { name: " ", value: " ", inline: false },
                                 { name: "Buys", value: "`" + buys + "`", inline: true },
                                 { name: "Sells", value: "`" + sells + "`", inline: true },
-                                { name: "Mints", value: "`" + mints + "`", inline: true },
-
-
+                                { name: "Approvals", value: "`" + approvals + "`", inline: true },
                             )
                             .setAuthor({ name: authorName, iconURL: userAvatar })
                             .setTimestamp()
@@ -262,8 +263,8 @@ module.exports = {
                                     .setLabel('Toggle Sells')
                                     .setStyle(2),
                                 new ButtonBuilder()
-                                    .setCustomId('button_coin_infra_tracker_mints')
-                                    .setLabel('Toggle Mints')
+                                    .setCustomId('button_coin_infra_tracker_approvals')
+                                    .setLabel('Toggle Approvals')
                                     .setStyle(2)
                             );
 
@@ -272,9 +273,11 @@ module.exports = {
 
                         await tracker_coin.destroy({ where: { authorId: authorId } })
 
+                        deleteAllAddress(authorId)
+
                         let buys = "❌"
                         let sells = "❌"
-                        let mints = "❌"
+                        let approvals = "❌"
 
 
                         const addressFormatted = "No tracked address found in your profile             "
@@ -293,7 +296,7 @@ module.exports = {
                                 { name: " ", value: " ", inline: false },
                                 { name: "Buys", value: "`" + buys + "`", inline: true },
                                 { name: "Sells", value: "`" + sells + "`", inline: true },
-                                { name: "Mints", value: "`" + mints + "`", inline: true },
+                                { name: "Approvals", value: "`" + approvals + "`", inline: true },
 
 
                             )
@@ -351,23 +354,23 @@ module.exports = {
                         }
 
 
-                    } else if (action === "mints") {
+                    } else if (action === "approvals") {
 
 
                         let taskEmbed = interaction.message.embeds[0].data
 
-                        if (taskEmbed.fields.find(obj => obj.name === "Mints").value == "`✅`") {
+                        if (taskEmbed.fields.find(obj => obj.name === "Approvals").value == "`✅`") {
 
-                            taskEmbed.fields.find(obj => obj.name === "Mints").value = "`❌`";
+                            taskEmbed.fields.find(obj => obj.name === "Approvals").value = "`❌`";
 
-                            await tracker_coin.update({ mint: "false", }, { where: { authorId: authorId } });
+                            await tracker_coin.update({ approval: "false", }, { where: { authorId: authorId } });
                             await interaction.update({ embeds: [taskEmbed], ephemeral: true });
 
                         } else {
 
-                            taskEmbed.fields.find(obj => obj.name === "Mints").value = "`✅`";
+                            taskEmbed.fields.find(obj => obj.name === "Approvals").value = "`✅`";
 
-                            await tracker_coin.update({ mint: "true", }, { where: { authorId: authorId } });
+                            await tracker_coin.update({ approval: "true", }, { where: { authorId: authorId } });
                             await interaction.update({ embeds: [taskEmbed], ephemeral: true });
 
                         }
@@ -503,3 +506,15 @@ module.exports = {
 
 
 
+function deleteAllAddress(authorId) {
+    let existingData = []
+    if (fs.existsSync(targetsJSON)) {
+        const fileContent = fs.readFileSync(targetsJSON, 'utf8');
+        existingData = JSON.parse(fileContent);
+    }
+
+    const filterData = existingData.filter(item => item.authorId != authorId)
+
+    // Écrivez le fichier JSON avec la nouvelle liste
+    fs.writeFileSync(targetsJSON, JSON.stringify(filterData, null, 2));
+}

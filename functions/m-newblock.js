@@ -2,8 +2,8 @@ const { EmbedBuilder } = require("discord.js");
 const { apimonitorsql, apiproviderssql, adminsql, paymentHistory, accessSql, interactionData, reportsql, sequelize } = require('../events/database')
 
 
-const formatCoinValueSign = require("../functions/formatNumberEmbed")
-const reduceText = require("../functions/reducetext")
+const formatCoinValueSign = require("./formatNumberEmbed")
+const reduceText = require("./reducetext")
 
 function formatWallet(input) {
     return input.length > 35 ? `${input.substring(0, 6)}…${input.substring(input.length - 6)}` : input;

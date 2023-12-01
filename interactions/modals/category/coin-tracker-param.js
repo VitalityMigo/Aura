@@ -13,6 +13,9 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { profileData, reportsql, infra_coin, accessSql, interactionData, adminsql, tracker_coin, infra_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
+const fs = require('fs')
+const targetsJSON = 'contracts/uniswap/tracker.json';
+
 const encrypt = require("../../../functions/encrypt")
 const decrypt = require("../../../functions/decrypt")
 
@@ -119,6 +122,8 @@ module.exports = {
                                             mint: "false",
                                         })
 
+                                        pushAddress(add, authorId)
+
                                         confirmed++
                                         userListCountUpdated++
 
@@ -213,6 +218,8 @@ module.exports = {
                         if (registeredList.includes(add)) {
 
                             await tracker_coin.destroy({ where: { authorId: authorId, address: add } })
+                            
+                            deleteAddress(add, authorId)
 
                             const confirmed = 1
 
@@ -376,3 +383,52 @@ module.exports = {
         }
     },
 };
+
+// fonctions 
+
+function pushAddress(address, authorId) {
+    let existingData = []
+    if (fs.existsSync(targetsJSON)) {
+        const fileContent = fs.readFileSync(targetsJSON, 'utf8');
+        existingData = JSON.parse(fileContent);
+    }
+
+    if (existingData.some(item => item.address === address && item.authorId === authorId)) {
+    const indexToRemove = existingData.findIndex(item => item.address === address && item.authorId === authorId);
+    if (indexToRemove !== -1) {
+        // L'objet a été trouvé, supprimez-le
+        existingData.splice(indexToRemove, 1);
+    }
+}
+    // Ajoutez le nouvel utilisateur à la liste existante
+
+
+        let obj = {
+            address: address.toLowerCase(),
+            authorId: authorId
+        }
+        existingData.push(obj);
+    
+
+    // Écrivez le fichier JSON avec la nouvelle liste
+    fs.writeFileSync(targetsJSON, JSON.stringify(existingData, null, 2));
+}
+
+
+function deleteAddress(address, authorId) {
+    let existingData = []
+    if (fs.existsSync(targetsJSON)) {
+        const fileContent = fs.readFileSync(targetsJSON, 'utf8');
+        existingData = JSON.parse(fileContent);
+    }
+
+    if (existingData.some(item => item.address === address && item.authorId === authorId)) {
+    const indexToRemove = existingData.findIndex(item => item.address === address && item.authorId === authorId);
+    if (indexToRemove !== -1) {
+        // L'objet a été trouvé, supprimez-le
+        existingData.splice(indexToRemove, 1);
+    }
+}
+    // Écrivez le fichier JSON avec la nouvelle liste
+    fs.writeFileSync(targetsJSON, JSON.stringify(existingData, null, 2));
+}

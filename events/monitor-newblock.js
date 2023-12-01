@@ -13,18 +13,23 @@ const formatCoinValueSign = require("../functions/formatNumberEmbed")
 const reduceText = require("../functions/reducetext")
 const contractType = require("../functions/contracttype")
 
-const blockInfosTreatment = require("../functions/newblock")
+const blockInfosTreatment = require("../functions/m-newblock")
 const erc20smartTreatment = require("../functions/m-erc20smartmoney")
 const addTimeout = require("../functions/addtimeout")
+const newContract = require("../functions/m-newcontract")
+const coinTracker = require("../functions/m-cointracker")
 
 const colors = require('colors');
-
+const fs = require("fs").promises
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
 dotenv.config()
 const infuraApiKey = process.env.infuraApiKey
 const etherscanApiKey = process.env.etherscanApiKey
+
+const trackerFile = "contracts/uniswap/tracker.json"
+
 
 
 
@@ -89,24 +94,6 @@ setTimeout(() => {
 
 
 
-let contract = ""
-let type = ""
-let name = ""
-let symbol = ""
-
-let createdSince = ""
-let deployer = ""
-let ownership = ""
-let devBalance = ""
-let deployerTxnCount = ""
-let deploymentTxn = ""
-
-let supply = ""
-let totalSupply = ""
-let decimals = ""
-let owner = ""
-let deployerBalance = ""
-let ownerBalance = ""
 
 // ON lance l'écoute
 web3.eth.subscribe('newBlockHeaders', async (error, header) => {
@@ -137,8 +124,11 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
         let contractCount = 0
         let contractList = []
 
-
-        console.log(colors.blue("🔗 New Block: " + blockNumber))
+        // On met à jour le fichier des wallets survéillés
+        // Fait ici car besoin d'une mise à jour en direct
+        const cachedTargets = await fs.readFile(trackerFile, 'utf8');
+        const targetsTable = JSON.parse(cachedTargets)
+        const targetsList = targetsTable.map((object) => object.address.toLowerCase());
 
 
         await web3.eth.getBlock(blockNumber, true, async (error, block) => {
@@ -147,271 +137,43 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                 return;
             }
 
-
             // Parcourez les transactions du bloc
             block.transactions.forEach(async transaction => {
 
                 transactionCount++
 
-                if (transaction.to == null && transaction.input !== '0x' && transaction.value == 0) {
+                // On déclare les valeurs de la transaction
+                // Valeurs réutilisé tout au long des monitors et executant
+                const to = transaction.to
+                const from = transaction.from.toLowerCase()
+                const value = transaction.value
+                const input = transaction.input
 
-                    await addTimeout(1.5)
 
+                // Nouveau contrat
+                if (to == null && input !== '0x' && value == 0) {
 
-                    await web3.eth.getTransactionReceipt(transaction.hash)
-                        .then(async receipt => {
-
-
-                            if (receipt) {
-
-                                if (receipt.contractAddress !== null) {
-
-                                    contractCount++
-
-                                    contract = receipt.contractAddress
-                                    deployer = receipt.from
-                                    deploymentTxn = receipt.transactionHash
-                                    deployerTxnCount = (transaction.nonce + 1).toString()
-                                    type = await contractType(contract)
-
-
-                                    console.log(colors.green("📄 Nouveau contrat " + type + " deployé"))
-                                    console.log("Contrat: " + contract)
-                                    console.log("Txn: " + deploymentTxn)
-
-
-                                    if (type == "ERC20") {
-
-                                        const tokenContract = await new web3.eth.Contract(erc20Standard, contract);
-                                        decimals = await tokenContract.methods.decimals().call();
-                                        owner = await tokenContract.methods.owner().call();
-                                        name = await tokenContract.methods.name().call();
-                                        symbol = await tokenContract.methods.symbol().call();
-                                        supply = await tokenContract.methods.totalSupply().call();
-                                        totalSupply = supply / 10 ** decimals
-
-                                        const balanceOfDeployer = await tokenContract.methods.balanceOf(deployer).call();
-                                        deployerBalance = balanceOfDeployer / 10 ** decimals
-
-                                        if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dead") {
-
-                                            ownership = "✅ Renounced"
-                                            devBalance = formatCoinValueSign(deployerBalance) + " (" + parseFloat((deployerBalance / totalSupply) * 100).toFixed(1) + "%)"
-
-                                        } else {
-
-                                            if (owner.toLowerCase() != deployer.toLowerCase()) {
-
-                                                const balanceOfOwner = await tokenContract.methods.balanceOf(owner).call();
-                                                ownerBalance = balanceOfOwner / 10 ** decimals
-
-                                            }
-
-                                            ownership = "❌ Not renounced"
-                                            devBalance = formatCoinValueSign(deployerBalance + ownerBalance) + " (" + parseFloat(((deployerBalance + ownerBalance) / totalSupply) * 100).toFixed(1) + "%)"
-
-                                        }
-
-
-
-
-
-
-                                        const newERC20 = new EmbedBuilder().setColor("#060A8F")
-                                            .setTitle(reduceText(name, 40) + " (" + symbol.toUpperCase() + ")")
-                                            .setDescription(">>> A new ERC20 contract has been created")
-                                            .addFields(
-                                                { name: " ", value: " ", inline: false },
-                                                { name: "Contract", value: "`" + contract.toLowerCase() + "`", inline: false },
-                                                { name: "Supply", value: "`" + formatCoinValueSign(totalSupply, 2) + "`", inline: true },
-                                                { name: "Type", value: "`" + type.toUpperCase() + "`", inline: true },
-                                                { name: "Dev. Txn Count", value: "`" + deployerTxnCount + "`", inline: true },
-                                                { name: "Dev. Balance", value: "`" + devBalance + "`", inline: true },
-                                                { name: "Ownership", value: "`" + ownership + "`", inline: true },
-                                                { name: "Contract Created", value: createdSince, inline: true },
-                                                { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + contract + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + contract + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + contract + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + contract + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + contract + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + contract + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + contract + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + contract + ")", inline: false },
-                                                { name: "Quicktasks", value: '[Thunder](http://localhost:7777/quickTask?module=defi&contract=' + contract + "&action=buy&blockchain=ethereum&platform=uniswapv2) ∙ " + '[Maestro]( https://t.me/MaestroSniperBot?start=' + contract + ") ∙ " + '[Sensei](https://app.thornhill.fun/defi?token=' + contract + "&venue=UNISWAP_V2&valueEth=0.05) ∙ " + '[Waifu]( http://localhost:7780/uniswapqt?contractAddress=' + contract + "&group=Default)", inline: false },
-
-
-                                            )
-                                            .setTimestamp()
-                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-
-
-                                        await channelNewERC20Contract.send({ embeds: [newERC20] });
-
-
-                                        // let obj20 = {}
-                                        // obj20.name = name
-                                        // obj20.symbal = symbol
-                                        // obj20.type = type
-                                        // obj20.contract = contract
-                                        // contractList.push(obj20)
-
-
-                                    } else if (type == "ERC721") {
-
-
-
-                                        const tokenContract = await new web3.eth.Contract(erc721Standard, contract);
-                                        owner = await tokenContract.methods.owner().call();
-                                        name = await tokenContract.methods.name().call();
-                                        symbol = await tokenContract.methods.symbol().call();
-                                        totalSupply = await tokenContract.methods.totalSupply().call();
-
-                                        const balanceOfDeployer = await tokenContract.methods.balanceOf(deployer).call();
-                                        deployerBalance = balanceOfDeployer
-
-                                        if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dead") {
-
-                                            ownership = "✅ Renounced"
-                                            devBalance = formatCoinValueSign(deployerBalance) + " (" + parseFloat((deployerBalance / totalSupply) * 100).toFixed(1) + "%)"
-
-                                        } else {
-
-                                            if (owner.toLowerCase() != deployer.toLowerCase()) {
-
-                                                const balanceOfOwner = await tokenContract.methods.balanceOf(owner).call();
-                                                ownerBalance = balanceOfOwner
-
-                                            }
-
-                                            ownership = "❌ Not renounced"
-                                            devBalance = formatCoinValueSign(deployerBalance + ownerBalance) + " (" + parseFloat(((deployerBalance + ownerBalance) / totalSupply) * 100).toFixed(1) + "%)"
-
-                                        }
-
-
-
-
-
-
-                                        const newERC721 = new EmbedBuilder().setColor("#060A8F")
-                                            .setTitle(name)
-                                            .setDescription(">>> A new ERC721 contract has been created")
-                                            .addFields(
-                                                { name: " ", value: " ", inline: false },
-                                                { name: "Contract", value: "`" + contract.toLowerCase() + "`", inline: false },
-                                                { name: "Supply", value: "`" + formatCoinValueSign(totalSupply, 2) + "`", inline: true },
-                                                { name: "Type", value: "`" + type.toUpperCase() + "`", inline: true },
-                                                { name: "Dev. Txn Count", value: "`" + deployerTxnCount + "`", inline: true },
-                                                { name: "Dev. Balance", value: "`" + devBalance + "`", inline: true },
-                                                { name: "Ownership", value: "`" + ownership + "`", inline: true },
-                                                { name: "Contract Created", value: createdSince, inline: true },
-                                                { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + contract + ") ∙ " + '[Opensea](https://opensea.io/collection/' + contract + ") ∙ " + '[Blur](https://blur.io/collection/' + contract + ") ∙ " + '[Magically](https://magically.gg/collection/' + contract + ") ∙ " + '[Holders](https://blur.io/collection/' + contract + "/holders) ∙ " + '[Deployer](https://etherscan.io/address/' + contract + ")", inline: false },
-
-
-                                            )
-                                            .setTimestamp()
-                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-
-
-                                        await channelNewERC721Contract.send({ embeds: [newERC721] });
-
-
-                                        // let obj721 = {}
-                                        // obj721.name = name
-                                        // obj721.symbal = symbol
-                                        // obj721.type = type
-                                        // obj721.contract = contract
-                                        // contractList.push(obj721)
-
-
-
-                                    }
-
-
-                                    // //On vérifie qu'aucun token similaire n'est dispo
-                                    // const tokenDB = erc20.findOne({ where: { contractAddress: contract.toLowerCase() } })
-
-
-                                    // // Il existe pas, on le crée
-                                    // if (tokenDB == null) {
-
-                                    //     let infoTable = []
-                                    //     let obj = {}
-                                    //     obj.supply = totalSupply
-                                    //     obj.deployer = deployer.toLowerCase()
-                                    //     obj.deploymentTxn = deploymentTxn
-                                    //     obj.deployerBalance = deployerBalance
-                                    //     obj.owner = owner.toLowerCase()
-                                    //     obj.ownerBalance = ownerBalance
-                                    //     obj.decimals = decimals
-                                    //     obj.block = blockNumber.toString()
-                                    //     infoTable.push(obj)
-
-                                    //     //On enregistre le call
-                                    //     erc20.create({
-                                    //         interactionId: "1",
-                                    //         contractAddress: contract.toLowerCase(),
-                                    //         name: name.toString(),
-                                    //         symbol: symbol.toString(),
-                                    //         type: type,
-                                    //         table1: JSON.stringify(infoTable),
-                                    //         created: actualTimestamp.toString()
-
-                                    //     })
-
-                                    // } else if (tokenDB != null) {
-
-                                    //     let infoTable = JSON.parse(tokenDB.dataValues.table1)
-
-                                    //     infoTable[0].supply = totalSupply
-                                    //     infoTable[0].deployer = deployer.toLowerCase()
-                                    //     infoTable[0].deploymentTxn = deploymentTxn
-                                    //     infoTable[0].deployerBalance = deployerBalance
-                                    //     infoTable[0].owner = owner.toLowerCase()
-                                    //     infoTable[0].ownerBalance = ownerBalance
-                                    //     infoTable[0].decimals = decimals
-                                    //     infoTable[0].block = blockNumber.toString()
-
-
-                                    //     await erc20.update({
-                                    //         table1: JSON.stringify(infoTable),
-                                    //         created: actualTimestamp.toString()
-                                    //     }, { where: { contractAddress: contract.toLowerCase() } })
-
-
-
-
-
-                                    // }
-
-
-
-                                }
-
-                            }
-
-
-                        })
-                        .catch(error => {
-                            console.error('Erreur lors de la récupération du reçu de la transaction :', error);
-                        });
-
-
-                } else {
-
-
-                    // TRANSACTIONS CLASSIQUES
-
-                    const fromWallet = transaction.from
-
-                    if (smartWalleterc20List.includes(fromWallet.toLowerCase())) {
-
-
-                        erc20smartTreatment(transaction)
-
-
-                    }
-
-
+                    newContract(transaction)
 
                 }
 
-                ////////////
+
+
+                // Transactions smart money erc20
+                if (smartWalleterc20List.includes(from.toLowerCase())) {
+
+                    erc20smartTreatment(transaction)
+
+                }
+
+
+
+                // Wallet tracker ERC20
+                if (targetsList.includes(from)) {
+
+                    coinTracker(transaction)
+
+                }
 
 
             })
@@ -419,6 +181,13 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
 
 
+
+
+
+
+
+        // Pour chaque block on récupère les informations
+        // On les envoie à la fonction qui affiche le nouveau bloc
         //Block monitor
         let burntFees = (header.baseFeePerGas / 10 ** 18) * blockGasUsed
 
@@ -436,6 +205,8 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
         blockInfos.push(objBlock)
 
         blockInfosTreatment(blockInfos, contractList)
+
+        console.log(colors.blue("🔗 New Block: " + blockNumber))
 
 
 

@@ -17,6 +17,19 @@ const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBu
 const { accessSql, profileData, reportsql, adminsql, interactionData, infra_coin, sequelize, exe_coin, infra_nft } = require('../../../events/database');
 const moment = require('moment');
 
+const buttonsRowNew = new ActionRowBuilder()
+    .addComponents(
+        new ButtonBuilder()
+            .setCustomId('button_infra_nft_walletsetup_import')
+            .setLabel('import wallet')
+            .setStyle(1),
+        new ButtonBuilder()
+            .setCustomId('button_infra_nft_walletsetup_generate')
+            .setLabel('generate wallet')
+            .setStyle(3),
+
+    );
+
 
 module.exports = {
     id: 'button_nft_exec_',

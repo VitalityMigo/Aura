@@ -1356,6 +1356,47 @@ const tracker_coin = sequelize.define('tracker_coin', {
 
 });
 
+
+//Alert up
+const infra_nft = sequelize.define('infra_nft', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    walletAddress: {
+        type: Sequelize.STRING,
+    },
+    privateKey: {
+        type: Sequelize.STRING,
+    },
+    gas_preset: {
+        type: Sequelize.STRING,
+    },
+    max_gwei: {
+        type: Sequelize.STRING,
+    },
+    ape_mode: {
+        type: Sequelize.STRING,
+    },
+    password: {
+        type: Sequelize.STRING,
+    },
+
+
+
+});
+
+
+
 //Synching the tables
 
 accessSql.sync();
@@ -1387,6 +1428,7 @@ farmer_friendTech.sync()
 exe_coin.sync()
 manager_coin.sync()
 tracker_coin.sync()
+infra_nft.sync()
 
 //Export the tables informations
 module.exports = {
@@ -1420,6 +1462,7 @@ module.exports = {
     exe_coin,
     manager_coin,
     tracker_coin,
+    infra_nft,
     Op,
 }
 

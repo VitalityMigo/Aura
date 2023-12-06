@@ -160,7 +160,19 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_coin_infra_tracker_");
 			
-		}
+		} else if (customId.startsWith("button_infra_nft_walletsetup_")) {
+
+			command = client.buttonCommands.get("button_infra_nft_walletsetup_");
+			
+		} else if (customId.startsWith("button_nft_tradepanel_refresh_")) {
+
+			command = client.buttonCommands.get("button_nft_tradepanel_refresh_");
+			
+		} else if (customId.startsWith("button_nft_exec_")) {
+
+			command = client.buttonCommands.get("button_nft_exec_");
+			
+		} 
 		
 		
 		

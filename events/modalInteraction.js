@@ -50,6 +50,8 @@ module.exports = {
 			command = client.modalCommands.get("modal_coin_manager_exec_");
 		} else if (customId.startsWith("modal_coin_infra_tracker_")) {
 			command = client.modalCommands.get("modal_coin_infra_tracker_");
+		} else if (customId.startsWith("modal_infra_nft_walletsetup_")) {
+			command = client.modalCommands.get("modal_infra_nft_walletsetup_");
 		} 
 		
 		

@@ -129,9 +129,8 @@ module.exports = {
 
                                     const existingCollection = collectionTable.find(c => c.name === element.name);
                                     if (existingCollection) {
-                                        console.log(element.name + " = " + existingCollection.name)
-                                        console.log(element.allTimeVolume + " = " + existingCollection.volume)
-
+                                       
+                                        
                                         if (obj.volume > existingCollection.volume) {
                                             existingCollection.name = obj.name;
                                             existingCollection.id = obj.id;
@@ -145,8 +144,8 @@ module.exports = {
                             }
                         });
 
-                        console.log(collectionTable)
 
+                        
                         result.forEach(element => {
                             //console.log(element.name)
                             if (element) {

@@ -13,12 +13,8 @@ const moment = require('moment');
 // Fonctions d'execution et de formattage
 const { createFactory } = require('../../../functions/coin-utils')
 
-const reduceText = require("../../../functions/reducetext")
-const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
-const getApprovals = require("../../../functions/getApprovals")
 const getEthPrice = require('../../../functions/getethprice')
 const decrypt = require("../../../functions/decrypt")
-const encrypt = require("../../../functions/encrypt")
 const isHttps = require('../../../functions/isHttps')
 
 //Récupérer les clefs API
@@ -48,11 +44,6 @@ sdk.auth(reservoirApiKey);
 
 const sdk3 = require('api')('@reservoirprotocol/v3.0#9eilkbbprl8');
 sdk3.auth(reservoirApiKey);
-
-//Gallop API
-const gallop = require('api')('@gallop/v1.0#4uq6vlfu0opx7');
-gallop.auth(gallopApiKey);
-
 
 //Block Span API
 const bsp = require('api')('@blockspan/v1.0#9zxl2sledru983');
@@ -276,8 +267,9 @@ module.exports = {
                                             .then(async ({ data: collectionData }) => {
 
 
-                                                const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                                               // const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
 
+                                                const ethPricePromise = getEthPrice()
 
 
 
@@ -306,7 +298,6 @@ module.exports = {
                                                 collectionFloor1D = collectionData.collections[0].floorSale["1day"]
                                                 floorChange1D = parseFloat(((collectionFloor - collectionFloor1D) / collectionFloor1D) * 100)
                                                 collectionMarketCap = collectionFloor * collectionSupply
-                                                ethPriceUsd = ethUsdPrice.data.result.ethusd
                                                 totalVolume7D = collectionData.collections[0].volume["7day"]
                                                 totalSales7D = collectionData.collections[0].salesCount["7day"]
                                                 collectionFloor7D = collectionData.collections[0].floorSale["7day"]
@@ -327,7 +318,7 @@ module.exports = {
                                                 // Mise en forme 1D Change
                                                 if (floorChange1D !== 0 && collectionFloor) {
 
-                                                    if (floorChange1D > 0) { roiPrefix = "+"; roiSuffix = " :chart_with_upwards_trend:"; } else if (floorChange1D < 0) { roiSuffix = " :chart_with_downwards_trend:"; } floorChange1DFormatted = "`" + roiPrefix + parseFloat(floorChange1D).toFixed(2) + "%" + "`" + roiSuffix;
+                                                    if (floorChange1D > 0) { roiPrefix = "+"; roiSuffix = "📈"; } else if (floorChange1D < 0) { roiSuffix = "📉"; } floorChange1DFormatted = "`" + roiPrefix + parseFloat(floorChange1D).toFixed(2) + "% " + roiSuffix + "`"
 
                                                     // if (floorChange1D > 0) { roiPrefix = "+"; roiSuffix = " :chart_with_upwards_trend:"; } else if (floorChange1D < 0) { roiSuffix = " :chart_with_downwards_trend:"; } floorChange1DFormatted = "`" + roiPrefix + parseFloat(floorChange1D).toFixed(2) + "% (" + ((collectionFloor1D - collectionFloor) * ethPriceUsd).toFixed(0) +  "$)`";
 
@@ -337,7 +328,7 @@ module.exports = {
                                                 // Mise en forme 7D Change
                                                 if (floorChange7D !== 0 && collectionFloor) {
 
-                                                    if (floorChange7D > 0) { roiPrefix7 = "+"; roiSuffix7 = " :chart_with_upwards_trend:"; } else if (floorChange7D < 0) { roiSuffix7 = " :chart_with_downwards_trend:"; } floorChange7DFormatted = "`" + roiPrefix7 + parseFloat(floorChange7D).toFixed(2) + "%" + "`" + roiSuffix7;
+                                                    if (floorChange7D > 0) { roiPrefix7 = "+"; roiSuffix7 = "📈"; } else if (floorChange7D < 0) { roiSuffix7 = "📉"; } floorChange7DFormatted = "`" + roiPrefix7 + parseFloat(floorChange7D).toFixed(2) + "% " + roiSuffix7 + "`"
 
                                                 } else if (floorChange7D === 0 || floorChange7D === "NaN") { floorChange7DFormatted = "`0.00%`" } else if (floorChange7D === "N/A") { floorChange7DFormatted = "'N/A'" }
 
@@ -345,7 +336,7 @@ module.exports = {
                                                 // Mise en forme 7D Change
                                                 if (floorChange30D !== 0 && collectionFloor) {
 
-                                                    if (floorChange30D > 0) { roiPrefix30 = "+"; roiSuffix30 = " :chart_with_upwards_trend:"; } else if (floorChange30D < 0) { roiSuffix30 = " :chart_with_downwards_trend:"; } floorChange30DFormatted = "`" + roiPrefix30 + parseFloat(floorChange30D).toFixed(2) + "%" + "`" + roiSuffix30;
+                                                    if (floorChange30D > 0) { roiPrefix30 = "+"; roiSuffix30 = "📈"; } else if (floorChange30D < 0) { roiSuffix30 =  "📉"; } floorChange30DFormatted = "`" + roiPrefix30 + parseFloat(floorChange30D).toFixed(2) + "% " + roiSuffix30 + "`"
 
                                                 } else if (floorChange30D === 0 || floorChange30D === "NaN") { floorChange30DFormatted = "`0.00%`" } else if (floorChange30D === "N/A") { floorChange30DFormatted = "'N/A'" }
 
@@ -354,93 +345,8 @@ module.exports = {
 
 
 
-                                                //On fait la fonction pour trouver la valeur des walls à afficher
-                                                let wall1 = 0
-                                                let wall2 = 0
-                                                let wall3 = 0
 
-                                                if (collectionFloor >= 10) {
-                                                    wall1 = ((Math.ceil((collectionFloor) * 1) / 1) + 2).toFixed(1);
-                                                    wall2 = ((Math.ceil((collectionFloor) * 1) / 1) + 5).toFixed(1);
-                                                    wall3 = ((Math.ceil((collectionFloor) * 1) / 1) + 10).toFixed(1);
-                                                } else if (collectionFloor >= 1 && collectionFloor < 10) {
-                                                    wall1 = ((Math.ceil((collectionFloor) * 10) / 10) + 0.5).toFixed(1);
-                                                    wall2 = ((Math.ceil((collectionFloor) * 10) / 10) + 1).toFixed(1);
-                                                    wall3 = ((Math.ceil((collectionFloor) * 10) / 10) + 2).toFixed(1);
-                                                } else if (collectionFloor >= 0.3 && collectionFloor < 1) {
-                                                    wall1 = ((Math.ceil((collectionFloor) * 10) / 10) + 0.15).toFixed(2);
-                                                    wall2 = ((Math.ceil((collectionFloor) * 10) / 10) + 0.3).toFixed(2);
-                                                    wall3 = ((Math.ceil((collectionFloor) * 10) / 10) + 0.5).toFixed(2);
-                                                } else if (collectionFloor >= 0.1 && collectionFloor < 0.3) {
-                                                    wall1 = ((Math.ceil((collectionFloor) * 10) / 10) + 0.1).toFixed(2);
-                                                    wall2 = ((Math.ceil((collectionFloor) * 10) / 10) + 0.2).toFixed(2);
-                                                    wall3 = ((Math.ceil((collectionFloor) * 10) / 10) + 0.3).toFixed(2);
-                                                } else if (collectionFloor >= 0.01 && collectionFloor < 0.1) {
-                                                    wall1 = ((Math.ceil((collectionFloor) * 100) / 100) + 0.05).toFixed(2);
-                                                    wall2 = ((Math.ceil((collectionFloor) * 100) / 100) + 0.1).toFixed(2);
-                                                    wall3 = ((Math.ceil((collectionFloor) * 100) / 100) + 0.15).toFixed(2);
-                                                } else if (collectionFloor < 0.01) {
-                                                    wall1 = ((Math.ceil((collectionFloor) * 1000) / 1000) + 0.02).toFixed(2);
-                                                    wall2 = ((Math.ceil((collectionFloor) * 1000) / 1000) + 0.04).toFixed(2);
-                                                    wall3 = ((Math.ceil((collectionFloor) * 1000) / 1000) + 0.07).toFixed(2);
-                                                }
-
-
-
-
-                                                let bidSupportFormatted = "No bids"
-                                                let listingWallFormatted = "No Listings"
-                                                let moveRange = 0
-
-                                                let elementWithMaxPrice = {}
-                                                let elementWithMaxWall = {}
-
-
-                                                sdk3.getOrdersDepthV1({ side: 'buy', collection: selectedCollection, accept: '*/*' })
-                                                    .then(async ({ data: bidsList }) => {
-
-                                                        if (bidsList.depth.length > 0) {
-
-                                                            // Trouver l'élément avec le prix le plus grand
-                                                            elementWithMaxPrice = bidsList.depth.reduce((acc, curr) => {
-                                                                return curr.quantity > acc.quantity ? curr : acc;
-                                                            });
-
-
-                                                            bidSupportFormatted = elementWithMaxPrice.quantity + " @ " + parseFloat(elementWithMaxPrice.price).toFixed(3) + "Ξ"
-
-
-
-                                                        }
-
-
-                                                        sdk3.getOrdersDepthV1({ side: 'sell', collection: selectedCollection, accept: '*/*' })
-                                                            .then(async ({ data: listingList }) => {
-
-
-                                                                if (listingList.depth.length > 0) {
-
-                                                                    // Trouver l'élément avec le prix le plus grand
-                                                                    elementWithMaxWall = listingList.depth.reduce((acc, curr) => {
-                                                                        return curr.quantity > acc.quantity ? curr : acc;
-                                                                    });
-
-
-                                                                    listingWallFormatted = elementWithMaxWall.quantity + " @ " + parseFloat(elementWithMaxWall.price).toFixed(3) + "Ξ"
-
-
-
-                                                                }
-
-
-                                                                if (elementWithMaxWall.price > 0) {
-
-                                                                    moveRange = parseFloat(elementWithMaxWall.price - elementWithMaxPrice.price).toFixed(3)
-
-
-                                                                }
-
-
+                                               
                                                                 const date = new Date(collectionDate);
                                                                 //const dateLisible = date.toLocaleString();
 
@@ -490,7 +396,7 @@ module.exports = {
                                                                             .setCustomId('button_nft_exec_newbid_' + selectedCollection)
                                                                             .setLabel('✨ New Bid')
                                                                             .setStyle(3),
-                                                                            new ButtonBuilder()
+                                                                        new ButtonBuilder()
                                                                             .setCustomId('button_nft_exec_snipe_' + selectedCollection)
                                                                             .setLabel('🔫 Snipe')
                                                                             .setStyle(3),
@@ -516,12 +422,28 @@ module.exports = {
                                                                             .setCustomId('nft_infra_tradepanel_help-button')
                                                                             .setLabel('📑 Tutorial')
                                                                             .setStyle(1),
+                                                                        new ButtonBuilder()
+                                                                            .setCustomId('button_nft_tradepanel_listingDepth_' + selectedCollection)
+                                                                            .setLabel('📊 Listings')
+                                                                            .setStyle(1),
+                                                                        new ButtonBuilder()
+                                                                            .setCustomId('button_nft_tradepanel_bidsDepth_' + selectedCollection)
+                                                                            .setLabel('👨🏽‍⚖️ Bids')
+                                                                            .setStyle(1),
 
                                                                     )
 
 
+                                                                //"]
 
 
+                                                                if (!isHttps(collectionBanner)) {
+                                                                    collectionBanner = "https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png"
+                                                                }
+
+
+                                                               [ethPriceUsd] = await Promise.all([ethPricePromise])
+                                                                
                                                                 const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
                                                                     .setTitle(collectionName)
                                                                     .setDescription(collectionDescription)
@@ -546,9 +468,9 @@ module.exports = {
                                                                         { name: "30D Volume", value: "`" + totalVolume30D.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume7D).toFixed(0)) + "$)`", inline: true },
                                                                         { name: "30D Floor Change", value: floorChange30DFormatted, inline: true },
                                                                         { name: "30D Sales", value: "`" + totalSales30D + "`", inline: true },
-                                                                        { name: "Listing Wall", value: "`" + listingWallFormatted + "`", inline: true },
-                                                                        { name: "Bid Support", value: "`" + bidSupportFormatted + "`", inline: true },
-                                                                        { name: "Volatility Range", value: "`" + moveRange + "Ξ`", inline: true },
+                                                                      //  { name: "Listing Wall", value: "`" + listingWallFormatted + "`", inline: true },
+                                                                      //  { name: "Bid Support", value: "`" + bidSupportFormatted + "`", inline: true },
+                                                                      //  { name: "Volatility Range", value: "`" + moveRange + "Ξ`", inline: true },
                                                                         { name: "Market Cap", value: "`" + collectionMarketCap.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * collectionMarketCap).toFixed(0)) + "$)`", inline: true },
                                                                         { name: "Creation Date", value: "`" + dateLisible + "`", inline: true },
                                                                         { name: "Royalties", value: "`" + collectionRoyaltiesFormatted + "`", inline: true },
@@ -573,8 +495,8 @@ module.exports = {
                                                                 await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "ethUsdPrice", apiProvider: "etherscan", timestamp: timeStamp.toString() })
 
                                                             })
-                                                    })
-                                            })
+                                                    
+                                            
 
 
                                     } else {

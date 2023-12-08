@@ -438,6 +438,15 @@ module.exports = {
                                                         .setCustomId('nft_infra_tradepanel_help-button')
                                                         .setLabel('📑 Tutorial')
                                                         .setStyle(1),
+                                                        new ButtonBuilder()
+                                                        .setCustomId('button_nft_tradepanel_listingDepth_' + selectedCollection)
+                                                        .setLabel('📊 Listings')
+                                                        .setStyle(1),
+                                                        new ButtonBuilder()
+                                                        .setCustomId('button_nft_tradepanel_bidsDepth_' + selectedCollection)
+                                                        .setLabel('👨🏽‍⚖️ Bids')
+                                                        .setStyle(1),
+
 
                                                 )
 

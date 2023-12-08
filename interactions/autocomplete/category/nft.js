@@ -33,6 +33,8 @@ sdk.auth(reservoirApiKey);
 const sdk2 = require('api')('@reservoirprotocol/v3.0#434y7jljnak92y');
 sdk2.auth(reservoirApiKey);
 
+const sdk3 = require('api')('@reservoirprotocol/v3.0#469em3alpswg158');
+sdk3.auth(reservoirApiKey);
 
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
@@ -71,18 +73,19 @@ module.exports = {
             if (focusedValue == "") {
 
 
-                sdk2.getCollectionsTopsellingV1({ fillType: 'sale', limit: '20', accept: '*/*' })
+                sdk3.getCollectionsTrendingV1({ limit: '20', accept: '*/*' })
                     .then(({ data }) => {
                         data.collections.forEach(element => {
                             //console.log(element.name)
                             if (element) {
+                                console.log(element)
                                 const projectName = element.name
                                 const pjAddress = element.id
                                 choices.push({ name: projectName, value: pjAddress });
                             }
                         });
 
-
+                        
                         interaction.respond(
                             choices.map((choice) => ({ name: choice.name, value: choice.value }))
                         ).catch((err) => {

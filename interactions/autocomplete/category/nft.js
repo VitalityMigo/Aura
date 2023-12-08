@@ -78,7 +78,6 @@ module.exports = {
                         data.collections.forEach(element => {
                             //console.log(element.name)
                             if (element) {
-                                console.log(element)
                                 const projectName = element.name
                                 const pjAddress = element.id
                                 choices.push({ name: projectName, value: pjAddress });

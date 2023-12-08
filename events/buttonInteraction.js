@@ -172,6 +172,14 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_nft_exec_");
 			
+		} else if (customId.startsWith("button_nft_tradepanel_bidsDepth_")) {
+
+			command = client.buttonCommands.get("button_nft_tradepanel_bidsDepth_");
+			
+		} else if (customId.startsWith("button_nft_tradepanel_listingDepth_")) {
+
+			command = client.buttonCommands.get("button_nft_tradepanel_listingDepth_");
+			
 		} 
 		
 		

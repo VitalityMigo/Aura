@@ -189,18 +189,27 @@ module.exports = {
 
                             } else {
 
-                                const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
-                                    .setTitle("NFT Data")
-                                    .setDescription("An error occured while retreiving the bids data. Please try again using `/nft data` or contact a team member if you need help.")
-                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                    .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
-                                    .setTimestamp()
-                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                const linksFormatted = interaction.message.embeds[0].data.fields.find(obj => obj.name === "Links").value
 
+                                const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
+                                .setTitle("Bids Depth")
+                                .setDescription(">>> Displaying the top bids")
+                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                .addFields(
+                                    { name: " ", value: " ", inline: false },
+                                    { name: "Total Bids Value", value: "`0.000Ξ`", inline: true },
+                                    { name: "Bid Count", value: "`0`", inline: true },
+                                    { name: "Unique Bidders", value: "`0`", inline: true },
+                                    { name: " ", value: " ", inline: false },
+                                    { name: "Bids", value: "```No bids found for this collection                        ```", inline: true },
+                                    { name: "Links", value: linksFormatted, inline: false },
+                                    // { name: "Page", value: "`[1/" + pageIndex + "]`", inline: true },
 
+                                )
+                                .setTimestamp()
+                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-
-                                await interaction.editReply({ embeds: [gasTrackerEmbed2], ephemeral: true });
+                            await interaction.editReply({ embeds: [getBlurOneWallet], components: [] })
 
 
                             }

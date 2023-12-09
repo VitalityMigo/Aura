@@ -80,10 +80,9 @@ module.exports = {
 
                             if (listings.length > 0) {
 
-                               
-                                const priceRanges = generatePriceRanges(listings);
 
-                                
+                                const priceRanges = generatePriceRanges(listings)
+
                                 const slicedRanges = priceRanges.slice(0, 15)
                                 const maxQuantity = Math.max(...slicedRanges.map(item => parseFloat(item.amount)));
 
@@ -104,7 +103,7 @@ module.exports = {
                                     total += amount
 
 
-                                    
+
                                     // let lignMaxSize = 55
                                     let part1 = parseFloat(price).toFixed(2) + "Ξ " + bars
                                     let part2 = amount
@@ -304,6 +303,7 @@ module.exports = {
 function generatePriceRanges(prices) {
 
     const floor = prices[0].price
+    const rangeAmount = 15
 
 
 
@@ -327,40 +327,59 @@ function generatePriceRanges(prices) {
 
     }
 
-    const rangeA = getFirstRange(floor, threshold)
-
-    function calculateAmounts(prices, initialPrice, step) {
+    function generateBase(initialPrice, step, count) {
         const result = [];
 
-        let currentPrice = initialPrice;
-        let totalAmount = 0;
-
-        while (currentPrice <= prices[prices.length - 1].price) {
-            const amount = prices.reduce((total, item) => {
-                if (item.price <= currentPrice) {
-                    return total + item.quantity;
-                }
-                return total;
-            }, 0);
-
-            const amountInStep = amount - totalAmount;
-            totalAmount = amount;
-
-            result.push({ price: currentPrice, amount: amountInStep });
-            currentPrice += step;
+        for (let i = 0; i <= count; i++) {
+            const price = initialPrice + i * step;
+            result.push({ price, amount: 0 });
         }
 
         return result;
     }
 
-    const result = calculateAmounts(prices, rangeA, threshold)
+    const firstRange = getFirstRange(floor, threshold)
+    const table = generateBase(firstRange, threshold, (rangeAmount - 1))
 
-    return result
+    console.log(table)
+    let index = 0
+
+    for (const obj of prices) {
+
+
+        const price = obj.price
+        const amount = obj.quantity
+        const range = table[index].price
+
+        if (price <= range) {
+            table[index].amount += amount
+        } else {
+
+            while (price > table[index].price) {
+                console.log(table[index].amount)
+                index++
+
+                if (index == (rangeAmount - 1)) {
+                    console.log(table)
+                    return table
+                }
+            }
+
+            table[index].amount += amount
+
+            if (index == (rangeAmount - 1)) {
+                console.log(table)
+                return table
+            }
+
+        }
+
+
+
+
+    }
+
+
 
 }
-
-
-
-
-
 

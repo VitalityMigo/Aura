@@ -101,6 +101,17 @@ function formatWallet2(input) {
 }
 
 
+function cutString(string) {
+    stringLength = string.length
+    if (stringLength > 300) {
+        console.log(stringLength)
+        return string.substring(0, 300) + "..."
+    } else {
+        return string
+    }
+}
+
+
 
 module.exports = {
     id: 'button_nft_tradepanel_refresh_',
@@ -199,313 +210,235 @@ module.exports = {
                         .then(async ({ data: collectionData }) => {
 
 
-                            const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                              // const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
 
+                              const ethPricePromise = getEthPrice()
 
 
 
-                            // if (collectionData.collections[0].lenght > 0) {
+                              // if (collectionData.collections[0].lenght > 0) {
 
-                            collectionName = collectionData.collections[0].name
-                            collectionDescription = collectionData.collections[0].description
-                            collectionTwitter = collectionData.collections[0].twitterUsername
-                            collectionWebsite = collectionData.collections[0].externalUrl
-                            collectionBanner = collectionData.collections[0].banner
-                            collectionSlug = collectionData.collections[0].slug
-                            collectionDate = collectionData.collections[0].createdAt
-                            collectionRoyalties = collectionData.collections[0].royalties.bps
-                            collectionRoyaltiesFormatted = parseFloat(collectionRoyalties / 100 + 0.5).toFixed(2) + "%"
-                            collectionSupply = collectionData.collections[0].tokenCount
-                            collectionTotalListings = collectionData.collections[0].onSaleCount
-                            collectionListingRatio = parseFloat((collectionTotalListings * 100) / collectionSupply).toFixed(3)
-                            collectionTopBid = collectionData.collections[0].topBid.price.amount.decimal
-                            collectionFloor = collectionData.collections[0].floorAsk.price.amount.decimal
-                            collectionOwners = collectionData.collections[0].ownerCount
-                            collectionUniqueOwners = parseFloat((collectionOwners * 100) / collectionSupply).toFixed(2) + "%"
-                            totalVolume = collectionData.collections[0].volume.allTime
-                            totalSales = collectionData.collections[0].salesCount.allTime
-                            totalVolume1D = collectionData.collections[0].volume["1day"]
-                            totalSales1D = collectionData.collections[0].salesCount["1day"]
-                            collectionFloor1D = collectionData.collections[0].floorSale["1day"]
-                            floorChange1D = parseFloat(((collectionFloor - collectionFloor1D) / collectionFloor1D) * 100)
-                            collectionMarketCap = collectionFloor * collectionSupply
-                            ethPriceUsd = ethUsdPrice.data.result.ethusd
-                            totalVolume7D = collectionData.collections[0].volume["7day"]
-                            totalSales7D = collectionData.collections[0].salesCount["7day"]
-                            collectionFloor7D = collectionData.collections[0].floorSale["7day"]
-                            floorChange7D = parseFloat(((collectionFloor - collectionFloor7D) / collectionFloor7D) * 100)
-                            totalVolume30D = collectionData.collections[0].volume["30day"]
-                            totalSales30D = collectionData.collections[0].salesCount["30day"]
-                            collectionFloor30D = collectionData.collections[0].floorSale["30day"]
-                            floorChange30D = parseFloat(((collectionFloor - collectionFloor30D) / collectionFloor30D) * 100)
+                              collectionName = collectionData.collections[0].name
+                              collectionDescription = collectionData.collections[0].description
+                              collectionTwitter = collectionData.collections[0].twitterUsername
+                              collectionWebsite = collectionData.collections[0].externalUrl
+                              collectionBanner = collectionData.collections[0].banner
+                              collectionSlug = collectionData.collections[0].slug
+                              collectionDate = collectionData.collections[0].createdAt
+                              collectionRoyalties = collectionData.collections[0].royalties.bps
+                              collectionRoyaltiesFormatted = parseFloat(collectionRoyalties / 100 + 0.5).toFixed(2) + "%"
+                              collectionSupply = collectionData.collections[0].tokenCount
+                              collectionTotalListings = collectionData.collections[0].onSaleCount
+                              collectionListingRatio = parseFloat((collectionTotalListings * 100) / collectionSupply).toFixed(3)
+                              collectionTopBid = collectionData.collections[0].topBid.price.amount.decimal
+                              collectionFloor = collectionData.collections[0].floorAsk.price.amount.decimal
+                              collectionOwners = collectionData.collections[0].ownerCount
+                              collectionUniqueOwners = parseFloat((collectionOwners * 100) / collectionSupply).toFixed(2) + "%"
+                              totalVolume = collectionData.collections[0].volume.allTime
+                              totalSales = collectionData.collections[0].salesCount.allTime
+                              totalVolume1D = collectionData.collections[0].volume["1day"]
+                              totalSales1D = collectionData.collections[0].salesCount["1day"]
+                              collectionFloor1D = collectionData.collections[0].floorSale["1day"]
+                              floorChange1D = parseFloat(((collectionFloor - collectionFloor1D) / collectionFloor1D) * 100)
+                              collectionMarketCap = collectionFloor * collectionSupply
+                              totalVolume7D = collectionData.collections[0].volume["7day"]
+                              totalSales7D = collectionData.collections[0].salesCount["7day"]
+                              collectionFloor7D = collectionData.collections[0].floorSale["7day"]
+                              floorChange7D = parseFloat(((collectionFloor - collectionFloor7D) / collectionFloor7D) * 100)
+                              totalVolume30D = collectionData.collections[0].volume["30day"]
+                              totalSales30D = collectionData.collections[0].salesCount["30day"]
+                              collectionFloor30D = collectionData.collections[0].floorSale["30day"]
+                              floorChange30D = parseFloat(((collectionFloor - collectionFloor30D) / collectionFloor30D) * 100)
 
 
 
 
 
 
-                            //  }
+                              //  }
 
 
-                            // Mise en forme 1D Change
-                            if (floorChange1D !== 0 && collectionFloor) {
+                              // Mise en forme 1D Change
+                              if (floorChange1D !== 0 && collectionFloor) {
 
-                                if (floorChange1D > 0) { roiPrefix = "+"; roiSuffix = " :chart_with_upwards_trend:"; } else if (floorChange1D < 0) { roiSuffix = " :chart_with_downwards_trend:"; } floorChange1DFormatted = "`" + roiPrefix + parseFloat(floorChange1D).toFixed(2) + "%" + "`" + roiSuffix;
+                                  if (floorChange1D > 0) { roiPrefix = "+"; roiSuffix = "📈"; } else if (floorChange1D < 0) { roiSuffix = "📉"; } floorChange1DFormatted = "`" + roiPrefix + parseFloat(floorChange1D).toFixed(2) + "% " + roiSuffix + "`"
 
-                                // if (floorChange1D > 0) { roiPrefix = "+"; roiSuffix = " :chart_with_upwards_trend:"; } else if (floorChange1D < 0) { roiSuffix = " :chart_with_downwards_trend:"; } floorChange1DFormatted = "`" + roiPrefix + parseFloat(floorChange1D).toFixed(2) + "% (" + ((collectionFloor1D - collectionFloor) * ethPriceUsd).toFixed(0) +  "$)`";
+                                  // if (floorChange1D > 0) { roiPrefix = "+"; roiSuffix = " :chart_with_upwards_trend:"; } else if (floorChange1D < 0) { roiSuffix = " :chart_with_downwards_trend:"; } floorChange1DFormatted = "`" + roiPrefix + parseFloat(floorChange1D).toFixed(2) + "% (" + ((collectionFloor1D - collectionFloor) * ethPriceUsd).toFixed(0) +  "$)`";
 
-                            } else if (floorChange1D === 0 || floorChange1D === "NaN") { floorChange1DFormatted = "`0.00%`" } else if (floorChange1D === "N/A") { floorChange1DFormatted = "'N/A'" }
+                              } else if (floorChange1D === 0 || floorChange1D === "NaN") { floorChange1DFormatted = "`0.00%`" } else if (floorChange1D === "N/A") { floorChange1DFormatted = "'N/A'" }
 
 
-                            // Mise en forme 7D Change
-                            if (floorChange7D !== 0 && collectionFloor) {
+                              // Mise en forme 7D Change
+                              if (floorChange7D !== 0 && collectionFloor) {
 
-                                if (floorChange7D > 0) { roiPrefix7 = "+"; roiSuffix7 = " :chart_with_upwards_trend:"; } else if (floorChange7D < 0) { roiSuffix7 = " :chart_with_downwards_trend:"; } floorChange7DFormatted = "`" + roiPrefix7 + parseFloat(floorChange7D).toFixed(2) + "%" + "`" + roiSuffix7;
+                                  if (floorChange7D > 0) { roiPrefix7 = "+"; roiSuffix7 = "📈"; } else if (floorChange7D < 0) { roiSuffix7 = "📉"; } floorChange7DFormatted = "`" + roiPrefix7 + parseFloat(floorChange7D).toFixed(2) + "% " + roiSuffix7 + "`"
 
-                            } else if (floorChange7D === 0 || floorChange7D === "NaN") { floorChange7DFormatted = "`0.00%`" } else if (floorChange7D === "N/A") { floorChange7DFormatted = "'N/A'" }
+                              } else if (floorChange7D === 0 || floorChange7D === "NaN") { floorChange7DFormatted = "`0.00%`" } else if (floorChange7D === "N/A") { floorChange7DFormatted = "'N/A'" }
 
 
-                            // Mise en forme 7D Change
-                            if (floorChange30D !== 0 && collectionFloor) {
+                              // Mise en forme 7D Change
+                              if (floorChange30D !== 0 && collectionFloor) {
 
-                                if (floorChange30D > 0) { roiPrefix30 = "+"; roiSuffix30 = " :chart_with_upwards_trend:"; } else if (floorChange30D < 0) { roiSuffix30 = " :chart_with_downwards_trend:"; } floorChange30DFormatted = "`" + roiPrefix30 + parseFloat(floorChange30D).toFixed(2) + "%" + "`" + roiSuffix30;
+                                  if (floorChange30D > 0) { roiPrefix30 = "+"; roiSuffix30 = "📈"; } else if (floorChange30D < 0) { roiSuffix30 = "📉"; } floorChange30DFormatted = "`" + roiPrefix30 + parseFloat(floorChange30D).toFixed(2) + "% " + roiSuffix30 + "`"
 
-                            } else if (floorChange30D === 0 || floorChange30D === "NaN") { floorChange30DFormatted = "`0.00%`" } else if (floorChange30D === "N/A") { floorChange30DFormatted = "'N/A'" }
+                              } else if (floorChange30D === 0 || floorChange30D === "NaN") { floorChange30DFormatted = "`0.00%`" } else if (floorChange30D === "N/A") { floorChange30DFormatted = "'N/A'" }
 
 
-                            ////////////////////////////////////////////////////////   FAIRE LES ARRONDIS ////////////////////////////////////////////////////////
+                              ////////////////////////////////////////////////////////   FAIRE LES ARRONDIS ////////////////////////////////////////////////////////
 
 
 
-                            //On fait la fonction pour trouver la valeur des walls à afficher
-                            let wall1 = 0
-                            let wall2 = 0
-                            let wall3 = 0
 
-                            if (collectionFloor >= 10) {
-                                wall1 = ((Math.ceil((collectionFloor) * 1) / 1) + 2).toFixed(1);
-                                wall2 = ((Math.ceil((collectionFloor) * 1) / 1) + 5).toFixed(1);
-                                wall3 = ((Math.ceil((collectionFloor) * 1) / 1) + 10).toFixed(1);
-                            } else if (collectionFloor >= 1 && collectionFloor < 10) {
-                                wall1 = ((Math.ceil((collectionFloor) * 10) / 10) + 0.5).toFixed(1);
-                                wall2 = ((Math.ceil((collectionFloor) * 10) / 10) + 1).toFixed(1);
-                                wall3 = ((Math.ceil((collectionFloor) * 10) / 10) + 2).toFixed(1);
-                            } else if (collectionFloor >= 0.3 && collectionFloor < 1) {
-                                wall1 = ((Math.ceil((collectionFloor) * 10) / 10) + 0.15).toFixed(2);
-                                wall2 = ((Math.ceil((collectionFloor) * 10) / 10) + 0.3).toFixed(2);
-                                wall3 = ((Math.ceil((collectionFloor) * 10) / 10) + 0.5).toFixed(2);
-                            } else if (collectionFloor >= 0.1 && collectionFloor < 0.3) {
-                                wall1 = ((Math.ceil((collectionFloor) * 10) / 10) + 0.1).toFixed(2);
-                                wall2 = ((Math.ceil((collectionFloor) * 10) / 10) + 0.2).toFixed(2);
-                                wall3 = ((Math.ceil((collectionFloor) * 10) / 10) + 0.3).toFixed(2);
-                            } else if (collectionFloor >= 0.01 && collectionFloor < 0.1) {
-                                wall1 = ((Math.ceil((collectionFloor) * 100) / 100) + 0.05).toFixed(2);
-                                wall2 = ((Math.ceil((collectionFloor) * 100) / 100) + 0.1).toFixed(2);
-                                wall3 = ((Math.ceil((collectionFloor) * 100) / 100) + 0.15).toFixed(2);
-                            } else if (collectionFloor < 0.01) {
-                                wall1 = ((Math.ceil((collectionFloor) * 1000) / 1000) + 0.02).toFixed(2);
-                                wall2 = ((Math.ceil((collectionFloor) * 1000) / 1000) + 0.04).toFixed(2);
-                                wall3 = ((Math.ceil((collectionFloor) * 1000) / 1000) + 0.07).toFixed(2);
-                            }
 
+                              const date = new Date(collectionDate);
+                              //const dateLisible = date.toLocaleString();
 
+                              const dateLisible = date.toLocaleDateString("fr-FR", {
+                                  day: "numeric",
+                                  month: "numeric",
+                                  year: "numeric",
+                              });
 
 
-                            let bidSupportFormatted = "No bids"
-                            let listingWallFormatted = "No Listings"
-                            let moveRange = 0
+                              let linksFormatted = ""
+                              if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                              else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
+                              else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
+                              else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
 
-                            let elementWithMaxPrice = {}
-                            let elementWithMaxWall = {}
 
 
-                            sdk3.getOrdersDepthV1({ side: 'buy', collection: selectedCollection, accept: '*/*' })
-                                .then(async ({ data: bidsList }) => {
-
-                                    if (bidsList.depth.length > 0) {
-
-                                        // Trouver l'élément avec le prix le plus grand
-                                        elementWithMaxPrice = bidsList.depth.reduce((acc, curr) => {
-                                            return curr.quantity > acc.quantity ? curr : acc;
-                                        });
-
-
-                                        bidSupportFormatted = elementWithMaxPrice.quantity + " @ " + parseFloat(elementWithMaxPrice.price).toFixed(3) + "Ξ"
-
-
-
-                                    }
-
-
-                                    sdk3.getOrdersDepthV1({ side: 'sell', collection: selectedCollection, accept: '*/*' })
-                                        .then(async ({ data: listingList }) => {
-
-
-                                            if (listingList.depth.length > 0) {
-
-                                                // Trouver l'élément avec le prix le plus grand
-                                                elementWithMaxWall = listingList.depth.reduce((acc, curr) => {
-                                                    return curr.quantity > acc.quantity ? curr : acc;
-                                                });
-
-
-                                                listingWallFormatted = elementWithMaxWall.quantity + " @ " + parseFloat(elementWithMaxWall.price).toFixed(3) + "Ξ"
-
-
-
-                                            }
-
-
-                                            if (elementWithMaxWall.price > 0) {
-
-                                                moveRange = parseFloat(elementWithMaxWall.price - elementWithMaxPrice.price).toFixed(3)
-
-
-                                            }
-
-
-                                            const date = new Date(collectionDate);
-                                            //const dateLisible = date.toLocaleString();
-
-                                            const dateLisible = date.toLocaleDateString("fr-FR", {
-                                                day: "numeric",
-                                                month: "numeric",
-                                                year: "numeric",
-                                            });
-
-
-                                            let linksFormatted = ""
-                                            if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
-                                            else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
-                                            else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
-                                            else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
-
-
-
-                                            const buttonRow = new ActionRowBuilder()
-                                                .addComponents(
-                                                    new ButtonBuilder()
-                                                        .setCustomId('button_nft_exec_buy_' + selectedCollection)
-                                                        .setLabel('📈 Buy')
-                                                        .setStyle(3),
-                                                    new ButtonBuilder()
-                                                        .setCustomId('button_nft_exec_sweep_' + selectedCollection)
-                                                        .setLabel('🧹 Sweep')
-                                                        .setStyle(3),
-                                                    new ButtonBuilder()
-                                                        .setCustomId('button_nft_exec_list_' + selectedCollection)
-                                                        .setLabel('📉 List')
-                                                        .setStyle(4),
-                                                    new ButtonBuilder()
-                                                        .setCustomId('button_nft_exec_bulklist_' + selectedCollection)
-                                                        .setLabel('❄️ Bulk List')
-                                                        .setStyle(4),
-                                                    new ButtonBuilder()
-                                                        .setCustomId('button_nft_tradepanel_setup')
-                                                        .setLabel('💻 Setup')
-                                                        .setStyle(1),
-
-                                                )
-
-                                            const buttonRow1 = new ActionRowBuilder()
-                                                .addComponents(
-                                                    new ButtonBuilder()
-                                                        .setCustomId('button_nft_exec_newbid_' + selectedCollection)
-                                                        .setLabel('✨ New Bid')
-                                                        .setStyle(3),
-                                                    new ButtonBuilder()
-                                                        .setCustomId('button_nft_exec_snipe_' + selectedCollection)
-                                                        .setLabel('🔫 Snipe')
-                                                        .setStyle(3),
-                                                    new ButtonBuilder()
-                                                        .setCustomId('button_nft_exec_acceptbid_' + selectedCollection)
-                                                        .setLabel('🤝 Accept Bid')
-                                                        .setStyle(4),
-                                                    new ButtonBuilder()
-                                                        .setCustomId('button_nft_exec_transfer_' + selectedCollection)
-                                                        .setLabel('📤 Transfer')
-                                                        .setStyle(4),
-                                                )
-
-
-                                            const buttonRow2 = new ActionRowBuilder()
-                                                .addComponents(
-                                                    new ButtonBuilder()
-                                                        .setCustomId('button_nft_tradepanel_refresh_' + selectedCollection)
-                                                        .setLabel('🔄 Refresh')
-                                                        .setStyle(1),
-                                                    new ButtonBuilder()
-                                                        .setCustomId('nft_infra_tradepanel_help-button')
-                                                        .setLabel('📑 Tutorial')
-                                                        .setStyle(1),
-                                                        new ButtonBuilder()
-                                                        .setCustomId('button_nft_tradepanel_listingDepth_' + selectedCollection)
-                                                        .setLabel('📊 Listings')
-                                                        .setStyle(1),
-                                                        new ButtonBuilder()
-                                                        .setCustomId('button_nft_tradepanel_bidsDepth_' + selectedCollection)
-                                                        .setLabel('👨🏽‍⚖️ Bids')
-                                                        .setStyle(1),
-
-
-                                                )
-
-
-
-
-                                            const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle(collectionName)
-                                                .setDescription(collectionDescription)
-                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                .setImage(collectionBanner)
-                                                .addFields(
-                                                    { name: "Floor Price", value: "`" + collectionFloor.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * collectionFloor).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Total Owners", value: "`" + collectionOwners + "`", inline: true },
-                                                    { name: "Total Listing", value: "`" + collectionTotalListings + "`", inline: true },
-                                                    { name: "Unique Owners", value: "`" + collectionUniqueOwners + "`", inline: true },
-                                                    { name: "Total Supply", value: "`" + collectionSupply + "`", inline: true },
-                                                    { name: "Listing Ratio", value: "`" + collectionListingRatio + "%`", inline: true },
-                                                    { name: "Top Bid", value: "`" + collectionTopBid.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * collectionTopBid).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Total Volume", value: "`" + totalVolume.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Total Sales", value: "`" + totalSales + "`", inline: true },
-                                                    { name: "1D Volume", value: "`" + totalVolume1D.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume1D).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "1D Floor Change", value: floorChange1DFormatted, inline: true },
-                                                    { name: "1D Sales", value: "`" + totalSales1D + "`", inline: true },
-                                                    { name: "7D Volume", value: "`" + totalVolume7D.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume7D).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "7D Floor Change", value: floorChange7DFormatted, inline: true },
-                                                    { name: "7D Sales", value: "`" + totalSales7D + "`", inline: true },
-                                                    { name: "30D Volume", value: "`" + totalVolume30D.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume7D).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "30D Floor Change", value: floorChange30DFormatted, inline: true },
-                                                    { name: "30D Sales", value: "`" + totalSales30D + "`", inline: true },
-                                                    { name: "Listing Wall", value: "`" + listingWallFormatted + "`", inline: true },
-                                                    { name: "Bid Support", value: "`" + bidSupportFormatted + "`", inline: true },
-                                                    { name: "Volatility Range", value: "`" + moveRange + "Ξ`", inline: true },
-                                                    { name: "Market Cap", value: "`" + collectionMarketCap.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * collectionMarketCap).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Creation Date", value: "`" + dateLisible + "`", inline: true },
-                                                    { name: "Royalties", value: "`" + collectionRoyaltiesFormatted + "`", inline: true },
-                                                    { name: "Links", value: linksFormatted, inline: true },
-
-
-                                                )
-                                                .setTimestamp()
-                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                            await interaction.editReply({ embeds: [getDataCollectionAddress], components: [buttonRow, buttonRow1, buttonRow2] });
-
-
-
-
-
-                                            //On enregistre le call API dans la database
-                                            const timeStamp = Date.now();
-                                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "getCollectionsV5", apiProvider: "reservoir", timestamp: timeStamp.toString() })
-                                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "getListings", apiProvider: "reservoir", timestamp: timeStamp.toString() })
-                                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "getBids", apiProvider: "reservoir", timestamp: timeStamp.toString() })
-                                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "ethUsdPrice", apiProvider: "etherscan", timestamp: timeStamp.toString() })
-
+                              const buttonRow = new ActionRowBuilder()
+                                  .addComponents(
+                                      new ButtonBuilder()
+                                          .setCustomId('button_nft_exec_buy_' + selectedCollection)
+                                          .setLabel('📈 Buy')
+                                          .setStyle(3),
+                                      new ButtonBuilder()
+                                          .setCustomId('button_nft_exec_sweep_' + selectedCollection)
+                                          .setLabel('🧹 Sweep')
+                                          .setStyle(3),
+                                      new ButtonBuilder()
+                                          .setCustomId('button_nft_exec_list_' + selectedCollection)
+                                          .setLabel('📉 List')
+                                          .setStyle(4),
+                                      new ButtonBuilder()
+                                          .setCustomId('button_nft_exec_bulklist_' + selectedCollection)
+                                          .setLabel('❄️ Bulk List')
+                                          .setStyle(4),
+                                      new ButtonBuilder()
+                                          .setCustomId('button_nft_tradepanel_setup')
+                                          .setLabel('💻 Setup')
+                                          .setStyle(1),
+
+                                  )
+
+                              const buttonRow1 = new ActionRowBuilder()
+                                  .addComponents(
+                                      new ButtonBuilder()
+                                          .setCustomId('button_nft_exec_newbid_' + selectedCollection)
+                                          .setLabel('✨ New Bid')
+                                          .setStyle(3),
+                                      new ButtonBuilder()
+                                          .setCustomId('button_nft_exec_snipe_' + selectedCollection)
+                                          .setLabel('🔫 Snipe')
+                                          .setStyle(3),
+                                      new ButtonBuilder()
+                                          .setCustomId('button_nft_exec_acceptbid_' + selectedCollection)
+                                          .setLabel('🤝 Accept Bid')
+                                          .setStyle(4),
+                                      new ButtonBuilder()
+                                          .setCustomId('button_nft_exec_transfer_' + selectedCollection)
+                                          .setLabel('📤 Transfer')
+                                          .setStyle(4),
+
+                                  )
+
+
+                              const buttonRow2 = new ActionRowBuilder()
+                                  .addComponents(
+                                      new ButtonBuilder()
+                                          .setCustomId('button_nft_tradepanel_refresh_' + selectedCollection)
+                                          .setLabel('🔄 Refresh')
+                                          .setStyle(1),
+                                      new ButtonBuilder()
+                                          .setCustomId('nft_infra_tradepanel_help-button')
+                                          .setLabel('📑 Tutorial')
+                                          .setStyle(1),
+                                      new ButtonBuilder()
+                                          .setCustomId('button_nft_tradepanel_listingDepth_' + selectedCollection)
+                                          .setLabel('📊 Listings')
+                                          .setStyle(1),
+                                      new ButtonBuilder()
+                                          .setCustomId('button_nft_tradepanel_bidsDepth_' + selectedCollection)
+                                          .setLabel('👨🏽‍⚖️ Bids')
+                                          .setStyle(1),
+
+                                  )
+
+
+                              //"]
+
+
+                              if (!isHttps(collectionBanner)) {
+                                  collectionBanner = "https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png"
+                              }
+
+                              if (collectionDescription) {
+                                  collectionDescription = cutString(collectionDescription)
+                              }
+
+                              [ethPriceUsd] = await Promise.all([ethPricePromise])
+
+                              const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
+                                  .setTitle(collectionName)
+                                  .setDescription(collectionDescription)
+                                  .setAuthor({ name: authorName, iconURL: userAvatar })
+                                  .setImage(collectionBanner)
+                                  .addFields(
+                                      { name: "Floor Price", value: "`" + collectionFloor.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * collectionFloor).toFixed(0)) + "$)`", inline: true },
+                                      { name: "Total Owners", value: "`" + collectionOwners + "`", inline: true },
+                                      { name: "Total Listing", value: "`" + collectionTotalListings + "`", inline: true },
+                                      { name: "Unique Owners", value: "`" + collectionUniqueOwners + "`", inline: true },
+                                      { name: "Total Supply", value: "`" + collectionSupply + "`", inline: true },
+                                      { name: "Listing Ratio", value: "`" + collectionListingRatio + "%`", inline: true },
+                                      { name: "Top Bid", value: "`" + collectionTopBid.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * collectionTopBid).toFixed(0)) + "$)`", inline: true },
+                                      { name: "Total Volume", value: "`" + totalVolume.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume).toFixed(0)) + "$)`", inline: true },
+                                      { name: "Total Sales", value: "`" + totalSales + "`", inline: true },
+                                      { name: "1D Volume", value: "`" + totalVolume1D.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume1D).toFixed(0)) + "$)`", inline: true },
+                                      { name: "1D Floor Change", value: floorChange1DFormatted, inline: true },
+                                      { name: "1D Sales", value: "`" + totalSales1D + "`", inline: true },
+                                      { name: "7D Volume", value: "`" + totalVolume7D.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume7D).toFixed(0)) + "$)`", inline: true },
+                                      { name: "7D Floor Change", value: floorChange7DFormatted, inline: true },
+                                      { name: "7D Sales", value: "`" + totalSales7D + "`", inline: true },
+                                      { name: "30D Volume", value: "`" + totalVolume30D.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * totalVolume7D).toFixed(0)) + "$)`", inline: true },
+                                      { name: "30D Floor Change", value: floorChange30DFormatted, inline: true },
+                                      { name: "30D Sales", value: "`" + totalSales30D + "`", inline: true },
+                                      //  { name: "Listing Wall", value: "`" + listingWallFormatted + "`", inline: true },
+                                      //  { name: "Bid Support", value: "`" + bidSupportFormatted + "`", inline: true },
+                                      //  { name: "Volatility Range", value: "`" + moveRange + "Ξ`", inline: true },
+                                      { name: "Market Cap", value: "`" + collectionMarketCap.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * collectionMarketCap).toFixed(0)) + "$)`", inline: true },
+                                      { name: "Creation Date", value: "`" + dateLisible + "`", inline: true },
+                                      { name: "Royalties", value: "`" + collectionRoyaltiesFormatted + "`", inline: true },
+                                      { name: "Links", value: linksFormatted, inline: true },
+
+
+                                  )
+                                  .setTimestamp()
+                                  .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                              await interaction.editReply({ embeds: [getDataCollectionAddress], components: [buttonRow, buttonRow1, buttonRow2] });
+
+
+
+
+
+
+
+                                      
                                         })
-                                })
-                        })
+                                
+                        
 
 
                 } else {

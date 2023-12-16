@@ -18,6 +18,7 @@ const erc20smartTreatment = require("../functions/m-erc20smartmoney")
 const addTimeout = require("../functions/addtimeout")
 const newContract = require("../functions/m-newcontract")
 const coinTracker = require("../functions/m-cointracker")
+const nftMonitors = require("../functions/1p-nftmonitors")
 
 const colors = require('colors');
 const fs = require("fs").promises
@@ -30,7 +31,9 @@ const etherscanApiKey = process.env.etherscanApiKey
 
 const trackerFile = "contracts/uniswap/tracker.json"
 
-
+// Marketplace NFT
+const blurV3_address = "0xb2ecfe4e4d61f8790bbb9de2d1259b9e2410cea5"
+const seaport15_address = "0x00000000000000adc04c56bf30ac9d3c0aaf14dc"
 
 
 const Web3 = require('web3');
@@ -172,6 +175,14 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
                 if (targetsList.includes(from)) {
 
                     coinTracker(transaction)
+
+                }
+
+
+                // Wallet tracker ERC721
+                if (to === blurV3_address || to === seaport15_address) {
+
+                    nftMonitors(transaction)
 
                 }
 

@@ -54,6 +54,30 @@
     {
         "address": "0x9727e451546e8d2103d432967796904164477d9a",
         "name": "thisisjustatest.eth"
-    }  
+    },
+    {
+        "address": "0x77777e7a8f844b73f6269bbda7f440af16038d90",
+        "name": "rlylosing.eth"
+    },
+    {
+        "address": "0x08c1fe1d2c15ba4b084eda071baf6404261a0f23",
+        "name": "pacificsound3003.eth"
+    },
+    {
+        "address": "0x26d7b4fe67f4601643304b5023b3caf3a72e8504",
+        "name": "peacelandbread.eth"
+    },
+    {
+        "address": "0xf565295eddcc0682bb16376c742e9bc9dbb32512",
+        "name": "masturb.eth"
+    },
+    {
+        "address": "0x8b0ba677cd4a9833128796fe3ad90db2076596d1",
+        "name": "gulp.eth"
+    },
+    {
+        "address": "0xb10534b75fbfeeb2e3315816c8e2ab2a2abd1ceb",
+        "name": "Anon"
+    } 
 ]
 

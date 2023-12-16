@@ -5,7 +5,7 @@ const fs = require("fs").promises
 
 const blurDecoder = require("./1blur-decoder")
 const openseaDecoder = require("./1opensea-decoder")
-const nftTracker = require("./1m-nfttrack")
+//const nftTracker = require("./1m-nfttrack")
 const nftSmartmoney = require("./1m-nftsmartmoney")
 
 

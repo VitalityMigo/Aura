@@ -101,7 +101,7 @@ async function nftSmartmoney(data, traders) {
             console.log(colors.green("🥷 New NFT smart money trade"))
 
 
-            const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
+            const userFTEmbed = new EmbedBuilder().setColor("#010616")
                 .setTitle(name)
                 .setDescription(">>> A new smart trade has been detected")
                 .setImage("https://cdn.discordapp.com/attachments/1100572519896977490/1185619758008254474/e.png?ex=65904572&is=657dd072&hm=7a51469cad88b48198c5f230d13450d50c7e2717c5acdf97a82a6eb1fb5adad4&")

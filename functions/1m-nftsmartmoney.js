@@ -21,7 +21,7 @@ setTimeout(() => {
 
         serverId = "1108754348818845729"
         channelId = "1185361772660670484"
-        
+
 
     } else if (botId == "1119666128411709552") {
         // DEV
@@ -88,6 +88,15 @@ async function nftSmartmoney(data, traders) {
             // On récupère les links
             const formattedLinks = createLink(links)
 
+
+            const buttonsRow = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('button_nft_openpanel_' + contract)
+                        .setLabel('📊 Trade Panel')
+                        .setStyle(1),
+                );
+
             // On envoi à la console
             console.log(colors.green("🥷 New NFT smart money trade"))
 
@@ -110,7 +119,7 @@ async function nftSmartmoney(data, traders) {
                 )
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-            await channel.send({ embeds: [userFTEmbed], components: [] });
+            await channel.send({ embeds: [userFTEmbed], components: [buttonsRow] });
 
 
         }

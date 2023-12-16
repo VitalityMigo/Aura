@@ -180,6 +180,10 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_nft_tradepanel_listingDepth_");
 			
+		}  else if (customId.startsWith("button_nft_openpanel_")) {
+
+			command = client.buttonCommands.get("button_nft_openpanel_");
+			
 		} 
 		
 		

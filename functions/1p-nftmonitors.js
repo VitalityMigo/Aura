@@ -1,5 +1,5 @@
-// var Web3 = require("web3")
-// const web3CloudflarePublic = new Web3("https://cloudflare-eth.com")
+ //var Web3 = require("web3")
+ //const web3CloudflarePublic = new Web3("https://cloudflare-eth.com")
 
 const fs = require("fs").promises
 

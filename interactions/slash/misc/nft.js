@@ -209,17 +209,10 @@ module.exports = {
 
 
 
-                                    //On enregistre le user si il est pas encore dans la database
-                                    const timeStamp = Date.now();
-                                    const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
-                                    const isUser = await usersql.findOne({ where: { userId: authorId, serverId: serverId } })
-                                    if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp }) }
-
 
 
                                     //Variable pour les options
                                     const selectedCollection = interaction.options.getString("collection");
-                                    const coinAddress = interaction.options.getString("collection");
 
 
                                     if (isValidEthereumAddress(selectedCollection)) {
@@ -446,9 +439,11 @@ module.exports = {
 
                                                 //"]
 
+                                                const links = createLink(collectionSlug, selectedCollection, collectionTwitter, collectionWebsite)
+
 
                                                 if (!isHttps(collectionBanner)) {
-                                                    collectionBanner = "https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png"
+                                                    collectionBanner = "https://cdn.discordapp.com/attachments/1100572519896977490/1185619758008254474/e.png?ex=65904572&is=657dd072&hm=7a51469cad88b48198c5f230d13450d50c7e2717c5acdf97a82a6eb1fb5adad4&"
                                                 }
 
                                                 if (collectionDescription) {
@@ -487,7 +482,7 @@ module.exports = {
                                                         { name: "Market Cap", value: "`" + collectionMarketCap.toFixed(3) + "Ξ (" + Intl.NumberFormat('en-US').format((ethPriceUsd * collectionMarketCap).toFixed(0)) + "$)`", inline: true },
                                                         { name: "Creation Date", value: "`" + dateLisible + "`", inline: true },
                                                         { name: "Royalties", value: "`" + collectionRoyaltiesFormatted + "`", inline: true },
-                                                        { name: "Links", value: linksFormatted, inline: true },
+                                                        { name: "Links", value: links, inline: true },
 
 
                                                     )
@@ -940,230 +935,26 @@ module.exports = {
 }
 
 
-// On crée quelques fonctions utiles
-async function decodeUniswapSwapEvent(version, input, topics, block, toBlock, contract, wETH, decimals, timestamp) {
-
-    if (version == "v2") {
-        // On définit les valeurs finales
-        let action
-        let eth
-        let token
-        let from
-        let price
-
-        const ethprice = 2000
-
-        // On isole les valeurs qui nous importent
-        const input2 = input.slice(2)
-        const amount0In = parseInt(input2.substring(0, 64), 16)
-        const amount1In = parseInt(input2.substring(64, 128), 16)
-        const amount0Out = parseInt(input2.substring(128, 192), 16)
-        const amount1Out = parseInt(input2.substring(192, 256), 16)
-
-        const sender = topics[1]
-        const to = topics[2]
-
-        // On définit lequel est A et lequel est B
-        const a1 = contract.toLowerCase();
-        const a2 = wETH.toLowerCase();
-        const token0 = a1 < a2 ? contract : wETH;
-        const token1 = a1 < a2 ? wETH : contract;
 
 
-        //Calcul du timestamp a retravailler ! 
 
-        const time = blockFromBlock(block, toBlock, timestamp)
+function createLink(slug, contract, twitter, website) {
 
+    let baseLinks = '[Opensea](https://opensea.io/collection/' + slug + ') ∙ ' +
+        '[blur](https://blur.io/collection/' + contract + ') ∙ ' +
+        '[magically](https://magically.gg/collection/' + contract + ') ∙ ' +
+        '[nerds](https://magically.gg/collection/' + contract + ') ∙ ' +
+        //'[opensea pro](https://pro.opensea.io/collection/' + links.contract + ') ∙ ' +
+        //'[tiny astro](https://tinyastro.io/en/analytics/eth/' + links.contract + ') ∙ ' +
+        '[etherscan](https://app.nftnerds.ai/collection/' + contract + ')';
 
-        // // GET CODE POUR TAG (Est ce que c'est un bot ?)
-        // const code = await web3.eth.getCode(sender);
-        // let tag = ""
-        // if (code != "0x") { tag = "🤖" }
-
-        // Le 0 est le token
-        if (token0.toLowerCase() == a1) {
-
-            // Il n'y a pas de token qui rentre ni de wETH qui sort
-            if (amount0In <= 0 && amount1Out <= 0) {
-
-                action = "buy"
-                eth = amount1In / 10 ** 18
-                token = amount0Out / 10 ** decimals
-                from = "0x" + to.substring(26, 66)
-                price = (eth / token) * ethprice
-
-            } else {
-
-                // Il n'y a pas de wETH qui rentre ni de token qui sort
-
-                action = "sell"
-                eth = amount1Out / 10 ** 18
-                token = amount0In / 10 ** decimals
-                from = "0x" + sender.substring(26, 66)
-                price = (eth / token) * ethprice
-
-
-            }
-
-
-        } else {
-            // Le 1 est le token
-
-            // Il n'y a pas de token qui rentre ni de wETH qui sort
-            if (amount0In <= 0 && amount1Out <= 0) {
-
-                action = "sell"
-                eth = amount0Out / 10 ** 18
-                token = amount1In / 10 ** decimals
-                from = "0x" + sender.substring(26, 66)
-                price = (eth / token) * ethprice
-
-            } else {
-
-                // Il n'y a pas de wETH qui rentre ni de token qui sort
-
-                action = "buy"
-                eth = amount0In / 10 ** 18
-                token = amount1Out / 10 ** decimals
-                from = "0x" + to.substring(26, 66)
-                price = (eth / token) * ethprice
-
-
-            }
-
-        }
-
-        const result = {
-            action: action,
-            eth: eth,
-            coin: token,
-            sender: from,
-            timestamp: time,
-            price: price
-        }
-        console.log(result)
-        return result
-
-    } else {
-
-
-        // On définit les valeurs finales
-        let action
-        let eth
-        let token
-        let from
-        let price
-
-        const ethprice = 2000
-
-        // On isole les valeurs qui nous importent
-        const input2 = input.slice(2)
-        const amount0 = parseInt(input2.substring(0, 64), 16).toFixed(0)
-        const amount1 = parseInt(input2.substring(64, 128), 16)
-        // const priceX96 = parseInt(input2.substring(128, 192), 16)
-        // const liquidity = parseInt(input2.substring(192, 256), 16)
-        // const tick = parseInt(input2.substring(256, 320), 16)
-
-        const sender = topics[1]
-        const to = topics[2]
-
-        // On définit lequel est A et lequel est B
-        const a1 = contract.toLowerCase();
-        const a2 = wETH.toLowerCase();
-        const token0 = a1 < a2 ? contract : wETH;
-        const token1 = a1 < a2 ? wETH : contract;
-
-
-        //Calcul du timestamp a retravailler ! 
-
-        const time = blockFromBlock(block, toBlock, timestamp)
-
-
-        // // GET CODE POUR TAG (Est ce que c'est un bot ?)
-        // const code = await web3.eth.getCode(sender);
-        // let tag = ""
-        // if (code != "0x") { tag = "🤖" }
-
-        // Le 0 est le token
-        console.log(amount0)
-        console.log(amount1)
-
-        if (token0.toLowerCase() == a1) {
-
-            // Il n'y a pas de token qui rentre ni de wETH qui sort
-            if (amount0 < 0 && amount1 > 0) {
-
-                action = "buy"
-                eth = parseFloat(amount1 / 10 ** 18).toFixed(5)
-                token = Math.abs(amount0) / 10 ** decimals
-                from = "0x" + to.substring(26, 66)
-                price = (eth / token) * ethprice
-
-            } else {
-
-                // Il n'y a pas de wETH qui rentre ni de token qui sort
-
-                action = "sell"
-                eth = parseFloat(amount1 / 10 ** 18).toFixed(5)
-                token = Math.abs(amount0) / 10 ** decimals
-                from = "0x" + to.substring(26, 66)
-                price = (eth / token) * ethprice
-
-            }
-
-
-        } else {
-            // Le 1 est le token
-
-            if (amount0 < 0 && amount1 > 0) {
-
-                action = "sell"
-                eth = parseFloat(amount0 / 10 ** decimals).toFixed(5)
-                token = Math.abs(amount1) / 10 ** 18
-                from = "0x" + to.substring(26, 66)
-                price = (eth / token) * ethprice
-
-            } else {
-
-                // Il n'y a pas de wETH qui rentre ni de token qui sort
-
-                action = "buy"
-                eth = parseFloat(amount0 / 10 ** decimals).toFixed(5)
-                token = Math.abs(amount1) / 10 ** 18
-                from = "0x" + to.substring(26, 66)
-                price = (eth / token) * ethprice
-
-            }
-
-        }
-
-
-        return {
-            action: action,
-            eth: eth,
-            coin: token,
-            sender: from,
-            timestamp: time,
-            price: price
-        }
-
+    if (twitter !== null) {
+        baseLinks += ' ∙ [twitter](https://twitter.com/' + twitter + ')';
     }
 
+    if (isHttps(website)) {
+        baseLinks += ' ∙ [website](' + website + ')';
+    }
+
+    return baseLinks;
 }
-
-
-function blockFromBlock(targetBlock, currentBlock, currentTimestamp) {
-    const averageBlockTime = 12
-
-    // Calculer la différence de blocs entre le bloc actuel et le bloc cible
-    const blockDifference = targetBlock - currentBlock;
-
-    // Calculer le temps écoulé en secondes
-    const timeElapsed = blockDifference * averageBlockTime;
-
-    // Estimer le timestamp du bloc cible
-    const estimatedTimestamp = currentTimestamp + timeElapsed;
-
-    return estimatedTimestamp;
-}
-

@@ -328,7 +328,6 @@ function decodeAvailable(transaction) {
 
         // Boucle pour extraire les informations pour chaque bidder
         for (let i = 0; i < tradeCount; i++) {
-            console.log("Round " + (i + 1))
             // Index de début des informations pour le bidder actuel
 
 
@@ -373,7 +372,6 @@ function decodeAvailable(transaction) {
             const sigSize = Math.ceil(parseInt(params[indexB - 1], 16) / 32)
             totalTradeSizes += oneTradeSize + 2 + sigSize
             oneTradeSize = (parseInt(params[indexB + sigSize + 1], 16) / 32) - 1
-            console.log(oneTradeSize)
 
             const buyerExist = sellers.some((obj) => obj.address === address && obj.collection === collection);
 
@@ -456,9 +454,7 @@ function decodeAvailableAdvanced(transaction) {
 
         // Boucle pour extraire les informations pour chaque bidder
         for (let i = 0; i < tradeCount; i++) {
-            console.log("Round " + (i + 1))
             // Index de début des informations pour le bidder actuel
-
 
             const indexA = tradeIdx + totalTradeSizes
             const indexB = indexA + oneTradeSize

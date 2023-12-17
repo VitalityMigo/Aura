@@ -131,7 +131,7 @@ async function coinSmartmoney(transaction) {
 
                         let sign = "$"
                         if (swap.tokenIn.address.toLowerCase() == wETH) { sign = "Ξ"; quote = await getEthPrice() }
-                        trade = "Token In: " + value + sign + "\nToken Out: " + new Intl.NumberFormat('en-US').format(Math.ceil(swap.tokenOut.amount))
+                        trade = "Token In: " + parseFloat(value).toFixed(3) + sign + "\nToken Out: " + new Intl.NumberFormat('en-US').format(Math.ceil(swap.tokenOut.amount))
                     } else {
                         value = swap.tokenOut.amount
                         amount = swap.tokenIn.amount
@@ -139,14 +139,14 @@ async function coinSmartmoney(transaction) {
 
                         let sign = "$"
                         if (swap.tokenOut.address.toLowerCase() == wETH) { sign = "Ξ"; quote = await getEthPrice() }
-                        trade = "Token In: " + new Intl.NumberFormat('en-US').format(Math.ceil(swap.tokenIn.amount)) + "\nToken Out: " + value + sign
+                        trade = "Token In: " + new Intl.NumberFormat('en-US').format(Math.ceil(swap.tokenIn.amount)) + "\nToken Out: " + parseFloat(value).toFixed(3) + sign
                     }
 
                     // On calcul les valeurs de prix
 
                     const price = (value / amount) * parseFloat(quote)
                     const marketCap = price * supply
-                    trade += "\nMarket Cap:" + new Intl.NumberFormat('en-US').format(Math.ceil(marketCap)) + "$                   "
+                    trade += "\nMarket Cap: " + new Intl.NumberFormat('en-US').format(Math.ceil(marketCap)) + "$                   "
 
 
                     // Format des metrics
@@ -220,7 +220,7 @@ function priceIndice(price) {
 
         const indices = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉', '₁₀', '₁₁', '₁₂', '₁₃', '₁₄', '₁₅', '₁₆', '₁₇', '₁₈', '₁₉'];
         const decimal = price.toString().split(".")[1]
-        console.log(price.toString())
+
         let count = 0
         for (const char of decimal) {
             if (char == "0") {

@@ -65,7 +65,7 @@ async function coinSmartmoney(transaction) {
 
         await addTimeout(5)
 
-        // const transaction = await web3.eth.getTransaction(hash)
+        //const transaction = await web3.eth.getTransaction(hash)
 
         const sender = transaction.from.toLowerCase()
         const exchange = transaction.to.toLowerCase()
@@ -130,7 +130,7 @@ async function coinSmartmoney(transaction) {
                         supply = await getTokenSupply(swap.tokenOut.address, 16) / 10 ** swap.tokenOut.decimals
 
                         let sign = "$"
-                        if (swap.tokenIn.address == wETH) { sign = "Ξ"; quote = await getEthPrice() }
+                        if (swap.tokenIn.address.toLowerCase() == wETH) { sign = "Ξ"; quote = await getEthPrice() }
                         trade = "Token In: " + value + sign + "\nToken Out: " + new Intl.NumberFormat('en-US').format(Math.ceil(swap.tokenOut.amount))
                     } else {
                         value = swap.tokenOut.amount
@@ -138,7 +138,7 @@ async function coinSmartmoney(transaction) {
                         supply = await getTokenSupply(swap.tokenIn.address, 16) / 10 ** swap.tokenIn.decimals
 
                         let sign = "$"
-                        if (swap.tokenOut.address == wETH) { sign = "Ξ"; quote = await getEthPrice() }
+                        if (swap.tokenOut.address.toLowerCase() == wETH) { sign = "Ξ"; quote = await getEthPrice() }
                         trade = "Token In: " + new Intl.NumberFormat('en-US').format(Math.ceil(swap.tokenIn.amount)) + "\nToken Out: " + value + sign
                     }
 
@@ -153,7 +153,7 @@ async function coinSmartmoney(transaction) {
                     const metrics = "Price: `" + priceIndice(price) + "$`\nFees: `" + parseFloat(fees).toFixed(3) + "Ξ`\nDEX: " + uniLogo + "\n"
 
                     // On formatte les liens
-                    const links = '[Etherscan](https://etherscan.io/address/' + contract + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + contract + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + contract + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + contract + ") ∙ " + + '[Suriken](https://app.shuriken.trade) ∙ ' + '[Honeypot](   https://honeypot.is/ethereum?address=' + contract + ")"
+                    const links = '[Etherscan](https://etherscan.io/address/' + contract + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + contract + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + contract + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + contract + ") ∙ " + '[Shuriken](https://app.shuriken.trade)'
 
                     // On crée le boutton
                     const buttonsRow = new ActionRowBuilder()
@@ -201,7 +201,6 @@ async function coinSmartmoney(transaction) {
     }
 
 }
-//coinSmartmoney("0xed1d008cfe0d0a8db08650adde406ec33009aa95746a3fa25ea3922065353bd1")
 
 module.exports = coinSmartmoney
 

@@ -2,5 +2,25 @@
     {
         "name": "Vitality",
         "address": "0x09e970fbad12435ae1a87926d7faa290a0f75c33"
+    },
+    {
+        "name": "Pow",
+        "address": "0x303425052e462dd0f3044aee17e1f5be9c7de783"
+    },
+    {
+        "name": "Anon",
+        "address": "0x8192c75ae83e2e1ef4f57622a6d3d3c74bdda84e"
+    },
+    {
+        "name": "Anon",
+        "address": "0x3f6b569d627896c41711c1925d8070527c34e389"
+    },
+    {
+        "name": "Anon",
+        "address": "0x9b1767a28dc7d2fcc1fb3c2494600a1f9fe49e3c"
+    },
+    {
+        "name": "Anon",
+        "address": "0x9b1767a28dc7d2fcc1fb3c2494600a1f9fe49e3c"
     }
 ]

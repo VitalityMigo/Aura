@@ -27,20 +27,24 @@ function decodeBlur(transaction) {
         const sig = transaction.input.substring(0, 10)
         const fctn = blur_marketplace3_functions.find(item => item.sig == sig)
 
-        if (fctn.name == "buy") {
-            return decodeSingleBuy(transaction)
-        } else if (fctn.name == "buyBulk") {
-            return decodeBulkBuy(transaction)
-        } else if (fctn.name == "acceptBid") {
-            return decodeSingleBid(transaction)
-        } else if (fctn.name == "acceptBidBulk") {
-            return decodeBulkBid(transaction)
-        } else if (fctn.name == "buyPool") {
-            return decodeBuyPool(transaction)
-        } else if (fctn.name == "buyBulkPool") {
-            return decodeBuyBulkPool(transaction)
-        } else {
-            return null
+        if (fctn) {
+
+            if (fctn.name == "buy") {
+                return decodeSingleBuy(transaction)
+            } else if (fctn.name == "buyBulk") {
+                return decodeBulkBuy(transaction)
+            } else if (fctn.name == "acceptBid") {
+                return decodeSingleBid(transaction)
+            } else if (fctn.name == "acceptBidBulk") {
+                return decodeBulkBid(transaction)
+            } else if (fctn.name == "buyPool") {
+                return decodeBuyPool(transaction)
+            } else if (fctn.name == "buyBulkPool") {
+                return decodeBuyBulkPool(transaction)
+            } else {
+                return null
+            }
+
         }
 
     } catch (error) {
@@ -169,7 +173,7 @@ function decodeBulkBuy(transaction) {
         const action = "buyBulk"
 
         // On a les paramètres
-       const input = transaction.input
+        const input = transaction.input
         const params = splitString(input.slice(10), 64)
         const hash = transaction.hash
 
@@ -318,7 +322,7 @@ function decodeBulkBid(transaction) {
         const action = "acceptBidBulk"
 
         // On a les paramètres
-       const input = transaction.input
+        const input = transaction.input
         const params = splitString(input.slice(10), 64)
         const hash = transaction.hash
 
@@ -465,7 +469,7 @@ function decodeBuyPool(transaction) {
         const action = "buyPool"
 
         // On a les paramètres
-       const input = transaction.input
+        const input = transaction.input
         const params = splitString(input.slice(10), 64)
         const hash = transaction.hash
 
@@ -522,7 +526,7 @@ function decodeBuyBulkPool(transaction) {
         const action = "buyBulkPool"
 
         // On a les paramètres
-       const input = transaction.input
+        const input = transaction.input
         const params = splitString(input.slice(10), 64)
         const hash = transaction.hash
 

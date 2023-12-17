@@ -30,28 +30,30 @@ function decodeOpensea(transaction) {
         const sig = transaction.input.substring(0, 10)
         const fctn = opensea_seaport15_functions.find(item => item.sig == sig)
 
-        if (fctn.name == "buy") {
-            return decodeBuy(transaction)
-        } else if (fctn.name == "buyAdvanced") {
-            return decodeBuyAdvanced(transaction)
-        } else if (fctn.name == "buyBasic") {
-            return decodeBuyBasic(transaction)
-        } else if (fctn.name == "buyEfficient") {
-            return decodeBuyEfficient(transaction)
-        } else if (fctn.name == "buyAvailable") {
-            return decodeAvailable(transaction)
-        } else if (fctn.name == "buyAvailableAdvanced") {
-            return decodeAvailableAdvanced(transaction)
-        }
-        // else if (fctn.name == "acceptBid") {
-        //     return decodeAcceptBid(transaction)
-        // } else if (fctn.name == "acceptBidAdvanced") {
-        //     return decodeAvailableAdvanced(transaction)
-        // } 
-        else {
-            return null
-        }
+        if (fctn) {
 
+            if (fctn.name == "buy") {
+                return decodeBuy(transaction)
+            } else if (fctn.name == "buyAdvanced") {
+                return decodeBuyAdvanced(transaction)
+            } else if (fctn.name == "buyBasic") {
+                return decodeBuyBasic(transaction)
+            } else if (fctn.name == "buyEfficient") {
+                return decodeBuyEfficient(transaction)
+            } else if (fctn.name == "buyAvailable") {
+                return decodeAvailable(transaction)
+            } else if (fctn.name == "buyAvailableAdvanced") {
+                return decodeAvailableAdvanced(transaction)
+            }
+            // else if (fctn.name == "acceptBid") {
+            //     return decodeAcceptBid(transaction)
+            // } else if (fctn.name == "acceptBidAdvanced") {
+            //     return decodeAvailableAdvanced(transaction)
+            // } 
+            else {
+                return null
+            }
+        }
     } catch (error) {
 
         console.log(error.stack)
@@ -70,7 +72,7 @@ function decodeBuy(transaction) {
         const action = "buy"
 
         // On a les paramètres
-       const input = transaction.input
+        const input = transaction.input
         const params = splitString(input.slice(10), 64)
         const hash = transaction.hash
 
@@ -127,7 +129,7 @@ function decodeBuyAdvanced(transaction) {
         const action = "buyAdvanced"
 
         // On a les paramètres
-       const input = transaction.input
+        const input = transaction.input
         const params = splitString(input.slice(10), 64)
         const hash = transaction.hash
 
@@ -186,7 +188,7 @@ function decodeBuyBasic(transaction) {
         const action = "buyBasic"
 
         // On a les paramètres
-       const input = transaction.input
+        const input = transaction.input
         const params = splitString(input.slice(10), 64)
         const hash = transaction.hash
 
@@ -245,7 +247,7 @@ function decodeBuyEfficient(transaction) {
         const action = "buyEfficient"
 
         // On a les paramètres
-       const input = transaction.input
+        const input = transaction.input
         const params = splitString(input.slice(10), 64)
         const hash = transaction.hash
 
@@ -305,7 +307,7 @@ function decodeAvailable(transaction) {
         const action = "buyAvailable"
 
         // On a les paramètres
-       const input = transaction.input
+        const input = transaction.input
         const params = splitString(input.slice(10), 64)
         const hash = transaction.hash
 
@@ -436,7 +438,7 @@ function decodeAvailableAdvanced(transaction) {
         const action = "buyAvailableAdvance"
 
         // On a les paramètres
-       const input = transaction.input
+        const input = transaction.input
         const params = splitString(input.slice(10), 64)
         const hash = transaction.hash
 

@@ -1,25 +1,3 @@
-const { EmbedBuilder } = require("discord.js");
-const { apimonitorsql, apiproviderssql, adminsql, paymentHistory, accessSql, interactionData, reportsql, erc20, sequelize } = require('./database')
-
-
-const erc20Standard = require("../contracts/uniswap/erc20standart.json")
-const erc721Standard = require("../contracts/blur/erc721standard.json")
-
-const smartWalleterc20List = require("../contracts/smart-money/walletlisterc20.json")
-const erc20Router = require("../contracts/smart-money/erc20Router.json")
-const routerList = erc20Router.map((object) => object.contract.toLowerCase());
-
-const formatCoinValueSign = require("../functions/formatNumberEmbed")
-const reduceText = require("../functions/reducetext")
-const contractType = require("../functions/contracttype")
-
-const blockInfosTreatment = require("../functions/m-newblock")
-const erc20smartTreatment = require("../functions/m-erc20smartmoney")
-const addTimeout = require("../functions/addtimeout")
-const newContract = require("../functions/m-newcontract")
-const coinTracker = require("../functions/m-cointracker")
-const nftMonitors = require("../functions/1p-nftmonitors")
-
 const colors = require('colors');
 const fs = require("fs").promises
 
@@ -27,8 +5,19 @@ const fs = require("fs").promises
 const dotenv = require("dotenv")
 dotenv.config()
 const infuraApiKey = process.env.infuraApiKey
-const etherscanApiKey = process.env.etherscanApiKey
 
+const blockInfosTreatment = require("../functions/m-newblock")
+const coinSmartmoney = require("../functions/m-coinSM")
+const addTimeout = require("../functions/addtimeout")
+const newContract = require("../functions/m-newcontract")
+const coinTracker = require("../functions/m-cointracker")
+const nftMonitors = require("../functions/1p-nftmonitors")
+
+// Smart wallet
+const coinSMFile = require("../contracts/uniswap/smartmoney.json")
+const coinSMList = coinSMFile.map(item => item.address.toLowerCase())
+
+// Coin tracker
 const trackerFile = "contracts/uniswap/tracker.json"
 
 // Marketplace NFT
@@ -45,57 +34,6 @@ const web3 = new Web3(new Web3.providers.WebsocketProvider(`wss://mainnet.infura
         maxReceivedMessageSize: 10000000000, // Taille maximale des messages reçus en octets.
     }
 }));
-
-const axios = require('axios')
-
-
-
-function formatWallet(input) {
-    return input.length > 35 ? `${input.substring(0, 6)}…${input.substring(input.length - 6)}` : input;
-}
-
-
-// On définit le client et charge les channels
-const client = require('../bot'); // Chemin vers le fichier client.js
-
-let serverId = ""
-let channelNewERC20ContractId = ""
-let channelNewERC721ContractId = ""
-
-let channelNewERC20Contract = ""
-let channelNewERC721Contract = ""
-
-setTimeout(() => {
-
-    const botId = client.user.id;
-
-    if (botId == "1074328639165964368") {
-        // PROD
-
-        serverId = "1108754348818845729"
-        channelNewERC20ContractId = "1148045555667304528"
-        channelNewERC721ContractId = "1148045614920241192"
-
-    } else if (botId == "1119666128411709552") {
-        // DEV
-
-        serverId = "1071576735298113667"
-        channelNewERC20ContractId = "1104225853023461388"
-        channelNewERC721ContractId = "1104225853023461388"
-    }
-
-    const botGuild = client.guilds.cache.get(serverId);
-    channelNewERC20Contract = botGuild.channels.cache.get(channelNewERC20ContractId);
-    channelNewERC721Contract = botGuild.channels.cache.get(channelNewERC721ContractId);
-
-}, 4000);
-
-
-
-
-
-
-
 
 
 // ON lance l'écoute
@@ -163,9 +101,9 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
 
                 // Transactions smart money erc20
-                if (smartWalleterc20List.includes(from.toLowerCase())) {
+                if (coinSMList.includes(from)) {
 
-                    erc20smartTreatment(transaction)
+                    coinSmartmoney(transaction)
 
                 }
 
@@ -180,7 +118,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
 
                 // Wallet tracker ERC721
-                if (to === blurV3_address || to === seaport15_address) {
+                if (to != null && to.toLowerCase() === blurV3_address || to.toLowerCase() === seaport15_address) {
 
                     nftMonitors(transaction)
 

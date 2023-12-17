@@ -1,4 +1,4 @@
-const { ChainId, TradeContext, TokensFactoryPublic, UniswapPair, UniswapPairSettings, ETH } = require('simple-uniswap-sdk')
+const { ChainId, TradeContext, TokensFactoryPublic, TokenFactoryPublic, UniswapPair, UniswapPairSettings, ETH } = require('simple-uniswap-sdk')
 const colors = require("colors")
 const BigNumber = require('bignumber.js');
 const decrypt = require("./decrypt")
@@ -649,7 +649,7 @@ async function getAllowance(factory, owner, spender, direction) {
             const allowance_call = await callList.allowance(owner, spender)
             const allowance_raw = allowance_call.toString()
 
-            
+
             if (parseInt(allowance_raw) > 0) {
 
                 const allowance = parseInt(allowance_raw) / 10 ** decimals
@@ -764,13 +764,13 @@ async function getToken(tokenArray) {
 
     try {
 
-    const tokensFactoryPublic = new TokensFactoryPublic(
-        { chainId: ChainId.MAINNET }
-    );
+        const tokensFactoryPublic = new TokensFactoryPublic(
+            { chainId: ChainId.MAINNET }
+        );
 
-    const tokens = await tokensFactoryPublic.getTokens(tokenArray);
+        const tokens = await tokensFactoryPublic.getTokens(tokenArray);
 
-    return tokens
+        return tokens
 
     } catch (error) {
         console.log(error.stack)
@@ -778,11 +778,24 @@ async function getToken(tokenArray) {
     }
 }
 
+async function getTokenSupply(contract) {
+
+    const tokenFactoryPublic = new TokenFactoryPublic(contract, {
+        chainId: ChainId.MAINNET,
+     
+    });
+
+    const totalSupplyRaw = await tokenFactoryPublic.totalSupply();
+    const totalSupply = parseInt(totalSupplyRaw, 16)
+
+    return totalSupply
+}
 
 
 module.exports = {
     createFactory,
     getToken,
+    getTokenSupply,
     generateTrade,
     encodeSwapExactETHForTokens,
     signTransaction,

@@ -118,7 +118,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
 
 
                 // Wallet tracker ERC721
-                if (to != null && to.toLowerCase() === blurV3_address || to.toLowerCase() === seaport15_address) {
+                if (to != null && (to.toLowerCase() === blurV3_address || to.toLowerCase() === seaport15_address)) {
 
                     nftMonitors(transaction)
 

@@ -151,8 +151,8 @@ module.exports = {
 
 
                         const botOff = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle(`Coin Tracker`)
-                            .setDescription(">>> Displaying your coin wallet tracker")
+                            .setTitle(`NFT Tracker`)
+                            .setDescription(">>> Displaying your NFT wallet tracker")
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .addFields(
                                 { name: " ", value: " ", inline: false },
@@ -177,7 +177,7 @@ module.exports = {
                 } else {
 
                     const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("Coin Tracker")
+                        .setTitle("NFT Tracker")
                         .setAuthor({ name: authorName, iconURL: userAvatar })
                         .setDescription("An error occured while retrieving your data. Please try again or contact a team member if the issue persists.")
                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
@@ -230,7 +230,7 @@ module.exports = {
             const userRoleList = interaction.member._roles
             let userHighestRole = "Member"
             if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-            let reportCommand = "/coin-tracker-param"
+            let reportCommand = "/nft-tracker-param"
 
             const timeStamp = Date.now();
             const date = new Date(timeStamp);

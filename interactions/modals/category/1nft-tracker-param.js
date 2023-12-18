@@ -10,7 +10,7 @@
  */
 
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-const { profileData, reportsql, infra_coin, accessSql, interactionData, adminsql, tracker_nft, infra_friendTech, sequelize } = require('../../../events/database');
+const { profileData, reportsql, accessSql, interactionData, adminsql, tracker_nft, infra_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 const fs = require('fs')
@@ -254,9 +254,9 @@ module.exports = {
                             await interaction.editReply({ embeds: [taskEmbed] })
 
                             const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
-                                .setTitle("Coin Tracker")
+                                .setTitle("NFT Tracker")
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
-                                .setDescription("Removed `" + confirmed + "` address from your coin wallet tracker. Refresh your dashboard to update the list ✅")
+                                .setDescription("Removed `" + confirmed + "` address from your NFT wallet tracker. You can manage your tracker from the main dashboard ✅")
                                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                 .setTimestamp()
                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
@@ -271,9 +271,9 @@ module.exports = {
                             await interaction.editReply({ embeds: [taskEmbed] })
 
                             const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
-                                .setTitle("Coin Tracker")
+                                .setTitle("NFT Tracker")
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
-                                .setDescription("The address you provided isn't registered in your coin wallet tracker. Try again with a valid address.")
+                                .setDescription("The address you provided isn't registered in your NFT wallet tracker. Try again with a valid address.")
                                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                 .setTimestamp()
                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })

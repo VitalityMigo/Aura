@@ -50,6 +50,7 @@ contracts/friendtech/lastid.json
 contracts/friendtech/newuser.json
 contracts/friendtech/tracker.json
 #contracts/uniswap/tracker.json
+#contracts/nft/tracker.json
 
 # Database
 data/rcadatabase.sqlite

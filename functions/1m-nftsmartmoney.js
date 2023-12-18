@@ -142,7 +142,7 @@ module.exports = nftSmartmoney
 
 function createLink(links) {
 
-    let baseLinks = '[Opensea](https://opensea.io/collection/' + links.slug + ') ∙ ' +
+    let baseLinks = '[opensea](https://opensea.io/collection/' + links.slug + ') ∙ ' +
         '[blur](https://blur.io/collection/' + links.contract + ') ∙ ' +
         '[magically](https://magically.gg/collection/' + links.contract + ') ∙ ' +
         '[nerds](https://magically.gg/collection/' + links.contract + ') ∙ ' +

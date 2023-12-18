@@ -1013,7 +1013,7 @@ module.exports = {
 
 function createLink(slug, contract, twitter, website) {
 
-    let baseLinks = '[Opensea](https://opensea.io/collection/' + slug + ') ∙ ' +
+    let baseLinks = '[opensea](https://opensea.io/collection/' + slug + ') ∙ ' +
         '[blur](https://blur.io/collection/' + contract + ') ∙ ' +
         '[magically](https://magically.gg/collection/' + contract + ') ∙ ' +
         '[nerds](https://magically.gg/collection/' + contract + ') ∙ ' +

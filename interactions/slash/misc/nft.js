@@ -7,7 +7,7 @@
 
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
-const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize, infra_coin, tracker_coin, infra_nft } = require('../../../events/database');
+const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize, infra_coin, tracker_nft, infra_nft } = require('../../../events/database');
 const moment = require('moment');
 
 // Fonctions d'execution et de formattage
@@ -125,6 +125,12 @@ module.exports = {
             subcommand
                 .setName("wallet")
                 .setDescription("Manage your buy and sell nft wallet")
+
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("tracker")
+                .setDescription("Manage your NFT wallet tracker")
 
         ),
 
@@ -721,7 +727,74 @@ module.exports = {
 
 
 
+                                } else if (subcommand === 'tracker') {
+
+
+                                    const buttonsRow = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('button_nft_infra_tracker_add')
+                                                .setLabel('Add Addresses')
+                                                .setStyle(3),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_nft_infra_tracker_remove')
+                                                .setLabel('Remove Address')
+                                                .setStyle(1),
+                                            new ButtonBuilder()
+                                                .setCustomId('button_nft_infra_tracker_reset')
+                                                .setLabel('Reset')
+                                                .setStyle(1),
+                              
+                                        );
+
+
+
+
+
+
+                                    const userList = await tracker_nft.findAll({ where: { authorId: authorId } })
+
+                                    let addressFormatted = ""
+                                    const maxAddress = 15
+                                    const spotLeft = maxAddress - userList.length
+
+
+                                    if (userList.length > 0) {
+
+                                        const userListSliced = userList.slice(0, 16)
+                                        addressFormatted = userListSliced.map(item => item.dataValues.address).join("\n")
+                                       
+
+
+                                    } else {
+
+                                        addressFormatted = "No tracked address found in your profile             "
+
+                                    }
+
+
+                                    const botOff = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle(`NFT Tracker`)
+                                        .setDescription(">>> Displaying your NFT wallet tracker")
+                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                        .addFields(
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Address Count", value: "`" + userList.length + "`", inline: true },
+                                            { name: "Spots Left", value: "`" + spotLeft + "`", inline: true },
+                                            { name: " ", value: " ", inline: false },
+                                            { name: "Address Tracked:", value: "```\n" +addressFormatted + "                                  ```", inline: false },
+                                        )
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                        
+                                    await interaction.editReply({ embeds: [botOff], components: [buttonsRow] });
+
+
+
                                 }
+
 
 
 

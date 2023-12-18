@@ -1397,6 +1397,46 @@ const infra_nft = sequelize.define('infra_nft', {
 
 
 
+//Alert up
+const tracker_nft = sequelize.define('tracker_nft', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    subjectUsername: {
+        type: Sequelize.STRING,
+    },
+    address: {
+        type: Sequelize.STRING,
+    },
+    buy: {
+        type: Sequelize.STRING,
+    },
+    sell: {
+        type: Sequelize.STRING,
+    },
+    mint: {
+        type: Sequelize.STRING,
+    },
+    list: {
+        type: Sequelize.STRING,
+    },
+    bid: {
+        type: Sequelize.STRING,
+    },
+
+
+});
+
 //Synching the tables
 
 accessSql.sync();
@@ -1429,6 +1469,7 @@ exe_coin.sync()
 manager_coin.sync()
 tracker_coin.sync()
 infra_nft.sync()
+tracker_nft.sync()
 
 //Export the tables informations
 module.exports = {
@@ -1463,6 +1504,7 @@ module.exports = {
     manager_coin,
     tracker_coin,
     infra_nft,
+    tracker_nft,
     Op,
 }
 

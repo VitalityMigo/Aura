@@ -184,6 +184,10 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_nft_openpanel_");
 			
+		} else if (customId.startsWith("button_nft_infra_tracker_")) {
+
+			command = client.buttonCommands.get("button_nft_infra_tracker_");
+			
 		} 
 		
 		

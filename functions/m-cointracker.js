@@ -173,7 +173,7 @@ async function coinTracker(transaction) {
 
                         if (filteredTasks.length > 0) {
 
-                            const trackedAuthor = filteredTasks.map(item => item.dataValues.authorId)
+                            const trackedAuthor = [...new Set(filteredTasks.map(item => item.dataValues.authorId))];
 
                             // On calcul les valeurs de prix
                             const price = (value / amount) * parseFloat(quote)

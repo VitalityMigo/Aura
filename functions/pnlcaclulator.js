@@ -22,6 +22,7 @@ async function coinProfitSingle(cont, wall, time) {
             swapIn: 0,
             swapOut: 0,
             transfer: 0,
+            approval: 0,
             buyAmount: 0,
             sellAmount: 0,
             heldAmount: 0,
@@ -41,7 +42,6 @@ async function coinProfitSingle(cont, wall, time) {
             potentialMLTP: 0,
             realizedROI: 0,
             potentialROI: 0,
-            price: 0,
         }
 
         // On formatte tout en lower case
@@ -241,6 +241,7 @@ async function coinProfitSingle(cont, wall, time) {
 
                     const fees = parseFloat(((normalLKP.gasPrice) * (normalLKP.gasUsed))) / 10 ** 18
                     data.sellGas += fees
+                    data.approval++
                 }
             }
         }
@@ -249,20 +250,20 @@ async function coinProfitSingle(cont, wall, time) {
         // On récupère les valeurs CALL au début
         // On calcul quelques valeurs en plus
         const [priceRaw, heldRaw, supply] = await Promise.all([priceCALL, heldCALL, supplyCALL]);
-        const price = priceRaw.priceUSD
+        const priceUSD = priceRaw.priceUSD
+        const priceETH = priceRaw.priceETH
         const held = heldRaw / 10 ** decimals
 
         // On ajoute les valeurs du holding actuel
         // REGLER LE FORMAT EN BN (actuellement exposant math)
         // Voir pour déduire held amount par Buy - Sell (seulement si tous les buy/sell sont comptés dans les transfert)
         data.heldAmount = held
-        data.price = price
-        if (data.heldAmount > 0) { data.heldValue = (data.heldAmount * price) }
+        if (data.heldAmount > 0) { data.heldValue = (data.heldAmount * priceETH) }
 
         // On calcul les valeurs d'average
-        if (data.buyValue) { data.avgMCBuy = (data.buyValue / data.buyAmount) * supply }
-        if (data.sellValue) { data.avgMCSell = (data.sellValue / data.sellAmount) * supply }
-        data.currentMC = supply * price
+        if (data.buyValue) { data.avgMCBuy = (data.buyValue / data.buyAmount) * supply * ethPrice}
+        if (data.sellValue) { data.avgMCSell = (data.sellValue / data.sellAmount) * supply * ethPrice}
+        data.currentMC = supply * priceUSD
 
         // On calcul les valeurs de gas
         data.totalGas = data.buyGas + data.sellGas
@@ -273,10 +274,10 @@ async function coinProfitSingle(cont, wall, time) {
         data.potentialPNL = (data.sellValue + data.heldValue) - (data.buyValue + data.totalGas)
 
         // On calcul le ROI et MLTP
-        if (data.sellValue) { data.realizedMLTP = data.sellValue / (data.buyValue + data.totalGas) }
+        if (data.sellValue) { data.realizedMLTP = data.sellValue / (data.buyValue + data.totalGas) } 
         if (data.sellValue + data.heldValue >= 0.001) { data.potentialMLTP = (data.sellValue + data.heldValue) / (data.buyValue + data.totalGas) }
         if (data.sellValue - (data.buyValue + data.totalGas)) { data.realizedROI = ((data.sellValue - (data.buyValue + data.totalGas)) / (data.buyValue + data.totalGas)) * 100 }
-        if ((data.sellValue + data.heldValue) - (data.buyValue + data.totalGas) >= 0.001) { data.potentialROI = (((data.sellValue + data.heldValue) - (data.buyValue + data.totalGas)) / (data.buyValue + data.totalGas)) * 100 }
+        if ((data.sellValue + data.heldValue) - (data.buyValue + data.totalGas)) { data.potentialROI = (((data.sellValue + data.heldValue) - (data.buyValue + data.totalGas)) / (data.buyValue + data.totalGas)) * 100 }
 
 
         // Toutes les values ont été calculés, on fait du formattage
@@ -310,7 +311,8 @@ async function coinProfitSingle(cont, wall, time) {
                 name: name,
                 symbol: symbol,
                 contract: contract,
-                price: price,
+                priceUSD: priceUSD,
+                priceETH: priceETH,
                 timestamp: timestamp
             },
             raw: data,

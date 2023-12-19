@@ -2,13 +2,10 @@
 const dotenv = require("dotenv")
 dotenv.config()
 const infuraApiKey = process.env.infuraApiKey
-const etherscanApiKey = process.env.etherscanApiKey
-
 
 //Web3 API + Cloudfare Provider
 var Web3 = require("web3")
 const web3 = new Web3('https://mainnet.infura.io/v3/' + infuraApiKey);
-//const web3 = new Web3("https://cloudflare-eth.com")
 
 
 
@@ -31,10 +28,10 @@ async function getApprovals(address, contract) {
             fromBlock: 0, // Bloc de départ
             toBlock: 'latest', // Bloc final (dernier bloc)
         };
-        console.log(filter)
 
+        
         const logs = await web3.eth.getPastLogs(filter);
-        console.log(logs)
+
         return logs
 
     } catch (error) {

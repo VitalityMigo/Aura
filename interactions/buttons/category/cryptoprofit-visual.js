@@ -161,7 +161,7 @@ module.exports = {
             //AVG BUY
             ctxFormatted.font = "bold 22px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ", 337, 316.5);
+            ctxFormatted.fillText((formatNumberVisual(avgBuy)).toString() + "$", 337, 316.5);
 
 
             //SOLD COUNT
@@ -177,7 +177,7 @@ module.exports = {
             //AVG SOLD
             ctxFormatted.font = "bold 22px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ", 337, 477.5);
+            ctxFormatted.fillText((formatNumberVisual(avgSold)).toString() + "$", 337, 477.5);
 
 
             //HELD VALUE
@@ -795,8 +795,8 @@ module.exports = {
           //AVG BUY
           ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
-          const avgBuyCountText = ctxFormatted.measureText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ").width
-          ctxFormatted.fillText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ", 812 - avgBuyCountText / 2, 420);
+          const avgBuyCountText = ctxFormatted.measureText((formatNumberVisual(avgBuy)).toString() + "$").width
+          ctxFormatted.fillText((formatNumberVisual(avgBuy)).toString() + "$", 812 - avgBuyCountText / 2, 420);
 
           //SOLD COUNT
           ctxFormatted.font = "700 35px 'Fira Code'";
@@ -813,8 +813,8 @@ module.exports = {
           //AVG SOLD
           ctxFormatted.font = "700 35px 'Fira Code'";
           ctxFormatted.fillStyle = "#E5EAFF";
-          const avgSoldText = ctxFormatted.measureText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ").width
-          ctxFormatted.fillText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ", 812 - avgSoldText / 2, 585);
+          const avgSoldText = ctxFormatted.measureText((formatNumberVisual(avgSold)).toString() + "$").width
+          ctxFormatted.fillText((formatNumberVisual(avgSold)).toString() + "$", 812 - avgSoldText / 2, 585);
 
 
           //REALIZED PROFIT

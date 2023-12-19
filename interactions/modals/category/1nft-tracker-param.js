@@ -178,29 +178,36 @@ module.exports = {
 
                         } else {
 
+                            taskEmbed.fields.splice(-2)
+                            await interaction.editReply({ embeds: [taskEmbed], ephemeral: true });
+
                             const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle("Add Address")
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
-                                .setDescription("You didn't provided any Ethereum address. Please try again or contact a team member if the issue persists.")
+                                .setDescription("You didn't provided any Ethereum address. Please try again or contact a team member if the issue persists ❌")
                                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                 .setTimestamp()
                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                            await interaction.editReply({ embeds: [setfpEmbedNotForYou], ephemeral: true });
+                            await interaction.followUp({ embeds: [setfpEmbedNotForYou], ephemeral: true });
 
 
                         }
                     } else {
 
+                        taskEmbed.fields.splice(-2)
+                            await interaction.editReply({ embeds: [taskEmbed], ephemeral: true });
+
+
                         const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
                             .setTitle("Add Address")
                             .setAuthor({ name: authorName, iconURL: userAvatar })
-                            .setDescription("You already reached the maximum number of wallet tracked. Please remove a wallet before adding a new one")
+                            .setDescription("You already reached the maximum number of wallet tracked. Please remove a wallet before adding a new one ❌")
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                        await interaction.editReply({ embeds: [setfpEmbedNotForYou], ephemeral: true });
+                        await interaction.followUp({ embeds: [setfpEmbedNotForYou], ephemeral: true });
 
 
                     }

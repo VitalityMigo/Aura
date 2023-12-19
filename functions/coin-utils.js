@@ -2,12 +2,13 @@ const { ChainId, TradeContext, TokensFactoryPublic, TokenFactoryPublic, UniswapP
 const colors = require("colors")
 const BigNumber = require('bignumber.js');
 const decrypt = require("./decrypt")
+const axios = require("axios")
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
 dotenv.config()
 const infuraApiKey = process.env.infuraApiKey
-
+const etherscanApiKey = process.env.etherscanApiKey
 
 const Web3 = require('web3')
 const web3 = new Web3("https://mainnet.infura.io/v3/" + infuraApiKey)
@@ -24,6 +25,12 @@ const routerV2 = new web3.eth.Contract(uniswapV2_router2_ABI, uniswapV2_router2_
 
 // On initialise uniswap router V3
 const uniswapV3_router_address = "0xe592427a0aece92de3edee1f18e0157c05861564"
+
+const oracle = {
+    address: "0x862284B87b774bbEC86c4f13bA6c283C4552AfAB",
+    slippage: 0,
+    amount: 1
+}
 
 
 
@@ -782,13 +789,150 @@ async function getTokenSupply(contract) {
 
     const tokenFactoryPublic = new TokenFactoryPublic(contract, {
         chainId: ChainId.MAINNET,
-     
+
     });
 
     const totalSupplyRaw = await tokenFactoryPublic.totalSupply();
     const totalSupply = parseInt(totalSupplyRaw, 16)
 
     return totalSupply
+}
+
+async function getBalance(contract, address) {
+
+    try {
+
+        const tokenFactoryPublic = new TokenFactoryPublic(
+            contract,
+            { chainId: ChainId.MAINNET }
+        );
+
+        const balanceOf = await tokenFactoryPublic.balanceOf(address);
+
+        return parseInt(balanceOf, 16)
+
+    } catch (error) {
+        return 0
+    }
+}
+
+async function getPriceEth(contract, isFactory) {
+
+    try {
+
+        let factory = isFactory
+        if (!isFactory) {
+            factory = await createFactory("swap_token_to_eth", contract, oracle.address, oracle.slippage)
+        }
+
+        if (factory) {
+
+            const trade = await generateTrade("swap_token_to_eth", factory, oracle.amount)
+            const price = trade.amountExpected
+
+            if (price) {
+                return price
+            } else {
+                return 0
+            }
+
+        } else {
+            return 0
+        }
+
+    } catch (error) {
+        return 0
+    }
+}
+
+async function getPriceUsd(contract, isFactory, ethPrice) {
+    // A revoir
+    try {
+
+        let rawPrice = 0
+        if (!isFactory) {
+            rawPrice = getPriceEth(contract, null)
+        } else {
+            rawPrice = getPriceEth(contract, isFactory)
+        }
+
+        if (rawPrice) {
+            return rawPrice * ethPrice
+        } else {
+            return 0
+        }
+
+    } catch (error) {
+        return 0
+    }
+}
+
+async function getMetrics(contract) {
+
+    try {
+
+        const call = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + contract.toLowerCase())
+
+        if (call.data.pairs.length > 0) {
+
+            const object = call.data.pairs[0]
+            
+            const metrics = {
+                priceUSD: parseFloat(object.priceUsd),
+                priceETH: parseFloat(object.priceNative),
+                token: object.baseToken,
+                quote: object.quoteToken,
+                pool: object.pairAddress,
+                dex: object.dexId
+            }
+
+            return metrics
+
+        } else {
+
+            const metrics = {
+                priceUSD: 0,
+                priceETH: 0,
+                token: null,
+                quote: null,
+                pool: null,
+                dex: null,
+            }
+
+            return metrics
+        }
+    } catch (error) {
+
+        const metrics = {
+            priceUSD: 0,
+            priceETH: 0,
+            token: null,
+            quote: null,
+            pool: null,
+            dex: null,
+        }
+
+        return metrics
+    }
+}
+
+
+async function getSupply(contract, decimals) {
+
+    try {
+
+        const supply = await axios.get("https://api.etherscan.io/api?module=stats&action=tokensupply&contractaddress=" + contract + "&apikey=" + etherscanApiKey)
+
+        if (supply.data.result) {
+            return supply.data.result / 10 ** decimals
+        } else {
+            return 0
+        }
+    } catch (error) {
+        console.log(error)
+        return 0
+    }
+
 }
 
 
@@ -810,5 +954,10 @@ module.exports = {
     getAllowance,
     encodeTransfer,
     encodeApproval,
-    encodeRevoke
+    encodeRevoke,
+    getBalance,
+    getPriceEth,
+    getSupply,
+    getPriceUsd,
+    getMetrics
 }

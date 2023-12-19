@@ -267,7 +267,7 @@ async function coinProfitSingle(cont, wall, time) {
 
         // On calcul les valeurs de gas
         data.totalGas = data.buyGas + data.sellGas
-        if (data.totalGas) { data.avgGas = data.totalGas / (data.swapIn + data.swapOut + data.transfer) }
+        if (data.totalGas) { data.avgGas = data.totalGas / (data.swapIn + data.swapOut + data.transfer + data.approval) }
 
         // On calcul les valeurs de profit
         data.realizedPNL = data.sellValue - (data.buyValue + data.totalGas)

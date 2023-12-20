@@ -174,7 +174,7 @@ module.exports = {
 
 
                         //On load l'image
-                        const chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
+                       // const chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
 
 
 
@@ -412,7 +412,7 @@ module.exports = {
                             .setTitle(reduceText(coinName, 40) + " (" + coinSymbol.toUpperCase() + ")")
                             .setDescription(">>> Displaying data for `$" + coinSymbol.toUpperCase() + "`.")
                             .setAuthor({ name: authorName, iconURL: userAvatar })
-                            .setImage(chartImageLink)
+                            //.setImage(chartImageLink)
                             .addFields(
                                 { name: "Contract", value: "`" + coinTicker.toLowerCase() + "`", inline: false },
                                 { name: "ETH Price", value: "`" + parseFloat(coinActualPriceEth).toFixed(5) + "Ξ`", inline: true },

@@ -79,7 +79,10 @@ async function coinProfitSingle(cont, wall, time) {
         const tokenTxs = tokenGlobalTxs.filter(item => item.contractAddress.toLowerCase() == contract)
 
         // On intialise le tableau avec les hash
+        // D'abord celui avec tous les hashs
+        // Puis celui avec les hash des contreparties, pour ne pas qu'il soit compter deux fois
         const allTxs = []
+        const counterTxs = []
 
         // On enclenche la boucle pour analyser chaque transaction
         for (const trade of tokenTxs) {
@@ -90,16 +93,20 @@ async function coinProfitSingle(cont, wall, time) {
             const to = trade.to.toLowerCase()
             const amount = trade.value / 10 ** decimals
             const fees = parseFloat(trade.gasPrice * trade.gasUsed) / 10 ** 18
-            const hash = trade.hash
+            const hash = trade.hash.toLowerCase()
 
             // On recherche les transactions similaires dans les autres types de transfert
-            const tokenLKP = tokenGlobalTxs.find(item => item.hash == hash.toLowerCase() && item !== trade);
-            const internalLKP = internalTxs.find(item => item.hash == hash.toLowerCase());
-            const normalLKP = normalTxs.find(item => item.hash == hash.toLowerCase());
+            const tokenLKP = tokenGlobalTxs.find(item => item.hash == hash && item !== trade);
+            const internalLKP = internalTxs.find(item => item.hash == hash);
+            const normalLKP = normalTxs.find(item => item.hash == hash);
 
+            // On regarde s'il existe un hash déjà compté en contrepartie 
+            // Si oui, on ne la comptera pas plus tard
+            const isCounterpart = counterTxs.find(item => item == hash)
 
             if (to === wallet) {
                 // C'est un achat
+                // Il est possible qu'il faille rajouter une vérification de la contrepartie pour éviter les doublons (comme pour sell)
 
                 if (!tokenLKP && !internalLKP && !normalLKP) {
                     // Il n'y a pas de transfert connexes
@@ -127,6 +134,8 @@ async function coinProfitSingle(cont, wall, time) {
                         data.buyValue += quoteAmt / ethPrice
                         data.buyGas += fees
 
+                        // On push le hash de contrepartie
+                        counterTxs.push(hash)
                     }
 
                 } else if (normalLKP) {
@@ -151,6 +160,8 @@ async function coinProfitSingle(cont, wall, time) {
                         }
                     }
 
+                    // On push le hash de contrepartie
+                    counterTxs.push(hash)
                 }
 
                 // On rajoute la tx au tableau
@@ -189,20 +200,40 @@ async function coinProfitSingle(cont, wall, time) {
                             // Au moins, en détéctant si c'est du wETH et en allant chercher le prix de l'ETH
                             const quoteAmt = tokenLKP.value / (10 ** quoteTab.find(item => item.contract == tokenLKP.contractAddress.toLowerCase()).decimals)
 
-                            data.swapOut++
+                            // On ajoute l'amount de token
                             data.sellAmount += amount
-                            data.sellValue += quoteAmt / ethPrice
-                            data.sellGas += fees
+
+                            // On vérifie que la counterpart du trade n'a pas été analyser déjà
+                            // Si il l'a pas été, le swap en lui même non plus
+                            if (!isCounterpart) {
+                                // On ajoute le nombre de token transféré et les gas
+                                // même si la contrepartie a déjà été compter, car on se base là dessus
+                                data.sellValue += quoteAmt / ethPrice
+                                data.sellGas += fees
+                                data.swapOut++
+                                // On push le hash de contrepartie
+                                counterTxs.push(hash)
+                            }
                         }
 
                     } else if (internalLKP) {
                         // Si il y'a un remboursement en internal en plus du token échangé
                         // A éclaircir
 
-                        data.swapOut++
+                        // On ajoute l'amount de token
                         data.sellAmount += amount
-                        data.sellValue += internalLKP.value / 10 ** 18
-                        data.sellGas += fees
+
+                        // On vérifie que la counterpart du trade n'a pas été analyser déjà
+                        // Si il l'a pas été, le swap en lui même non plus
+                        if (!isCounterpart) {
+                            // On ajoute le nombre de token transféré et les gas
+                            // même si la contrepartie a déjà été compter, car on se base là dessus
+                            data.sellValue += internalLKP.value / 10 ** 18
+                            data.sellGas += fees
+                            data.swapOut++
+                            // On push le hash de contrepartie
+                            counterTxs.push(hash)
+                        }
                     }
 
 
@@ -210,11 +241,21 @@ async function coinProfitSingle(cont, wall, time) {
                     // Token envoyés par le user et ETH reçu
                     // C'est donc un swap out probablement
 
-                    data.swapOut++
-                    data.sellValue += internalLKP.value / 10 ** 18
-                    data.sellAmount += amount
-                    data.sellGas += fees
+                   // On ajoute l'amount de token
+                   data.sellAmount += amount
 
+
+                    // On vérifie que la counterpart du trade n'a pas été analyser déjà
+                    // Si il l'a pas été, le swap en lui même non plus
+                    if (!isCounterpart) {
+                        // On ajoute le nombre de token transféré et les gas
+                        // même si la contrepartie a déjà été compter, car on se base là dessus
+                        data.sellValue += internalLKP.value / 10 ** 18
+                        data.sellGas += fees
+                        data.swapOut++
+                        // On push le hash de contrepartie
+                        counterTxs.push(hash)
+                    }
                 }
 
                 // On rajoute la tx au tableau
@@ -261,8 +302,8 @@ async function coinProfitSingle(cont, wall, time) {
         if (data.heldAmount > 0) { data.heldValue = (data.heldAmount * priceETH) }
 
         // On calcul les valeurs d'average
-        if (data.buyValue) { data.avgMCBuy = (data.buyValue / data.buyAmount) * supply * ethPrice}
-        if (data.sellValue) { data.avgMCSell = (data.sellValue / data.sellAmount) * supply * ethPrice}
+        if (data.buyValue) { data.avgMCBuy = (data.buyValue / data.buyAmount) * supply * ethPrice }
+        if (data.sellValue) { data.avgMCSell = (data.sellValue / data.sellAmount) * supply * ethPrice }
         data.currentMC = supply * priceUSD
 
         // On calcul les valeurs de gas
@@ -274,7 +315,7 @@ async function coinProfitSingle(cont, wall, time) {
         data.potentialPNL = (data.sellValue + data.heldValue) - (data.buyValue + data.totalGas)
 
         // On calcul le ROI et MLTP
-        if (data.sellValue) { data.realizedMLTP = data.sellValue / (data.buyValue + data.totalGas) } 
+        if (data.sellValue) { data.realizedMLTP = data.sellValue / (data.buyValue + data.totalGas) }
         if (data.sellValue + data.heldValue >= 0.001) { data.potentialMLTP = (data.sellValue + data.heldValue) / (data.buyValue + data.totalGas) }
         if (data.sellValue - (data.buyValue + data.totalGas)) { data.realizedROI = ((data.sellValue - (data.buyValue + data.totalGas)) / (data.buyValue + data.totalGas)) * 100 }
         if ((data.sellValue + data.heldValue) - (data.buyValue + data.totalGas)) { data.potentialROI = (((data.sellValue + data.heldValue) - (data.buyValue + data.totalGas)) / (data.buyValue + data.totalGas)) * 100 }

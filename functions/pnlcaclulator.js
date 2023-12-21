@@ -2,6 +2,14 @@
 const dotenv = require("dotenv")
 dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
+const nftgoApiKey = process.env.nftgoApiKey
+
+// Headers Call API
+const nftgoHeader = {
+    "Accept": "application/json",
+    "X-Api-Key": nftgoApiKey,
+    "Host": "data-api.nftgo.io"
+}
 
 const axios = require("axios")
 const { getToken, getBalance, getSupply, getMetrics } = require("./coin-utils")
@@ -241,8 +249,8 @@ async function coinProfitSingle(cont, wall, time) {
                     // Token envoyés par le user et ETH reçu
                     // C'est donc un swap out probablement
 
-                   // On ajoute l'amount de token
-                   data.sellAmount += amount
+                    // On ajoute l'amount de token
+                    data.sellAmount += amount
 
 
                     // On vérifie que la counterpart du trade n'a pas été analyser déjà
@@ -370,10 +378,554 @@ async function coinProfitSingle(cont, wall, time) {
 
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//// Travail sur NFT profit
+
+// //Récupérer les clefs API
+// const dotenv = require("dotenv")
+// dotenv.config()
+// const infuraApiKey = process.env.infuraApiKey
+
+const { getCollection } = require("./1nft-utils")
+const getApprovalForAll = require("./getApprovalForAll")
+const poolTab = require("../contracts/nft/pools.json")
+const pools = poolTab.map(item => item.contract.toLowerCase())
+const mintAddress = "0x0000000000000000000000000000000000000000"
+const decimals = 18
+
+async function nftProfitSingle(cont, wall, time) {
+
+    try {
+
+        const data = {
+            mint: 0,
+            buy: 0,
+            total: 0,
+            sell: 0,
+            held: 0,
+            airdrop: 0,
+            transfer: 0,
+            approval: 0,
+            trade: 0,
+            mintValue: 0,
+            mintGas: 0,
+            mintTotal: 0,
+            buyValue: 0,
+            buyGas: 0,
+            buyTotal: 0,
+            totalValue: 0,
+            sellValue: 0,
+            sellGas: 0,
+            sellTotal: 0,
+            heldValue: 0,
+            totalGas: 0,
+            avgMint: 0,
+            avgBuy: 0,
+            avgTotal: 0,
+            avgSold: 0,
+            avgGas: 0,
+            avgHeld: 0,
+            realisedPNL: 0,
+            potentialPNL: 0,
+            potentialROI: 0,
+        }
+
+        // On formatte tout en lower case
+        const contract = cont.toLowerCase()
+        const wallet = wall.toLowerCase()
+        const timestamp = getTimestamp(time)
+
+        // On lance les calls en synchrone
+        // Ils seront résolu plus bas pour gagner du temps
+        const ethPriceCALL = getEthPrice()
+        const collectionCALL = getCollection([contract])
+        const approvalsCALL = getApprovalForAll(wallet, contract)
+
+
+
+        const [internalTxs, normalTxs, nftTxs, tokenGlobalTxs] = await Promise.all([
+            axios.get(`https://api.etherscan.io/api?module=account&action=txlistinternal&address=${wallet}&startblock=0&page=1&offset=10000&sort=asc&apikey=${etherscanApiKey}`).then(res => res.data.result.filter(item => parseInt(item.timeStamp) >= timestamp)),
+            axios.get(`https://api.etherscan.io/api?module=account&action=txlist&address=${wallet}&startblock=0&page=1&offset=10000&sort=asc&apikey=${etherscanApiKey}`).then(res => res.data.result.filter(item => parseInt(item.timeStamp) >= timestamp)),
+            axios.get(`https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=${contract}&address=${wallet}&page=1&offset=10000&startblock=0&sort=desc&apikey=${etherscanApiKey}`).then(res => res.data.result.filter(item => parseInt(item.timeStamp) >= timestamp)),
+            axios.get(`https://api.etherscan.io/api?module=account&action=tokentx&address=${wallet}&page=1&offset=10000&startblock=0&sort=desc&apikey=${etherscanApiKey}`).then(res => res.data.result.filter(item => parseInt(item.timeStamp) >= timestamp)),
+        ]);
+        const tokenTxs = tokenGlobalTxs.filter(item => pools.includes(item.contractAddress.toLowerCase()))
+
+        // On intialise le tableau avec les hash
+        // D'abord celui avec tous les hashs
+        // Puis celui avec les hash des contreparties, pour ne pas qu'il soit compter deux fois
+        const allTxs = []
+        const counterTxs = []
+
+
+        for (const trade of nftTxs) {
+
+
+            // On initialise les valeurs de la transaction
+            const from = trade.from.toLowerCase()
+            const to = trade.to.toLowerCase()
+            const value = trade.value / 10 ** 18
+            const tokenId = trade.tokenId
+            const fees = parseFloat(trade.gasPrice * trade.gasUsed) / 10 ** 18
+            const hash = trade.hash.toLowerCase()
+
+
+            // On recherche les transactions similaires dans les autres types de transfert
+            // On sépare les tokenOut et tokenIn car il ne faut pas que des royalties soient confondus en cas de bid acceptés
+            const normalLKP = normalTxs.find(item => item.hash == hash);
+            const tokenLKPIn = tokenTxs.filter(item => item.hash == hash && item.from == from);
+            const tokenLKPOut = tokenTxs.filter(item => item.hash == hash && item.to == from);
+            const internalLKP = internalTxs.filter(item => item.hash == hash);
+
+            // On regarde la taille de internal vu que c'est un filter
+            const internalSize = internalLKP.length
+            const tokenSizeIn = tokenLKPIn.length
+            const tokenSizeOut = tokenLKPOut.length
+
+            // On regarde s'il existe un hash déjà compté en contrepartie 
+            // Si oui, on ne la comptera pas plus tard
+            const isCounterpart = counterTxs.find(item => item == hash)
+
+            if (to === wallet) {
+                // C'est un achat
+
+
+                if (!tokenSizeIn && !internalSize && !normalLKP) {
+                    // Il n'y a aucune transaction en contrepartie
+                    // C'est soit un transfert soit un airdrop
+                    // Le wallet n'a rien payé
+
+                    data.airdrop++
+
+                } else if (normalLKP) {
+                    // Il y'a une contrepartie dans un txn normal
+                    // Cela veut dire que le user a lancé une transaction de lui même
+                    // Il faut vérifier si c'est un mint ou un achat normal
+
+                    if (from === mintAddress) {
+                        // Le token a été transférer depuis une addresse dead, c'est donc un mint
+                        // On incrémente les valeurs et catégorise en mint
+
+                        // On ajoute le nombre de mint
+                        data.mint++
+
+                        // On vérifie que la counterpart du trade n'a pas été analyser déjà
+                        // Si il l'a pas été, le trade en lui même non plus
+                        if (!isCounterpart) {
+                            // On ajoute le nombre de token transféré et les gas
+                            // même si la contrepartie a déjà été compter, car on se base là dessus
+                            data.mintGas += fees
+                            data.mintValue += normalLKP.value / 10 ** decimals
+                            // On push le hash de contrepartie
+                            counterTxs.push(hash)
+                        }
+
+                    } else {
+                        // C'est un buy classique
+                        // On incrémente seulement les valeurs de buy
+
+                        // On ajoute le nombre de buy
+                        data.buy++
+
+                        // On vérifie que la counterpart du trade n'a pas été analyser déjà
+                        // Si il l'a pas été, le trade en lui même non plus
+                        if (!isCounterpart) {
+                            // On ajoute le nombre de token transféré et les gas
+                            // même si la contrepartie a déjà été compter, car on se base là dessus
+                            data.buyGas += fees
+                            data.buyValue += normalLKP.value / 10 ** decimals
+                            // On push le hash de contrepartie
+                            counterTxs.push(hash)
+                        }
+                    }
+
+                    // On regarde s'il y'a eu un remboursement
+                    // Dans le cas où des tokens ont pas pu être acheter
+                    // Donc la marketplace rembource
+                    if (internalSize && !isCounterpart) {
+
+                        // On fait une boucle au cas où il y'a plusieurs remboursement
+                        for (const internal of internalLKP) {
+                            data.buyValue -= internal.value / 10 ** decimals
+                        }
+                    }
+
+                } else if (tokenSizeIn) {
+                    // C'est probablement une bid accepté
+                    // Il suffit maintenant de chercher le token utilisé pour bid
+                    // et d'ajouter les valeus correspondantes en buy
+
+                    // On ajoute le nombre de buy
+                    data.buy++
+
+                    // On ajoute les gas seulement une fois
+                    if (!isCounterpart) {
+                        data.buyGas += fees
+                    }
+
+                    // On utilise une boucle pour 
+                    for (const tokenTxn of tokenLKPIn) {
+
+
+                        const poolTKN = poolTab.find(item => item.contract == tokenTxn.contractAddress.toLowerCase())
+
+                        if (poolTKN) {
+                            // C'est une bid du user qui a été accepter
+                            // On caclul donc la valeur en fonction des decimal du tableau
+                            // Prend en compte Blur ETH et WETH
+
+                            // On vérifie que la counterpart du trade n'a pas été analyser déjà
+                            // Si il l'a pas été, le trade en lui même non plus
+                            if (!isCounterpart) {
+                                // On ajoute le nombre de token transféré et les gas
+                                // même si la contrepartie a déjà été compter, car on se base là dessus
+                                data.buyValue += tokenTxn.value / 10 ** poolTKN.decimals
+                                // On push le hash de contrepartie
+                                counterTxs.push(hash)
+                            }
+                        }
+
+
+                    }
+
+
+
+                }
+
+
+                // On push dans le tableau de hash
+                allTxs.push({
+                    hash: hash,
+                    direction: "in"
+                })
+
+
+            } else if (from === wallet) {
+                // C'est une vente
+
+                if (!tokenSizeOut && !internalSize && !normalLKP) {
+                    // Il n'y a aucune transaction en contrepartie
+                    // C'est probablement un transfert out
+                    // Le wallet paye les gas du transfert
+
+                    data.airdrop--
+                    data.sellGas++
+
+                } else if (internalSize) {
+                    // Il y'a une contrepartie dans un txn internal
+                    // Cela veut dire que le user vendu un de ses items listés
+
+                    // On ajoute le nombre de sell
+                    data.sell++
+
+                    // On vérifie que la counterpart du trade n'a pas été analyser déjà
+                    // Si il l'a pas été, le trade en lui même non plus
+                    if (internalSize && !isCounterpart) {
+                        // On ajoute le nombre de token transféré et les gas
+                        // même si la contrepartie a déjà été compter, car on se base là dessus
+
+                        // On push tous les transfer internal vers l'auteur
+                        for (const internal of internalLKP) {
+                            data.sellValue += internal.value / 10 ** decimals
+                        }
+                        // On push le hash de contrepartie
+                        counterTxs.push(hash)
+                    }
+
+                } else if (tokenSizeOut) {
+                    // C'est probablement une bid accepté
+                    // Il suffit maintenant de chercher le token utilisé pour bid
+                    // et d'ajouter les valeus correspondantes en sell
+
+                    // On ajoute le nombre de sell
+                    data.sell++
+
+                    // On ajoute les gas seulement une fois
+                    if (!isCounterpart) {
+                        data.sellGas += fees
+                    }
+
+                    // On utilise une boucle pour prendre tous les transfer de token vers le user en cas de bulk sell
+                    for (const tokenTxn of tokenLKPOut) {
+
+
+                        const poolTKN = poolTab.find(item => item.contract == tokenTxn.contractAddress.toLowerCase())
+
+                        if (poolTKN) {
+                            // C'est une bid du user qui a été accepter
+                            // On caclul donc la valeur en fonction des decimal du tableau
+                            // Prend en compte Blur ETH et WETH
+
+                            // On vérifie que la counterpart du trade n'a pas été analyser déjà
+                            // Si il l'a pas été, le trade en lui même non plus
+                            if (!isCounterpart) {
+                                // On ajoute le nombre de token transféré et les gas
+                                // même si la contrepartie a déjà été compter, car on se base là dessus
+                                data.sellValue += tokenTxn.value / 10 ** poolTKN.decimals
+                                // On push le hash de contrepartie
+                                counterTxs.push(hash)
+                            }
+                        }
+
+
+                    }
+
+
+                } else if (normalLKP) {
+                    // C'est un transfert car il n'y a :
+                    // pas de token en échange (bid accepté), ni d'ETH (listing vendu)
+                    // On vérifie quand même la contrepartie, ça peut être un bulk transfer avec plusieurs tokens
+
+                    // On déduit du nombre d'airdrop et transfert
+                    data.airdrop--
+
+                    // On vérifie que la counterpart du trade n'a pas été analyser déjà
+                    // Si il l'a pas été, le trade en lui même non plus
+                    if (!isCounterpart) {
+                        // On ajoute le nombre de token transféré et les gas
+                        // même si la contrepartie a déjà été compter, car on se base là dessus
+                        data.sellGas += fees
+                        // On push le hash de contrepartie
+                        counterTxs.push(hash)
+                    }
+
+
+                }
+
+
+                // On push dans le tableau de hash
+                allTxs.push({
+                    hash: hash,
+                    direction: "out"
+                })
+            }
+
+
+
+
+        }
+
+
+        // On récupère le tableau des approvals
+        const [approvals] = await Promise.all([approvalsCALL]);
+        for (const tx of approvals) {
+
+            if (!allTxs.map(obj => obj.hash).includes((tx.transactionHash).toLowerCase())) {
+                // On vérifie qu'on a pas déjà compter l'approval dans un buy & approve par exemple
+
+                const normalLKP = await normalTxs.find(obj => obj.hash == (tx.transactionHash).toLowerCase());
+
+                if (normalLKP) {
+
+                    const fees = parseFloat(((normalLKP.gasPrice) * (normalLKP.gasUsed))) / 10 ** 18
+                    data.sellGas += fees
+                    data.approval++
+
+                    // On push dans le tableau de hash
+                    allTxs.push({
+                        hash: tx.transactionHash,
+                        direction: "approval"
+                    })
+
+
+                }
+            }
+        }
+
+
+        // On résolve les call en attente lancé au début du code
+        const [ethPrice, collectionRaw] = await Promise.all([ethPriceCALL, collectionCALL]);
+        // On construit l'objet collectio
+        const floor = collectionRaw[0].floor
+
+
+        // On commence par additioner les valeurs de base pour les calculs
+        data.mintTotal = data.mintValue + data.mintGas
+        data.buyTotal = data.buyValue + data.buyGas
+        data.sellTotal = data.sellValue - data.sellGas
+        data.totalGas = data.buyGas + data.sellGas + data.mintGas
+        data.totalValue = data.buyTotal + data.mintTotal
+
+        // Puis les valeurs en plus
+        data.total = data.buy + data.mint
+        data.held = data.total + data.airdrop - data.sell
+        data.trade = [...new Set(allTxs.map(item => item.hash))].length
+
+        // On continu avec les average
+        if (data.buyTotal) { data.avgBuy = data.buyTotal / data.buy }
+        if (data.mintTotal) { data.avgMint = data.mintTotal / data.mint }
+        if (data.totalValue) { data.avgTotal = (data.totalValue) / data.total }
+        if (data.sellValue) { data.avgSold = data.sellTotal / data.sell }
+        if (floor && data.held) { data.avgHeld = floor; data.heldValue = floor * data.held }
+        if (data.totalGas && data.trade) { data.avgGas = data.totalGas / data.trade }
+
+        // Enfin, on calcul les valeurs de PNL 
+        // On calcul les valeurs de profit
+        data.realisedPNL = data.sellTotal - data.totalValue
+        data.potentialPNL = (data.sellTotal + data.heldValue) - data.totalValue
+
+        // On calcul le ROI
+        if ((data.sellTotal + data.heldValue) - (data.totalValue)) {
+            data.potentialROI = (((data.sellTotal + data.heldValue) - (data.totalValue)) / (data.totalValue)) * 100
+        }
+
+        // On formatte le ROI
+        // Le ROI doit être formatter ici car il peut être infinity
+        let prettierROI = parseFloat(data.potentialROI).toFixed(2) + "%"
+        if (data.potentialROI == Infinity) {
+            prettierROI = "∞ %"
+        }
+
+
+
+        // Toutes les values ont été calculés, on fait du formattage
+        const prettier = {
+            mintValue: parseFloat(data.mintValue).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.mintValue * ethPrice).toFixed(0)) + "$)",
+            mintGas: parseFloat(data.mintGas).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.mintGas * ethPrice).toFixed(0)) + "$)",
+            mintTotal: parseFloat(data.mintTotal).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.mintTotal * ethPrice).toFixed(0)) + "$)",
+            buyValue: parseFloat(data.buyValue).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.buyValue * ethPrice).toFixed(0)) + "$)",
+            buyGas: parseFloat(data.buyGas).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.buyGas * ethPrice).toFixed(0)) + "$)",
+            buyTotal: parseFloat(data.buyTotal).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.buyTotal * ethPrice).toFixed(0)) + "$)",
+            sellValue: parseFloat(data.sellValue).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.sellValue * ethPrice).toFixed(0)) + "$)",
+            sellGas: parseFloat(data.sellGas).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.sellGas * ethPrice).toFixed(0)) + "$)",
+            sellTotal: parseFloat(data.sellTotal).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.sellTotal * ethPrice).toFixed(0)) + "$)",
+            mint: new Intl.NumberFormat('en-US').format(parseFloat(data.mint).toFixed(0)),
+            buy: new Intl.NumberFormat('en-US').format(parseFloat(data.buy).toFixed(0)),
+            airdrop: new Intl.NumberFormat('en-US').format(parseFloat(data.airdrop).toFixed(0)),
+            sell: new Intl.NumberFormat('en-US').format(parseFloat(data.sell).toFixed(0)),
+            held: new Intl.NumberFormat('en-US').format(parseFloat(data.held).toFixed(0)),
+            txs: new Intl.NumberFormat('en-US').format(parseFloat(data.trade).toFixed(0)),
+            avgMint: parseFloat(data.avgMint).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgMint * ethPrice).toFixed(0)) + "$)",
+            avgBuy: parseFloat(data.avgBuy).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgBuy * ethPrice).toFixed(0)) + "$)",
+            avgTotal: parseFloat(data.avgTotal).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgTotal * ethPrice).toFixed(0)) + "$)",
+            avgSold: parseFloat(data.avgSold).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgSold * ethPrice).toFixed(0)) + "$)",
+            avgHeld: parseFloat(data.avgHeld).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgHeld * ethPrice).toFixed(0)) + "$)",
+            avgGas: parseFloat(data.avgGas).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgGas * ethPrice).toFixed(0)) + "$)",
+            realisedPNL: parseFloat(data.realisedPNL).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.realisedPNL * ethPrice).toFixed(0)) + "$)",
+            potentialPNL: parseFloat(data.potentialPNL).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.potentialPNL * ethPrice).toFixed(0)) + "$)",
+            potentialROI: prettierROI,
+        }
+
+        const result = {
+            collection: {
+                name: collectionRaw[0].name,
+                contract: collectionRaw[0].contract,
+                banner: collectionRaw[0].banner,
+                floor: collectionRaw[0].floor,
+                slug: collectionRaw[0].links.slug
+            },
+            raw: data,
+            prettier: prettier
+        }
+
+
+        return result
+
+    } catch (error) {
+
+        console.log(error.stack)
+        return null
+    }
+
+
+
+}
+
+async function nftProfitGlobal(wall) {
+
+    try {
+
+        // On récupère le wallet
+        const wallet = wall.toLowerCase()
+
+        // On envoi le call non résolu pour récupérer le prix de l'ETH
+        const ethPriceCALL = getEthPrice()
+
+        // On fait le call à l'API
+        const portfolio = (await axios.get("https://data-api.nftgo.io/eth/v2/address/metrics?address=" + wallet, { headers: nftgoHeader })).data
+
+
+        if (portfolio.address_tag) {
+            // On vérifie que le tableau de data est présent
+
+            const [ethPrice] = await Promise.all([ethPriceCALL]);
+
+
+            const data = {
+                mint: portfolio.mint_num,
+                buy: portfolio.buy_num,
+                airdrop: portfolio.receive_num - portfolio.send_num,
+                sell: portfolio.sell_num,
+                held: portfolio.nft_num,
+                trade: portfolio.activity_num,
+                buyValue: portfolio.total_spent.eth,
+                sellValue: portfolio.total_revenue.eth,
+                heldValue: portfolio.portfolio_value.eth,
+                gasCost: portfolio.total_gas.eth,
+                royalties: portfolio.total_royalty_expense.eth,
+                avgBuy: portfolio.total_spent.eth / (portfolio.mint_num + portfolio.buy_num),
+                avgSold: portfolio.total_revenue.eth / portfolio.sell_num,
+                avgHeld: portfolio.portfolio_value.eth / portfolio.nft_num,
+                realisedPNL: portfolio.total_revenue.eth - portfolio.total_spent.eth,
+                potentialPNL: (portfolio.total_revenue.eth + portfolio.portfolio_value.eth) - portfolio.total_spent.eth,
+                realisedROI: ((portfolio.total_revenue.eth - portfolio.total_spent.eth) / portfolio.total_spent.eth) * 100,
+                potentialROI: (((portfolio.total_revenue.eth + portfolio.portfolio_value.eth) - portfolio.total_spent.eth) / portfolio.total_spent.eth) * 100,
+            }
+
+            const prettier = {
+                buyValue: parseFloat(data.buyValue).toFixed(3) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(data.buyValue * ethPrice).toFixed(0)) + "$)",
+                sellValue: parseFloat(data.sellValue).toFixed(3) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(data.sellValue * ethPrice).toFixed(0)) + "$)",
+                heldValue: parseFloat(data.heldValue).toFixed(3) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(data.heldValue * ethPrice).toFixed(0)) + "$)",
+                mint: new Intl.NumberFormat('en-US').format(parseFloat(data.mint).toFixed(0)),
+                buy: new Intl.NumberFormat('en-US').format(parseFloat(data.buy).toFixed(0)),
+                airdrop: new Intl.NumberFormat('en-US').format(parseFloat(data.airdrop).toFixed(0)),
+                sell: new Intl.NumberFormat('en-US').format(parseFloat(data.sell).toFixed(0)),
+                held: new Intl.NumberFormat('en-US').format(parseFloat(data.held).toFixed(0)),
+                trade: new Intl.NumberFormat('en-US').format(parseFloat(data.trade).toFixed(0)),
+                avgBuy: parseFloat(data.avgBuy).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgBuy * ethPrice).toFixed(0)) + "$)",
+                avgSold: parseFloat(data.avgSold).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgSold * ethPrice).toFixed(0)) + "$)",
+                avgHeld: parseFloat(data.avgHeld).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgHeld * ethPrice).toFixed(0)) + "$)",
+                gasCost: parseFloat(data.gasCost).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.gasCost * ethPrice).toFixed(0)) + "$)",
+                royalties: parseFloat(data.royalties).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.royalties * ethPrice).toFixed(0)) + "$)",
+                realisedPNL: parseFloat(data.realisedPNL).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.realisedPNL * ethPrice).toFixed(0)) + "$)",
+                potentialPNL: parseFloat(data.potentialPNL).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(data.potentialPNL * ethPrice).toFixed(0)) + "$)",
+                realisedROI: parseFloat(data.realisedROI).toFixed(2) + "%",
+                potentialROI: parseFloat(data.potentialROI).toFixed(2) + "%",
+            }
+
+            const result = {
+                user: {
+                    address: wallet,
+                    isWhale: portfolio.is_whale,
+                    isBluechip: portfolio.is_super_blue_chip_holder,
+                },
+                raw: data,
+                prettier: prettier
+            }
+
+            
+            return result
+
+        } else {
+            // Il n'y a pas de réponse au call
+            return null
+        }
+
+    } catch (error) {
+        console.log(error.stack)
+        return null
+    }
+
+}
+
 
 
 module.exports = {
-    coinProfitSingle
+    coinProfitSingle,
+    nftProfitSingle,
+    nftProfitGlobal
 }
 
 // Fonction qui permet de calculer le timestamp

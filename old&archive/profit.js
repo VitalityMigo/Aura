@@ -5,7 +5,7 @@
 
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
-const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize } = require('../../../events/database');
+const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize } = require('../events/database');
 const moment = require('moment');
 
 //Récupérer les clefs API
@@ -2909,7 +2909,7 @@ module.exports = {
 
                 console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
-                const reduceText = require("../../../functions/reducetext")
+                const reduceText = require("../functions/reducetext")
                 const roleTag = "1121510423687090186"
 
 

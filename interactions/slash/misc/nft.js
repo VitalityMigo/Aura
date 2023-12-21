@@ -10,77 +10,29 @@ const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize, infra_coin, tracker_nft, infra_nft } = require('../../../events/database');
 const moment = require('moment');
 
-// Fonctions d'execution et de formattage
-const { createFactory } = require('../../../functions/coin-utils')
-
-const getEthPrice = require('../../../functions/getethprice')
-const decrypt = require("../../../functions/decrypt")
-const isHttps = require('../../../functions/isHttps')
-
 //Récupérer les clefs API
 const dotenv = require("dotenv")
 dotenv.config()
-const etherscanApiKey = process.env.etherscanApiKey
 const reservoirApiKey = process.env.reservoirApiKey
-const blockspanApiKey = process.env.blockspanApiKey
-const alchemyApiKey = process.env.alchemyApiKey
-const moralisApiKey = process.env.moralisApiKey
-const chartApiKey = process.env.chartApiKey
-const magicedenApiKey = process.env.chainbaseApiKey
-const gallopApiKey = process.env.gallopApiKey
 
-
-// Axios
-const axios = require('axios')
-
-
-// Instance des APIs cryptos
-const Moralis = require("moralis").default;
+// On importe les fonctions importantes
+const getEthPrice = require('../../../functions/getethprice')
+const decrypt = require("../../../functions/decrypt")
+const isHttps = require('../../../functions/isHttps')
+const { nftProfitSingle, nftProfitGlobal } = require("../../../functions/pnlcaclulator")
 
 //Reservoir API
 const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
 sdk.auth(reservoirApiKey);
-//;
-
-const sdk3 = require('api')('@reservoirprotocol/v3.0#9eilkbbprl8');
-sdk3.auth(reservoirApiKey);
-
-//Block Span API
-const bsp = require('api')('@blockspan/v1.0#9zxl2sledru983');
-bsp.auth(blockspanApiKey);
-
 
 //Web3 API + Cloudfare Provider
 var Web3 = require("web3")
 const web3 = new Web3("https://cloudflare-eth.com")
 
-//Alchemy API 
-const { Network, Alchemy } = require('alchemy-sdk')
-const settings = {
-    apiKey: alchemyApiKey, // Replace with your Alchemy API Key.
-    network: Network.ETH_MAINNET, // Replace with your network.
-};
-const alchemy = new Alchemy(settings);
-const alchemy2 = require('api')('@alchemy-docs/v1.0#24zcsa23lfbpdnv5');
-
-// Initialisation du contrat de pair
-const wETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-
-// Configuration de l'en-tête d'autorisation
-const headers = {
-    'Authorization': `Bearer ${magicedenApiKey}`
-};
 
 // Fonctions
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
-}
-
-
-function isBRC20BitcoinWallet(wallet) {
-    const regex = /^bc1[a-zA-Z0-9]{39,59}$/;
-
-    return regex.test(wallet);
 }
 
 function formatWallet(input) {
@@ -94,7 +46,7 @@ function formatWallet2(input) {
 function cutString(string) {
     stringLength = string.length
     if (stringLength > 300) {
-        console.log(stringLength)
+
         return string.substring(0, 300) + "..."
     } else {
         return string
@@ -107,7 +59,7 @@ function cutString(string) {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("nft")
-        .setDescription("Various nft commands")
+        .setDescription("NFT trading and analytics features")
         .addSubcommand(subcommand =>
             subcommand
                 .setName("data")
@@ -132,7 +84,68 @@ module.exports = {
                 .setName("tracker")
                 .setDescription("Manage your NFT wallet tracker")
 
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("profit")
+                .setDescription("Display your profit on a collection")
+                .addStringOption(option =>
+                    option
+                        .setName("collection")
+                        .setDescription("The collection to analyse")
+                        .setRequired(true)
+                        .setAutocomplete(true)
+                )
+                .addStringOption(option =>
+                    option
+                        .setName("wallet")
+                        .setDescription("The wallet to analyse")
+                        .setRequired(true)
+                        .setAutocomplete(true)
+                )
+                .addStringOption(option =>
+                    option
+                        .setName("timelapse")
+                        .setDescription("The period of time to analyse")
+                        .setRequired(false)
+                        .setChoices(
+                            {
+                                name: 'All Time',
+                                value: 'All Time',
+                            },
+                            {
+                                name: '1 Day',
+                                value: '1 Day',
+                            },
+                            {
+                                name: '3 Days',
+                                value: '3 Days',
+                            },
+                            {
+                                name: '7 Days',
+                                value: '7 Days',
+                            },
+                            {
+                                name: '14 Days',
+                                value: '14 Days',
+                            },
+                            {
+                                name: '30 Days',
+                                value: '30 Days',
+                            },
+                            {
+                                name: '90 Days',
+                                value: '90 Days',
+                            },
+                            {
+                                name: '1 Year',
+                                value: '1 Year',
+                            }
+                        )
+                ),
+
         ),
+
 
     async execute(interaction) {
 
@@ -206,12 +219,7 @@ module.exports = {
 
 
 
-                                if (subcommand === 'profit') {
-
-
-
-
-                                } else if (subcommand === "data") {
+                                if (subcommand === "data") {
 
 
 
@@ -507,95 +515,17 @@ module.exports = {
 
                                     } else {
 
+                                        // Il y'a un problème dans la séléction des collections
 
-                                        // Prix de l'ETH
-                                        const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-                                        const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
-
-
-                                        const cryptoUsdtPrice = await axios.get('https://api-testnet.bybit.com/v5/market/tickers?category=linear')
-                                        const BTCUsdtPrice = cryptoUsdtPrice.data.result.list.find(obj => obj.symbol === "BTCUSDT").lastPrice;
-
-
-
-                                        const url = `https://api-mainnet.magiceden.dev/v2/ord/btc/collections/` + coinAddress;
-                                        const response = await axios.get(url, { headers });
-                                        const data = await response.data;
-
-                                        const description = data.description
-                                        const collectionLogo = data.imageURI
-                                        const supply = data.supply
-                                        const name = data.name
-                                        const twitter = data.twitterLink
-                                        const discord = data.discordLink
-                                        const website = data.websiteLink
-                                        const inscriptionIcon = data.inscriptionIcon
-
-
-
-                                        const url2 = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=` + coinAddress;
-                                        const response2 = await axios.get(url2, { headers });
-                                        const data2 = await response2.data;
-
-
-                                        const totalVolume = (data2.totalVolume) / (10 ** 8)
-                                        const owners = data2.owners
-                                        const floorPrice = (data2.floorPrice) / (10 ** 8)
-                                        const floorPriceUSD = floorPrice * BTCUsdtPrice
-                                        const floorPriceETH = floorPriceUSD / ethUsdPrice
-                                        const totalListed = data2.totalListed
-                                        const inscriptionNumberMin = data2.inscriptionNumberMin
-                                        const inscriptionNumberMax = data2.inscriptionNumberMax
-                                        const pendingTxn = data2.pendingTransactions
-
-
-                                        //Quelques calculs
-                                        const listingRatio = (totalListed / supply) * 100;
-                                        const holderRatio = (owners / supply) * 100;
-
-
-
-
-                                        const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
-                                            .setTitle(name)
-                                            .setDescription(description)
+                                        const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle(`Invalid Collection`)
+                                            .setDescription("The NFT collection you provided isn't a valid Ethereum contract address. Please try again using the appropriate form.")
+                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                             .setAuthor({ name: authorName, iconURL: userAvatar })
-                                            .setThumbnail(collectionLogo)
-                                            .addFields(
-                                                { name: " ", value: " ", inline: true },
-                                                { name: "Inscription", value: "`" + inscriptionIcon + "`", inline: false },
-                                                { name: "BTC Price", value: "`" + parseFloat(floorPrice).toFixed(3) + "₿`", inline: true },
-                                                { name: "ETH Price", value: "`" + parseFloat(floorPriceETH).toFixed(3) + "Ξ`", inline: true },
-                                                { name: "USD Price", value: "`" + parseFloat(floorPriceUSD).toFixed(2) + "$`", inline: true },
-                                                { name: "Supply", value: "`" + supply + "`", inline: true },
-                                                { name: "Total Volume", value: "`" + parseFloat(totalVolume).toFixed(3) + "₿\n(" + Intl.NumberFormat('en-US').format(parseFloat(totalVolume * BTCUsdtPrice).toFixed(0)) + "$)`", inline: true },
-                                                { name: "Ongoin Txn", value: "`" + pendingTxn + "`", inline: true },
-                                                { name: "Listing Count", value: "`" + totalListed + "`", inline: true },
-                                                { name: "Listing Ratio", value: "`" + parseFloat(listingRatio).toFixed(2) + "%`", inline: true },
-                                                { name: " ", value: " ", inline: true },
-                                                { name: "Holder Count", value: "`" + owners + "`", inline: true },
-                                                { name: "Holder Ratio", value: "`" + parseFloat(holderRatio).toFixed(2) + "%`", inline: true },
-                                                { name: " ", value: " ", inline: true },
-                                                { name: "Lowest Inscription", value: "`#" + inscriptionNumberMin + "`", inline: true },
-                                                { name: "Highest Inscription", value: "`#" + inscriptionNumberMax + "`", inline: true },
-                                                { name: "Links", value: '[magic eden](https://magiceden.io/ordinals/marketplace/' + coinAddress + ") ∙ " + '[twitter](' + twitter + ") ∙ " + '[discord](' + discord + ") ∙ " + '[website](' + website + ")", inline: false },
-
-
-                                            )
                                             .setTimestamp()
-                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                        await interaction.editReply({ embeds: [getDataCollectionAddress] });
-
-
-                                        //On enregistre le call API dans la database
-                                        const timeStamp = Date.now();
-                                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "getCollectionInfos", apiProvider: "magic eden", timestamp: timeStamp.toString() })
-                                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "getCollectionStats", apiProvider: "magic eden", timestamp: timeStamp.toString() })
-                                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "btcUsdPrice", apiProvider: "bybit", timestamp: timeStamp.toString() })
-                                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/data", apiCallName: "ethUsdPrice", apiProvider: "etherscan", timestamp: timeStamp.toString() })
-
-
+                                        await interaction.editReply({ embeds: [setwalletErrorEmbed] });
 
 
                                     }
@@ -744,7 +674,7 @@ module.exports = {
                                                 .setCustomId('button_nft_infra_tracker_reset')
                                                 .setLabel('Reset')
                                                 .setStyle(1),
-                              
+
                                         );
 
 
@@ -763,7 +693,7 @@ module.exports = {
 
                                         const userListSliced = userList.slice(0, 16)
                                         addressFormatted = userListSliced.map(item => item.dataValues.address).join("\n")
-                                       
+
 
 
                                     } else {
@@ -782,14 +712,355 @@ module.exports = {
                                             { name: "Address Count", value: "`" + userList.length + "`", inline: true },
                                             { name: "Spots Left", value: "`" + spotLeft + "`", inline: true },
                                             { name: " ", value: " ", inline: false },
-                                            { name: "Address Tracked:", value: "```\n" +addressFormatted + "                                  ```", inline: false },
+                                            { name: "Address Tracked:", value: "```\n" + addressFormatted + "                                  ```", inline: false },
                                         )
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                         .setTimestamp()
                                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                                        
+
                                     await interaction.editReply({ embeds: [botOff], components: [buttonsRow] });
+
+
+
+                                } else if (subcommand === 'profit') {
+
+
+                                    // On ajoute le boutton
+                                    const visualBTN = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('profitvisual-button')
+                                                .setLabel('visual')
+                                                .setStyle(2)
+                                        );
+
+
+                                    //Variable pour les options
+                                    const wallet = interaction.options.getString("wallet").toLowerCase()
+                                    const contract = interaction.options.getString("collection").toLowerCase()
+                                    const time = interaction.options.getString("timelapse");
+
+
+
+                                    if (isValidEthereumAddress(contract)) {
+                                        // Une seule collection a été séléctionner
+
+
+                                        if (isValidEthereumAddress(wallet)) {
+                                            // Un seul wallet séléctionné
+
+
+
+                                            const data = await nftProfitSingle(contract, wallet, time)
+
+                                            if (data) {
+
+                                                // On sépare les data entre le raw et le prettier
+                                                // Les raw sont les data non traité
+                                                // Les prettier sont pour l'embed
+                                                const raw = data.raw
+                                                const prettier = data.prettier
+                                                const collection = data.collection
+
+                                                // On vérifie que la bannière est valide
+                                                // Sinon on remplace par la bannière d'Aura
+                                                if (!isHttps(collection.banner)) {
+                                                    collection.banner = 'https://cdn.discordapp.com/attachments/1100572519896977490/1185619758008254474/e.png?ex=65904572&is=657dd072&hm=7a51469cad88b48198c5f230d13450d50c7e2717c5acdf97a82a6eb1fb5adad4&'
+                                                }
+
+                                                //Embed getRCprofitPrecisedAll
+                                                const answer = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle(collection.name)
+                                                    .setDescription(">>> Displaying the P&L made by `" + formatWallet2(wallet) + "`")
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setImage(collection.banner)
+                                                    .addFields(
+                                                        { name: "Mint Value:", value: "`" + prettier.mintValue + "`", inline: true },
+                                                        { name: "Mint Gas:", value: "`" + prettier.mintGas + "`", inline: true },
+                                                        { name: "Mint Total:", value: "`" + prettier.mintTotal + "`", inline: true },
+
+                                                        { name: "Buy Value:", value: "`" + prettier.buyValue + "`", inline: true },
+                                                        { name: "Buy Gas:", value: "`" + prettier.buyGas + "`", inline: true },
+                                                        { name: "Buy Total:", value: "`" + prettier.buyTotal + "`", inline: true },
+
+                                                        { name: "Sales Value:", value: "`" + prettier.sellValue + "`", inline: true },
+                                                        { name: "Sales Gas:", value: "`" + prettier.sellGas + "`", inline: true },
+                                                        { name: "Sales Total:", value: "`" + prettier.sellTotal + "`", inline: true },
+
+                                                        { name: "Tokens Minted:", value: "`" + prettier.mint + "`", inline: true },
+                                                        { name: "Tokens Bought:", value: "`" + prettier.buy + "`", inline: true },
+                                                        { name: "Airdrop & Transfer:", value: "`" + prettier.airdrop + "`", inline: true },
+
+                                                        { name: "Tokens Sold:", value: "`" + prettier.sell + "`", inline: true },
+                                                        { name: "Tokens Held:", value: "`" + prettier.held + "`", inline: true },
+                                                        { name: "Transactions:", value: "`" + prettier.txs + "`", inline: true },
+
+                                                        { name: "Avg Mint Value:", value: "`" + prettier.avgMint + "`", inline: true },
+                                                        { name: "Avg Buy Value:", value: "`" + prettier.avgBuy + "`", inline: true },
+                                                        { name: "Avg Spent Value:", value: "`" + prettier.avgTotal + "`", inline: true },
+
+                                                        { name: "Avg Sold Value:", value: "`" + prettier.avgSold + "`", inline: true },
+                                                        { name: "Avg Held Value:", value: "`" + prettier.avgHeld + "`", inline: true },
+                                                        { name: "Avg Gas Value:", value: "`" + prettier.avgGas + "`", inline: true },
+
+                                                        { name: "Current P&L:", value: "`" + prettier.realisedPNL + "`", inline: true },
+                                                        { name: "Potential P&L:", value: "`" + prettier.potentialPNL + "`", inline: true },
+                                                        { name: "ROI:", value: "`" + prettier.potentialROI + "`", inline: true },
+
+                                                        { name: "Links", value: '[opensea](https://opensea.io/collection/' + collection.slug + ") ∙ " + '[blur](https://blur.io/collection/' + contract + ") ∙ " + '[magically](https://magically.gg/collection/' + contract + ") ∙ " + '[nerds](https://app.nftnerds.ai/collection/' + contract + ") ∙ " + '[etherscan](https://etherscan.io/address/' + contract + ')', inline: false },
+                                                    )
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                await interaction.editReply({ embeds: [answer], components: [visualBTN] });
+
+
+                                                // On enregistre les informations dans la base SQL
+                                                // L'interaction sera récupéré pour générer le visuel de profit
+                                                await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
+
+                                                await interactionData.create({
+
+                                                    authorId: authorId,
+                                                    authorName: authorName,
+                                                    serverId: serverId,
+                                                    commandName: "profit",
+                                                    interactionId: interaction.id,
+                                                    walletCategory: "eth",
+                                                    selectedCollection: collection.contract,
+                                                    floorPrice: collection.floor.toString(),
+                                                    collectionName: collection.name,
+                                                    mintCount: raw.mint.toString(),
+                                                    buyCount: raw.buy.toString(),
+                                                    soldCount: raw.sell.toString(),
+                                                    remaining: raw.held.toString(),
+                                                    avgBuy: parseFloat(raw.avgTotal).toFixed(3),
+                                                    avgSold: parseFloat(raw.avgSold).toFixed(3),
+                                                    realisedProfit: parseFloat(raw.realisedPNL).toFixed(3),
+                                                    potentialProfit: parseFloat(raw.potentialPNL).toFixed(3),
+                                                    roi: raw.potentialROI.toString(),
+                                                    userAvatar: userAvatar,
+                                                })
+
+
+
+
+                                            } else {
+                                                // Si il y'a une erreur lors de l'analyse des data
+
+                                                const notMember = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle(`NFT Profit`)
+                                                    .setDescription("Aura can't analyze your wallet's profit data. Please try again or contact our team if the error persists.")
+                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                await interaction.editReply({ embeds: [notMember] });
+
+
+
+                                            }
+
+
+
+
+
+
+
+
+                                        } else if (wallet === "all") {
+                                            // Tous les wallets séléctionnés
+
+
+                                            const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle(`Not available`)
+                                                .setDescription("We are currently optimising this feature. You can still use NFT profit on a **single** wallet with `/nft profit`.")
+                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                            await interaction.editReply({ embeds: [setwalletErrorEmbed] });
+
+
+                                        } else {
+                                            // Problème dans la séléction du wallet
+
+                                            const notMember = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle(`NFT Profit`)
+                                                .setDescription("Aura can't analyze your wallet's data because the wallet you provided isn't an Ethereum wallet. Please use try again using the appropriate form.")
+                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                            await interaction.editReply({ embeds: [notMember] });
+
+
+                                        }
+
+
+                                    } else if (contract === "all") {
+                                        // Toute les collections ont été séléctionner
+
+
+
+                                        if (isValidEthereumAddress(wallet)) {
+
+
+
+                                            const data = await nftProfitGlobal(wallet)
+
+                                            if (data) {
+
+                                                const raw = data.raw
+                                                const prettier = data.prettier
+                                                const user = data.user
+
+
+
+
+                                                //Embed getRCprofitPrecisedAll
+                                                const getprofitOneWalletOneCollection = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle(`Global Profits`)
+                                                    .setDescription(">>> Displaying the global P&L of `" + formatWallet2(wallet) + "`")
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setImage("https://cdn.discordapp.com/attachments/1100572519896977490/1185619758008254474/e.png?ex=65904572&is=657dd072&hm=7a51469cad88b48198c5f230d13450d50c7e2717c5acdf97a82a6eb1fb5adad4&")
+                                                    .addFields(
+                                                        { name: "Address: ", value: "`" + wallet + "`", inline: false },
+
+                                                        { name: "Buy Value:", value: "`" + prettier.buyValue + "`", inline: true },
+                                                        { name: "Sales Value:", value: "`" + prettier.sellValue + "`", inline: true },
+                                                        { name: "Held Value:", value: "`" + prettier.heldValue + "`", inline: true },
+
+                                                        { name: "Tokens Minted:", value: "`" + prettier.mint + "`", inline: true },
+                                                        { name: "Tokens Bought:", value: "`" + prettier.buy + "`", inline: true },
+                                                        { name: "Airdrop & Transfer:", value: "`" + prettier.airdrop + "`", inline: true },
+
+                                                        { name: "Tokens Sold:", value: "`" + prettier.sell + "`", inline: true },
+                                                        { name: "Tokens Held:", value: "`" + prettier.held + "`", inline: true },
+                                                        { name: "Tokens Traded:", value: "`" + prettier.trade + "`", inline: true },
+
+                                                        { name: "Avg. Spent Value:", value: "`" + prettier.avgBuy + "`", inline: true },
+                                                        { name: "Avg. Sold Value:", value: "`" + prettier.avgSold + "`", inline: true },
+                                                        { name: "Avg. Held Value:", value: "`" + prettier.avgHeld + "`", inline: true },
+
+                                                        { name: "Gas Costs:", value: "`" + prettier.gasCost + "`", inline: true },
+                                                        { name: "Royalties:", value: "`" + prettier.royalties + "`", inline: true },
+                                                        { name: " ", value: " ", inline: true },
+
+                                                        { name: "Current P&L:", value: "`" + prettier.realisedPNL + "`", inline: true },
+                                                        { name: "Current ROI:", value: "`" + prettier.realisedROI + "`", inline: true },
+                                                        { name: " ", value: " ", inline: true },
+
+                                                        { name: "Potential P&L:", value: "`" + prettier.potentialPNL + "`", inline: true },
+                                                        { name: "Potential ROI:", value: "`" + prettier.potentialROI + "`", inline: true },
+                                                        { name: " ", value: " ", inline: true },
+
+                                                        { name: "Links", value: '[opensea](https://opensea.io/' + wallet + ") ∙ " + '[blur](https://blur.io/' + wallet + ") ∙ " + '[nansen](https://app.nansen.ai/profiler?address=' + wallet + ") ∙ " + '[opensea pro](https://pro.opensea.io/profile/' + contract + ") ∙ " + '[etherscan](https://etherscan.io/address/' + wallet + ')', inline: false },
+
+                                                    )
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                await interaction.editReply({ embeds: [getprofitOneWalletOneCollection], components: [visualBTN] });
+
+
+                                                // Enregistrerment de l'intéraction dans la base de données
+                                                // Cette interaction est récupéré pour générer le visuel.
+                                                await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
+
+                                                await interactionData.create({
+
+                                                    authorId: authorId,
+                                                    authorName: authorName,
+                                                    serverId: serverId,
+                                                    commandName: "profit",
+                                                    interactionId: interaction.id,
+                                                    walletCategory: "eth",
+                                                    selectedCollection: "All",
+                                                    floorPrice: raw.avgHeld.toString(),
+                                                    collectionName: "All Collections",
+                                                    mintCount: raw.mint.toString(),
+                                                    buyCount: raw.buy.toString(),
+                                                    soldCount: raw.sell.toString(),
+                                                    remaining: raw.held.toString(),
+                                                    avgBuy: parseFloat(raw.avgBuy).toFixed(3),
+                                                    avgSold: parseFloat(raw.avgSold).toFixed(3),
+                                                    realisedProfit: parseFloat(raw.realisedPNL).toFixed(3),
+                                                    potentialProfit: parseFloat(raw.potentialPNL).toFixed(3),
+                                                    roi: raw.potentialROI.toString(),
+                                                    userAvatar: userAvatar,
+                                                })
+
+                                            } else {
+                                                // Si il y'a une erreur lors de l'analyse des data
+
+                                                const notMember = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle(`NFT Profit`)
+                                                    .setDescription("Aura can't analyze your wallet's profit data. Please try again or contact our team if the error persists.")
+                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                await interaction.editReply({ embeds: [notMember] });
+
+                                            }
+
+
+                                        } else if (wallet === "all") {
+                                            // Tous les wallets séléctionnés
+
+
+                                            const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle(`Not available`)
+                                                .setDescription("We are currently optimising this feature. You can still use NFT profit on a **single** wallet with `/nft profit`.")
+                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                            await interaction.editReply({ embeds: [setwalletErrorEmbed] });
+
+
+                                        } else {
+                                            // Problème dans la séléction du wallet
+
+                                            const notMember = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle(`NFT Profit`)
+                                                .setDescription("Aura can't analyze your wallet's data because the wallet you provided isn't an Ethereum wallet. Please use try again using the appropriate form.")
+                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                            await interaction.editReply({ embeds: [notMember] });
+
+
+                                        }
+
+
+
+
+
+                                    } else {
+                                        // Il y'a un problème dans la séléction des collections
+
+                                        const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle(`Invalid Collection`)
+                                            .setDescription("The NFT collection you provided isn't a valid Ethereum contract address. Please try again using the appropriate form.")
+                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                        await interaction.editReply({ embeds: [setwalletErrorEmbed] });
+
+
+                                    }
 
 
 
@@ -1016,7 +1287,7 @@ function createLink(slug, contract, twitter, website) {
     let baseLinks = '[opensea](https://opensea.io/collection/' + slug + ') ∙ ' +
         '[blur](https://blur.io/collection/' + contract + ') ∙ ' +
         '[magically](https://magically.gg/collection/' + contract + ') ∙ ' +
-        '[nerds](https://magically.gg/collection/' + contract + ') ∙ ' +
+        '[nerds](https://app.nftnerds.ai/collection/' + contract + ') ∙ ' +
         //'[opensea pro](https://pro.opensea.io/collection/' + links.contract + ') ∙ ' +
         //'[tiny astro](https://tinyastro.io/en/analytics/eth/' + links.contract + ') ∙ ' +
         '[etherscan](https://app.nftnerds.ai/collection/' + contract + ')';

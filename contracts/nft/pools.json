@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Wrapped Ether",
+        "symbol": "WETH",
+        "contract": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "decimals": 18
+    },
+    {
+        "name": "Blur Pool",
+        "symbol": "BETH",
+        "contract": "0x0000000000a39bb272e79075ade125fd351887ac",
+        "decimals": 18
+    }
+]

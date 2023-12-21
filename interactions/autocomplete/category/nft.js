@@ -9,7 +9,7 @@
  * @type {import("../../../typings").AutocompleteInteraction}
  */
 
-const { apimonitorsql, accessSql, adminsql, reportsql, sequelize } = require('../../../events/database');
+const { apimonitorsql, accessSql, adminsql, reportsql, wallets, sequelize } = require('../../../events/database');
 const moment = require('moment');
 const calculateSimilarity = require('../../../functions/similarity')
 
@@ -56,175 +56,381 @@ module.exports = {
 
         try {
 
-            const selectedCollection = interaction.options.get("collection");
+
+            const actualSubcommand = interaction.options._subcommand
 
 
-            const focusedValue = interaction.options.getFocused();
-            const choices = []
-            const collectionTable = []
+            if (actualSubcommand.toLowerCase() == "data") {
+
+                const focusedValue = interaction.options.getFocused();
+                const choices = []
+                const collectionTable = []
 
 
-            // //BUG FIX 11/09/2023 - API ME BUG
-            //const popularCollectionsLink = "https://api-mainnet.magiceden.dev/v2/ord/btc/popular_collections?window=7d&limit=600"
-            //const popularCollectionsCall = await axios.get(popularCollectionsLink, { headers });
-            // const result = await popularCollectionsCall.data;
-            const result = []
+                // //BUG FIX 11/09/2023 - API ME BUG
+                //const popularCollectionsLink = "https://api-mainnet.magiceden.dev/v2/ord/btc/popular_collections?window=7d&limit=600"
+                //const popularCollectionsCall = await axios.get(popularCollectionsLink, { headers });
+               // const result = await popularCollectionsCall.data;
+               const result = []
 
-            if (focusedValue == "") {
-
-
-                sdk3.getCollectionsTrendingV1({ limit: '20', accept: '*/*' })
-                    .then(({ data }) => {
-                        data.collections.forEach(element => {
-                            //console.log(element.name)
-                            if (element) {
-                                const projectName = element.name
-                                const pjAddress = element.id
-                                choices.push({ name: projectName, value: pjAddress });
-                            }
-                        });
-
-                        
-                        interaction.respond(
-                            choices.map((choice) => ({ name: choice.name, value: choice.value }))
-                        ).catch((err) => {
-                            console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
-                        });
+                if (focusedValue == "") {
 
 
-                        //On stock le call API
-                        const timeStamp = Date.now();
-                        apimonitorsql.create({ serverId: serverId.toString(), commandName: "/rcprofit-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
-
-
-                        return;
-
-                    }).catch(err => console.error(err));
-
-
-            } else {
-
-                let index = 0
-
-                sdk.getSearchCollectionsV1({ name: focusedValue, limit: '50', accept: '*/*' })
-                    .then(async ({ data }) => {
-                        data.collections.forEach(element => {
-
-
-                            index++
-
-                            if (element && index <= 20) {
-
-
-                                let obj = {}
-
-
-                                obj.name = element.name
-                                obj.id = element.collectionId
-                                obj.volume = element.allTimeVolume
-
-
-
-                                if (isValidEthereumAddress(element.collectionId)) {
-
-                                    const existingCollection = collectionTable.find(c => c.name === element.name);
-                                    if (existingCollection) {
-                                       
-                                        
-                                        if (obj.volume > existingCollection.volume) {
-                                            existingCollection.name = obj.name;
-                                            existingCollection.id = obj.id;
-                                            existingCollection.volume = obj.volume;
-                                        }
-                                    } else {
-                                        collectionTable.push(obj);
-                                    }
-
-                                }
-                            }
-                        });
-
-
-                        
-                        result.forEach(element => {
-                            //console.log(element.name)
-                            if (element) {
-
-                                if (((element.name).toLowerCase()).includes(focusedValue.toLowerCase())) {
-                                    let obj = {}
-
-                                    obj.name = element.name + ' [BTC]'
-                                    obj.id = element.symbol
-                                    collectionTable.push(obj)
-                                }
-                            }
-                        });
-
-
-                        // Fonction de comparaison pour trier les objets en fonction de la ressemblance de leur champ "name" avec focusedValue
-                        const compareNames = (a, b) => {
-                            const similarityA = calculateSimilarity(a.name, focusedValue);
-                            const similarityB = calculateSimilarity(b.name, focusedValue);
-                            return similarityB - similarityA; // Triez par ordre décroissant de similarité
-                        };
-
-
-
-
-
-                        // Limiter les résultats aux 20 premiers objets
-                        const sortedCollections = collectionTable.sort(compareNames);
-
-                        const sliceArray = sortedCollections.slice(0, 20);
-
-                        sliceArray.forEach(element => {
-                            //console.log(element.name)
-                            if (element) {
-                                //console.log("element :" + element.name + element.id)
-
-                                let projectName = element.name
-                                const pjAddress = element.id
-
-                                let hasName = false
-                                for (let i = 0; i < choices.length; i++) {
-                                    if (choices[i].name === projectName) {
-                                        hasName = true;
-                                        break;
-                                    }
-                                }
-
-                                // if (hasName) { projectName = element.name + " (BTC)" }
-
-                                if (isValidInput(pjAddress)) {
-
+                    sdk2.getCollectionsTopsellingV1({ fillType: 'sale', limit: '20', accept: '*/*' })
+                        .then(({ data }) => {
+                            data.collections.forEach(element => {
+                                //console.log(element.name)
+                                if (element) {
+                                    const projectName = element.name
+                                    const pjAddress = element.id
                                     choices.push({ name: projectName, value: pjAddress });
                                 }
-                            }
-                        })
+                            });
 
 
-                        interaction.respond(
-                            choices.map((choice) => ({ name: choice.name, value: choice.value }))
-                        ).catch((err) => {
-                            console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
-                        });
+                            interaction.respond(
+                                choices.map((choice) => ({ name: choice.name, value: choice.value }))
+                            ).catch((err) => {
+                                console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                            });
+
+
+                            //On stock le call API
+                            const timeStamp = Date.now();
+                            apimonitorsql.create({ serverId: serverId.toString(), commandName: "/rcprofit-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
+
+
+                            return;
+
+                        }).catch(err => console.error(err));
+
+
+                } else {
+
+                    let index = 0
+
+                    sdk.getSearchCollectionsV1({ name: focusedValue, limit: '50', accept: '*/*' })
+                        .then(async ({ data }) => {
+                            data.collections.forEach(element => {
+
+
+                                index++
+
+                                if (element && index <= 20) {
+
+
+                                    let obj = {}
+
+
+                                    obj.name = element.name
+                                    obj.id = element.collectionId
+                                    obj.volume = element.allTimeVolume
 
 
 
-                        //On stock le call API
-                        // const timeStamp = Date.now();
-                        // apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
-                        return;
+                                    if (isValidEthereumAddress(element.collectionId)) {
+
+                                        const existingCollection = collectionTable.find(c => c.name === element.name);
+                                        if (existingCollection) {
+                                      
+
+                                            if (obj.volume > existingCollection.volume) {
+                                                existingCollection.name = obj.name;
+                                                existingCollection.id = obj.id;
+                                                existingCollection.volume = obj.volume;
+                                            }
+                                        } else {
+                                            collectionTable.push(obj);
+                                        }
+
+                                    }
+                                }
+                            });
+
+
+                            result.forEach(element => {
+                                //console.log(element.name)
+                                if (element) {
+
+                                    if (((element.name).toLowerCase()).includes(focusedValue.toLowerCase())) {
+                                        let obj = {}
+
+                                        obj.name = element.name + ' [BTC]'
+                                        obj.id = element.symbol
+                                        collectionTable.push(obj)
+                                    }
+                                }
+                            });
+
+
+                            // Fonction de comparaison pour trier les objets en fonction de la ressemblance de leur champ "name" avec focusedValue
+                            const compareNames = (a, b) => {
+                                const similarityA = calculateSimilarity(a.name, focusedValue);
+                                const similarityB = calculateSimilarity(b.name, focusedValue);
+                                return similarityB - similarityA; // Triez par ordre décroissant de similarité
+                            };
 
 
 
-                    }).catch(err => console.error(err));
+
+
+                            // Limiter les résultats aux 20 premiers objets
+                            const sortedCollections = collectionTable.sort(compareNames);
+
+                            const sliceArray = sortedCollections.slice(0, 20);
+
+                            sliceArray.forEach(element => {
+                                //console.log(element.name)
+                                if (element) {
+                                    //console.log("element :" + element.name + element.id)
+
+                                    let projectName = element.name
+                                    const pjAddress = element.id
+
+                                    let hasName = false
+                                    for (let i = 0; i < choices.length; i++) {
+                                        if (choices[i].name === projectName) {
+                                            hasName = true;
+                                            break;
+                                        }
+                                    }
+
+                                    // if (hasName) { projectName = element.name + " (BTC)" }
+
+                                    if (isValidInput(pjAddress)) {
+
+                                        choices.push({ name: projectName, value: pjAddress });
+                                    }
+                                }
+                            })
+
+
+                            interaction.respond(
+                                choices.map((choice) => ({ name: choice.name, value: choice.value }))
+                            ).catch((err) => {
+                                console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                            });
+
+
+
+                            //On stock le call API
+                            // const timeStamp = Date.now();
+                            // apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
+                            return;
+
+
+
+                        }).catch(err => console.error(err));
+
+                }
+
+                
+            } else if (actualSubcommand.toLowerCase() == "profit") {
+
+
+                const focused = interaction.options.getFocused(true);
+                const focusedOption = focused.name
+                const focusedValue = focused.value
+    
+                const choices = [{ name: "All", value: "All" }]
+                const result = []
+                const collectionTable = []
+
+    
+                if (focusedOption === "wallet") {
+    
+    
+    
+    
+                    let authorId = interaction.user.id;
+    
+                    // Retrieve the wallets for the authorID
+                    const walletsFilter = await wallets.findAll({ where: { authorId: authorId } });
+    
+                    walletsFilter.forEach(elem => {
+    
+                        if (isValidEthereumAddress(elem.walletAddress)) {
+    
+                            choices.push({ name: elem.walletName + " (" + elem.walletAddress.substring(0, 5) + "..." + elem.walletAddress.substring(elem.walletAddress.length - 4, elem.walletAddress.length) + ")", value: elem.walletAddress })
+                        }
+                    })
+    
+    
+                    // Filter the wallet names based on the focused value
+                    const filtered = choices.filter((blaze) => blaze.name.startsWith(focusedValue));
+    
+                    // Respond with the filtered wallet names as autocomplete choices
+                    await interaction.respond(
+    
+                        filtered.map((choice) => ({ name: choice.name, value: choice.value }))
+    
+    
+                    ).catch((err) => {
+                        console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                    });
+    
+                    return;
+    
+                } else if (focusedOption == "collection") {
+    
+                    if (focusedValue == "") {
+
+
+                        sdk2.getCollectionsTopsellingV1({ fillType: 'sale', limit: '20', accept: '*/*' })
+                            .then(({ data }) => {
+                                data.collections.forEach(element => {
+                                    if (element) {
+                                        const projectName = element.name
+                                        const pjAddress = element.id
+                                        choices.push({ name: projectName, value: pjAddress });
+                                    }
+                                });
+    
+    
+                                interaction.respond(
+                                    choices.map((choice) => ({ name: choice.name, value: choice.value }))
+                                ).catch((err) => {
+                                    console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                                });
+    
+    
+                                //On stock le call API
+                                const timeStamp = Date.now();
+                                apimonitorsql.create({ serverId: serverId.toString(), commandName: "/rcprofit-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
+    
+    
+                                return;
+    
+                            }).catch(err => console.error(err));
+    
+    
+                    } else {
+    
+                        let index = 0
+    
+                        sdk.getSearchCollectionsV1({ name: focusedValue, limit: '50', accept: '*/*' })
+                            .then(async ({ data }) => {
+                                data.collections.forEach(element => {
+    
+    
+                                    index++
+    
+                                    if (element && index <= 20) {
+    
+    
+                                        let obj = {}
+    
+    
+                                        obj.name = element.name
+                                        obj.id = element.collectionId
+                                        obj.volume = element.allTimeVolume
+    
+    
+    
+                                        if (isValidEthereumAddress(element.collectionId)) {
+    
+                                            const existingCollection = collectionTable.find(c => c.name === element.name);
+                                            if (existingCollection) {
+
+    
+                                                if (obj.volume > existingCollection.volume) {
+                                                    existingCollection.name = obj.name;
+                                                    existingCollection.id = obj.id;
+                                                    existingCollection.volume = obj.volume;
+                                                }
+                                            } else {
+                                                collectionTable.push(obj);
+                                            }
+    
+                                        }
+                                    }
+                                });
+    
+    
+                                result.forEach(element => {
+                                    //console.log(element.name)
+                                    if (element) {
+    
+                                        if (((element.name).toLowerCase()).includes(focusedValue.toLowerCase())) {
+                                            let obj = {}
+    
+                                            obj.name = element.name + ' [BTC]'
+                                            obj.id = element.symbol
+                                            collectionTable.push(obj)
+                                        }
+                                    }
+                                });
+    
+    
+                                // Fonction de comparaison pour trier les objets en fonction de la ressemblance de leur champ "name" avec focusedValue
+                                const compareNames = (a, b) => {
+                                    const similarityA = calculateSimilarity(a.name, focusedValue);
+                                    const similarityB = calculateSimilarity(b.name, focusedValue);
+                                    return similarityB - similarityA; // Triez par ordre décroissant de similarité
+                                };
+    
+    
+    
+    
+    
+                                // Limiter les résultats aux 20 premiers objets
+                                const sortedCollections = collectionTable.sort(compareNames);
+    
+                                const sliceArray = sortedCollections.slice(0, 20);
+    
+                                sliceArray.forEach(element => {
+                                    //console.log(element.name)
+                                    if (element) {
+                                        //console.log("element :" + element.name + element.id)
+    
+                                        let projectName = element.name
+                                        const pjAddress = element.id
+    
+                                        let hasName = false
+                                        for (let i = 0; i < choices.length; i++) {
+                                            if (choices[i].name === projectName) {
+                                                hasName = true;
+                                                break;
+                                            }
+                                        }
+    
+                                        // if (hasName) { projectName = element.name + " (BTC)" }
+    
+                                        if (isValidInput(pjAddress)) {
+    
+                                            choices.push({ name: projectName, value: pjAddress });
+                                        }
+                                    }
+                                })
+    
+    
+                                interaction.respond(
+                                    choices.map((choice) => ({ name: choice.name, value: choice.value }))
+                                ).catch((err) => {
+                                    console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                                });
+    
+    
+    
+                                //On stock le call API
+                                // const timeStamp = Date.now();
+                                // apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
+                                return;
+    
+    
+    
+                            }).catch(err => console.error(err));
+    
+                    }
+                }
+
+
 
             }
-
+           
         } catch (error) {
 
-
+            
             //On envoi une notif
             let botId = interaction.applicationId
             const botAdmins = await adminsql.findOne({ where: { botId: botId } })

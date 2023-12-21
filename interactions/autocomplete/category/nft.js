@@ -30,11 +30,9 @@ const axios = require('axios')
 const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
 sdk.auth(reservoirApiKey);
 
-const sdk2 = require('api')('@reservoirprotocol/v3.0#434y7jljnak92y');
+const sdk2 = require('api')('@reservoirprotocol/v3.0#kke23hlqfhwtrr');
 sdk2.auth(reservoirApiKey);
 
-const sdk3 = require('api')('@reservoirprotocol/v3.0#469em3alpswg158');
-sdk3.auth(reservoirApiKey);
 
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
@@ -76,8 +74,8 @@ module.exports = {
                 if (focusedValue == "") {
 
 
-                    sdk2.getCollectionsTopsellingV1({ fillType: 'sale', limit: '20', accept: '*/*' })
-                        .then(({ data }) => {
+                    sdk2.getCollectionsTrendingV1({period: '24h', limit: '20', sortBy: 'sales', accept: '*/*'})
+                    .then(({ data }) => {
                             data.collections.forEach(element => {
                                 //console.log(element.name)
                                 if (element) {
@@ -86,7 +84,6 @@ module.exports = {
                                     choices.push({ name: projectName, value: pjAddress });
                                 }
                             });
-
 
                             interaction.respond(
                                 choices.map((choice) => ({ name: choice.name, value: choice.value }))
@@ -276,8 +273,8 @@ module.exports = {
                     if (focusedValue == "") {
 
 
-                        sdk2.getCollectionsTopsellingV1({ fillType: 'sale', limit: '20', accept: '*/*' })
-                            .then(({ data }) => {
+                        sdk2.getCollectionsTrendingV1({period: '24h', limit: '20', sortBy: 'sales', accept: '*/*'})
+                        .then(({ data }) => {
                                 data.collections.forEach(element => {
                                     if (element) {
                                         const projectName = element.name

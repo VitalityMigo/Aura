@@ -1,26 +1,9 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 
-
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const infuraApiKey = process.env.infuraApiKey
-const etherscanApiKey = process.env.etherscanApiKey
-
-
-const axios = require('axios')
 const colors = require('colors');
-const fs = require('fs').promises;
-
-
-const newUserFile = "contracts/friendtech/newuser.json"
-
 
 const reduceText = require("./reducetext")
 const addTimeout = require("./addtimeout")
-const getTwitterUserInfo = require("../functions/twitteruserinfo")
-const getEthPrice = require("./getethprice")
-const getPrice = require("./FT-getprice")
 const contractType = require("./contracttype")
 const formatCoinValueSign = require("./formatNumberEmbed")
 
@@ -160,7 +143,7 @@ async function newContract(transaction) {
                             // 0n crée les valeurs formattés
                             // Ces valeurs vont directement dans l'embed
                             const deployerFRMT = "• Deployer: [" + formatWallet(deployer) + "](https://etherscan.io/address/" + deployer + ")\n• Balance: `" + deployerAMNT + "`\n• Txn: [" + formatWallet(deploymentTxn) + "](https://etherscan.io/address/" + deploymentTxn + ")\n• Count: `" + deployerTxnCount + "`\n"
-                            const tokenFRMT = "• Renounced: `" + renounced + "`\n• Supply: `" + formatCoinValueSign(supply, 2) + "`\n• Circulating: `" + formatCoinValueSign(deployerBLNC, 2) + "`\n• Type: `" + type + "`"
+                            const tokenFRMT = "• Renounced: `" + renounced + "`\n• Supply: `" + formatCoinValueSign(supply, 0) + "`\n• Circulating: `" + formatCoinValueSign(supply, 0) + "`\n• Type: `" + type + "`"
 
 
                             // On récupère le nom et symbol
@@ -181,7 +164,7 @@ async function newContract(transaction) {
                                 .setDescription(">>> A new ERC20 contract has been created")
                                 .addFields(
                                     { name: " ", value: " ", inline: false },
-                                    { name: "Contract", value: "`" + tokenAddress + "`", inline: false },
+                                    { name: "Contract", value: "`" + contract + "`", inline: false },
                                     { name: " ", value: " ", inline: false },
 
                                     { name: "🦍 Token", value: tokenFRMT, inline: true },
@@ -209,7 +192,7 @@ async function newContract(transaction) {
                             // C'est un contrat ERC721, un NFT
 
                             // On initialise le contrat
-                            const tokenContract = await new web3.eth.Contract(erc20Standard, contract);
+                            const tokenContract = await new web3.eth.Contract(erc721Standard, contract);
 
                             // On call toutes les fonctions du contrat en même temps
                             const [name, supply] = await Promise.all([
@@ -226,8 +209,8 @@ async function newContract(transaction) {
 
                             // 0n crée les valeurs formattés
                             // Ces valeurs vont directement dans l'embed
-                            const deployerFRMT = "• Deployer: [" + formatWallet(deployer) + "](https://etherscan.io/address/" + deployer + ")\n• Balance: `" + deployerAMNT + "`\n• Txn: [" + formatWallet(deploymentTxn) + "](https://etherscan.io/address/" + deploymentTxn + ")\n• Count: `" + deployerTxnCount + "`\n"
-                            const tokenFRMT = "• Renounced: `" + renounced + "`\n• Supply: `" + formatCoinValueSign(supply, 2) + "`\n• Circulating: `" + formatCoinValueSign(supply, 2) + "`\n• Type: `" + type + "`"
+                            const deployerFRMT = "• Deployer: [" + formatWallet(deployer) + "](https://etherscan.io/address/" + deployer + ")\n• Balance: `" + deployerAMNT + "`\n• Txn: [" + formatWallet(deploymentTxn) + "](https://etherscan.io/tx/" + deploymentTxn + ")\n• Count: `" + deployerTxnCount + "`\n"
+                            const tokenFRMT = "• Renounced: `" + renounced + "`\n• Supply: `" + formatCoinValueSign(supply, 0) + "`\n• Circulating: `" + formatCoinValueSign(supply, 0) + "`\n• Type: `" + type + "`"
 
 
                             // On renvoi l'embed
@@ -236,13 +219,14 @@ async function newContract(transaction) {
                                 .setDescription(">>> A new ERC721 contract has been created")
                                 .addFields(
                                     { name: " ", value: " ", inline: false },
-                                    { name: "Contract", value: "`" + tokenAddress + "`", inline: false },
+                                    { name: "Contract", value: "`" + contract + "`", inline: false },
                                     { name: " ", value: " ", inline: false },
 
-                                    { name: "🦍 Token", value: tokenFRMT, inline: true },
+                                    { name: "🦍 Collection", value: tokenFRMT, inline: true },
                                     { name: "👨🏽‍💻 Deployer", value: deployerFRMT, inline: true },
                                     { name: " ", value: " ", inline: true },
 
+                                    { name: " ", value: " ", inline: false },
                                     { name: " ", value: " ", inline: false },
                                     { name: " ", value: "**➜** This contract was created: " + created, inline: true },
                                     { name: " ", value: " ", inline: false },

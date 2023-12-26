@@ -10,24 +10,15 @@ const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize, infra_coin, tracker_nft, infra_nft } = require('../../../events/database');
 const moment = require('moment');
 
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const reservoirApiKey = process.env.reservoirApiKey
+// On récupère les nodes et API
+const { reservoirA, web3CloudflarePublic } = require("../../../config/web3config")
+
 
 // On importe les fonctions importantes
 const getEthPrice = require('../../../functions/getethprice')
 const decrypt = require("../../../functions/decrypt")
 const isHttps = require('../../../functions/isHttps')
 const { nftProfitSingle, nftProfitGlobal } = require("../../../functions/pnlcaclulator")
-
-//Reservoir API
-const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
-sdk.auth(reservoirApiKey);
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
 
 
 // Fonctions
@@ -280,7 +271,7 @@ module.exports = {
 
 
                                         // Premier Call API Reservoir : Stats et infos sur la collection
-                                        sdk.getCollectionsV5({ id: selectedCollection, accept: '*/*', includeTopBid: 'true', includeOwnerCount: 'true', includeSalesCount: 'true' })
+                                        reservoirA.getCollectionsV5({ id: selectedCollection, accept: '*/*', includeTopBid: 'true', includeOwnerCount: 'true', includeSalesCount: 'true' })
                                             .then(async ({ data: collectionData }) => {
 
 
@@ -608,7 +599,7 @@ module.exports = {
 
                                         if (ape_mode == "true") { ape_mode = "✅" } else { ape_mode = "❌" }
 
-                                        const balance = await web3.eth.getBalance(walletAddress) / 10 ** 18
+                                        const balance = await web3CloudflarePublic.eth.getBalance(walletAddress) / 10 ** 18
 
                                         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                             .setTitle("NFT Setup")

@@ -6,43 +6,17 @@
 
 const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { profileData, accessSql, wallets, interactionData, apimonitorsql, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
-const moment = require('moment');
-const isHttps = require('../../../functions/isHttps')
+
+const { web3CloudflarePublic, reservoirA, reservoirC, blockspan, magiceden} = require("../../../config/web3config")
 
 const dotenv = require("dotenv")
 dotenv.config()
-const reservoirApiKey = process.env.reservoirApiKey
-const blockspanApiKey = process.env.blockspanApiKey
 const alchemyApiKey = process.env.alchemyApiKey
-const magicedenApiKey = process.env.magicedenApiKey
 
-
-// Configuration de l'en-tête d'autorisation
-const headers = {
-    'Authorization': `Bearer ${magicedenApiKey}`
-};
-
-
-
-//https request
+// Https request
 const axios = require('axios')
-
-
-const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
-sdk.auth(reservoirApiKey);
-
-
-const sdk3 = require('api')('@reservoirprotocol/v3.0#1im010ljszuoex');
-sdk3.auth(reservoirApiKey);
-
-
-//Block Span API
-const bsp = require('api')('@blockspan/v1.0#9zxl2sledru983');
-bsp.auth(blockspanApiKey);
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
+const moment = require('moment');
+const isHttps = require('../../../functions/isHttps')
 
 //Alchemy API 
 const { Network, Alchemy } = require('alchemy-sdk')
@@ -68,7 +42,7 @@ function isValidInput(input) {
 }
 
 function estLienHTTPS(val) {
-    var lienRegex = /^(https:\/\/)/i; // Regex pour vérifier si le lien commence par "https://"
+    var lienRegex = /^(https:\/\/)/i;
 
     return lienRegex.test(val);
 }
@@ -259,7 +233,7 @@ module.exports = {
 
 
                                                 // Premier Call API Reservoir : Stats et infos sur la collection
-                                                sdk.getCollectionsV5({ id: selectedCollection, accept: '*/*' })
+                                                reservoirA.getCollectionsV5({ id: selectedCollection, accept: '*/*' })
                                                     .then(async ({ data }) => {
 
                                                         //Incrémentation compteur API
@@ -310,7 +284,7 @@ module.exports = {
 
                                                         // Deuxième Call API Reservoir : Stats et infos sur les collections de l'utilisateur
                                                         for (const walletAddress of walletsAuthorTable) {
-                                                            const { data: userData } = await sdk.getUsersUserCollectionsV2({ collection: selectedCollection, user: walletAddress, accept: '*/*' });
+                                                            const { data: userData } = await reservoirA.getUsersUserCollectionsV2({ collection: selectedCollection, user: walletAddress, accept: '*/*' });
 
                                                             //Incrémentation compteur API
                                                             apiObj.getUsersUserCollectionsV2++
@@ -328,7 +302,7 @@ module.exports = {
 
                                                             // Troisème Call API Reservoir : Stats et infos sur les tokens précis de l'utilisateur
                                                             for await (const walletAddress of walletsAuthorTableWithCollection) {
-                                                                const { data: userTokens } = await sdk.getUsersUserTokensV6({ collection: selectedCollection, limit: '200', user: walletAddress, accept: '*/*' });
+                                                                const { data: userTokens } = await reservoirA.getUsersUserTokensV6({ collection: selectedCollection, limit: '200', user: walletAddress, accept: '*/*' });
 
                                                                 //Incrémentation compteur API
                                                                 apiObj.getUsersUserTokensV6++
@@ -341,7 +315,7 @@ module.exports = {
                                                             //Calculer le prix d'achat de chaque token de l'utilisateur
                                                             for (const tokenId of tokenHoldTable) {
                                                                 const { data: userPriceToken } = await
-                                                                    sdk.getSalesV4({
+                                                                    reservoirA.getSalesV4({
                                                                         token: selectedCollection + '%3A' + tokenId,
                                                                         limit: '100',
                                                                         accept: '*/*'
@@ -375,9 +349,9 @@ module.exports = {
 
                                                                     let tokenHashTxn = filteredSales[0].txHash
 
-                                                                    const hashValueReader = await web3.eth.getTransaction(tokenHashTxn)
-                                                                    const hashGasReader = await web3.eth.getTransactionReceipt(tokenHashTxn)
-                                                                    const { data: hashTransferReader } = await bsp.getAllTransfers({ chain: 'eth-main', hash: tokenHashTxn, page_size: '100' })
+                                                                    const hashValueReader = await web3CloudflarePublic.eth.getTransaction(tokenHashTxn)
+                                                                    const hashGasReader = await web3CloudflarePublic.eth.getTransactionReceipt(tokenHashTxn)
+                                                                    const { data: hashTransferReader } = await blockspan.getAllTransfers({ chain: 'eth-main', hash: tokenHashTxn, page_size: '100' })
 
                                                                     //Incrémentation compteur API
                                                                     apiObj.getTransaction++
@@ -397,7 +371,7 @@ module.exports = {
                                                                         }
                                                                     }
 
-                                                                    gasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
+                                                                    gasSpent += (parseFloat(web3CloudflarePublic.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
 
 
 
@@ -690,7 +664,7 @@ module.exports = {
 
 
                                                 const url = `https://api-mainnet.magiceden.dev/v2/ord/btc/collections/` + selectedCollection;
-                                                const response = await axios.get(url, { headers });
+                                                const response = await axios.get(url, { magiceden });
                                                 const data = await response.data;
 
                                                 collectionLogo = data.imageURI
@@ -701,7 +675,7 @@ module.exports = {
 
 
                                                 const url2 = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=` + selectedCollection;
-                                                const response2 = await axios.get(url2, { headers });
+                                                const response2 = await axios.get(url2, { magiceden });
                                                 const data2 = await response2.data;
 
 
@@ -714,7 +688,7 @@ module.exports = {
                                                 for (const wallet of walletsAuthorTable) {
 
                                                     const url3 = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?collectionSymbol=` + selectedCollection + `&ownerAddress=` + wallet + `&showAll=true&sortBy=priceAsc`;
-                                                    const response3 = await axios.get(url3, { headers });
+                                                    const response3 = await axios.get(url3, { magiceden });
                                                     const data3 = await response3.data;
 
 
@@ -737,7 +711,7 @@ module.exports = {
 
                                                         //Buy classic
                                                         const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token.tokenId
-                                                        const tokenBuyCall = await axios.get(tokenBuyLink, { headers });
+                                                        const tokenBuyCall = await axios.get(tokenBuyLink, { magiceden });
                                                         const tokenBuy = await tokenBuyCall.data.activities;
 
                                                         const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== token.wallet.toLowerCase() && activity.newOwner.toLowerCase() == token.wallet.toLowerCase());
@@ -755,7 +729,7 @@ module.exports = {
 
                                                             //Create
                                                             const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenInscription
-                                                            const tokenCreateCall = await axios.get(tokenCreateLink, { headers });
+                                                            const tokenCreateCall = await axios.get(tokenCreateLink, { magiceden });
                                                             const tokenCreate = await tokenCreateCall.data.activities;
 
                                                             const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == token.wallet.toLowerCase());
@@ -772,7 +746,7 @@ module.exports = {
 
                                                                 //Mint
                                                                 const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenInscription
-                                                                const tokenMintCall = await axios.get(tokenMintLink, { headers });
+                                                                const tokenMintCall = await axios.get(tokenMintLink, { magiceden });
                                                                 const tokenMint = await tokenMintCall.data.activities;
 
                                                                 const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == token.wallet.toLowerCase());
@@ -995,14 +969,14 @@ module.exports = {
 
 
                                                 // Premier Call API Reservoir : Stats et infos sur la collection
-                                                sdk.getCollectionsV5({ id: selectedCollection, accept: '*/*' })
+                                                reservoirA.getCollectionsV5({ id: selectedCollection, accept: '*/*' })
                                                     .then(async ({ data }) => {
 
                                                         apiObj.getCollectionsV5++
 
 
                                                         // Deuxième Call API Reservoir : Stats et infos sur les collections de l'utilisateur
-                                                        sdk.getUsersUserCollectionsV2({ collection: selectedCollection, user: selectedWallet, accept: '*/*' })
+                                                        reservoirA.getUsersUserCollectionsV2({ collection: selectedCollection, user: selectedWallet, accept: '*/*' })
                                                             .then(async ({ data: userData }) => {
 
                                                                 apiObj.getUsersUserCollectionsV2++
@@ -1039,7 +1013,7 @@ module.exports = {
 
 
                                                                     // Troisème Call API Reservoir : Stats et infos sur les tokens précis de l'utilisateur
-                                                                    sdk.getUsersUserTokensV6({ collection: selectedCollection, limit: '200', user: selectedWallet, accept: '*/*' })
+                                                                    reservoirA.getUsersUserTokensV6({ collection: selectedCollection, limit: '200', user: selectedWallet, accept: '*/*' })
                                                                         .then(async ({ data: userTokens }) => {
 
                                                                             apiObj.getUsersUserTokensV6++
@@ -1050,7 +1024,7 @@ module.exports = {
 
                                                                             for (const tokenId of tokenHoldTable) {
                                                                                 const { data: userPriceToken } = await
-                                                                                    sdk.getSalesV4({
+                                                                                    reservoirA.getSalesV4({
                                                                                         token: selectedCollection + '%3A' + tokenId,
                                                                                         limit: '100',
                                                                                         accept: '*/*'
@@ -1082,9 +1056,9 @@ module.exports = {
 
                                                                                     let tokenHashTxn = filteredSales[0].txHash
 
-                                                                                    const hashValueReader = await web3.eth.getTransaction(tokenHashTxn)
-                                                                                    const hashGasReader = await web3.eth.getTransactionReceipt(tokenHashTxn)
-                                                                                    const { data: hashTransferReader } = await bsp.getAllTransfers({ chain: 'eth-main', hash: tokenHashTxn, page_size: '100' })
+                                                                                    const hashValueReader = await web3CloudflarePublic.eth.getTransaction(tokenHashTxn)
+                                                                                    const hashGasReader = await web3CloudflarePublic.eth.getTransactionReceipt(tokenHashTxn)
+                                                                                    const { data: hashTransferReader } = await blockspan.getAllTransfers({ chain: 'eth-main', hash: tokenHashTxn, page_size: '100' })
 
 
                                                                                     //Incrémentation compteur API
@@ -1106,7 +1080,7 @@ module.exports = {
                                                                                         }
                                                                                     }
 
-                                                                                    gasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
+                                                                                    gasSpent += (parseFloat(web3CloudflarePublic.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether'))) / uniqueIdCount;
 
 
                                                                                 }
@@ -1170,7 +1144,7 @@ module.exports = {
                                                                             }
 
 
-                                                                           
+
                                                                             let linksFormatted = ""
                                                                             if (isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ") ∙ " + '[website](' + collectionWebsite + ")" }
                                                                             else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
@@ -1254,7 +1228,7 @@ module.exports = {
                                                                             })
 
 
-                                                                            
+
 
                                                                             //On enregistre le call API dans la database
                                                                             const timeStamp = Date.now();
@@ -1389,7 +1363,7 @@ module.exports = {
 
 
                                                 const url = `https://api-mainnet.magiceden.dev/v2/ord/btc/collections/` + selectedCollection;
-                                                const response = await axios.get(url, { headers });
+                                                const response = await axios.get(url, { magiceden });
                                                 const data = await response.data;
 
                                                 collectionLogo = data.imageURI
@@ -1400,7 +1374,7 @@ module.exports = {
 
 
                                                 const url2 = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=` + selectedCollection;
-                                                const response2 = await axios.get(url2, { headers });
+                                                const response2 = await axios.get(url2, { magiceden });
                                                 const data2 = await response2.data;
 
 
@@ -1408,7 +1382,7 @@ module.exports = {
 
 
                                                 const url3 = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?collectionSymbol=` + selectedCollection + `&ownerAddress=` + selectedWallet + `&showAll=true&sortBy=priceAsc`;
-                                                const response3 = await axios.get(url3, { headers });
+                                                const response3 = await axios.get(url3, { magiceden });
                                                 const data3 = await response3.data;
 
 
@@ -1430,7 +1404,7 @@ module.exports = {
 
                                                         //Buy classic
                                                         const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token
-                                                        const tokenBuyCall = await axios.get(tokenBuyLink, { headers });
+                                                        const tokenBuyCall = await axios.get(tokenBuyLink, { magiceden });
                                                         const tokenBuy = await tokenBuyCall.data.activities;
 
                                                         const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== selectedWallet.toLowerCase() && activity.newOwner.toLowerCase() == selectedWallet.toLowerCase());
@@ -1448,7 +1422,7 @@ module.exports = {
 
                                                             //Create
                                                             const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenInscription
-                                                            const tokenCreateCall = await axios.get(tokenCreateLink, { headers });
+                                                            const tokenCreateCall = await axios.get(tokenCreateLink, { magiceden });
                                                             const tokenCreate = await tokenCreateCall.data.activities;
 
                                                             const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == selectedWallet.toLowerCase());
@@ -1464,7 +1438,7 @@ module.exports = {
 
                                                                 //Mint
                                                                 const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenInscription
-                                                                const tokenMintCall = await axios.get(tokenMintLink, { headers });
+                                                                const tokenMintCall = await axios.get(tokenMintLink, { magiceden });
                                                                 const tokenMint = await tokenMintCall.data.activities;
 
                                                                 const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == selectedWallet.toLowerCase());
@@ -1715,12 +1689,12 @@ module.exports = {
                             let isNFT = true
 
 
-                            const hashValueReader = await web3.eth.getTransaction(txn)
-                            const hashGasReader = await web3.eth.getTransactionReceipt(txn)
-                            buyGasSpent += (parseFloat(web3.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether')))
+                            const hashValueReader = await web3CloudflarePublic.eth.getTransaction(txn)
+                            const hashGasReader = await web3CloudflarePublic.eth.getTransactionReceipt(txn)
+                            buyGasSpent += (parseFloat(web3CloudflarePublic.utils.fromWei(((hashValueReader.gasPrice) * (hashGasReader.gasUsed)).toString(), 'ether')))
 
 
-                            await sdk3.getTransfersV3({
+                            await reservoirC.getTransfersV3({
                                 txHash: txn,
                                 accept: '*/*'
                             }).then(async ({ data }) => {
@@ -1771,7 +1745,7 @@ module.exports = {
                                         } else {
 
                                             const { data: mintInfos } = await
-                                                sdk.getSalesV4({
+                                                reservoirA.getSalesV4({
                                                     token: collection + '%3A' + tokenId,
                                                     limit: '100',
                                                     accept: '*/*'
@@ -1816,7 +1790,7 @@ module.exports = {
 
 
                                 // Premier Call API Reservoir : Stats et infos sur la collection
-                                sdk.getCollectionsV5({ id: selectedCollection, accept: '*/*' })
+                                reservoirA.getCollectionsV5({ id: selectedCollection, accept: '*/*' })
                                     .then(async ({ data: collectionStats }) => {
 
                                         royalties = collectionStats.collections[0].royalties.bps
@@ -1842,7 +1816,7 @@ module.exports = {
                                         else if (!isHttps(collectionWebsite) && collectionTwitter !== null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[twitter](https://twitter.com/' + collectionTwitter + ")" }
                                         else if (isHttps(collectionWebsite) && collectionTwitter == null) { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ") ∙ " + '[website](' + collectionWebsite + ")" }
                                         else { linksFormatted = '[opensea](https://opensea.io/collection/' + collectionSlug + ") ∙ " + '[blur](https://blur.io/collection/' + selectedCollection + ") ∙ " + '[magically](https://magically.gg/collection/' + selectedCollection + ") ∙ " + '[etherscan](https://etherscan.io/address/' + selectedCollection + ")" }
-                    
+
 
 
 

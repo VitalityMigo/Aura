@@ -8,9 +8,9 @@ const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = r
 
 
 
-const { profileData, accessSql, apimonitorsql, reportsql, adminsql, alertsDown, alertsUp, usersql, Op, sequelize } = require('../../../events/database');
+const { profileData, accessSql, apimonitorsql, reportsql, adminsql, alertsDown, alertsUp, usersql, Op, sequelize } = require('../events/database');
 const fs = require('fs');
-const isHttps = require('../../../functions/isHttps')
+const isHttps = require('../functions/isHttps')
 
 
 
@@ -1442,7 +1442,7 @@ module.exports = {
 
 				console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
-				const reduceText = require("../../../functions/reducetext")
+				const reduceText = require("../functions/reducetext")
 				const roleTag = "1121510423687090186"
 
 

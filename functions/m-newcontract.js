@@ -32,7 +32,9 @@ const erc721Standard = require("../contracts/blur/erc721standard.json")
 var Web3 = require("web3")
 const web3 = new Web3("https://cloudflare-eth.com")
 
-
+function formatWallet(input) {
+    return input.length > 35 ? `${input.substring(0, 5)}…${input.substring(input.length - 4)}` : input;
+}
 
 
 // On définit le client et charge les channels
@@ -106,7 +108,7 @@ async function newContract(transaction) {
 
 
     try {
-        console.log(transaction.hash)
+
         await web3.eth.getTransactionReceipt(transaction.hash)
             .then(async receipt => {
 
@@ -115,74 +117,84 @@ async function newContract(transaction) {
 
                     if (receipt.contractAddress !== null) {
 
+                        // On récupère le timestamp et la date de création
                         const timeStamp = Date.now();
                         const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
-                        createdSince = "<t:" + actualTimestamp + ":R>"
+                        const created = "<t:" + actualTimestamp + ":R>"
 
 
-                        contract = receipt.contractAddress
-                        deployer = receipt.from
-                        deploymentTxn = receipt.transactionHash
-                        deployerTxnCount = (transaction.nonce + 1).toString()
-                        type = await contractType(contract)
+                        // On initialise les valeurs de la transaction de base
+                        const contract = receipt.contractAddress
+                        const deployer = receipt.from
+                        const deploymentTxn = receipt.transactionHash
+                        const deployerTxnCount = (transaction.nonce + 1).toString()
+                        const type = await contractType(contract)
 
 
+                        // On emet un console.log
                         console.log(colors.green("📄 Nouveau contrat " + type + " deployé"))
                         console.log("Contrat: " + contract)
                         console.log("Txn: " + deploymentTxn)
 
 
                         if (type == "ERC20") {
+                            // C'est un contrat ERC20, un coin
 
+                            // On initialise le contrat
                             const tokenContract = await new web3.eth.Contract(erc20Standard, contract);
-                            decimals = await tokenContract.methods.decimals().call();
-                            owner = await tokenContract.methods.owner().call();
-                            name = await tokenContract.methods.name().call();
-                            symbol = await tokenContract.methods.symbol().call();
-                            supply = await tokenContract.methods.totalSupply().call();
-                            totalSupply = supply / 10 ** decimals
 
-                            const balanceOfDeployer = await tokenContract.methods.balanceOf(deployer).call();
-                            deployerBalance = balanceOfDeployer / 10 ** decimals
-
-                            if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dead") {
-
-                                ownership = "✅ Renounced"
-                                devBalance = formatCoinValueSign(deployerBalance) + " (" + parseFloat((deployerBalance / totalSupply) * 100).toFixed(1) + "%)"
-
-                            } else {
-
-                                if (owner.toLowerCase() != deployer.toLowerCase()) {
-
-                                    const balanceOfOwner = await tokenContract.methods.balanceOf(owner).call();
-                                    ownerBalance = balanceOfOwner / 10 ** decimals
-
-                                }
-
-                                ownership = "❌ Not renounced"
-                                devBalance = formatCoinValueSign(deployerBalance + ownerBalance) + " (" + parseFloat(((deployerBalance + ownerBalance) / totalSupply) * 100).toFixed(1) + "%)"
-
-                            }
+                            // On call toutes les fonctions du contrat en même temps
+                            const [decimals, rawSupply] = await Promise.all([
+                                tokenContract.methods.decimals().call(),
+                                tokenContract.methods.totalSupply().call(),
+                            ]);
+                            const supply = rawSupply / 10 ** decimals
 
 
+                            // On récupère des infos sur le deployer
+                            const deployerBLNC = (await tokenContract.methods.balanceOf(deployer).call()) / 10 ** decimals
+                            const deployerAMNT = formatCoinValueSign(deployerBLNC, 0) + " (" + parseFloat((deployerBLNC / supply) * 100).toFixed(1) + "%)"
+                            const renounced = "❌ No"
 
 
+                            // 0n crée les valeurs formattés
+                            // Ces valeurs vont directement dans l'embed
+                            const deployerFRMT = "• Deployer: [" + formatWallet(deployer) + "](https://etherscan.io/address/" + deployer + ")\n• Balance: `" + deployerAMNT + "`\n• Txn: [" + formatWallet(deploymentTxn) + "](https://etherscan.io/address/" + deploymentTxn + ")\n• Count: `" + deployerTxnCount + "`\n"
+                            const tokenFRMT = "• Renounced: `" + renounced + "`\n• Supply: `" + formatCoinValueSign(supply, 2) + "`\n• Circulating: `" + formatCoinValueSign(deployerBLNC, 2) + "`\n• Type: `" + type + "`"
 
 
+                            // On récupère le nom et symbol
+                            // On call toutes les fonctions du contrat en même temps
+                            const [symbol, name] = await Promise.all([
+                                tokenContract.methods.symbol().call(),
+                                tokenContract.methods.name().call(),
+                            ]);
+
+
+                            // Possibilité de rajouter des bouttons
+                            // Par exemple, pair lookup (trouver des paires)
+
+                            /// RENVOI DE L'EMBED
+                            // On renvoi l'embed sur le contrat
                             const newERC20 = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle(reduceText(name, 40) + " (" + symbol.toUpperCase() + ")")
                                 .setDescription(">>> A new ERC20 contract has been created")
                                 .addFields(
                                     { name: " ", value: " ", inline: false },
-                                    { name: "Contract", value: "`" + contract.toLowerCase() + "`", inline: false },
-                                    { name: "Supply", value: "`" + formatCoinValueSign(totalSupply, 2) + "`", inline: true },
-                                    { name: "Type", value: "`" + type.toUpperCase() + "`", inline: true },
-                                    { name: "Dev. Txn Count", value: "`" + deployerTxnCount + "`", inline: true },
-                                    { name: "Dev. Balance", value: "`" + devBalance + "`", inline: true },
-                                    { name: "Ownership", value: "`" + ownership + "`", inline: true },
-                                    { name: "Contract Created", value: createdSince, inline: true },
+                                    { name: "Contract", value: "`" + tokenAddress + "`", inline: false },
+                                    { name: " ", value: " ", inline: false },
+
+                                    { name: "🦍 Token", value: tokenFRMT, inline: true },
+                                    { name: "👨🏽‍💻 Deployer", value: deployerFRMT, inline: true },
+                                    { name: " ", value: " ", inline: true },
+
+                                    { name: " ", value: " ", inline: false },
+                                    { name: " ", value: "**➜** This contract was created: " + created, inline: true },
+                                    { name: " ", value: " ", inline: false },
+
                                     { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + contract + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + contract + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + contract + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + contract + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + contract + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + contract + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + contract + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + contract + ")", inline: false },
                                     { name: "Quicktasks", value: '[Thunder](http://localhost:7777/quickTask?module=defi&contract=' + contract + "&action=buy&blockchain=ethereum&platform=uniswapv2) ∙ " + '[Maestro]( https://t.me/MaestroSniperBot?start=' + contract + ") ∙ " + '[Sensei](https://app.thornhill.fun/defi?token=' + contract + "&venue=UNISWAP_V2&valueEth=0.05) ∙ " + '[Waifu]( http://localhost:7780/uniswapqt?contractAddress=' + contract + "&group=Default)", inline: false },
+
 
 
                                 )
@@ -190,59 +202,51 @@ async function newContract(transaction) {
                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
 
-
                             await channelNewERC20Contract.send({ embeds: [newERC20] });
 
 
                         } else if (type == "ERC721") {
+                            // C'est un contrat ERC721, un NFT
+
+                            // On initialise le contrat
+                            const tokenContract = await new web3.eth.Contract(erc20Standard, contract);
+
+                            // On call toutes les fonctions du contrat en même temps
+                            const [name, supply] = await Promise.all([
+                                tokenContract.methods.name().call(),
+                                tokenContract.methods.totalSupply().call(),
+                            ]);
 
 
-
-                            const tokenContract = await new web3.eth.Contract(erc721Standard, contract);
-                            owner = await tokenContract.methods.owner().call();
-                            name = await tokenContract.methods.name().call();
-                            symbol = await tokenContract.methods.symbol().call();
-                            totalSupply = await tokenContract.methods.totalSupply().call();
-
-                            const balanceOfDeployer = await tokenContract.methods.balanceOf(deployer).call();
-                            deployerBalance = balanceOfDeployer
-
-                            if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dead") {
-
-                                ownership = "✅ Renounced"
-                                devBalance = formatCoinValueSign(deployerBalance) + " (" + parseFloat((deployerBalance / totalSupply) * 100).toFixed(1) + "%)"
-
-                            } else {
-
-                                if (owner.toLowerCase() != deployer.toLowerCase()) {
-
-                                    const balanceOfOwner = await tokenContract.methods.balanceOf(owner).call();
-                                    ownerBalance = balanceOfOwner
-
-                                }
-
-                                ownership = "❌ Not renounced"
-                                devBalance = formatCoinValueSign(deployerBalance + ownerBalance) + " (" + parseFloat(((deployerBalance + ownerBalance) / totalSupply) * 100).toFixed(1) + "%)"
-
-                            }
+                            // On récupère des infos sur le deployer
+                            const deployerBLNC = (await tokenContract.methods.balanceOf(deployer).call())
+                            const deployerAMNT = formatCoinValueSign(deployerBLNC, 0) + " (" + parseFloat((deployerBLNC / supply) * 100).toFixed(1) + "%)"
+                            const renounced = "❌ No"
 
 
+                            // 0n crée les valeurs formattés
+                            // Ces valeurs vont directement dans l'embed
+                            const deployerFRMT = "• Deployer: [" + formatWallet(deployer) + "](https://etherscan.io/address/" + deployer + ")\n• Balance: `" + deployerAMNT + "`\n• Txn: [" + formatWallet(deploymentTxn) + "](https://etherscan.io/address/" + deploymentTxn + ")\n• Count: `" + deployerTxnCount + "`\n"
+                            const tokenFRMT = "• Renounced: `" + renounced + "`\n• Supply: `" + formatCoinValueSign(supply, 2) + "`\n• Circulating: `" + formatCoinValueSign(supply, 2) + "`\n• Type: `" + type + "`"
 
 
-
-
+                            // On renvoi l'embed
                             const newERC721 = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle(name)
                                 .setDescription(">>> A new ERC721 contract has been created")
                                 .addFields(
                                     { name: " ", value: " ", inline: false },
-                                    { name: "Contract", value: "`" + contract.toLowerCase() + "`", inline: false },
-                                    { name: "Supply", value: "`" + formatCoinValueSign(totalSupply, 2) + "`", inline: true },
-                                    { name: "Type", value: "`" + type.toUpperCase() + "`", inline: true },
-                                    { name: "Dev. Txn Count", value: "`" + deployerTxnCount + "`", inline: true },
-                                    { name: "Dev. Balance", value: "`" + devBalance + "`", inline: true },
-                                    { name: "Ownership", value: "`" + ownership + "`", inline: true },
-                                    { name: "Contract Created", value: createdSince, inline: true },
+                                    { name: "Contract", value: "`" + tokenAddress + "`", inline: false },
+                                    { name: " ", value: " ", inline: false },
+
+                                    { name: "🦍 Token", value: tokenFRMT, inline: true },
+                                    { name: "👨🏽‍💻 Deployer", value: deployerFRMT, inline: true },
+                                    { name: " ", value: " ", inline: true },
+
+                                    { name: " ", value: " ", inline: false },
+                                    { name: " ", value: "**➜** This contract was created: " + created, inline: true },
+                                    { name: " ", value: " ", inline: false },
+
                                     { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + contract + ") ∙ " + '[Opensea](https://opensea.io/collection/' + contract + ") ∙ " + '[Blur](https://blur.io/collection/' + contract + ") ∙ " + '[Magically](https://magically.gg/collection/' + contract + ") ∙ " + '[Holders](https://blur.io/collection/' + contract + "/holders) ∙ " + '[Deployer](https://etherscan.io/address/' + contract + ")", inline: false },
 
 

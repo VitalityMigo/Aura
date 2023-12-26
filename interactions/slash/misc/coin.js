@@ -3,15 +3,17 @@
  * @author Vitality Migø
  */
 
-
-
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize, infra_coin, tracker_coin } = require('../../../events/database');
 const moment = require('moment');
+const axios = require('axios')
+
+// Nodes
+const { web3CloudflarePublic } = require("../../../config/web3config")
 
 // Fonctions d'execution et de formattage
-const { createFactory } = require('../../../functions/coin-utils')
+const { getToken } = require('../../../functions/coin-utils')
 const { coinProfitSingle } = require('../../../functions/pnlcaclulator')
 
 const reduceText = require("../../../functions/reducetext")
@@ -21,47 +23,8 @@ const getEthPrice = require('../../../functions/getethprice')
 const decrypt = require("../../../functions/decrypt")
 const encrypt = require("../../../functions/encrypt")
 
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const reservoirApiKey = process.env.reservoirApiKey
-const blockspanApiKey = process.env.blockspanApiKey
-const alchemyApiKey = process.env.alchemyApiKey
-const chartApiKey = process.env.chartApiKey
-
-
-// Axios
-const axios = require('axios')
-
-
-// Instance des APIs cryptos
-const Moralis = require("moralis").default;
-
-//Reservoir API
-const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
-sdk.auth(reservoirApiKey);
-//;
-
-//Block Span API
-const bsp = require('api')('@blockspan/v1.0#9zxl2sledru983');
-bsp.auth(blockspanApiKey);
-
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
-//Alchemy API 
-const { Network, Alchemy } = require('alchemy-sdk')
-const settings = {
-    apiKey: alchemyApiKey, // Replace with your Alchemy API Key.
-    network: Network.ETH_MAINNET, // Replace with your network.
-};
-const alchemy = new Alchemy(settings);
-const alchemy2 = require('api')('@alchemy-docs/v1.0#24zcsa23lfbpdnv5');
-
 // Initialisation du contrat de pair
-const wETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+const wETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
 
 
 // Fonctions
@@ -515,7 +478,7 @@ module.exports = {
                                     const ethPriceUsdPromise = getEthPrice()
 
                                     // On charge l'image de la chart (pas obligatoire)
-                                     //const chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
+                                    //const chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
 
 
                                     if (isValidEthereumAddress(coinTicker)) {
@@ -553,14 +516,14 @@ module.exports = {
                                         let coinActualPriceEth = 0
 
                                         //On récupère les infos du coin
-                                        const coinInfos = await alchemy.core.getTokenMetadata(coinTicker)
+                                        const coinInfos = await getToken([coinTicker])
 
-                                        if (coinInfos.symbol !== "") {
+                                        if (coinInfos.length > 0) {
 
 
-                                            coinName = coinInfos.name
-                                            coinSymbol = coinInfos.symbol
-                                            coinDecimal = coinInfos.decimals
+                                            coinName = coinInfos[0].name
+                                            coinSymbol = coinInfos[0].symbol
+                                            coinDecimal = coinInfos[0].decimals
 
 
                                             const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinTicker.toLowerCase())
@@ -776,8 +739,8 @@ module.exports = {
                                                 );
 
 
-                                                // Image de la charte désactive
-                                                // Pour des raisons d'efficacité et de clareté
+                                            // Image de la charte désactive
+                                            // Pour des raisons d'efficacité et de clareté
                                             const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
                                                 .setTitle(reduceText(coinName, 40) + " (" + coinSymbol.toUpperCase() + ")")
                                                 .setDescription(">>> Displaying data for `$" + coinSymbol.toUpperCase() + "`.")
@@ -850,25 +813,18 @@ module.exports = {
 
                                     const contract = interaction.options.getString("coin").toLowerCase()
 
-                                    const random_address = "0x862284B87b774bbEC86c4f13bA6c283C4552AfAB"
-                                    const random_slippage = 0
-                                    const transfer_events = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 
                                     // On crée la paire grâce à la factory
-                                    const factory = await createFactory(
-                                        "swap_eth_to_token",
-                                        contract,
-                                        random_address,
-                                        random_slippage
-                                    )
+                                    const factory = await getToken([contract])
+                                    const symbol = factory[0].symbol
 
                                     const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
-                                        .setTitle(factory.toToken.symbol)
-                                        .setDescription(">>> Displaying the last trades on`" + factory.toToken.symbol + "`.")
+                                        .setTitle(symbol)
+                                        .setDescription(">>> Displaying the last trades on`" + symbol + "`.")
                                         .setAuthor({ name: authorName, iconURL: userAvatar })
                                         .setTimestamp()
                                         .addFields(
-                                            { name: "Symbol", value: "`" + factory.toToken.symbol + "`", inline: false },
+                                            { name: "Symbol", value: "`" + symbol + "`", inline: false },
                                             { name: "Contract", value: "`" + contract + "`", inline: false },
                                             { name: " ", value: " ", inline: false },
                                         )
@@ -885,12 +841,12 @@ module.exports = {
 
                                         //const pool = pairData.pairAddress
                                         const version = pairData.labels[0]
-                                        const tokenDecimals = factory.toToken.decimals
+                                        const tokenDecimals = factory[0].decimals
                                         const pool = pairData.pairAddress
 
                                         // Dernier bloc
                                         const blockRange = 799
-                                        const toBlock = await web3.eth.getBlockNumber();
+                                        const toBlock = await web3CloudflarePublic.eth.getBlockNumber();
                                         const fromBlock = toBlock - blockRange
 
 
@@ -902,7 +858,7 @@ module.exports = {
                                         let uniswap_topic = uniswap_swap_topicV2
                                         if (version == "v3") { uniswap_topic = uniswap_swap_topicV3 }
 
-                                        const eventsCall = await web3.eth.getPastLogs({
+                                        const eventsCall = await web3CloudflarePublic.eth.getPastLogs({
                                             fromBlock: fromBlock,
                                             toBlock: toBlock,
                                             address: pool,
@@ -1275,7 +1231,7 @@ module.exports = {
                                         if (ape_mode == "true") { ape_mode = "✅" } else { ape_mode = "❌" }
                                         if (auto_approval == "true") { auto_approval = "✅" } else { auto_approval = "❌" }
 
-                                        const balance = await web3.eth.getBalance(walletAddress) / 10 ** 18
+                                        const balance = await web3CloudflarePublic.eth.getBalance(walletAddress) / 10 ** 18
 
                                         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                             .setTitle("Coin Setup")

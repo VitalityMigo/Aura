@@ -876,7 +876,7 @@ async function getMetrics(contract) {
         if (call.data.pairs.length > 0) {
 
             const object = call.data.pairs[0]
-            
+
             const metrics = {
                 priceUSD: parseFloat(object.priceUsd),
                 priceETH: parseFloat(object.priceNative),
@@ -935,6 +935,28 @@ async function getSupply(contract, decimals) {
 
 }
 
+async function getDeployment(contract) {
+
+    try {
+
+        const call = await axios.get("https://api.etherscan.io/api?module=contract&action=getcontractcreation&contractaddresses=" + contract + "&apikey=" + etherscanApiKey)
+
+        const deployer = await call.data.result[0].contractCreator.toLowerCase()
+        const deploymentTx = await call.data.result[0].txHash.toLowerCase()
+
+        const result = {
+            deployer: deployer,
+            txn: deploymentTx
+        }
+
+        return result
+
+    } catch (error) {
+
+        return null
+    }
+}
+
 
 module.exports = {
     createFactory,
@@ -959,5 +981,6 @@ module.exports = {
     getPriceEth,
     getSupply,
     getPriceUsd,
-    getMetrics
+    getMetrics,
+    getDeployment
 }

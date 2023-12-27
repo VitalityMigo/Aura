@@ -1,17 +1,4 @@
- const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
- const { apimonitorsql, apiproviderssql, adminsql, paymentHistory, accessSql, interactionData, reportsql, sequelize } = require('./database')
-
-const factoryContractAbi = require("../contracts/uniswap/factory.json")
-const pairContractAbi = require("../contracts/uniswap/pair.json")
-const erc20Standard = require("../contracts/uniswap/erc20standart.json")
-
-const pinklockAbi = require("../contracts/lockliquidity/pinklock.json")
-const unxcAbi = require("../contracts/lockliquidity/uncx.json")
-
-
-
-const formatCoinValueSign = require("../functions/formatNumberEmbed")
-const reduceText = require("../functions/reducetext")
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
@@ -19,15 +6,38 @@ dotenv.config()
 const infuraApiKey = process.env.infuraApiKey
 const etherscanApiKey = process.env.etherscanApiKey
 
-
+// WEB3
 const Web3 = require('web3');
-//const web3 = new Web3("https://cloudflare-eth.com")
 const web3 = new Web3('wss://mainnet.infura.io/ws/v3/' + infuraApiKey);
 
 const axios = require('axios')
 const colors = require('colors');
 
 
+// Fonctions
+const formatCoinValueSign = require("../functions/formatNumberEmbed")
+const reduceText = require("../functions/reducetext")
+const getEthPrice = require("../functions/getethprice")
+const { getDeployment } = require("../functions/coin-utils")
+
+// ON importe les fonctions de contrat
+const pairContractAbi = require("../contracts/uniswap/pair.json")
+const erc20Standard = require("../contracts/uniswap/erc20standart.json")
+const pinklockAbi = require("../contracts/lockliquidity/pinklock.json")
+const unxcAbi = require("../contracts/lockliquidity/uncx.json")
+const wETHAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+const pinklockContractAddress = "0x71b5759d73262fbb223956913ecf4ecc51057641"
+const uncxContractAddress = "0x663a5c229c09b049e36dcc11a9b0d4a8eb9db214"
+
+// Création de l'instance des contrats
+const unxcContract = new web3.eth.Contract(unxcAbi, uncxContractAddress);
+const pinklockContract = new web3.eth.Contract(pinklockAbi, pinklockContractAddress);
+
+// On définit les addresse DEAD
+const deadAddress = [
+    "0x0000000000000000000000000000000000000000",
+    "0x000000000000000000000000000000000000dead"
+]
 
 function formatWallet(input) {
     return input.length > 35 ? `${input.substring(0, 5)}…${input.substring(input.length - 4)}` : input;
@@ -64,89 +74,46 @@ setTimeout(() => {
 
 
 
-
-
-// On définit les constantes et variables principales
-const factoryContractAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
-const wETHAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-
-const pinklockContractAddress = "0x71b5759d73262fbb223956913ecf4ecc51057641"
-const uncxContractAddress = "0x663a5c229c09b049e36dcc11a9b0d4a8eb9db214"
-
-
-// Création de l'instance du Factory Contract
-const unxcContract = new web3.eth.Contract(unxcAbi, uncxContractAddress);
-const pinklockContract = new web3.eth.Contract(pinklockAbi, pinklockContractAddress);
-
 // Écouter l'événement de création de paire
 pinklockContract.events.LockAdded()
     .on('data', async eventData => {
 
         let tokenAddress = ""
 
-        let priceEth = 0
-        let priceUsd = 0
-        let marketCap = 0
-        let pooledETH = 0
-        let pooledToken = 0
-        let liquidity = 0
-        let reserveToken0 = ""
-        let reserveToken1 = ""
-
-        let ownership = "N/A"
-        let devBalance = 0
-        let deployerBalance = 0
-        let ownerBalance = 0
-        let createdSince = "`Unknown`"
-
-
-
-
-
         try {
 
+            // Envoyer le call non résolu de l'ETH
+            const ethPriceCALL = getEthPrice()
 
-            const timeStamp = Date.now();
-            const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
-
-
-            const ethCallPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-            let ethPriceUsd = ethCallPrice.data.result.ethusd
-
-
-          
 
             const pairAddress = eventData.returnValues.token.toLowerCase()
             const sender = eventData.returnValues.owner.toLowerCase()
-            const supplyLocked = eventData.returnValues.amount / 10**18
+            const lpLocked = eventData.returnValues.amount / 10 ** 18
             const unlockDate = eventData.returnValues.unlockDate
-            const txnHash = eventData.transactionHash
+            const hash = eventData.transactionHash
 
             console.log(colors.magenta("🔒 Nouvelle LP Lock [PINK]"))
             console.log("Pair: " + pairAddress)
-            console.log("Txn: " + txnHash)
+            console.log("Txn: " + hash)
 
 
-            createdSince = "<t:" + unlockDate + ":R>"
+            // on récupère les infos de la pool uniswap
+            const pairContract = new web3.eth.Contract(pairContractAbi, pairAddress);
+            const token0 = (await pairContract.methods.token0().call()).toLowerCase()
+            const token1 = (await pairContract.methods.token1().call()).toLowerCase()
+            const reserves = await pairContract.methods.getReserves().call();
+
+            // On récupère les infos du locks
+            // Ca comprend la supply des LP, les locks, la partie etc
+            const lpSupplyRaw = await pairContract.methods.totalSupply().call();
+            const lpSupply = lpSupplyRaw / 10 ** 18
+            const locked = 100 * lpLocked / lpSupply
 
 
-               // on récupère les infos de la pool uniswap
-               const pairContract = new web3.eth.Contract(pairContractAbi, pairAddress);
-               const token0 = await pairContract.methods.token0().call();
-               const token1 = await pairContract.methods.token1().call();
+            // On vérifie que c'est bien une paire en WETH
+            if (token0 == wETHAddress || token1 == wETHAddress) {
 
-
-            // On commence la recherche de données 
-
-
-            // On commence la recherche de données 
-
-
-            // On définit le token qui est le bon
-            let whichToken = "token0"
-            if (token0.toLowerCase() == wETHAddress.toLowerCase() || token1.toLowerCase() == wETHAddress.toLowerCase()) {
-
-
+                // On cherche le token qui est le contrat, pas le quote (tokenAddress)
                 if (token0.toLowerCase() !== wETHAddress.toLowerCase()) {
 
                     tokenAddress = token0
@@ -154,147 +121,134 @@ pinklockContract.events.LockAdded()
                 } else if (token1.toLowerCase() !== wETHAddress.toLowerCase()) {
 
                     tokenAddress = token1
-                    whichToken = "token1"
-
                 }
 
+
+
+                // On initialise le contrat
+                const tokenContract = new web3.eth.Contract(erc20Standard, tokenAddress);
+
+                // On call toutes les fonctions du contrat en même temps
+                const [decimals, rawSupply, ownerRaw] = await Promise.all([
+                    tokenContract.methods.decimals().call(),
+                    tokenContract.methods.totalSupply().call(),
+                    tokenContract.methods.owner().call(),
+                ]);
+                const supply = rawSupply / 10 ** decimals
+                const owner = ownerRaw.toLowerCase()
+
+                // On récupère le prix de l'ETH
+                // La promesse est résolu ici, mais call en haut
+                const [ethPrice] = await Promise.all([ethPriceCALL]);
+
+
+                // On formatte les reserves
+                // Puis on assigne les différentes valeurs
+                const reserve = getTokenInPair(token0, token1, reserves, decimals)
+                const pooledETH = reserve.quote
+                const pooledTKN = reserve.token
+                const liquidity = (pooledETH * 2) * ethPrice
+                const price = easyPrice((pooledETH / pooledTKN) * ethPrice)
+                const marketCap = price * supply
+
+
+                // On récupère les information sur le deployer
+                const deployerOBJ = await getDeployment(tokenAddress)
+                const deployer = deployerOBJ.deployer
+                const deployTx = deployerOBJ.txn
+                const deployerBLNC = (await tokenContract.methods.balanceOf(deployer).call()) / 10 ** decimals
+                const deployerAMNT = parseFloat((deployerBLNC * price) / ethPrice).toFixed(3) + "Ξ (" + parseFloat((deployerBLNC / supply) * 100).toFixed(1) + "%)"
+
+                // On formatte les infos sur l'owner
+                // On vérifie si le contrat est renoncé et si l'owner est le même que le dev
+                let renounced = "✅ Yes"
+                let ownerAMNT = deployerAMNT
+                let ownerBLNC = deployerBLNC
+                if (!deadAddress.includes(owner.toLowerCase())) {
+                    // Le contrat n'est pas renoncé
+                    renounced = "❌ No"
+                    // On vérifie si le dev est le même que l'owner
+                    if (owner.toLowerCase() !== deployer) {
+                        ownerBLNC = (await tokenContract.methods.balanceOf(owner).call()) / 10 ** decimals
+                        ownerAMNT = parseFloat((ownerBLNC * price) / ethPrice).toFixed(3) + "Ξ (" + parseFloat((ownerBLNC / supply) * 100).toFixed(1) + "%)"
+                    }
+                }
+
+
+                // 0n crée les valeurs formattés
+                // Ces valeurs vont directement dans l'embed
+                const liquidityFRMT = "• Pair: [" + formatWallet(pairAddress) + "](https://etherscan.io/address/" + pairAddress + ")\n• Liquidity: `" + formatCoinValueSign(liquidity, 2) + "$`\n• Pooled WETH: `" + parseFloat(pooledETH).toFixed(3) + "Ξ`\n• Pooled Tokens: `" + formatCoinValueSign(pooledTKN, 2) + "`"
+                const deployerFRMT = "• Deployer: [" + formatWallet(deployer) + "](https://etherscan.io/address/" + deployer + ")\n• Amount: `" + formatCoinValueSign(deployerBLNC, 0) + "`\n• Balance: `" + deployerAMNT + "`\n• Txn: [" + formatWallet(deployTx) + "](https://etherscan.io/address/" + deployTx + ")"
+                const ownerFRMT = "• Owner: [" + formatWallet(owner) + "](https://etherscan.io/address/" + owner + ")\n• Amount: `" + formatCoinValueSign(ownerBLNC, 0) + "`\n• Balance: `" + ownerAMNT + "`"
+                const tokenFRMT = "• Renounced: `" + renounced + "`\n• Supply: `" + formatCoinValueSign(supply, 2) + "`\n• Circulating: `" + formatCoinValueSign(supply, 2) + "`\n• Burned: `0.00% 🔥`"
+                const lplocksFRMT = "• LP Supply: `" + lpSupply + "`\n• Locked: `" + parseFloat(locked).toFixed(2) + "% (" + lpLocked + ")` until <t:" + unlockDate + ":R>\n• Locker: [" + formatWallet(sender) + "](https://etherscan.io/address/" + sender + ") at this [tx](https://etherscan.io/tx/" + hash + ")"
+
+
+                // On récupère le nom et symbol
+                // On call toutes les fonctions du contrat en même temps
+                const [symbol, name] = await Promise.all([
+                    tokenContract.methods.symbol().call(),
+                    tokenContract.methods.name().call(),
+                ]);
+
+
+                // On crée un boutton
+                const buttonsRow = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId('button_exec_open_panel_' + tokenAddress)
+                            .setLabel('📊 Trade Panel')
+                            .setStyle(1),
+                    );
+
+
+
+                /// RENVOI DE L'EMBED
+                const newPair = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle(reduceText(name, 40) + " (" + symbol.toUpperCase() + ")")
+                    .setDescription(">>> A pool just locked LP tokens")
+                    .addFields(
+                        { name: " ", value: " ", inline: false },
+                        { name: "Contract", value: "`" + tokenAddress + "`", inline: false },
+                        { name: " ", value: " ", inline: false },
+
+                        { name: "Price", value: "`" + parseFloat(price).toFixed(10) + "$`", inline: true },
+                        { name: "Market Cap", value: "`" + formatCoinValueSign(marketCap) + "$`", inline: true },
+                        { name: " ", value: " ", inline: true },
+
+                        { name: " ", value: " ", inline: false },
+
+                        { name: "🦍 Token", value: tokenFRMT, inline: true },
+                        { name: "🐬 Pool", value: liquidityFRMT, inline: true },
+                        { name: " ", value: " ", inline: true },
+
+                        { name: " ", value: " ", inline: false },
+
+                        { name: "👨🏽‍⚖️ Ownership", value: ownerFRMT, inline: true },
+                        { name: "👨🏽‍💻 Deployer", value: deployerFRMT, inline: true },
+                        { name: " ", value: " ", inline: true },
+
+                        { name: " ", value: " ", inline: false },
+                        { name: "🔒 LP Locks", value: lplocksFRMT, inline: false },
+                        { name: " ", value: " ", inline: false },
+
+                        { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + tokenAddress + ") ∙ " + '[Etherscan LP](https://etherscan.io/address/' + pairAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + tokenAddress + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + tokenAddress + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + tokenAddress + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + tokenAddress + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + tokenAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + tokenAddress + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + tokenAddress + ") ∙ " + '[Locker Protocol](https://etherscan.io/address/' + uncxContractAddress + ")", inline: false },
+                        { name: "Quicktasks", value: '[Thunder](http://localhost:7777/quickTask?module=defi&contract=' + tokenAddress + "&action=buy&blockchain=ethereum&platform=uniswapv2) ∙ " + '[Maestro]( https://t.me/MaestroSniperBot?start=' + tokenAddress + ") ∙ " + '[Sensei](https://app.thornhill.fun/defi?token=' + tokenAddress + "&venue=UNISWAP_V2&valueEth=0.05) ∙ " + '[Waifu]( http://localhost:7780/uniswapqt?contractAddress=' + tokenAddress + "&group=Default)", inline: false },
+
+
+                    )
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+
+
+                await channelLPLocks.send({ embeds: [newPair], components: [buttonsRow] });
 
             }
-
-            const reserves = await pairContract.methods.getReserves().call();
-            const circulatingSupplyCall = await pairContract.methods.totalSupply().call();
-            const lpSupply = circulatingSupplyCall / 10 ** 18
-            const lockedPart = 100 * supplyLocked / lpSupply
-
-
-            // On récupère les infos du token
-            const tokenContract = new web3.eth.Contract(erc20Standard, tokenAddress.toLowerCase());
-
-            const symbol = await tokenContract.methods.symbol().call();
-            const name = await tokenContract.methods.name().call();
-            const decimals = await tokenContract.methods.decimals().call();
-            const totalSupplyCall = await tokenContract.methods.totalSupply().call();
-            const owner = await tokenContract.methods.owner().call();
-            const totalSupply = totalSupplyCall / 10 ** decimals
-
-            // on estime le prix, marketcap et d'autre chose
-            if (token0.toLowerCase() !== wETHAddress.toLowerCase()) {
-
-
-                reserveToken0 = reserves._reserve0 / 10 ** decimals
-                reserveToken1 = reserves._reserve1 / 10 ** 18
-
-                pooledETH = reserveToken1
-                pooledToken = reserveToken0
-                liquidity = (reserveToken1 * 2) * ethPriceUsd
-
-                if (reserveToken1 != 0) {
-
-                    priceEth = reserveToken1 / reserveToken0
-
-                }
-
-
-            } else if (token1.toLowerCase() !== wETHAddress.toLowerCase()) {
-
-                reserveToken0 = reserves._reserve0 / 10 ** 18
-                reserveToken1 = reserves._reserve1 / 10 ** decimals
-
-                pooledETH = reserveToken0
-                pooledToken = reserveToken1
-                liquidity = (reserveToken0 * 2) * ethPriceUsd
-
-                if (reserveToken0 != 0) {
-
-                    priceEth = reserveToken0 / reserveToken1
-                }
-            }
-
-            priceUsd = priceEth * ethPriceUsd
-            marketCap = priceUsd * totalSupply;
-
-
-
-
-            const deploymentInfos = await axios.get("https://api.etherscan.io/api?module=contract&action=getcontractcreation&contractaddresses=" + tokenAddress + "&apikey=" + etherscanApiKey)
-
-            const devAddress = await deploymentInfos.data.result[0].contractCreator.toLowerCase()
-            const deploymentTxn = await deploymentInfos.data.result[0].txHash
-
-
-            const balanceOfDeployer = await tokenContract.methods.balanceOf(devAddress).call();
-            deployerBalance = balanceOfDeployer / 10 ** decimals
-
-           
-
-
-            if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dead") {
-
-                ownership = "✅ Renounced"
-                devBalance = parseFloat((deployerBalance * priceUsd) / priceUsd).toFixed(3) + "Ξ (" + parseFloat((deployerBalance / totalSupply) * 100).toFixed(1) + "%)"
-
-            } else {
-
-                if (owner.toLowerCase() != devAddress.toLowerCase()) {
-
-                    const balanceOfOwner = await tokenContract.methods.balanceOf(owner).call();
-                    ownerBalance = balanceOfOwner / 10 ** decimals
-
-                }
-
-                ownership = "❌ Not renounced"
-                devBalance = parseFloat(((deployerBalance + ownerBalance / 2) * priceUsd) / ethPriceUsd).toFixed(3) + "Ξ (" + parseFloat((((deployerBalance + ownerBalance) / 2) / totalSupply) * 100).toFixed(1) + "%)"
-
-            }
-
-
-            const buttonsRow = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                .setCustomId('button_exec_open_panel_' + tokenAddress.toLowerCase())
-                .setLabel('📊 Trade Panel')
-                .setStyle(1),
-            );
-
-            /// RENVOI DE L'EMBED
-            const newPair = new EmbedBuilder().setColor("#060A8F")
-                .setTitle(reduceText(name, 40) + " (" + symbol.toUpperCase() + ")")
-                .setDescription(">>> A pool just locked liquidities")
-                .addFields(
-                    { name: " ", value: " ", inline: false },
-                    { name: "Contract", value: "`" + tokenAddress.toLowerCase() + "`", inline: false },
-                    { name: "ETH Price", value: "`" + parseFloat(priceEth).toFixed(5) + "Ξ`", inline: true },
-                    { name: "USD Price", value: "`" + priceUsd + "$`", inline: true },
-                    { name: " ", value: " ", inline: true },
-                    { name: "Supply", value: "`" + formatCoinValueSign(totalSupply, 2) + "`", inline: true },
-                    { name: "Circulating Supply", value: "`" + formatCoinValueSign(totalSupply, 2) + "`", inline: true },
-                    { name: "Market Cap", value: "`" + formatCoinValueSign(marketCap) + "$`", inline: true },
-                    { name: "Liquidity", value: "`" + formatCoinValueSign(liquidity) + "$`", inline: true },
-                    { name: "Pooled ETH", value: "`" + parseFloat(pooledETH).toFixed(3) + "Ξ`", inline: true },
-                    { name: "Pooled " + symbol.toUpperCase(), value: "`" + formatCoinValueSign(pooledToken) + "`", inline: true },
-                    { name: "Dev. Balance", value: "`" + devBalance + "`", inline: true },
-                    { name: "Ownership", value: "`" + ownership + "`", inline: true },
-                    { name: "LP Token Supply", value: "`" + formatCoinValueSign(lpSupply) + "`", inline: true },
-                    { name: "Locked Supply", value: "`" + parseFloat(lockedPart).toFixed(2) + "%`", inline: true },
-                    { name: "Sender", value: "`" + formatWallet(sender.toUpperCase()) + "`", inline: true },
-                    { name: "Unlock Date", value: createdSince, inline: true },
-                    { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + tokenAddress + ") ∙ " + '[Etherscan LP](https://etherscan.io/address/' + pairAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + tokenAddress + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + tokenAddress + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + tokenAddress + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + tokenAddress + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + tokenAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + tokenAddress + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + tokenAddress + ") ∙ " + '[Locker Protocol](https://etherscan.io/address/' + pinklockContractAddress + ")", inline: false },
-                    { name: "Quicktasks", value: '[Thunder](http://localhost:7777/quickTask?module=defi&contract=' + tokenAddress + "&action=buy&blockchain=ethereum&platform=uniswapv2) ∙ " + '[Maestro]( https://t.me/MaestroSniperBot?start=' + tokenAddress + ") ∙ " + '[Sensei](https://app.thornhill.fun/defi?token=' + tokenAddress + "&venue=UNISWAP_V2&valueEth=0.05) ∙ " + '[Waifu]( http://localhost:7780/uniswapqt?contractAddress=' + tokenAddress + "&group=Default)", inline: false },
-
-
-                )
-                .setTimestamp()
-                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-
-
-            await channelLPLocks.send({ embeds: [newPair], components: [buttonsRow] });
-
-
 
         } catch (error) {
 
-            console.log(error)
+            console.log(error.stack)
 
 
         }
@@ -304,7 +258,7 @@ pinklockContract.events.LockAdded()
     .on('error', error => {
 
 
-        console.error('Erreur:', error);
+        console.log('Erreur:', error);
     });
 
 
@@ -314,65 +268,42 @@ unxcContract.events.onDeposit()
 
         let tokenAddress = ""
 
-        let priceEth = 0
-        let priceUsd = 0
-        let marketCap = 0
-        let pooledETH = 0
-        let pooledToken = 0
-        let liquidity = 0
-        let reserveToken0 = ""
-        let reserveToken1 = ""
-
-        let ownership = "N/A"
-        let devBalance = 0
-        let deployerBalance = 0
-        let ownerBalance = 0
-        let createdSince = "`Unknown`"
-
-
-
-
-
         try {
 
 
-            const timeStamp = Date.now();
-            const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
-
-
-            const ethCallPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-            let ethPriceUsd = ethCallPrice.data.result.ethusd
-
+            // Envoyer le call non résolu de l'ETH
+            const ethPriceCALL = getEthPrice()
 
 
             const pairAddress = eventData.returnValues.lpToken.toLowerCase()
             const sender = eventData.returnValues.user.toLowerCase()
-            const supplyLocked = eventData.returnValues.amount / 10**18
+            const lpLocked = eventData.returnValues.amount / 10 ** 18
             const unlockDate = eventData.returnValues.unlockDate
-            const txnHash = eventData.transactionHash
+            const hash = eventData.transactionHash
 
             console.log(colors.magenta("🔒 Nouvelle LP Lock [UNCX]"))
             console.log("Pair: " + pairAddress)
-            console.log("Txn: " + txnHash)
+            console.log("Txn: " + hash)
 
 
-            createdSince = "<t:" + unlockDate + ":R>"
+            // on récupère les infos de la pool uniswap
+            const pairContract = new web3.eth.Contract(pairContractAbi, pairAddress);
+            const token0 = (await pairContract.methods.token0().call()).toLowerCase()
+            const token1 = (await pairContract.methods.token1().call()).toLowerCase()
+            const reserves = await pairContract.methods.getReserves().call();
+
+            // On récupère les infos du locks
+            // Ca comprend la supply des LP, les locks, la partie etc
+            const lpSupplyRaw = await pairContract.methods.totalSupply().call();
+            const lpSupply = lpSupplyRaw / 10 ** 18
+            const locked = 100 * lpLocked / lpSupply
 
 
-               // on récupère les infos de la pool uniswap
-               const pairContract = new web3.eth.Contract(pairContractAbi, pairAddress);
-               const token0 = await pairContract.methods.token0().call();
-               const token1 = await pairContract.methods.token1().call();
 
+            // On vérifie que c'est bien une paire en WETH
+            if (token0 == wETHAddress || token1 == wETHAddress) {
 
-            // On commence la recherche de données 
-
-
-            // On définit le token qui est le bon
-            let whichToken = "token0"
-            if (token0.toLowerCase() == wETHAddress.toLowerCase() || token1.toLowerCase() == wETHAddress.toLowerCase()) {
-
-
+                // On cherche le token qui est le contrat, pas le quote (tokenAddress)
                 if (token0.toLowerCase() !== wETHAddress.toLowerCase()) {
 
                     tokenAddress = token0
@@ -380,148 +311,137 @@ unxcContract.events.onDeposit()
                 } else if (token1.toLowerCase() !== wETHAddress.toLowerCase()) {
 
                     tokenAddress = token1
-                    whichToken = "token1"
-
                 }
 
+
+
+                // On initialise le contrat
+                const tokenContract = new web3.eth.Contract(erc20Standard, tokenAddress);
+
+                // On call toutes les fonctions du contrat en même temps
+                const [decimals, rawSupply, ownerRaw] = await Promise.all([
+                    tokenContract.methods.decimals().call(),
+                    tokenContract.methods.totalSupply().call(),
+                    tokenContract.methods.owner().call(),
+                ]);
+                const supply = rawSupply / 10 ** decimals
+                const owner = ownerRaw.toLowerCase()
+
+                // On récupère le prix de l'ETH
+                // La promesse est résolu ici, mais call en haut
+                const [ethPrice] = await Promise.all([ethPriceCALL]);
+
+
+                // On formatte les reserves
+                // Puis on assigne les différentes valeurs
+                const reserve = getTokenInPair(token0, token1, reserves, decimals)
+                const pooledETH = reserve.quote
+                const pooledTKN = reserve.token
+                const liquidity = (pooledETH * 2) * ethPrice
+                const price = easyPrice((pooledETH / pooledTKN) * ethPrice)
+                const marketCap = price * supply
+
+                
+
+                // On récupère les information sur le deployer
+                const deployerOBJ = await getDeployment(tokenAddress)
+                const deployer = deployerOBJ.deployer
+                const deployTx = deployerOBJ.txn
+                const deployerBLNC = (await tokenContract.methods.balanceOf(deployer).call()) / 10 ** decimals
+                const deployerAMNT = parseFloat((deployerBLNC * price) / ethPrice).toFixed(3) + "Ξ (" + parseFloat((deployerBLNC / supply) * 100).toFixed(1) + "%)"
+
+                // On formatte les infos sur l'owner
+                // On vérifie si le contrat est renoncé et si l'owner est le même que le dev
+                let renounced = "✅ Yes"
+                let ownerAMNT = deployerAMNT
+                let ownerBLNC = deployerBLNC
+                if (!deadAddress.includes(owner.toLowerCase())) {
+                    // Le contrat n'est pas renoncé
+                    renounced = "❌ No"
+                    // On vérifie si le dev est le même que l'owner
+                    if (owner.toLowerCase() !== deployer) {
+                        ownerBLNC = (await tokenContract.methods.balanceOf(owner).call()) / 10 ** decimals
+                        ownerAMNT = parseFloat((ownerBLNC * price) / ethPrice).toFixed(3) + "Ξ (" + parseFloat((ownerBLNC / supply) * 100).toFixed(1) + "%)"
+                    }
+                }
+
+
+                
+                // 0n crée les valeurs formattés
+                // Ces valeurs vont directement dans l'embed
+                const liquidityFRMT = "• Pair: [" + formatWallet(pairAddress) + "](https://etherscan.io/address/" + pairAddress + ")\n• Liquidity: `" + formatCoinValueSign(liquidity, 2) + "$`\n• Pooled WETH: `" + parseFloat(pooledETH).toFixed(3) + "Ξ`\n• Pooled Tokens: `" + formatCoinValueSign(pooledTKN, 2) + "`"
+                const deployerFRMT = "• Deployer: [" + formatWallet(deployer) + "](https://etherscan.io/address/" + deployer + ")\n• Amount: `" + formatCoinValueSign(deployerBLNC, 0) + "`\n• Balance: `" + deployerAMNT + "`\n• Txn: [" + formatWallet(deployTx) + "](https://etherscan.io/address/" + deployTx + ")"
+                const ownerFRMT = "• Owner: [" + formatWallet(owner) + "](https://etherscan.io/address/" + owner + ")\n• Amount: `" + formatCoinValueSign(ownerBLNC, 0) + "`\n• Balance: `" + ownerAMNT + "`"
+                const tokenFRMT = "• Renounced: `" + renounced + "`\n• Supply: `" + formatCoinValueSign(supply, 2) + "`\n• Circulating: `" + formatCoinValueSign(supply, 2) + "`\n• Burned: `0.00% 🔥`"
+                const lplocksFRMT = "• LP Supply: `" + lpSupply + "`\n• Locked: `" + parseFloat(locked).toFixed(2) + "% (" + lpLocked + ")` until <t:" + unlockDate + ":R>\n• Locker: [" + formatWallet(sender) + "](https://etherscan.io/address/" + sender + ") at this [tx](https://etherscan.io/tx/" + hash + ")"
+
+
+                // On récupère le nom et symbol
+                // On call toutes les fonctions du contrat en même temps
+                const [symbol, name] = await Promise.all([
+                    tokenContract.methods.symbol().call(),
+                    tokenContract.methods.name().call(),
+                ]);
+
+
+                // On crée un boutton
+                const buttonsRow = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId('button_exec_open_panel_' + tokenAddress)
+                            .setLabel('📊 Trade Panel')
+                            .setStyle(1),
+                    );
+
+
+
+                /// RENVOI DE L'EMBED
+                const newPair = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle(reduceText(name, 40) + " (" + symbol.toUpperCase() + ")")
+                    .setDescription(">>> A pool just locked LP tokens")
+                    .addFields(
+                        { name: " ", value: " ", inline: false },
+                        { name: "Contract", value: "`" + tokenAddress + "`", inline: false },
+                        { name: " ", value: " ", inline: false },
+
+                        { name: "Price", value: "`" + parseFloat(price).toFixed(10) + "$`", inline: true },
+                        { name: "Market Cap", value: "`" + formatCoinValueSign(marketCap) + "$`", inline: true },
+                        { name: " ", value: " ", inline: true },
+
+                        { name: " ", value: " ", inline: false },
+
+                        { name: "🦍 Token", value: tokenFRMT, inline: true },
+                        { name: "🐬 Pool", value: liquidityFRMT, inline: true },
+                        { name: " ", value: " ", inline: true },
+
+                        { name: " ", value: " ", inline: false },
+
+                        { name: "👨🏽‍⚖️ Ownership", value: ownerFRMT, inline: true },
+                        { name: "👨🏽‍💻 Deployer", value: deployerFRMT, inline: true },
+                        { name: " ", value: " ", inline: true },
+
+                        { name: " ", value: " ", inline: false },
+                        { name: "🔒 LP Locks", value: lplocksFRMT, inline: false },
+                        { name: " ", value: " ", inline: false },
+
+                        { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + tokenAddress + ") ∙ " + '[Etherscan LP](https://etherscan.io/address/' + pairAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + tokenAddress + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + tokenAddress + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + tokenAddress + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + tokenAddress + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + tokenAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + tokenAddress + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + tokenAddress + ") ∙ " + '[Locker Protocol](https://etherscan.io/address/' + uncxContractAddress + ")", inline: false },
+                        { name: "Quicktasks", value: '[Thunder](http://localhost:7777/quickTask?module=defi&contract=' + tokenAddress + "&action=buy&blockchain=ethereum&platform=uniswapv2) ∙ " + '[Maestro]( https://t.me/MaestroSniperBot?start=' + tokenAddress + ") ∙ " + '[Sensei](https://app.thornhill.fun/defi?token=' + tokenAddress + "&venue=UNISWAP_V2&valueEth=0.05) ∙ " + '[Waifu]( http://localhost:7780/uniswapqt?contractAddress=' + tokenAddress + "&group=Default)", inline: false },
+
+
+                    )
+                    .setTimestamp()
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+
+
+                await channelLPLocks.send({ embeds: [newPair], components: [buttonsRow] });
 
             }
-
-    
-            const reserves = await pairContract.methods.getReserves().call();
-            const circulatingSupplyCall = await pairContract.methods.totalSupply().call();
-            const lpSupply = circulatingSupplyCall / 10 ** 18
-            const lockedPart = 100 * supplyLocked / lpSupply
-
-
-            // On récupère les infos du token
-            const tokenContract = new web3.eth.Contract(erc20Standard, tokenAddress.toLowerCase());
-
-            const symbol = await tokenContract.methods.symbol().call();
-            const name = await tokenContract.methods.name().call();
-            const decimals = await tokenContract.methods.decimals().call();
-            const totalSupplyCall = await tokenContract.methods.totalSupply().call();
-            const owner = await tokenContract.methods.owner().call();
-            const totalSupply = totalSupplyCall / 10 ** decimals
-
-            // on estime le prix, marketcap et d'autre chose
-            if (token0.toLowerCase() !== wETHAddress.toLowerCase()) {
-
-
-                reserveToken0 = reserves._reserve0 / 10 ** decimals
-                reserveToken1 = reserves._reserve1 / 10 ** 18
-
-                pooledETH = reserveToken1
-                pooledToken = reserveToken0
-                liquidity = (reserveToken1 * 2) * ethPriceUsd
-
-                if (reserveToken1 != 0) {
-
-                    priceEth = reserveToken1 / reserveToken0
-
-                }
-
-
-            } else if (token1.toLowerCase() !== wETHAddress.toLowerCase()) {
-
-                reserveToken0 = reserves._reserve0 / 10 ** 18
-                reserveToken1 = reserves._reserve1 / 10 ** decimals
-
-                pooledETH = reserveToken0
-                pooledToken = reserveToken1
-                liquidity = (reserveToken0 * 2) * ethPriceUsd
-
-                if (reserveToken0 != 0) {
-
-                    priceEth = reserveToken0 / reserveToken1
-                }
-            }
-
-            priceUsd = priceEth * ethPriceUsd
-            marketCap = priceUsd * totalSupply;
-
-
-
-
-            const deploymentInfos = await axios.get("https://api.etherscan.io/api?module=contract&action=getcontractcreation&contractaddresses=" + tokenAddress + "&apikey=" + etherscanApiKey)
-
-            const devAddress = await deploymentInfos.data.result[0].contractCreator.toLowerCase()
-            const deploymentTxn = await deploymentInfos.data.result[0].txHash
-
-
-            const balanceOfDeployer = await tokenContract.methods.balanceOf(devAddress).call();
-            deployerBalance = balanceOfDeployer / 10 ** decimals
-
-            
-
-
-            if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dead") {
-
-                ownership = "✅ Renounced"
-                devBalance = parseFloat((deployerBalance * priceUsd) / priceUsd).toFixed(3) + "Ξ (" + parseFloat((deployerBalance / totalSupply) * 100).toFixed(1) + "%)"
-
-            } else {
-
-                if (owner.toLowerCase() != devAddress.toLowerCase()) {
-
-                    const balanceOfOwner = await tokenContract.methods.balanceOf(owner).call();
-                    ownerBalance = balanceOfOwner / 10 ** decimals
-
-                }
-
-                ownership = "❌ Not renounced"
-                devBalance = parseFloat(((deployerBalance + ownerBalance / 2) * priceUsd) / ethPriceUsd).toFixed(3) + "Ξ (" + parseFloat((((deployerBalance + ownerBalance) / 2) / totalSupply) * 100).toFixed(1) + "%)"
-
-            }
-
-            const buttonsRow = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                .setCustomId('button_exec_open_panel_' + tokenAddress.toLowerCase())
-                .setLabel('📊 Trade Panel')
-                .setStyle(1),
-            );
-
-
-            /// RENVOI DE L'EMBED
-            const newPair = new EmbedBuilder().setColor("#060A8F")
-                .setTitle(reduceText(name, 40) + " (" + symbol.toUpperCase() + ")")
-                .setDescription(">>> A pool just locked liquidities")
-                .addFields(
-                    { name: " ", value: " ", inline: false },
-                    { name: "Contract", value: "`" + tokenAddress.toLowerCase() + "`", inline: false },
-                    { name: "ETH Price", value: "`" + parseFloat(priceEth).toFixed(5) + "Ξ`", inline: true },
-                    { name: "USD Price", value: "`" + priceUsd + "$`", inline: true },
-                    { name: " ", value: " ", inline: true },
-                    { name: "Supply", value: "`" + formatCoinValueSign(totalSupply, 2) + "`", inline: true },
-                    { name: "Circulating Supply", value: "`" + formatCoinValueSign(totalSupply, 2) + "`", inline: true },
-                    { name: "Market Cap", value: "`" + formatCoinValueSign(marketCap) + "$`", inline: true },
-                    { name: "Liquidity", value: "`" + formatCoinValueSign(liquidity) + "$`", inline: true },
-                    { name: "Pooled ETH", value: "`" + parseFloat(pooledETH).toFixed(3) + "Ξ`", inline: true },
-                    { name: "Pooled " + symbol.toUpperCase(), value: "`" + formatCoinValueSign(pooledToken) + "`", inline: true },
-                    { name: "Dev. Balance", value: "`" + devBalance + "`", inline: true },
-                    { name: "Ownership", value: "`" + ownership + "`", inline: true },
-                    { name: "LP Token Supply", value: "`" + formatCoinValueSign(lpSupply) + "`", inline: true },
-                    { name: "Locked Supply", value: "`" + parseFloat(lockedPart).toFixed(2) + "%`", inline: true },
-                    { name: "Sender", value: "`" + formatWallet(sender.toUpperCase()) + "`", inline: true },
-                    { name: "Unlock Date", value: createdSince, inline: true },
-                    { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + tokenAddress + ") ∙ " + '[Etherscan LP](https://etherscan.io/address/' + pairAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + tokenAddress + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + tokenAddress + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + tokenAddress + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + tokenAddress + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + tokenAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + tokenAddress + ") ∙ " + '[Holders](https://etherscan.io/token/tokenholderchart/' + tokenAddress + ") ∙ " + '[Locker Protocol](https://etherscan.io/address/' + uncxContractAddress + ")", inline: false },
-                    { name: "Quicktasks", value: '[Thunder](http://localhost:7777/quickTask?module=defi&contract=' + tokenAddress + "&action=buy&blockchain=ethereum&platform=uniswapv2) ∙ " + '[Maestro]( https://t.me/MaestroSniperBot?start=' + tokenAddress + ") ∙ " + '[Sensei](https://app.thornhill.fun/defi?token=' + tokenAddress + "&venue=UNISWAP_V2&valueEth=0.05) ∙ " + '[Waifu]( http://localhost:7780/uniswapqt?contractAddress=' + tokenAddress + "&group=Default)", inline: false },
-
-
-                )
-                .setTimestamp()
-                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-
-
-            await channelLPLocks.send({ embeds: [newPair], components: [buttonsRow] });
-
 
 
         } catch (error) {
 
-            console.log(error)
+            console.log(error.stack)
 
 
         }
@@ -531,12 +451,96 @@ unxcContract.events.onDeposit()
     .on('error', error => {
 
 
-        console.error('Erreur:', error);
+        console.log('Erreur:', error);
     });
 
 
 
 
+
+
+// Fonctions qui permet de formatter les reserves en fonction
+// de quel token est le 0 et le 1
+function getTokenInPair(token0, token1, reserves, decimals) {
+
+    // On récupère les valeurs 
+    if (token0 === wETHAddress) {
+
+        const reserve = {
+            token: reserves._reserve1 / 10 ** decimals,
+            quote: reserves._reserve0 / 10 ** 18,
+        }
+
+        return reserve
+
+    } else if (token1 == wETHAddress) {
+
+        const reserve = {
+            token: reserves._reserve0 / 10 ** decimals,
+            quote: reserves._reserve1 / 10 ** 18,
+        }
+
+        return reserve
+
+    }
+}
+
+
+
+function priceIndice(price) {
+
+    try {
+
+        if (price > 0.01) {
+
+            return parseFloat(price).toFixed(3)
+
+        } else if (price > 0.001) {
+
+            return parseFloat(price).toFixed(4)
+
+        } else {
+
+            const indices = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉', '₁₀', '₁₁', '₁₂', '₁₃', '₁₄', '₁₅', '₁₆', '₁₇', '₁₈', '₁₉'];
+            const decimal = price.toString().split(".")[1]
+
+            let count = 0
+            for (const char of decimal) {
+                if (char == "0") {
+                    count++
+                } else {
+                    break
+                }
+            }
+
+            const indice = indices[count]
+            const firstNoZero = count
+            const extra = decimal.substring(firstNoZero, firstNoZero + 2)
+
+            return "0.0" + indice + extra
+
+        }
+
+    } catch (error) {
+        console.log(error.stack)
+        return price
+    }
+
+}
+
+function easyPrice(price) {
+
+    let prettierPrice = price
+
+    if (!price) {
+
+        prettierPrice = 0
+
+    }
+
+    return prettierPrice
+
+}
 
 
 

@@ -10,8 +10,8 @@ dotenv.config()
 const infuraApiKey = process.env.infuraApiKey
 const etherscanApiKey = process.env.etherscanApiKey
 
-const Web3 = require('web3')
-const web3 = new Web3("https://mainnet.infura.io/v3/" + infuraApiKey)
+//Récupérer les clefs API
+const { web3Infura } = require("../config/web3config")
 const chainId = 1
 
 const wETH = "0xbcF9C3e618702Ab4a0D2055687C37A2846019C56"
@@ -21,7 +21,7 @@ const wETH_decimals = 18
 const uniswapV2_router2_ABI = require('../contracts/uniswap/router2-v2.json');
 
 const uniswapV2_router2_address = "0x7a250d5630b4cf539739df2c5dacb4c659f2488d"
-const routerV2 = new web3.eth.Contract(uniswapV2_router2_ABI, uniswapV2_router2_address);
+const routerV2 = new web3Infura.eth.Contract(uniswapV2_router2_ABI, uniswapV2_router2_address);
 
 // On initialise uniswap router V3
 const uniswapV3_router_address = "0xe592427a0aece92de3edee1f18e0157c05861564"
@@ -286,7 +286,7 @@ async function simulateTransaction(param) {
 
         // On tente de simuler la transaction
 
-        const gas_used = await web3.eth.estimateGas(param)
+        const gas_used = await web3Infura.eth.estimateGas(param)
 
         return {
             result: gas_used,
@@ -327,11 +327,11 @@ async function signTransaction(txnInfos, private_key) {
     try {
         // On signe
 
-        const signedTx = await web3.eth.accounts.signTransaction(txnInfos, private_key);
+        const signedTx = await web3Infura.eth.accounts.signTransaction(txnInfos, private_key);
         const rawTransaction = signedTx.rawTransaction
 
         // On envoie
-        return web3.eth.sendSignedTransaction(rawTransaction)
+        return web3Infura.eth.sendSignedTransaction(rawTransaction)
             .then(async (receipt) => {
 
                 return {
@@ -378,7 +378,7 @@ async function gasOracle(gas_preset, gas_used, max_gwei) {
     const gasMargin = 1.1
 
     // On set les gas price
-    let gas_price = await web3.eth.getGasPrice()
+    let gas_price = await web3Infura.eth.getGasPrice()
     let gas_limit = 300000
 
     // On s'assure que la transaction passe en boostant légèrement les gas
@@ -394,8 +394,8 @@ async function gasOracle(gas_preset, gas_used, max_gwei) {
         gas_price = parseInt(gas_price * (1 + (parseFloat(gas_preset) / 100)))
     }
 
-    const gas_price_gwei = parseFloat(await web3.utils.fromWei(gas_price.toString(), "gwei"))
-    const expected_fees = parseFloat(await web3.utils.fromWei((gas_price * gas_used).toString(), "ether"))
+    const gas_price_gwei = parseFloat(await web3Infura.utils.fromWei(gas_price.toString(), "gwei"))
+    const expected_fees = parseFloat(await web3Infura.utils.fromWei((gas_price * gas_used).toString(), "ether"))
 
     if (max_gwei == null || gas_price_gwei <= max_gwei) {
 
@@ -430,7 +430,7 @@ async function gasPreset(gas_preset, max_gwei) {
     const gasMargin = 1.1
 
     // On set les gas price
-    let gas_price = await web3.eth.getGasPrice()
+    let gas_price = await web3Infura.eth.getGasPrice()
     let gas_limit = 300000
 
     // On s'assure que la transaction passe en boostant légèrement les gas
@@ -441,7 +441,7 @@ async function gasPreset(gas_preset, max_gwei) {
         gas_price = parseInt(gas_price * (1 + (parseFloat(gas_preset) / 100)))
     }
 
-    const gas_price_gwei = parseFloat(await web3.utils.fromWei(gas_price.toString(), "gwei"))
+    const gas_price_gwei = parseFloat(await web3Infura.utils.fromWei(gas_price.toString(), "gwei"))
 
     if (max_gwei == null || gas_price_gwei <= max_gwei) {
 
@@ -701,7 +701,7 @@ async function getAllowance(factory, owner, spender, direction) {
 
 async function getGasPrice() {
 
-    const gas_price = await web3.eth.getGasPrice()
+    const gas_price = await web3Infura.eth.getGasPrice()
 
     return gas_price
 
@@ -721,7 +721,7 @@ function encodeTransfer(receiver, value, decimals) {
         const valueDecimals = valueBN.times(new BigNumber(10).pow(decimals));
 
 
-        const input = web3.eth.abi.encodeFunctionCall({
+        const input = web3Infura.eth.abi.encodeFunctionCall({
             name: 'transfer',
             type: 'function',
             inputs: [{

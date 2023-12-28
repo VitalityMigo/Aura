@@ -1,5 +1,3 @@
-
-
 const { sniper_friendTech, sequelize, Op } = require('../events/database');
 
 

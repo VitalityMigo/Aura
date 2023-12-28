@@ -1,14 +1,12 @@
 const { EmbedBuilder, ButtonBuilder, ActionRowBuilder } = require("discord.js");
 const colors = require('colors');
 
-const Web3 = require('web3');
-const web3 = new Web3("https://cloudflare-eth.com")
+const { web3CloudflarePublic } = require("../config/web3config.js")
 
 // Fonctions
 const addTimeout = require("./addtimeout")
 const uniswapDecoder = require("./uniswap-decoder.js")
 const { getTokenSupply } = require("./coin-utils.js")
-const formatCoinValueSign = require("./formatNumberEmbed.js")
 const getEthPrice = require("./getethprice.js")
 
 // On récupère la liste des wallet track
@@ -80,7 +78,7 @@ async function coinSmartmoney(transaction) {
 
             try {
                 // on récupère le receipt
-                receipt = await web3.eth.getTransactionReceipt(hash)
+                receipt = await web3CloudflarePublic.eth.getTransactionReceipt(hash)
 
             } catch (error) {
                 console.log("Erreur lors de la récupération de la txn FT SM :" + error)

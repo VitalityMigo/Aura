@@ -1,5 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 
+const { web3CloudflarePublic } = require("../config/web3config.js")
+
 const colors = require('colors');
 
 const reduceText = require("./reducetext")
@@ -11,9 +13,6 @@ const formatCoinValueSign = require("./formatNumberEmbed")
 const erc20Standard = require("../contracts/uniswap/erc20standart.json")
 const erc721Standard = require("../contracts/blur/erc721standard.json")
 
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
 
 function formatWallet(input) {
     return input.length > 35 ? `${input.substring(0, 5)}…${input.substring(input.length - 4)}` : input;
@@ -92,7 +91,7 @@ async function newContract(transaction) {
 
     try {
 
-        await web3.eth.getTransactionReceipt(transaction.hash)
+        await web3CloudflarePublic.eth.getTransactionReceipt(transaction.hash)
             .then(async receipt => {
 
 
@@ -124,7 +123,7 @@ async function newContract(transaction) {
                             // C'est un contrat ERC20, un coin
 
                             // On initialise le contrat
-                            const tokenContract = await new web3.eth.Contract(erc20Standard, contract);
+                            const tokenContract = await new web3CloudflarePublic.eth.Contract(erc20Standard, contract);
 
                             // On call toutes les fonctions du contrat en même temps
                             const [decimals, rawSupply] = await Promise.all([
@@ -192,7 +191,7 @@ async function newContract(transaction) {
                             // C'est un contrat ERC721, un NFT
 
                             // On initialise le contrat
-                            const tokenContract = await new web3.eth.Contract(erc721Standard, contract);
+                            const tokenContract = await new web3CloudflarePublic.eth.Contract(erc721Standard, contract);
 
                             // On call toutes les fonctions du contrat en même temps
                             const [name, supply] = await Promise.all([

@@ -1,9 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { tracker_coin, Op, sequelize } = require('../events/database')
 
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
+const { web3CloudflarePublic } = require("../config/web3config.js")
 
 
 const reduceText = require("./reducetext")
@@ -110,7 +108,7 @@ async function coinTracker(transaction) {
 
                 try {
                     // on récupère le receipt
-                    receipt = await web3.eth.getTransactionReceipt(hash)
+                    receipt = await web3CloudflarePublic.eth.getTransactionReceipt(hash)
 
                 } catch (error) {
                     console.log("Erreur lors de la récupération de la txn FT SM :" + error)
@@ -255,7 +253,7 @@ async function coinTracker(transaction) {
 
 
 
-                const decodedLogs = web3.eth.abi.decodeParameters(approvalTypes, "0x" + input.slice(10))
+                const decodedLogs = web3CloudflarePublic.eth.abi.decodeParameters(approvalTypes, "0x" + input.slice(10))
 
                 let router = decodedLogs.spender
                 let amount = decodedLogs.amount / 10 ** decimals

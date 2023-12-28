@@ -48,6 +48,12 @@ reservoirE.auth(reservoirApiKey);
 const reservoirF = require('api')('@reservoirprotocol/v3.0#434y7jljnak92y');
 reservoirF.auth(reservoirApiKey);
 
+const reservoirHead = {
+  "X-Api-Key": reservoirApiKey,
+  "accept": "*/*",
+  "host": "api.reservoir.tools"
+}
+
 const blockspan = require('api')('@blockspan/v1.0#9zxl2sledru983');
 blockspan.auth(blockspanApiKey);
 
@@ -60,6 +66,13 @@ nftgo.auth(nftgoApiKey);
 
 const nftGoB = require('api')('@nftgo/v1.0#i65d19lewn3l7h');
 nftGoB.auth(nftgoApiKey);
+
+// Headers Call API
+const nftgoHead = {
+  "Accept": "application/json",
+  "X-Api-Key": nftgoApiKey,
+  "Host": "data-api.nftgo.io"
+}
 
 module.exports = {
   web3CloudflarePublic,
@@ -75,11 +88,13 @@ module.exports = {
   reservoirD,
   reservoirE,
   reservoirF,
+  reservoirHead,
   blockspan,
   magiceden,
   alchemyB,
   nftgo,
   nftGoB,
+  nftgoHead,
 };
 
 console.log(colors.green("Web3 config succefsuly initiated"))

@@ -1,12 +1,5 @@
 //Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const reservoirApiKey = process.env.reservoirApiKey
-const headers = {
-    "X-Api-Key": reservoirApiKey,
-    "accept": "*/*",
-    "host": "api.reservoir.tools"
-}
+const { reservoirHead } = require("../config/web3config")
 
 const axios = require("axios")
 
@@ -17,7 +10,7 @@ async function getCollection(contracts) {
 
         const table = contracts.map(address => `contract=${address}`).join('&');
 
-        const call = await axios.get("https://api.reservoir.tools/collections/v7?" + table, { headers })
+        const call = await axios.get("https://api.reservoir.tools/collections/v7?" + table, { headers: reservoirHead })
 
         const result = []
 

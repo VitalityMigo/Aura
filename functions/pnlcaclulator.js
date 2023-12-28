@@ -2,14 +2,9 @@
 const dotenv = require("dotenv")
 dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
-const nftgoApiKey = process.env.nftgoApiKey
 
-// Headers Call API
-const nftgoHeader = {
-    "Accept": "application/json",
-    "X-Api-Key": nftgoApiKey,
-    "Host": "data-api.nftgo.io"
-}
+const { nftgoHead } = require("../config/web3config")
+
 
 const axios = require("axios")
 const { getToken, getBalance, getSupply, getMetrics } = require("./coin-utils")
@@ -844,7 +839,7 @@ async function nftProfitGlobal(wall) {
         const ethPriceCALL = getEthPrice()
 
         // On fait le call à l'API
-        const portfolio = (await axios.get("https://data-api.nftgo.io/eth/v2/address/metrics?address=" + wallet, { headers: nftgoHeader })).data
+        const portfolio = (await axios.get("https://data-api.nftgo.io/eth/v2/address/metrics?address=" + wallet, { headers: nftgoHead })).data
 
 
         if (portfolio.address_tag) {

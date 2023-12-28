@@ -3,11 +3,6 @@ const dotenv = require("dotenv")
 dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
 
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
 const axios = require('axios')
 
 

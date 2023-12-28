@@ -1,6 +1,5 @@
 //Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
+const { web3CloudflarePublic } = require("../config/web3config")
 
 
 const { getToken } = require('./coin-utils')
@@ -42,7 +41,7 @@ async function uniswapDecoder(swapLogs) {
 
 
 
-        const pairContract = new web3.eth.Contract(pairABI, pairAddress);
+        const pairContract = new web3CloudflarePublic.eth.Contract(pairABI, pairAddress);
 
         const token0 = await pairContract.methods.token0().call()
         const token1 = await pairContract.methods.token1().call()
@@ -111,7 +110,7 @@ async function uniswapDecoder(swapLogs) {
 
         } else if (topics == swapUniV3) {
 
-            const decodedParams = web3.eth.abi.decodeLog(typeUniswapV3SwapEvent, data);
+            const decodedParams = web3CloudflarePublic.eth.abi.decodeLog(typeUniswapV3SwapEvent, data);
 
             const dataForm = {
                 amount0: parseInt(decodedParams.amount0),
@@ -144,7 +143,7 @@ async function uniswapDecoder(swapLogs) {
         const dataA = dataRawA.slice(2)
         const pairAddressA = swapLogs[0].address
 
-        const pairContractA = new web3.eth.Contract(pairABI, pairAddressA);
+        const pairContractA = new web3CloudflarePublic.eth.Contract(pairABI, pairAddressA);
 
         const token0A = await pairContractA.methods.token0().call()
         const token1A = await pairContractA.methods.token1().call()
@@ -162,7 +161,7 @@ async function uniswapDecoder(swapLogs) {
             swapTokenIn = await decodeUniswapV2MultiswapEvent("in", token0A, token1A, dataFormA)
 
         } else if (topicA == swapUniV3) {
-            const decodedParams = web3.eth.abi.decodeLog(typeUniswapV3SwapEvent, dataA);
+            const decodedParams = web3CloudflarePublic.eth.abi.decodeLog(typeUniswapV3SwapEvent, dataA);
             const dataFormA = {
                 amount0: parseInt(decodedParams.amount0),
                 amount1: parseInt(decodedParams.amount1),
@@ -177,7 +176,7 @@ async function uniswapDecoder(swapLogs) {
         const dataAB = dataRawB.slice(2)
         const pairAddressB = swapLogs[swapCount - 1].address
 
-        const pairContractB = new web3.eth.Contract(pairABI, pairAddressB);
+        const pairContractB = new web3CloudflarePublic.eth.Contract(pairABI, pairAddressB);
 
         const token0B = await pairContractB.methods.token0().call()
         const token1B = await pairContractB.methods.token1().call()
@@ -199,7 +198,7 @@ async function uniswapDecoder(swapLogs) {
 
         } else if (topicB == swapUniV3) {
 
-            const decodedParams = web3.eth.abi.decodeLog(typeUniswapV3SwapEvent, dataAB);
+            const decodedParams = web3CloudflarePublic.eth.abi.decodeLog(typeUniswapV3SwapEvent, dataAB);
 
             const dataFormB = {
                 amount0: parseInt(decodedParams.amount0),

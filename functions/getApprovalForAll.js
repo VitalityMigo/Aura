@@ -1,13 +1,4 @@
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const infuraApiKey = process.env.infuraApiKey
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3('https://mainnet.infura.io/v3/' + infuraApiKey);
-
-
+const { web3Infura } = require("../config/web3config")
 
 
 async function getApprovalForAll(address, contract) {
@@ -30,7 +21,7 @@ async function getApprovalForAll(address, contract) {
         };
 
         
-        const logs = await web3.eth.getPastLogs(filter);
+        const logs = await web3Infura.eth.getPastLogs(filter);
 
         return logs
 

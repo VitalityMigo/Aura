@@ -1,14 +1,11 @@
 
 
-const Web3 = require('web3');
-const web3 = new Web3("https://cloudflare-eth.com")
-
-
+const { web3CloudflarePublic } = require("../config/web3config")
 
 
 async function decodeLogs(eventABI, logHex) {
 
-const decodedLogs = await web3.eth.abi.decodeLog(eventABI, logHex);
+const decodedLogs = await web3CloudflarePublic.eth.abi.decodeLog(eventABI, logHex);
 
 return decodedLogs
 

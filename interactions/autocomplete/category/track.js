@@ -12,33 +12,12 @@
 const { apimonitorsql, accessSql, adminsql, reportsql, wallets, watchlistSql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const reservoirApiKey = process.env.reservoirApiKey
-const magicedenApiKey = process.env.magicedenApiKey
+const { magiceden, reservoirA, reservoirB } = require("../../../config/web3config")
 
 const calculateSimilarity = require('../../../functions/similarity')
-
-
-// Configuration de l'en-tête d'autorisation
-const headers = {
-    'Authorization': `Bearer ${magicedenApiKey}`
-};
-
-const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
-sdk.auth(reservoirApiKey);
-
-const sdk2 = require('api')('@reservoirprotocol/v3.0#434y7jljnak92y');
-sdk2.auth(reservoirApiKey);
-
-const axios = require('axios')
-
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
 }
-
 function isValidInput(input) {
     return /^(\w+|-)+$/.test(input);
 }
@@ -74,15 +53,15 @@ module.exports = {
                     const collectionTable = []
 
 
-                    const popularCollectionsLink = "https://api-mainnet.magiceden.dev/v2/ord/btc/popular_collections?window=30d&limit=120"
-                    const popularCollectionsCall = await axios.get(popularCollectionsLink, { headers });
-                    const result = await popularCollectionsCall.data;
-
+                    // const popularCollectionsLink = "https://api-mainnet.magiceden.dev/v2/ord/btc/popular_collections?window=30d&limit=120"
+                    // const popularCollectionsCall = await axios.get(popularCollectionsLink, { magiceden });
+                    // const result = await popularCollectionsCall.data;
+                    const result = []
 
                     if (focusedValue == "") {
 
 
-                        sdk2.getCollectionsTopsellingV1({ fillType: 'sale', limit: '20', accept: '*/*' })
+                        reservoirB.getCollectionsTrendingV1({ period: '24h', limit: '20', sortBy: 'sales', accept: '*/*' })
                             .then(({ data }) => {
                                 data.collections.forEach(element => {
                                     //console.log(element.name)
@@ -115,32 +94,32 @@ module.exports = {
 
                         let index = 0
 
-                        sdk.getSearchCollectionsV1({ name: focusedValue, limit: '50', accept: '*/*' })
+                        reservoirA.getSearchCollectionsV1({ name: focusedValue, limit: '50', accept: '*/*' })
                             .then(async ({ data }) => {
                                 data.collections.forEach(element => {
-    
-    
+
+
                                     index++
-    
+
                                     if (element && index <= 20) {
-    
-    
+
+
                                         let obj = {}
-    
-    
+
+
                                         obj.name = element.name
                                         obj.id = element.collectionId
                                         obj.volume = element.allTimeVolume
-    
-    
-    
+
+
+
                                         if (isValidEthereumAddress(element.collectionId)) {
-    
+
                                             const existingCollection = collectionTable.find(c => c.name === element.name);
                                             if (existingCollection) {
                                                 console.log(element.name + " = " + existingCollection.name)
                                                 console.log(element.allTimeVolume + " = " + existingCollection.volume)
-    
+
                                                 if (obj.volume > existingCollection.volume) {
                                                     existingCollection.name = obj.name;
                                                     existingCollection.id = obj.id;
@@ -149,52 +128,52 @@ module.exports = {
                                             } else {
                                                 collectionTable.push(obj);
                                             }
-    
+
                                         }
                                     }
                                 });
-    
+
                                 console.log(collectionTable)
-    
+
                                 result.forEach(element => {
                                     //console.log(element.name)
                                     if (element) {
-    
+
                                         if (((element.name).toLowerCase()).includes(focusedValue.toLowerCase())) {
                                             let obj = {}
-    
+
                                             obj.name = element.name + ' [BTC]'
                                             obj.id = element.symbol
                                             collectionTable.push(obj)
                                         }
                                     }
                                 });
-    
-    
+
+
                                 // Fonction de comparaison pour trier les objets en fonction de la ressemblance de leur champ "name" avec focusedValue
                                 const compareNames = (a, b) => {
                                     const similarityA = calculateSimilarity(a.name, focusedValue);
                                     const similarityB = calculateSimilarity(b.name, focusedValue);
                                     return similarityB - similarityA; // Triez par ordre décroissant de similarité
                                 };
-    
-    
-    
-    
-    
+
+
+
+
+
                                 // Limiter les résultats aux 20 premiers objets
                                 const sortedCollections = collectionTable.sort(compareNames);
-    
+
                                 const sliceArray = sortedCollections.slice(0, 20);
-    
+
                                 sliceArray.forEach(element => {
                                     //console.log(element.name)
                                     if (element) {
                                         //console.log("element :" + element.name + element.id)
-    
+
                                         let projectName = element.name
                                         const pjAddress = element.id
-    
+
                                         let hasName = false
                                         for (let i = 0; i < choices.length; i++) {
                                             if (choices[i].name === projectName) {
@@ -202,34 +181,34 @@ module.exports = {
                                                 break;
                                             }
                                         }
-    
+
                                         // if (hasName) { projectName = element.name + " (BTC)" }
-    
+
                                         if (isValidInput(pjAddress)) {
-    
+
                                             choices.push({ name: projectName, value: pjAddress });
                                         }
                                     }
                                 })
-    
-    
+
+
                                 interaction.respond(
                                     choices.map((choice) => ({ name: choice.name, value: choice.value }))
                                 ).catch((err) => {
                                     console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
                                 });
-    
-    
-    
+
+
+
                                 //On stock le call API
                                 // const timeStamp = Date.now();
                                 // apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
                                 return;
-    
-    
-    
+
+
+
                             }).catch(err => console.error(err));
-    
+
                     }
                 }
 
@@ -269,36 +248,36 @@ module.exports = {
             } else if (actualSubcommand == "trades") {
 
 
-                  // Extract the focused value from the interaction options
-                  const focusedValue = interaction.options.getFocused();
+                // Extract the focused value from the interaction options
+                const focusedValue = interaction.options.getFocused();
 
-                  let authorId = interaction.user.id;
-  
-                  // Retrieve the wallets for the authorID
-                  const walletsFilter = await wallets.findAll({ where: { authorId: authorId } });
-  
-                  const choices = []
-                  walletsFilter.forEach(elem => {
-  
-                      choices.push({ name: elem.walletName + " (" + elem.walletAddress.substring(0, 5) + "..." + elem.walletAddress.substring(elem.walletAddress.length - 4, elem.walletAddress.length) + ")", value: elem.walletAddress })
-  
-                  })
-  
-  
-                  // Filter the wallet names based on the focused value
-                  const filtered = choices.filter((blaze) => blaze.name.startsWith(focusedValue));
-  
-                  // Respond with the filtered wallet names as autocomplete choices
-                  await interaction.respond(
-  
-                      filtered.map((choice) => ({ name: choice.name, value: choice.value }))
-  
-  
-                  ).catch((err) => {
-                      console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
-                  });
-  
-                  return;
+                let authorId = interaction.user.id;
+
+                // Retrieve the wallets for the authorID
+                const walletsFilter = await wallets.findAll({ where: { authorId: authorId } });
+
+                const choices = []
+                walletsFilter.forEach(elem => {
+
+                    choices.push({ name: elem.walletName + " (" + elem.walletAddress.substring(0, 5) + "..." + elem.walletAddress.substring(elem.walletAddress.length - 4, elem.walletAddress.length) + ")", value: elem.walletAddress })
+
+                })
+
+
+                // Filter the wallet names based on the focused value
+                const filtered = choices.filter((blaze) => blaze.name.startsWith(focusedValue));
+
+                // Respond with the filtered wallet names as autocomplete choices
+                await interaction.respond(
+
+                    filtered.map((choice) => ({ name: choice.name, value: choice.value }))
+
+
+                ).catch((err) => {
+                    console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                });
+
+                return;
             }
         } catch (error) {
 

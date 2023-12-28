@@ -9,58 +9,29 @@ const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, SlashCommandBuilder } = r
 const { profileData, accessSql, interactionData, wallets, apimonitorsql, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 const reduceText = require("../../../functions/reducetext")
-
+const axios = require('axios')
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
 dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
-const nftgoApiKey = process.env.nftgoApiKey
-const reservoirApiKey = process.env.reservoirApiKey
-const blockspanApiKey = process.env.blockspanApiKey
-const magicedenApiKey = process.env.magicedenApiKey
 
 
-// Configuration de l'en-tête d'autorisation
-const headers = {
-    'Authorization': `Bearer ${magicedenApiKey}`
-};
+// On récupère les nodes et API
+const { web3CloudflarePublic, magiceden, nftGoB, reservoirE } = require("../../../config/web3config")
 
-//https request
-const axios = require('axios')
-
-//Reservoir API
-const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
-sdk.auth(reservoirApiKey);
-
-//Reservoir API V2
-const sdk2 = require('api')('@reservoirprotocol/v2.0#1xltvr918dlfmst76l');
-sdk2.auth(reservoirApiKey);
-sdk2.server('https://api.reservoir.tools');
-
-//Block Span API
-const bsp = require('api')('@blockspan/v1.0#9zxl2sledru983');
-bsp.auth(blockspanApiKey);
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
-//NFT GO API
-const nftGo = require('api')('@nftgo/v1.0#i65d19lewn3l7h');
-nftGo.auth(nftgoApiKey);
 
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
 
 }
-
 function isBRC20BitcoinWallet(wallet) {
     const regex = /^bc1[a-zA-Z0-9]{39,59}$/;
 
     return regex.test(wallet);
 }
 
+// Buttons to load
 const chartVisual = new ActionRowBuilder()
     .addComponents(
         new ButtonBuilder()
@@ -236,7 +207,7 @@ module.exports = {
 
 
                                         //On récupère la balance de token
-                                        const ethBalance = await web3.eth.getBalance(selectedWallet)
+                                        const ethBalance = await web3CloudflarePublic.eth.getBalance(selectedWallet)
                                         const wethBalance = await axios.get('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2&address=' + selectedWallet + '&tag=latest&apikey=' + etherscanApiKey)
                                         const usdcBalance = await axios.get('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&address=' + selectedWallet + '&tag=latest&apikey=' + etherscanApiKey)
                                         const blurBalance = await axios.get('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0x5283D291DBCF85356A21bA090E6db59121208b44&address=' + selectedWallet + '&tag=latest&apikey=' + etherscanApiKey)
@@ -244,7 +215,7 @@ module.exports = {
                                         const blurPoolBalance = await axios.get('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0x0000000000A39bb272e79075ade125fd351887Ac&address=' + selectedWallet + '&tag=latest&apikey=' + etherscanApiKey)
 
 
-                                        const ethBalanceFormatted = parseFloat(web3.utils.fromWei((ethBalance).toString(), 'ether'))
+                                        const ethBalanceFormatted = parseFloat(web3CloudflarePublic.utils.fromWei((ethBalance).toString(), 'ether'))
                                         const wethBalanceFormatted = wethBalance.data.result / (10 ** 18)
                                         const usdcBalanceFormatted = usdcBalance.data.result / (10 ** 6)
                                         const blurBalanceFormatted = blurBalance.data.result / (10 ** 18)
@@ -283,14 +254,14 @@ module.exports = {
                                         let nftsOverview = "";
 
 
-                                        nftGo.get_metrics_eth_v2_address_metrics_get({ address: selectedWallet })
+                                        nftGoB.get_metrics_eth_v2_address_metrics_get({ address: selectedWallet })
                                             .then(async ({ data: nftGoData }) => {
 
                                                 nftsValueEth = nftGoData.portfolio_value.eth
                                                 nftsValueUsd = nftGoData.portfolio_value.usd
 
 
-                                                sdk2.getUsersUserCollectionsV2({ limit: '100', sortBy: 'allTimeVolume', user: selectedWallet, accept: '*/*' })
+                                                reservoirE.getUsersUserCollectionsV2({ limit: '100', sortBy: 'allTimeVolume', user: selectedWallet, accept: '*/*' })
                                                     .then(async ({ data }) => {
 
 
@@ -512,7 +483,7 @@ module.exports = {
 
 
                                         const url5 = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?ownerAddress=${selectedWallet}&showAll=true&sortBy=priceDesc`;
-                                        const response5 = await axios.get(url5, { headers });
+                                        const response5 = await axios.get(url5, { magiceden });
                                         const data5 = await response5.data;
 
 
@@ -541,7 +512,7 @@ module.exports = {
                                             let obj = {}
 
                                             const url6 = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=${collectionSymbol}`;
-                                            const response6 = await axios.get(url6, { headers });
+                                            const response6 = await axios.get(url6, { magiceden });
                                             const data6 = await response6.data;
 
                                             if (data6.floorPrice) {
@@ -717,7 +688,7 @@ module.exports = {
                                             for (const selectedWallet of allWalletAddressOfAuthorTable) {
 
                                                 //On récupère la balance de token
-                                                const ethBalance = await web3.eth.getBalance(selectedWallet)
+                                                const ethBalance = await web3CloudflarePublic.eth.getBalance(selectedWallet)
                                                 const wethBalance = await axios.get('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2&address=' + selectedWallet + '&tag=latest&apikey=' + etherscanApiKey)
                                                 const usdcBalance = await axios.get('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&address=' + selectedWallet + '&tag=latest&apikey=' + etherscanApiKey)
                                                 const blurBalance = await axios.get('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0x5283D291DBCF85356A21bA090E6db59121208b44&address=' + selectedWallet + '&tag=latest&apikey=' + etherscanApiKey)
@@ -725,7 +696,7 @@ module.exports = {
                                                 const blurPoolBalance = await axios.get('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0x0000000000A39bb272e79075ade125fd351887Ac&address=' + selectedWallet + '&tag=latest&apikey=' + etherscanApiKey)
 
 
-                                                ethBalanceFormatted += parseFloat(web3.utils.fromWei((ethBalance).toString(), 'ether'))
+                                                ethBalanceFormatted += parseFloat(web3CloudflarePublic.utils.fromWei((ethBalance).toString(), 'ether'))
                                                 wethBalanceFormatted += wethBalance.data.result / (10 ** 18)
                                                 usdcBalanceFormatted += usdcBalance.data.result / (10 ** 6)
                                                 blurBalanceFormatted += blurBalance.data.result / (10 ** 18)
@@ -743,7 +714,7 @@ module.exports = {
 
 
 
-                                                const promise1 = nftGo.get_metrics_eth_v2_address_metrics_get({ address: selectedWallet })
+                                                const promise1 = nftGoB.get_metrics_eth_v2_address_metrics_get({ address: selectedWallet })
                                                     .then(async ({ data: nftGoData }) => {
 
                                                         nftsValueEth += nftGoData.portfolio_value.eth
@@ -758,7 +729,7 @@ module.exports = {
 
                                                 await Promise.all(promises)
 
-                                                const promise2 = sdk2.getUsersUserCollectionsV2({ limit: '100', sortBy: 'allTimeVolume', user: selectedWallet, accept: '*/*' })
+                                                const promise2 = reservoirE.getUsersUserCollectionsV2({ limit: '100', sortBy: 'allTimeVolume', user: selectedWallet, accept: '*/*' })
                                                     .then(async ({ data }) => {
 
                                                         const result = data.collections.map(item => {

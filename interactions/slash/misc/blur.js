@@ -9,62 +9,36 @@ const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = r
 const { profileData, accessSql, wallets, apimonitorsql, adminsql, reportsql, usersql, interactionData, sequelize } = require('../../../events/database');
 const moment = require('moment');
 const isHttps = require('../../../functions/isHttps')
-
-
+const axios = require('axios')
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
 dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
-const reservoirApiKey = process.env.reservoirApiKey
 const alchemyApiKey = process.env.alchemyApiKey
 
+// On récupère les nodes et API
+const { web3CloudflarePublic, reservoirA, alchemyB } = require("../../../config/web3config")
 
-//HTTPS requests
-const axios = require('axios')
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
-var Contract = require('web3-eth-contract');
-const { link } = require("fs");
-//const contract = new Contract.setProvider("https://cloudflare-eth.com")
-
-const alchemy2 = require('api')('@alchemy-docs/v1.0#24zcsa23lfbpdnv5');
-
-
-
-//Reservoir API
-const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
-sdk.auth(reservoirApiKey);
-
-
-const sdk3 = require('api')('@reservoirprotocol/v3.0#2n2re32lkmyg6l7');
-sdk3.auth(reservoirApiKey);
-
+// Fonctions
 function formatWallet(input) {
     return input.length > 35 ? `${input.substring(0, 10)}…${input.substring(input.length - 10)}` : input;
 }
-
-
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
 }
-
-
 function isBRC20BitcoinWallet(wallet) {
     const regex = /^bc1[a-zA-Z0-9]{39,59}$/;
 
     return regex.test(wallet);
 }
-
 function reduceTextCurrent(text, maxLength) {
     if (text.length > maxLength) {
         return text.substring(0, maxLength - 3) + '…';
     }
     return text;
 }
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -245,11 +219,11 @@ module.exports = {
                                             //On récupère la balance de token
                                             const blurWalletBalance = await axios.get('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0x5283D291DBCF85356A21bA090E6db59121208b44&address=' + selectedWallet + '&tag=latest&apikey=' + etherscanApiKey)
                                             const blurPoolWalletBalance = await axios.get('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0x0000000000A39bb272e79075ade125fd351887Ac&address=' + selectedWallet + '&tag=latest&apikey=' + etherscanApiKey)
-                                            const blurPoolContractBalance = await web3.eth.getBalance("0x0000000000A39bb272e79075ade125fd351887Ac")
+                                            const blurPoolContractBalance = await web3CloudflarePublic.eth.getBalance("0x0000000000A39bb272e79075ade125fd351887Ac")
 
                                             const blurBalanceFormatted = blurWalletBalance.data.result / (10 ** 18)
                                             const blurPoolBalanceFormatted = blurPoolWalletBalance.data.result / (10 ** 18)
-                                            const blurPoolContractBalanceFormatted = parseFloat(web3.utils.fromWei((blurPoolContractBalance).toString(), 'ether'))
+                                            const blurPoolContractBalanceFormatted = parseFloat(web3CloudflarePublic.utils.fromWei((blurPoolContractBalance).toString(), 'ether'))
 
 
                                             // On récupère le prix USD des différentes cryptos
@@ -353,7 +327,7 @@ module.exports = {
 
                                             let walletsValue = ""
 
-                                            const blurPoolContractBalance = await web3.eth.getBalance("0x0000000000A39bb272e79075ade125fd351887Ac")
+                                            const blurPoolContractBalance = await web3CloudflarePublic.eth.getBalance("0x0000000000A39bb272e79075ade125fd351887Ac")
 
                                             // On récupère le prix USD des différentes cryptos
                                             const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
@@ -375,7 +349,7 @@ module.exports = {
 
                                                     blurBalanceFormatted += blurWalletBalance.data.result / (10 ** 18)
                                                     blurPoolBalanceFormatted += blurPoolWalletBalance.data.result / (10 ** 18)
-                                                    blurPoolContractBalanceFormatted += parseFloat(web3.utils.fromWei((blurPoolContractBalance).toString(), 'ether'))
+                                                    blurPoolContractBalanceFormatted += parseFloat(web3CloudflarePublic.utils.fromWei((blurPoolContractBalance).toString(), 'ether'))
 
 
 
@@ -534,7 +508,7 @@ module.exports = {
 
 
                                             // Premier Call API Reservoir : Stats et infos sur la collection
-                                            await sdk.getCollectionsV5({ id: selectedCollection, accept: '*/*', includeTopBid: 'false', includeOwnerCount: 'false', includeSalesCount: 'false' })
+                                            await reservoirA.getCollectionsV5({ id: selectedCollection, accept: '*/*', includeTopBid: 'false', includeOwnerCount: 'false', includeSalesCount: 'false' })
                                                 .then(async ({ data: collectionData }) => {
 
 
@@ -548,7 +522,7 @@ module.exports = {
 
 
                                                     // Premier Call API Reservoir : Stats et infos sur la collection
-                                                    await sdk3.getOrdersBidsV6({
+                                                    await reservoirD.getOrdersBidsV6({
                                                         collection: selectedCollection,
                                                         sources: 'blur.io',
                                                         includeCriteriaMetadata: 'true',
@@ -804,7 +778,7 @@ module.exports = {
 
                                                 // Premier Call API Reservoir : Stats et infos sur les bids
 
-                                                sdk3.getOrdersBidsV6({
+                                                reservoirD.getOrdersBidsV6({
                                                     maker: selectedWallet,
                                                     sources: 'blur.io',
                                                     includeCriteriaMetadata: 'true',
@@ -867,7 +841,7 @@ module.exports = {
                                                         const contractList = new Set(dataTable.map((item) => item.contract))
                                                         for (const contract of contractList) {
                                                             // Premier Call API Reservoir : Stats et infos sur la collection
-                                                            await sdk.getCollectionsV5({ id: contract, accept: '*/*', includeTopBid: 'false', includeOwnerCount: 'false', includeSalesCount: 'false' })
+                                                            await reservoirA.getCollectionsV5({ id: contract, accept: '*/*', includeTopBid: 'false', includeOwnerCount: 'false', includeSalesCount: 'false' })
                                                                 .then(async ({ data: collectionData }) => {
 
                                                                     let name = await reduceTextCurrent(collectionData.collections[0].name, 22)
@@ -1044,7 +1018,7 @@ module.exports = {
 
                                                     for (const selectedWallet of allWalletsAuthorTable) {
 
-                                                        await sdk3.getOrdersBidsV6({
+                                                        await reservoirD.getOrdersBidsV6({
                                                             maker: selectedWallet,
                                                             sources: 'blur.io',
                                                             includeCriteriaMetadata: 'true',
@@ -1113,7 +1087,7 @@ module.exports = {
                                                         const contractList = new Set(dataTable.map((item) => item.contract))
                                                         for (const contract of contractList) {
                                                             // Premier Call API Reservoir : Stats et infos sur la collection
-                                                            await sdk.getCollectionsV5({ id: contract, accept: '*/*', includeTopBid: 'false', includeOwnerCount: 'false', includeSalesCount: 'false' })
+                                                            await reservoirA.getCollectionsV5({ id: contract, accept: '*/*', includeTopBid: 'false', includeOwnerCount: 'false', includeSalesCount: 'false' })
                                                                 .then(async ({ data: collectionData }) => {
 
                                                                     let name = await reduceTextCurrent(collectionData.collections[0].name, 22)
@@ -1306,7 +1280,7 @@ module.exports = {
 
                                                 }
 
-                                                await sdk.getCollectionsV5({ id: selectedCollection, accept: '*/*', includeTopBid: 'false', includeOwnerCount: 'false', includeSalesCount: 'false' })
+                                                await reservoirA.getCollectionsV5({ id: selectedCollection, accept: '*/*', includeTopBid: 'false', includeOwnerCount: 'false', includeSalesCount: 'false' })
                                                     .then(async ({ data: collectionData }) => {
 
                                                         let collectionName = collectionData.collections[0].name
@@ -1320,7 +1294,7 @@ module.exports = {
 
                                                         // Premier Call API Reservoir : Stats et infos sur les bids
 
-                                                        sdk3.getOrdersBidsV6({
+                                                        reservoirD.getOrdersBidsV6({
                                                             maker: selectedWallet,
                                                             sources: 'blur.io',
                                                             includeCriteriaMetadata: 'true',
@@ -1533,7 +1507,7 @@ module.exports = {
                                                 let allWalletsAuthorTable = allWalletsAuthor.map(wallet => wallet.walletAddress.toLowerCase());
                                                 const walletCount = allWalletsAuthorTable.length
 
-                                                await sdk.getCollectionsV5({ id: selectedCollection, accept: '*/*', includeTopBid: 'false', includeOwnerCount: 'false', includeSalesCount: 'false' })
+                                                await reservoirA.getCollectionsV5({ id: selectedCollection, accept: '*/*', includeTopBid: 'false', includeOwnerCount: 'false', includeSalesCount: 'false' })
                                                     .then(async ({ data: collectionData }) => {
 
                                                         let collectionName = collectionData.collections[0].name
@@ -1551,7 +1525,7 @@ module.exports = {
                                                             let dataTable = []
                                                             for (const selectedWallet of allWalletsAuthorTable) {
 
-                                                                await sdk3.getOrdersBidsV6({
+                                                                await reservoirD.getOrdersBidsV6({
                                                                     maker: selectedWallet,
                                                                     sources: 'blur.io',
                                                                     includeCriteriaMetadata: 'true',
@@ -1867,7 +1841,7 @@ module.exports = {
                                     let holdersFormatted = ""
 
 
-                                    const { data: collectionInfos } = await alchemy2.getContractMetadata({
+                                    const { data: collectionInfos } = await alchemyB.getContractMetadata({
                                         contractAddress: selectedCollection,
                                         apiKey: alchemyApiKey
                                     })
@@ -1886,7 +1860,7 @@ module.exports = {
 
 
                                     // Premier Call API Reservoir : Stats et infos sur la collection
-                                    await sdk3.getOwnersV2({ contract: selectedCollection, limit: '500', accept: '*/*' })
+                                    await reservoirD.getOwnersV2({ contract: selectedCollection, limit: '500', accept: '*/*' })
                                         .then(async ({ data: collectionHolders }) => {
 
 

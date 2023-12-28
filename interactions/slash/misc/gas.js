@@ -9,13 +9,13 @@ const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require("disc
 const { profileData, accessSql, apimonitorsql, wallets, reportsql, adminsql, usersql, interactionData, watchlistSql, sequelize } = require('../../../events/database');
 
 const moment = require('moment');
+const axios = require('axios')
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
 dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
 
-const axios = require('axios')
 
 function keyword(abi, keyword) {
     return abi.filter((item) => item.name.includes(keyword));

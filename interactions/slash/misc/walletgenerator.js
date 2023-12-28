@@ -14,9 +14,9 @@ const decrypt = require('../../../functions/decrypt');
 const encrypt = require('../../../functions/encrypt');
 
 
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
+
+// Nodes
+const {web3CloudflarePublic} = require("../../../config/web3config")
 
 
 
@@ -114,7 +114,7 @@ module.exports = {
 
                                 for (let i = 0; i < walletNumber; i++) {
 
-                                    const wallet = web3.eth.accounts.create();
+                                    const wallet = web3CloudflarePublic.eth.accounts.create();
 
                                     walletTable.push(wallet);
 

@@ -5,70 +5,20 @@
 
 // On définit des constantes qui serviront dans l'ensemble de la commande
 const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-const moment = require('moment');
-const csv = require('fast-csv');
-const isHttps = require('../../../functions/isHttps')
-
 const { profileData, accessSql, apimonitorsql, wallets, reportsql, adminsql, usersql, interactionData, watchlistSql, sequelize } = require('../../../events/database');
-const fs = require('fs');
+const moment = require('moment');
 
-
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const reservoirApiKey = process.env.reservoirApiKey
-const magicedenApiKey = process.env.magicedenApiKey
-
-
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
-
-
-
-//Reservoir API
-const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
-sdk.auth(reservoirApiKey);
-//;
-
-// Configuration de l'en-tête d'autorisation
-const headers = {
-    'Authorization': `Bearer ${magicedenApiKey}`
-};
-
+// Nodes
+const {magiceden, reservoirA} = require("../../../config/web3config")
 
 const axios = require('axios');
-const { LinearScale } = require("chart.js");
+const isHttps = require('../../../functions/isHttps')
 
-
-function formatString(input) {
-    return input.length > 42 ? `${input.substring(0, 19)}...${input.substring(input.length - 20)}` : input;
-}
 
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
 
 }
-
-function isBRC20BitcoinWallet(wallet) {
-    const regex = /^bc1[a-zA-Z0-9]{39,59}$/;
-
-    return regex.test(wallet);
-}
-
-function isENS(str) {
-    const lowerCaseStr = str.toLowerCase();
-    return lowerCaseStr.endsWith(".eth");
-}
-
-
-function isSATS(str) {
-    return str.endsWith(".sats");
-}
-
-
 function estLienHTTPS(val) {
     var lienRegex = /^(https:\/\/)/i; // Regex pour vérifier si le lien commence par "https://"
 
@@ -222,7 +172,7 @@ module.exports = {
                                             if (authorWatchlistETHCount <= 5) {
 
 
-                                                sdk.getCollectionsV5({ id: selectedCollection, accept: '*/*', includeTopBid: 'true', includeOwnerCount: 'true', includeSalesCount: 'true' })
+                                                reservoirA.getCollectionsV5({ id: selectedCollection, accept: '*/*', includeTopBid: 'true', includeOwnerCount: 'true', includeSalesCount: 'true' })
                                                     .then(async ({ data: collectionData }) => {
 
 
@@ -314,11 +264,11 @@ module.exports = {
 
 
                                                 const url = "https://api-mainnet.magiceden.dev/v2/ord/btc/collections/" + selectedCollection
-                                                const response = await axios.get(url, { headers });
+                                                const response = await axios.get(url, { magiceden });
                                                 const collectionData = await response.data;
 
                                                 const url2 = "https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=" + selectedCollection
-                                                const response2 = await axios.get(url2, { headers });
+                                                const response2 = await axios.get(url2, { magiceden });
                                                 const collectionData2 = await response2.data;
 
 
@@ -526,7 +476,7 @@ module.exports = {
 
                                             let selectedCollection = obj.dataValues.selectedCollection
 
-                                            let promise = sdk.getCollectionsV5({ id: selectedCollection, accept: '*/*', includeTopBid: 'true', includeOwnerCount: 'true', includeSalesCount: 'true' })
+                                            let promise = reservoirA.getCollectionsV5({ id: selectedCollection, accept: '*/*', includeTopBid: 'true', includeOwnerCount: 'true', includeSalesCount: 'true' })
                                                 .then(async ({ data: collectionData }) => {
 
 

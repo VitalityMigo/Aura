@@ -10,9 +10,6 @@ const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { profileData, accessSql, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-
-const fs = require('fs');
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("status")

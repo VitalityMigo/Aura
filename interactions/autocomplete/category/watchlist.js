@@ -11,31 +11,13 @@
 
 const { apimonitorsql, accessSql, adminsql, reportsql, watchlistSql, sequelize } = require('../../../events/database');
 const moment = require('moment');
+
+const { magiceden, reservoirA, reservoirB } = require("../../../config/web3config")
+
 const calculateSimilarity = require('../../../functions/similarity')
-
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const reservoirApiKey = process.env.reservoirApiKey
-const magicedenApiKey = process.env.magicedenApiKey
-
-// Configuration de l'en-tête d'autorisation
-const headers = {
-    'Authorization': `Bearer ${magicedenApiKey}`
-};
-
-const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
-sdk.auth(reservoirApiKey);
-
-const sdk2 = require('api')('@reservoirprotocol/v3.0#434y7jljnak92y');
-sdk2.auth(reservoirApiKey);
-
-const axios = require('axios')
-
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
 }
-
 function isValidInput(input) {
     return /^(\w+|-)+$/.test(input);
 }
@@ -65,14 +47,14 @@ module.exports = {
 
                 // //BUG FIX 11/09/2023 - API ME BUG
                 //const popularCollectionsLink = "https://api-mainnet.magiceden.dev/v2/ord/btc/popular_collections?window=7d&limit=600"
-                //const popularCollectionsCall = await axios.get(popularCollectionsLink, { headers });
-               // const result = await popularCollectionsCall.data;
-               const result = []
+                //const popularCollectionsCall = await axios.get(popularCollectionsLink, { magiceden });
+                // const result = await popularCollectionsCall.data;
+                const result = []
 
                 if (focusedValue == "") {
 
 
-                    sdk2.getCollectionsTopsellingV1({ fillType: 'sale', limit: '20', accept: '*/*' })
+                    reservoirB.getCollectionsTrendingV1({ period: '24h', limit: '20', sortBy: 'sales', accept: '*/*' })
                         .then(({ data }) => {
                             data.collections.forEach(element => {
                                 //console.log(element.name)
@@ -105,7 +87,7 @@ module.exports = {
 
                     let index = 0
 
-                    sdk.getSearchCollectionsV1({ name: focusedValue, limit: '50', accept: '*/*' })
+                    reservoirA.getSearchCollectionsV1({ name: focusedValue, limit: '50', accept: '*/*' })
                         .then(async ({ data }) => {
                             data.collections.forEach(element => {
 

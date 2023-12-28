@@ -4,54 +4,43 @@
  */
 
 // On définit des constantes qui serviront dans l'ensemble de la commande
-const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
-const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
-const moment = require('moment');
-const csv = require('fast-csv');
-
-
+const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { profileData, accessSql, wallets, reportsql, adminsql, usersql, interactionData, sequelize } = require('../../../events/database');
+const moment = require('moment');
+
+// Nodes
+const {web3CloudflarePublic} = require("../../../config/web3config")
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
 dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
-const googleApiKey = process.env.googleApiKey
+
+// Packages
+const axios = require('axios');
+const csv = require('fast-csv');
 
 
 function formatString(input) {
     return input.length > 42 ? `${input.substring(0, 19)}...${input.substring(input.length - 20)}` : input;
 }
-
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
 
 }
-
 function isBRC20BitcoinWallet(wallet) {
     const regex = /^bc1[a-zA-Z0-9]{39,59}$/;
 
     return regex.test(wallet);
 }
-
 function isENS(str) {
     const lowerCaseStr = str.toLowerCase();
     return lowerCaseStr.endsWith(".eth");
 }
-
-
 function isSATS(str) {
     return str.endsWith(".sats");
 }
 
-
-const axios = require('axios');
-//const csv = require('csv-parser');
-const fs = require('fs');
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
 
 
 
@@ -275,7 +264,7 @@ module.exports = {
                                             try {
 
 
-                                                ensToWallet = await web3.eth.ens.getOwner(walletAddress)
+                                                ensToWallet = await web3CloudflarePublic.eth.ens.getOwner(walletAddress)
 
                                             } catch (error) {
 
@@ -705,7 +694,7 @@ module.exports = {
                                                             try {
 
 
-                                                                ensToWallet = await web3.eth.ens.getOwner(wallet.toLowerCase())
+                                                                ensToWallet = await web3CloudflarePublic.eth.ens.getOwner(wallet.toLowerCase())
 
                                                             } catch (error) {
 
@@ -1006,7 +995,7 @@ module.exports = {
                                                             try {
 
 
-                                                                ensToWallet = await web3.eth.ens.getOwner(wallet.toLowerCase())
+                                                                ensToWallet = await web3CloudflarePublic.eth.ens.getOwner(wallet.toLowerCase())
 
                                                             } catch (error) {
 

@@ -5,61 +5,22 @@
 
 // On définit des constantes qui serviront dans l'ensemble de la commande
 const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-const moment = require('moment');
-const csv = require('fast-csv');
-
-const getTimeAgo = require("../../../functions/timeago")
-
-
 const { profileData, accessSql, apimonitorsql, wallets, reportsql, adminsql, usersql, interactionData, watchlistSql, sequelize } = require('../../../events/database');
-const fs = require('fs');
+const moment = require('moment');
+const axios = require('axios');
 
-
-
+// On récupère les nodes
+const { web3CloudflarePublic, reservoirA, reservoirC, reservoirF, alchemyB, magiceden} = require("../../../config/web3config")
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
 dotenv.config()
-const reservoirApiKey = process.env.reservoirApiKey
-const magicedenApiKey = process.env.magicedenApiKey
 const etherscanApiKey = process.env.etherscanApiKey
 const alchemyApiKey = process.env.alchemyApiKey
 
 
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
 
-//Reservoir API
-const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
-sdk.auth(reservoirApiKey);
-//;
-
-const sdk2 = require('api')('@reservoirprotocol/v3.0#434y7jljnak92y');
-sdk2.auth(reservoirApiKey);
-
-const sdk3 = require('api')('@reservoirprotocol/v3.0#1im010ljszuoex');
-sdk3.auth(reservoirApiKey);
-
-const { Network, Alchemy } = require('alchemy-sdk')
-const settings = {
-    apiKey: alchemyApiKey, // Replace with your Alchemy API Key.
-    network: Network.ETH_MAINNET, // Replace with your network.
-};
-const alchemy = new Alchemy(settings);
-const alchemy2 = require('api')('@alchemy-docs/v1.0#24zcsa23lfbpdnv5');
-
-
-// Configuration de l'en-tête d'autorisation
-const headers = {
-    'Authorization': `Bearer ${magicedenApiKey}`
-};
-
-
-const axios = require('axios');
-const { embed } = require("bitcoinjs-lib/src/payments");
-
-
+const getTimeAgo = require("../../../functions/timeago")
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
 }
@@ -312,7 +273,7 @@ module.exports = {
 
 
 
-                                            await sdk2.getUsersActivityV6({ users: selectedWallet, limit: '200', sortBy: 'eventTimestamp', includeMetadata: 'false', types: 'sale', accept: '*/*' })
+                                            await reservoirF.getUsersActivityV6({ users: selectedWallet, limit: '200', sortBy: 'eventTimestamp', includeMetadata: 'false', types: 'sale', accept: '*/*' })
                                                 .then(async ({ data }) => {
 
 
@@ -332,7 +293,7 @@ module.exports = {
 
                                                             let collection = "Unknow"
 
-                                                            await sdk3.getCollectionsV6({ id: token.collection.collectionId, accept: '*/*' })
+                                                            await reservoirC.getCollectionsV6({ id: token.collection.collectionId, accept: '*/*' })
                                                                 .then(async ({ data: collectionData }) => {
 
                                                                     collection = await collectionData.collections[0].name
@@ -375,7 +336,7 @@ module.exports = {
 
 
 
-                                                        const { data: userBuy } = await alchemy2.getNFTSales({
+                                                        const { data: userBuy } = await alchemyB.getNFTSales({
                                                             fromBlock: '0',
                                                             toBlock: 'latest',
                                                             order: 'desc',
@@ -415,7 +376,7 @@ module.exports = {
                                                         } else {
 
                                                             const { data: mintInfos } = await
-                                                                sdk.getSalesV4({
+                                                                reservoirA.getSalesV4({
                                                                     token: collection + '%3A' + tokenId,
                                                                     limit: '100',
                                                                     accept: '*/*'
@@ -636,7 +597,7 @@ module.exports = {
 
 
                                             const recentSalesLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&ownerAddress=` + selectedWallet
-                                            const recentSalesCall = await axios.get(recentSalesLink, { headers });
+                                            const recentSalesCall = await axios.get(recentSalesLink, { magiceden });
                                             const recentSales = await recentSalesCall.data.activities;
 
                                             const filteredTable = recentSales.filter(activity => activity.oldOwner.toLowerCase() == selectedWallet.toLowerCase() && activity.newOwner.toLowerCase() !== selectedWallet.toLowerCase());
@@ -682,7 +643,7 @@ module.exports = {
 
 
                                                 const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token.tokenInscription
-                                                const tokenBuyCall = await axios.get(tokenBuyLink, { headers });
+                                                const tokenBuyCall = await axios.get(tokenBuyLink, { magiceden });
                                                 const tokenBuy = await tokenBuyCall.data.activities;
 
                                                 const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== selectedWallet.toLowerCase() && activity.newOwner.toLowerCase() == selectedWallet.toLowerCase());
@@ -713,7 +674,7 @@ module.exports = {
 
 
                                                     const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenInscription
-                                                    const tokenCreateCall = await axios.get(tokenCreateLink, { headers });
+                                                    const tokenCreateCall = await axios.get(tokenCreateLink, { magiceden });
                                                     const tokenCreate = await tokenCreateCall.data.activities;
 
                                                     const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == selectedWallet.toLowerCase());
@@ -739,7 +700,7 @@ module.exports = {
                                                     } else {
 
                                                         const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenInscription
-                                                        const tokenMintCall = await axios.get(tokenMintLink, { headers });
+                                                        const tokenMintCall = await axios.get(tokenMintLink, { magiceden });
                                                         const tokenMint = await tokenMintCall.data.activities;
 
                                                         const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == selectedWallet.toLowerCase());
@@ -1050,7 +1011,7 @@ module.exports = {
 
 
 
-                                            await sdk2.getUsersActivityV6({ users: selectedWallet, limit: '20', sortBy: 'eventTimestamp', types: 'mint', accept: '*/*' })
+                                            await reservoirF.getUsersActivityV6({ users: selectedWallet, limit: '20', sortBy: 'eventTimestamp', types: 'mint', accept: '*/*' })
                                                 .then(async ({ data }) => {
 
 
@@ -1059,7 +1020,7 @@ module.exports = {
 
 
                                                         let txnHash = mint.txHash
-                                                        const hashGasReader = await web3.eth.getTransaction(txnHash)
+                                                        const hashGasReader = await web3CloudflarePublic.eth.getTransaction(txnHash)
 
 
                                                         if ((hashGasReader.from).toLowerCase() == selectedWallet.toLowerCase()) {
@@ -1261,11 +1222,11 @@ module.exports = {
 
 
                                             const createCall = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?ownerAddress=` + selectedWallet + "&kind=create";
-                                            const createCallFormatted = await axios.get(createCall, { headers });
+                                            const createCallFormatted = await axios.get(createCall, { magiceden });
                                             const createData = await createCallFormatted.data.activities;
 
                                             const mintCall = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?ownerAddress=` + selectedWallet + "&kind=mint_broadcasted";
-                                            const mintCallFormatted = await axios.get(mintCall, { headers });
+                                            const mintCallFormatted = await axios.get(mintCall, { magiceden });
                                             const mintData = await mintCallFormatted.data.activities;
 
 
@@ -1517,7 +1478,7 @@ module.exports = {
 
 
 
-                                            await sdk2.getUsersActivityV6({ users: walletAddresses, limit: '20', sortBy: 'eventTimestamp', types: 'mint', accept: '*/*' })
+                                            await reservoirF.getUsersActivityV6({ users: walletAddresses, limit: '20', sortBy: 'eventTimestamp', types: 'mint', accept: '*/*' })
                                                 .then(async ({ data }) => {
 
 
@@ -1526,7 +1487,7 @@ module.exports = {
 
 
                                                         let txnHash = mint.txHash
-                                                        const hashGasReader = await web3.eth.getTransaction(txnHash)
+                                                        const hashGasReader = await web3CloudflarePublic.eth.getTransaction(txnHash)
 
 
                                                         if ((walletAddresses.includes((hashGasReader.from).toLowerCase()))) {
@@ -1797,7 +1758,7 @@ module.exports = {
 
                                             for (const wallet of walletAddresses) {
 
-                                                await sdk2.getUsersUserCollectionsV3({ collection: selectedCollection, limit: '100', user: wallet, accept: '*/*' })
+                                                await reservoirF.getUsersUserCollectionsV3({ collection: selectedCollection, limit: '100', user: wallet, accept: '*/*' })
                                                     .then(async ({ data }) => {
 
 
@@ -1827,7 +1788,7 @@ module.exports = {
                                             if (holdingTable.length <= 0) {
 
 
-                                                await sdk2.getCollectionsV5({ id: selectedCollection, accept: '*/*' })
+                                                await reservoirF.getCollectionsV5({ id: selectedCollection, accept: '*/*' })
                                                     .then(async ({ data: collectionData }) => {
 
                                                         console.log(collectionData.collections[0].floorAsk)
@@ -1931,7 +1892,7 @@ module.exports = {
                                         let BTCUsdPrice = btcCallPrice.data
 
                                         const url5 = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?collectionSymbol=bitcoin-frogs&ownerAddress=bc1qc5cd94mq8juv953hqqqgefaqunuanqpk9t762d&showAll=true&limit=120&sortBy=priceAsc`;
-                                        const response5 = await axios.get(url5, { headers });
+                                        const response5 = await axios.get(url5, { magiceden });
                                         const data5 = await response5.data;
 
 
@@ -1950,7 +1911,7 @@ module.exports = {
                                             let holdingTable = []
 
                                             const statCall = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=` + selectedCollection
-                                            const stats = await axios.get(statCall, { headers });
+                                            const stats = await axios.get(statCall, { magiceden });
                                             const statsResponse = await stats.data;
 
                                             collectionFloor = statsResponse.floorPrice / (10 ** 8)
@@ -1961,7 +1922,7 @@ module.exports = {
 
 
                                                 const url = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?collectionSymbol=` + selectedCollection + "&ownerAddress=" + wallet + `&showAll=true&limit=120&sortBy=priceAsc`;
-                                                const response = await axios.get(url, { headers });
+                                                const response = await axios.get(url, { magiceden });
                                                 const data = await response.data;
 
 
@@ -1992,7 +1953,7 @@ module.exports = {
                                             if (holdingTable.length <= 0) {
 
                                                 const infoCall = `https://api-mainnet.magiceden.dev/v2/ord/btc/collections/` + selectedCollection
-                                                const infos = await axios.get(infoCall, { headers });
+                                                const infos = await axios.get(infoCall, { magiceden });
                                                 const infoAnswer = await infos.data;
 
                                                 if (infoAnswer.name) {

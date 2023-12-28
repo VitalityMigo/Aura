@@ -5,9 +5,9 @@
 
 
 const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-const { profileData, accessSql, wallets, interactionData, apimonitorsql, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
+const { profileData, accessSql, wallets, interactionData, apimonitorsql, adminsql, reportsql, usersql, sequelize } = require('../events/database');
 
-const { web3CloudflarePublic, reservoirA, reservoirC, blockspan, magiceden} = require("../../../config/web3config")
+const { web3CloudflarePublic, reservoirA, reservoirC, blockspan, magiceden} = require("../config/web3config")
 
 const dotenv = require("dotenv")
 dotenv.config()
@@ -16,7 +16,7 @@ const alchemyApiKey = process.env.alchemyApiKey
 // Https request
 const axios = require('axios')
 const moment = require('moment');
-const isHttps = require('../../../functions/isHttps')
+const isHttps = require('../functions/isHttps')
 
 //Alchemy API 
 const { Network, Alchemy } = require('alchemy-sdk')
@@ -1959,7 +1959,7 @@ module.exports = {
 
                 console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
-                const reduceText = require("../../../functions/reducetext")
+                const reduceText = require("../functions/reducetext")
                 const roleTag = "1121510423687090186"
 
 

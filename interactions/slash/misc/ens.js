@@ -8,20 +8,19 @@
 
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { profileData, accessSql, apimonitorsql, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
+
 const moment = require('moment');
-
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
 const axios = require('axios')
 
+// Initialisation des nodes
+const { web3CloudflarePublic } = require("../../../config/web3config")
 
+// Fonctions
 function isENS(str) {
     const lowerCaseStr = str.toLowerCase();
     return lowerCaseStr.endsWith(".eth");
 }
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -48,7 +47,7 @@ module.exports = {
             let serverId = interaction.member.guild.id
             let member = interaction.member;
             let botId = interaction.applicationId
-            
+
 
             try {
 
@@ -93,175 +92,175 @@ module.exports = {
 
                         if (accessTier.toLowerCase() == "s-tier" || accessTier.toLowerCase() == "a-tier") {
 
-                        if (member.roles.cache.has(communityMemberRoleId)) {
+                            if (member.roles.cache.has(communityMemberRoleId)) {
 
-                            //Checkpoint
-                            console.log("// Step 2 : Authorization - Executed ✅")
-
-
-
-                            //On enregistre le user si il est pas encore dans la database
-                            const timeStamp1 = Date.now();
-                            const actualTimestamp1 = parseFloat(timeStamp1 / 1000).toFixed(0)
-                            const isUser = await usersql.findOne({ where: { userId: authorId, serverId: serverId } })
-                            if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp1 }) }
+                                //Checkpoint
+                                console.log("// Step 2 : Authorization - Executed ✅")
 
 
 
-                            //Variable pour les options
-                            const selectedEns = interaction.options.getString("ens");
+                                //On enregistre le user si il est pas encore dans la database
+                                const timeStamp1 = Date.now();
+                                const actualTimestamp1 = parseFloat(timeStamp1 / 1000).toFixed(0)
+                                const isUser = await usersql.findOne({ where: { userId: authorId, serverId: serverId } })
+                                if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp1 }) }
 
 
 
-                            if (isENS(selectedEns)) {
-
-
-                                const ensToWallet = await web3.eth.ens.getOwner(selectedEns)
-                                //const ensUserOpenSeaInfos = await axios.get('https://api.opensea.io/user/' + ensToWallet + '?format=json')
-
-
-                                //let profileOsName = ensUserOpenSeaInfos.data.account.user.username
-                                //let profileOsPicture = ensUserOpenSeaInfos.data.account.profile_image_url
-
-
-                                let configOtherEnsOfUserRequest = { method: 'get', url: 'https://api.gomu.co/rest/ens/reverse-resolve?address=' + ensToWallet, headers: { 'Accept': 'application/json' } };
-
-                                let otherEnsOfUserTable = [];
-                                let otherEnsOfUserField = "";
-
-                                axios(configOtherEnsOfUserRequest)
-                                    .then(async (response) => {
-
-                                        if (response.data.data) {
+                                //Variable pour les options
+                                const selectedEns = interaction.options.getString("ens");
 
 
 
-                                            for (let i = 0; i < response.data.data.length; i++) {
+                                if (isENS(selectedEns)) {
 
-                                                if (response.data.data[i].name !== selectedEns) {
-                                                    otherEnsOfUserTable.push(response.data.data[i].name);
+
+                                    const ensToWallet = await web3CloudflarePublic.eth.ens.getOwner(selectedEns)
+                                    //const ensUserOpenSeaInfos = await axios.get('https://api.opensea.io/user/' + ensToWallet + '?format=json')
+
+
+                                    //let profileOsName = ensUserOpenSeaInfos.data.account.user.username
+                                    //let profileOsPicture = ensUserOpenSeaInfos.data.account.profile_image_url
+
+
+                                    let configOtherEnsOfUserRequest = { method: 'get', url: 'https://api.gomu.co/rest/ens/reverse-resolve?address=' + ensToWallet, headers: { 'Accept': 'application/json' } };
+
+                                    let otherEnsOfUserTable = [];
+                                    let otherEnsOfUserField = "";
+
+                                    axios(configOtherEnsOfUserRequest)
+                                        .then(async (response) => {
+
+                                            if (response.data.data) {
+
+
+
+                                                for (let i = 0; i < response.data.data.length; i++) {
+
+                                                    if (response.data.data[i].name !== selectedEns) {
+                                                        otherEnsOfUserTable.push(response.data.data[i].name);
+                                                    }
                                                 }
+
+
+
+
+                                                let otherEnsOfUserTableTop15 = otherEnsOfUserTable.slice(0, 15);
+
+                                                otherEnsOfUserTableTop15.forEach(ens => {
+
+
+
+                                                    otherEnsOfUserField += ens + "\n"
+
+
+
+
+
+
+                                                })
+                                            } else if (!response.data.data) {
+
+                                                otherEnsOfUserField = "``No other ENS name detected``"
+
                                             }
 
 
+                                            const ensFinder = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle(selectedEns)
+                                                .setDescription(">>> Informations about the ENS")
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                //.setThumbnail(profileOsPicture)
+                                                .setTimestamp()
+                                                .addFields(
+                                                    { name: "ENS Name", value: "`" + selectedEns + "`", inline: true },
+                                                    { name: "Network", value: "`Ethereum`", inline: true },
+                                                    { name: "Wallet", value: "`" + ensToWallet + "`", inline: false },
+                                                    { name: "Alt. ens", value: "`" + otherEnsOfUserField + "`", inline: false },
+                                                    { name: ' ', value: '<:ASxRCPNG:1070385409080696902> [Magically](https://magically.gg/portfolio/wallet/' + ensToWallet + ")", inline: true },
+                                                    { name: ' ', value: '<:opensea:1062318570761101352> [OpenSea](https://opensea.io/' + ensToWallet + ")", inline: true },
+                                                    { name: ' ', value: '<:etherscan:1062318582328987648> [Etherscan](https://etherscan.io/address/' + ensToWallet + ")", inline: true },
 
+                                                )
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                            let otherEnsOfUserTableTop15 = otherEnsOfUserTable.slice(0, 15);
-
-                                            otherEnsOfUserTableTop15.forEach(ens => {
-
-
-
-                                                otherEnsOfUserField += ens + "\n"
-
-
-
-
-
-
-                                            })
-                                        } else if (!response.data.data) {
-
-                                            otherEnsOfUserField = "``No other ENS name detected``"
-
-                                        }
-
-
-                                        const ensFinder = new EmbedBuilder().setColor("#060A8F")
-                                            .setTitle(selectedEns)
-                                            .setDescription(">>> Informations about the ENS")
-                                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                                            //.setThumbnail(profileOsPicture)
-                                            .setTimestamp()
-                                            .addFields(
-                                                { name: "ENS Name", value: "`" + selectedEns + "`", inline: true },
-                                                { name: "Network", value: "`Ethereum`", inline: true },
-                                                { name: "Wallet", value: "`" + ensToWallet + "`", inline: false },
-                                                { name: "Alt. ens", value: "`" + otherEnsOfUserField + "`", inline: false },
-                                                { name: ' ', value: '<:ASxRCPNG:1070385409080696902> [Magically](https://magically.gg/portfolio/wallet/' + ensToWallet + ")", inline: true },
-                                                { name: ' ', value: '<:opensea:1062318570761101352> [OpenSea](https://opensea.io/' + ensToWallet + ")", inline: true },
-                                                { name: ' ', value: '<:etherscan:1062318582328987648> [Etherscan](https://etherscan.io/address/' + ensToWallet + ")", inline: true },
-
-                                            )
-                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                        await interaction.editReply({ embeds: [ensFinder] });
+                                            await interaction.editReply({ embeds: [ensFinder] });
 
 
 
 
-                                    })
+                                        })
 
-                                //On enregistre le call API dans la database
-                                const timeStamp = Date.now();
-                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/ens", apiCallName: "ensToWallet", apiProvider: "web3.eth", timestamp: timeStamp.toString() })
-                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/ens", apiCallName: "ensUserOpenSeaInfos", apiProvider: "opensea", timestamp: timeStamp.toString() })
-                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/ens", apiCallName: "relatedEns", apiProvider: "gomu", timestamp: timeStamp.toString() })
+                                    //On enregistre le call API dans la database
+                                    const timeStamp = Date.now();
+                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/ens", apiCallName: "ensToWallet", apiProvider: "web3.eth", timestamp: timeStamp.toString() })
+                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/ens", apiCallName: "ensUserOpenSeaInfos", apiProvider: "opensea", timestamp: timeStamp.toString() })
+                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/ens", apiCallName: "relatedEns", apiProvider: "gomu", timestamp: timeStamp.toString() })
 
-                            } else {
+                                } else {
 
 
-                                const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
-                                    .setTitle(`${authorName}'s portfolio`)
-                                    .setDescription("The ENS name you provided isn't valid. Try again using the appropriate form `.eth`.")
+                                    const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle(`${authorName}'s portfolio`)
+                                        .setDescription("The ENS name you provided isn't valid. Try again using the appropriate form `.eth`.")
+                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                    await interaction.editReply({ embeds: [setwalletErrorEmbed] });
+
+
+
+                                }
+                            } else if (!member.roles.cache.has(communityMemberRoleId)) {
+
+
+
+                                const notMember = new EmbedBuilder().setColor("#060A8F")
+                                    .setTitle(`Bot Access`)
+                                    .setDescription(">>> Showing access data")
                                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                     .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    .addFields(
+                                        { name: " ", value: " ", inline: false },
+                                        { name: "Status", value: "`Access Denied ❌`", inline: true },
+                                        { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
+                                        { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
+                                    )
                                     .setTimestamp()
-                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                                await interaction.editReply({ embeds: [setwalletErrorEmbed] });
-
-
+                                await interaction.editReply({ embeds: [notMember] });
 
                             }
-                        } else if (!member.roles.cache.has(communityMemberRoleId)) {
 
 
+                        } else {
 
-                            const notMember = new EmbedBuilder().setColor("#060A8F")
+
+                            if (accessTier == "") {
+                                accessTier = "Free Tier"
+                            }
+
+
+                            const botOff = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle(`Bot Access`)
-                                .setDescription(">>> Showing access data")
+                                .setDescription(">>> Showing the community's bot access")
                                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                 .addFields(
-                                    { name: " ", value: " ", inline: false },
-                                    { name: "Status", value: "`Access Denied ❌`", inline: true },
-                                    { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
-                                    { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
+                                    { name: 'Access Status', value: "`Denied 🔴`", inline: false },
+                                    { name: 'Access Tier', value: "`" + accessTier.toUpperCase() + "`", inline: true },
+                                    { name: 'Required Tier', value: "`A-TIER`", inline: true },
+                                    { name: "Problem Detected", value: "Your access to this command has been denied. You need a higher access tier to use this feature. You can consult the available commands in this community by using `/access`.", inline: false },
                                 )
                                 .setTimestamp()
                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                            await interaction.editReply({ embeds: [notMember] });
+                            await interaction.editReply({ embeds: [botOff] });
 
                         }
-
-
-                    } else {
-
-
-                        if (accessTier == "") {
-								accessTier = "Free Tier"
-							}
-
-
-                        const botOff = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle(`Bot Access`)
-                            .setDescription(">>> Showing the community's bot access")
-                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                            .addFields(
-                                { name: 'Access Status', value: "`Denied 🔴`", inline: false },
-                                { name: 'Access Tier', value: "`" + accessTier.toUpperCase() + "`", inline: true },
-                                { name: 'Required Tier', value: "`A-TIER`", inline: true },
-                                { name: "Problem Detected", value: "Your access to this command has been denied. You need a higher access tier to use this feature. You can consult the available commands in this community by using `/access`.", inline: false },
-                            )
-                            .setTimestamp()
-                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-                        await interaction.editReply({ embeds: [botOff] });
-
-                    }
 
 
                     } else {

@@ -16,27 +16,11 @@
 const fs = require('fs');
 
 const { wallets, apimonitorsql, adminsql, reportsql, accessSql, sequelize } = require('../../../events/database');
+
+// Recupère API et Nodes depuis la config
+const { reservoirA, reservoirB } = require("../../../config/web3config")
+
 const moment = require('moment');
-
-
-
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const reservoirApiKey = process.env.reservoirApiKey
-
-
-
-//Reservoir API
-const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
-sdk.auth(reservoirApiKey);
-
-
-const sdk2 = require('api')('@reservoirprotocol/v3.0#2n2re32lkmyg6l7');
-sdk2.auth(reservoirApiKey);
-
-
-
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
 }
@@ -154,7 +138,7 @@ module.exports = {
                     if (focusedValue == "") {
 
 
-                        sdk2.getCollectionsTopsellingV1({ fillType: 'sale', limit: '20', accept: '*/*' })
+                        reservoirB.getCollectionsTrendingV1({ period: '24h', limit: '20', sortBy: 'sales', accept: '*/*' })
                             .then(({ data }) => {
                                 data.collections.forEach(element => {
                                     //console.log(element.name)
@@ -185,7 +169,7 @@ module.exports = {
 
                     } else {
 
-                        sdk.getSearchCollectionsV1({ name: focusedValue, limit: '20', accept: '*/*' })
+                        reservoirA.getSearchCollectionsV1({ name: focusedValue, limit: '20', accept: '*/*' })
                             .then(({ data }) => {
                                 data.collections.forEach(element => {
                                     //console.log(element.name)
@@ -238,7 +222,7 @@ module.exports = {
                 if (focusedValue == "") {
 
 
-                    sdk2.getCollectionsTopsellingV1({ fillType: 'sale', limit: '20', accept: '*/*' })
+                    reservoirB.getCollectionsTrendingV1({period: '24h', limit: '20', sortBy: 'sales', accept: '*/*'})
                         .then(({ data }) => {
                             data.collections.forEach(element => {
                                 //console.log(element.name)
@@ -269,7 +253,7 @@ module.exports = {
 
                 } else {
 
-                    sdk.getSearchCollectionsV1({ name: focusedValue, limit: '20', accept: '*/*' })
+                    reservoirA.getSearchCollectionsV1({ name: focusedValue, limit: '20', accept: '*/*' })
                         .then(({ data }) => {
                             data.collections.forEach(element => {
                                 //console.log(element.name)

@@ -12,43 +12,15 @@
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { apimonitorsql, accessSql, adminsql, reportsql,wallets,  sequelize } = require('../../../events/database');
 const moment = require('moment');
-const reduceText = require("../../../functions/reducetext")
-
-
-
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const reservoirApiKey = process.env.reservoirApiKey
-const magicedenApiKey = process.env.magicedenApiKey
-const moralisApiKey = process.env.moralisApiKey
-
-// Configuration de l'en-tête d'autorisation
-const headers = {
-    'Authorization': `Bearer ${magicedenApiKey}`
-};
-
 const axios = require('axios')
 
-
-const Moralis = require("moralis").default;
-const EvmChain = require("@moralisweb3/common-evm-utils");
-
-
-
+const reduceText = require("../../../functions/reducetext")
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
 }
-
-function isValidInput(input) {
-    return /^(\w+|-)+$/.test(input);
-}
-
 function firstLetterCap(word) {
     return word.charAt(0).toUpperCase() + word.slice(1);
 }
-
-
 
 
 module.exports = {

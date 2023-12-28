@@ -12,6 +12,8 @@ const infuraApiKey = process.env.infuraApiKey
 const reservoirApiKey = process.env.reservoirApiKey
 const blockspanApiKey = process.env.blockspanApiKey
 const magicedenApiKey = process.env.magicedenApiKey
+const alchemyApiKey = process.env.alchemyApiKey
+const nftgoApiKey = process.env.nftgoApiKey
 
 // On appel web3.js
 const Web3 = require('web3');
@@ -31,15 +33,33 @@ const web3BaseUnifra = new Web3(new Web3.providers.HttpProvider(`https://base-ma
 const reservoirA = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
 reservoirA.auth(reservoirApiKey);
 
+const reservoirB = require('api')('@reservoirprotocol/v3.0#kke23hlqfhwtrr');
+reservoirB.auth(reservoirApiKey);
+
 const reservoirC = require('api')('@reservoirprotocol/v3.0#1im010ljszuoex');
 reservoirC.auth(reservoirApiKey);
+
+const reservoirD = require('api')('@reservoirprotocol/v3.0#2n2re32lkmyg6l7');
+reservoirD.auth(reservoirApiKey);
+
+const reservoirE = require('api')('@reservoirprotocol/v2.0#1xltvr918dlfmst76l');
+reservoirE.auth(reservoirApiKey);
+
+const reservoirF = require('api')('@reservoirprotocol/v3.0#434y7jljnak92y');
+reservoirF.auth(reservoirApiKey);
 
 const blockspan = require('api')('@blockspan/v1.0#9zxl2sledru983');
 blockspan.auth(blockspanApiKey);
 
 const magiceden = { 'Authorization': `Bearer ${magicedenApiKey}`};
 
+const alchemyB = require('api')('@alchemy-docs/v1.0#24zcsa23lfbpdnv5');
 
+const nftgo = require('api')('@nftgo/v1.0#28807z4klgnauhl3');
+nftgo.auth(nftgoApiKey);
+
+const nftGoB = require('api')('@nftgo/v1.0#i65d19lewn3l7h');
+nftGoB.auth(nftgoApiKey);
 
 module.exports = {
   web3CloudflarePublic,
@@ -50,9 +70,16 @@ module.exports = {
   web3BaseDRPC,
   web3BaseUnifra,
   reservoirA,
+  reservoirB,
   reservoirC,
+  reservoirD,
+  reservoirE,
+  reservoirF,
   blockspan,
-  magiceden
+  magiceden,
+  alchemyB,
+  nftgo,
+  nftGoB,
 };
 
 console.log(colors.green("Web3 config succefsuly initiated"))

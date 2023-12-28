@@ -9,14 +9,6 @@ const { ActionRowBuilder, EmbedBuilder, SlashCommandBuilder, ModalBuilder, TextI
 const { accessSql, profileData, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
-const axios = require('axios')
-
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("admin")

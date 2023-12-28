@@ -13,8 +13,6 @@
  * @returns {Array} The wallets for the author
  */
 
-const fs = require('fs');
-
 const { apimonitorsql, reportsql, adminsql, wallets, sequelize } = require('../../../events/database');
 const moment = require('moment');
 

@@ -1,4 +1,4 @@
-const { wssBase } = require("../config/web3config.js")
+const { wssBase } = require("../config/web3config")
 
 const newFriendtechUser = require('../functions/m-newFTuser')
 const newSmartMoneyTrade = require('../functions/m-FTsmartmoney')

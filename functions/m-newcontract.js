@@ -1,6 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 
-const { web3CloudflarePublic } = require("../config/web3config.js")
+const { web3CloudflarePublic } = require("../config/web3config")
 
 const colors = require('colors');
 

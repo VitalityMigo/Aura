@@ -1,7 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { tracker_coin, Op, sequelize } = require('../events/database')
 
-const { web3CloudflarePublic } = require("../config/web3config.js")
+const { web3CloudflarePublic } = require("../config/web3config")
 
 
 const reduceText = require("./reducetext")

@@ -1,10 +1,21 @@
-const colors = require('colors');
-const fs = require("fs").promises
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
 dotenv.config()
 const infuraApiKey = process.env.infuraApiKey
+
+const Web3 = require('web3');
+const web3 = new Web3(new Web3.providers.WebsocketProvider(`wss://mainnet.infura.io/ws/v3/${infuraApiKey}`, {
+    clientConfig: {
+        // Ajustez la taille maximale des trames et des messages selon vos besoins.
+        maxReceivedFrameSize: 10000000000, // Taille maximale des trames reçues en octets.
+        maxReceivedMessageSize: 10000000000, // Taille maximale des messages reçus en octets.
+    }
+}));
+
+
+const colors = require('colors');
+const fs = require("fs").promises
 
 const blockInfosTreatment = require("../functions/m-newblock")
 const coinSmartmoney = require("../functions/m-coinSM")
@@ -24,16 +35,6 @@ const trackerFile = "contracts/uniswap/tracker.json"
 const blurV3_address = "0xb2ecfe4e4d61f8790bbb9de2d1259b9e2410cea5"
 const seaport15_address = "0x00000000000000adc04c56bf30ac9d3c0aaf14dc"
 
-
-const Web3 = require('web3');
-//const web3 = new Web3("https://cloudflare-eth.com")
-const web3 = new Web3(new Web3.providers.WebsocketProvider(`wss://mainnet.infura.io/ws/v3/${infuraApiKey}`, {
-    clientConfig: {
-        // Ajustez la taille maximale des trames et des messages selon vos besoins.
-        maxReceivedFrameSize: 10000000000, // Taille maximale des trames reçues en octets.
-        maxReceivedMessageSize: 10000000000, // Taille maximale des messages reçus en octets.
-    }
-}));
 
 
 // ON lance l'écoute

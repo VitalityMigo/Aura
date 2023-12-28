@@ -15,9 +15,7 @@ const moment = require('moment');
 const decrypt = require("../../../functions/decrypt")
 const { simulateTransaction, createFactory, balanceOfToken, encodeTransfer, encodeApproval, encodeRevoke } = require('../../../functions/coin-utils')
 
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
+const { web3CloudflarePublic } = require("../../../config/web3config")
 
 
 
@@ -119,11 +117,11 @@ module.exports = {
 
                             if (addressCount > 0) {
 
-                                const balance = await web3.eth.getBalance(decrypt(sender))
-                                const gasPriceRaw = await web3.eth.getGasPrice()
+                                const balance = await web3CloudflarePublic.eth.getBalance(decrypt(sender))
+                                const gasPriceRaw = await web3CloudflarePublic.eth.getGasPrice()
                                 const gasMargin = 1.1
                                 const gasPrice = Math.ceil(gasPriceRaw * gasMargin)
-                                const valueRaw = await web3.utils.toWei(amount.toString(), 'ether');
+                                const valueRaw = await web3CloudflarePublic.utils.toWei(amount.toString(), 'ether');
                                 const value = parseInt(valueRaw)
 
 
@@ -316,11 +314,11 @@ module.exports = {
                                 const factory = await createFactory("swap_token_to_eth", contract, decrypt(sender), 0)
 
                                 const decimals = factory._uniswapPairFactoryContext.fromToken.decimals
-                                const balance = await web3.eth.getBalance(decrypt(sender))
+                                const balance = await web3CloudflarePublic.eth.getBalance(decrypt(sender))
                                 const balanceToken = await balanceOfToken(factory, decrypt(sender))
                                 const amount = parseFloat(balanceToken * (1 - (ratio / 100))).toFixed(decimals)
 
-                                const gasPriceRaw = await web3.eth.getGasPrice()
+                                const gasPriceRaw = await web3CloudflarePublic.eth.getGasPrice()
                                 const gasMargin = 1.1
                                 const gasPrice = Math.ceil(gasPriceRaw * gasMargin)
                                 const value = 0
@@ -500,9 +498,9 @@ module.exports = {
                         const spender = interaction.fields.getTextInputValue('modal_coin_manager_exec_' + action + 'R2');
 
 
-                        const balance = await web3.eth.getBalance(decrypt(sender))
+                        const balance = await web3CloudflarePublic.eth.getBalance(decrypt(sender))
 
-                        const gasPrice = await web3.eth.getGasPrice()
+                        const gasPrice = await web3CloudflarePublic.eth.getGasPrice()
                         const value = 0
                         const data = encodeApproval(spender)
 
@@ -649,9 +647,9 @@ module.exports = {
                         const spender = interaction.fields.getTextInputValue('modal_coin_manager_exec_' + action + 'R2');
 
 
-                        const balance = await web3.eth.getBalance(decrypt(sender))
+                        const balance = await web3CloudflarePublic.eth.getBalance(decrypt(sender))
 
-                        const gasPrice = await web3.eth.getGasPrice()
+                        const gasPrice = await web3CloudflarePublic.eth.getGasPrice()
                         const value = 0
                         const data = encodeRevoke(spender)
 

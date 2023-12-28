@@ -14,10 +14,7 @@ const { profileData, reportsql, paymentHistory, watchlistSql, walletsgenerated, 
 const generateRandomString = require("../../../functions/randomkey")
 const moment = require('moment');
 
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
+const { web3CloudflarePublic } = require("../../../config/web3config")
 
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
@@ -66,7 +63,7 @@ if(isValidEthereumAddress(txnHash)) {
             const price = 0.02
 
 
-            const txnCall = await web3.eth.getTransaction(txnHash)
+            const txnCall = await web3CloudflarePublic.eth.getTransaction(txnHash)
 
 
 

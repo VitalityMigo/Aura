@@ -16,17 +16,6 @@ const moment = require('moment');
 const fs = require('fs')
 const targetsJSON = 'contracts/nft/tracker.json';
 
-const encrypt = require("../../../functions/encrypt")
-const decrypt = require("../../../functions/decrypt")
-
-
-//Web3 API + Cloudfare Provider
-const Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
-
-
-
 
 module.exports = {
     id: "modal_nft_infra_tracker_",

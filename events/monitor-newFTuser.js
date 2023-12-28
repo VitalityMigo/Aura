@@ -1,14 +1,4 @@
-const { EmbedBuilder } = require("discord.js");
-const { apimonitorsql, apiproviderssql, adminsql, paymentHistory, accessSql, interactionData, reportsql, sequelize } = require('./database')
-
-const shareContractABI = require("../contracts/friendtech/share.json")
-const pairContractAbi = require("../contracts/uniswap/pair.json")
-const erc20Standard = require("../contracts/uniswap/erc20standart.json")
-
-
-const formatCoinValueSign = require("../functions/formatNumberEmbed")
-const reduceText = require("../functions/reducetext")
-const addTimeout = require("../functions/addtimeout")
+const { wssBase } = require("../config/web3config.js")
 
 const newFriendtechUser = require('../functions/m-newFTuser')
 const newSmartMoneyTrade = require('../functions/m-FTsmartmoney')
@@ -19,54 +9,15 @@ const orderExecFT = require("../functions/FT-order-exec")
 const trackerHandler = require("../functions/m-FTtracker.js")
 const farmerExecFT = require('../functions/FT-farmer-exec.js')
 
-//const newGMUser = require("../old&archive/m-newGMuser")
-
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const infuraApiKey = process.env.infuraApiKey
-const etherscanApiKey = process.env.etherscanApiKey
-const quicknodebaseApiKey = process.env.quicknodebaseApiKey
-
-const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.WebsocketProvider(`wss://nameless-hardworking-pallet.base-mainnet.discover.quiknode.pro/` + quicknodebaseApiKey))
-
-
-
-const axios = require('axios')
-const colors = require('colors');
-
-
-
-
 // On définit les constantes et variables principales
 const shareContractAddress = "0xcf205808ed36593aa40a44f10c7f7c2f67d4a4d4";
-
 const smartWalletJson = require("../contracts/friendtech/smartwallet.json")
 const smartWalletTable = smartWalletJson.map(obj => obj.address);
-
-const depositRelayAddress = "0x977f82a600a1414e583f7f13623f1ac5d58b1c0b"
-const depositBridgerL1AddressA = "0x3154cf16ccdb4c6d922629664174b904d80f2c35"
-const depositBridgerL2AddressA = "0x4200000000000000000000000000000000000007"
-const depositBridgerL2AddressB = "0x4200000000000000000000000000000000000010"
-
 const transferSig = "0x"
-
-const depositMin = 2
 const transferMin = 2
 
-const exepectedTxnType = 126
 
-
-//GM.io
-// const gmContract = "0x84a34c641b66e8823676990521421f954d7eb42b"
-// const gmInviteSig = "0x6160f862"
-// const gmInviteSelfSig = "0x6007f17d"
-
-
-
-
-web3.eth.subscribe('newBlockHeaders', async (error, header) => {
+wssBase.eth.subscribe('newBlockHeaders', async (error, header) => {
 
 
     try {
@@ -75,7 +26,7 @@ web3.eth.subscribe('newBlockHeaders', async (error, header) => {
         const blockNumber = header.number
 
 
-        await web3.eth.getBlock(blockNumber, true, async (error, block) => {
+        await wssBase.eth.getBlock(blockNumber, true, async (error, block) => {
 
             if (error) {
                 console.error('Erreur lors de la récupération du bloc :', error);

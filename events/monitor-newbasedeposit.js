@@ -1,41 +1,15 @@
-const { EmbedBuilder } = require("discord.js");
-const { apimonitorsql, apiproviderssql, adminsql, paymentHistory, accessSql, interactionData, reportsql, sequelize } = require('./database')
-
-
-
-
-const formatCoinValueSign = require("../functions/formatNumberEmbed")
-const reduceText = require("../functions/reducetext")
+const { wssInfura } = require("../config/web3config")
 
 const FTSnipeDepositExec = require('../functions/FT-snipe-deposit')
-
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const infuraApiKey = process.env.infuraApiKey
-const etherscanApiKey = process.env.etherscanApiKey
-
-
-
-
-const Web3 = require('web3');
-const web3Call = new Web3("https://cloudflare-eth.com")
-const web3 = new Web3('wss://mainnet.infura.io/ws/v3/' + infuraApiKey);
-
-const axios = require('axios')
-const colors = require('colors');
+const newFTDeposit = require("../functions/m-newbasedeposit")
 
 const portalContractAbi = require("../contracts/base/baseportal.json")
 const portalContractAddress = "0x49048044d57e1c92a77f79988d21fa8faf74e97e"
 const bridgeRelay = "0x4200000000000000000000000000000000000007"
-
-const newFTDeposit = require("../functions/m-newbasedeposit")
-
-
 const minValue = 2
 
 // Création de l'instance du Factory Contract
-const portalContract = new web3.eth.Contract(portalContractAbi, portalContractAddress);
+const portalContract = new wssInfura.eth.Contract(portalContractAbi, portalContractAddress);
 
 
 // Écouter l'événement de création de paire

@@ -12,20 +12,14 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { profileData, reportsql, watchlistSql, walletsgenerated, vouchData, wallets, accessSql, interactionData, adminsql, sequelize } = require('../../../events/database');
 const moment = require('moment');
-
-
+const axios = require("axios");
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
 dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
 
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
-const axios = require("axios");
+const { web3CloudflarePublic } = require("../../../config/web3config")
 
 
 module.exports = {
@@ -95,12 +89,12 @@ module.exports = {
             }
             console.log(sender)
 
-            const gasPriceCall = await web3.eth.getGasPrice()
+            const gasPriceCall = await web3CloudflarePublic.eth.getGasPrice()
             const gasPriceGwei = gasPriceCall / 10 ** 9
             const gasPriceEth = gasPriceCall / 10 ** 18
 
 
-            const myContract = await new web3.eth.Contract(abi, contract);
+            const myContract = await new web3CloudflarePublic.eth.Contract(abi, contract);
 
 
             let gasEstimation = 0
@@ -147,7 +141,7 @@ module.exports = {
 
                 console.log("sig : " + signatureString)
 
-                encodedABI = await web3.utils.keccak256(signatureString)
+                encodedABI = await web3CloudflarePublic.utils.keccak256(signatureString)
                 encodedABI = encodedABI.substring(0, 10) + " + encoded arguments"
 
 

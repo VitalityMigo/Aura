@@ -16,10 +16,7 @@ const moment = require('moment');
 const encrypt = require("../../../functions/encrypt")
 const decrypt = require("../../../functions/decrypt")
 
-
-//Web3 API + Cloudfare Provider
-const Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
+const { web3CloudflarePublic } = require("../../../config/web3config")
 
 
 function isPrivateKeyValid(privateKey) {
@@ -157,7 +154,7 @@ module.exports = {
 
                     if (isPrivateKeyValid(privateKey)) {
 
-                        const account = await web3.eth.accounts.privateKeyToAccount(privateKey);
+                        const account = await web3CloudflarePublic.eth.accounts.privateKeyToAccount(privateKey);
 
                         const walletAddress = account.address.toLowerCase()
 
@@ -184,7 +181,7 @@ module.exports = {
                             })
 
 
-                            const balance = await web3.eth.getBalance(walletAddress) / 10 ** 18
+                            const balance = await web3CloudflarePublic.eth.getBalance(walletAddress) / 10 ** 18
 
                             const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle("Coin Setup")
@@ -246,7 +243,7 @@ module.exports = {
 
 
 
-                            const balance = await web3.eth.getBalance(walletAddress) / 10 ** 18
+                            const balance = await web3CloudflarePublic.eth.getBalance(walletAddress) / 10 ** 18
 
                             const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle("Coin Setup")
@@ -309,7 +306,7 @@ module.exports = {
 
 
 
-                            const balance = await web3.eth.getBalance(walletAddress) / 10 ** 18
+                            const balance = await web3CloudflarePublic.eth.getBalance(walletAddress) / 10 ** 18
 
                             const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle("Coin Setup")

@@ -14,6 +14,7 @@ const blockspanApiKey = process.env.blockspanApiKey
 const magicedenApiKey = process.env.magicedenApiKey
 const alchemyApiKey = process.env.alchemyApiKey
 const nftgoApiKey = process.env.nftgoApiKey
+const quicknodebaseApiKey = process.env.quicknodebaseApiKey
 
 // On appel web3.js
 const Web3 = require('web3');
@@ -21,6 +22,7 @@ const Web3 = require('web3');
 // On instancie les nodes Mainnet
 const web3CloudflarePublic = new Web3(new Web3.providers.HttpProvider(`https://cloudflare-eth.com`))
 const web3Infura = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/" + infuraApiKey))
+const wssInfura = new Web3('wss://mainnet.infura.io/ws/v3/' + infuraApiKey);
 
 // On instancie les nodes Base
 const web3BaseAlchemy = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.g.alchemy.com/v2/` + alchemyNodeBaseApiKey))
@@ -28,6 +30,7 @@ const web3Base1RPC = new Web3(new Web3.providers.HttpProvider(`https://1rpc.io/`
 const web3BaseBlast = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.blastapi.io/` + blastNodeApiKey))
 const web3BaseDRPC = new Web3(new Web3.providers.HttpProvider(`https://lb.drpc.org/ogrpc?network=base&dkey=` + DRPCBaseNodeApiKey))
 const web3BaseUnifra = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.unifra.io/v1/` + unifraBaseNodeApiKey))
+const wssBase = new Web3(new Web3.providers.WebsocketProvider(`wss://nameless-hardworking-pallet.base-mainnet.discover.quiknode.pro/` + quicknodebaseApiKey))
 
 // On initialise les APIs NFT
 const reservoirA = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
@@ -77,11 +80,13 @@ const nftgoHead = {
 module.exports = {
   web3CloudflarePublic,
   web3Infura,
+  wssInfura,
   web3BaseAlchemy,
   web3Base1RPC,
   web3BaseBlast,
   web3BaseDRPC,
   web3BaseUnifra,
+  wssBase,
   reservoirA,
   reservoirB,
   reservoirC,

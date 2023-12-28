@@ -1,18 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const infuraApiKey = process.env.infuraApiKey
-const etherscanApiKey = process.env.etherscanApiKey
-
-// WEB3
-const Web3 = require('web3');
-const web3 = new Web3('wss://mainnet.infura.io/ws/v3/' + infuraApiKey);
-
-const axios = require('axios')
+const { wssInfura } = require("../config/web3config")
 const colors = require('colors');
-
 
 // Fonctions
 const formatCoinValueSign = require("../functions/formatNumberEmbed")
@@ -30,8 +18,8 @@ const pinklockContractAddress = "0x71b5759d73262fbb223956913ecf4ecc51057641"
 const uncxContractAddress = "0x663a5c229c09b049e36dcc11a9b0d4a8eb9db214"
 
 // Création de l'instance des contrats
-const unxcContract = new web3.eth.Contract(unxcAbi, uncxContractAddress);
-const pinklockContract = new web3.eth.Contract(pinklockAbi, pinklockContractAddress);
+const unxcContract = new wssInfura.eth.Contract(unxcAbi, uncxContractAddress);
+const pinklockContract = new wssInfura.eth.Contract(pinklockAbi, pinklockContractAddress);
 
 // On définit les addresse DEAD
 const deadAddress = [
@@ -42,7 +30,6 @@ const deadAddress = [
 function formatWallet(input) {
     return input.length > 35 ? `${input.substring(0, 5)}…${input.substring(input.length - 4)}` : input;
 }
-
 
 
 // On définit le client et charge les channels
@@ -98,7 +85,7 @@ pinklockContract.events.LockAdded()
 
 
             // on récupère les infos de la pool uniswap
-            const pairContract = new web3.eth.Contract(pairContractAbi, pairAddress);
+            const pairContract = new wssInfura.eth.Contract(pairContractAbi, pairAddress);
             const token0 = (await pairContract.methods.token0().call()).toLowerCase()
             const token1 = (await pairContract.methods.token1().call()).toLowerCase()
             const reserves = await pairContract.methods.getReserves().call();
@@ -126,7 +113,7 @@ pinklockContract.events.LockAdded()
 
 
                 // On initialise le contrat
-                const tokenContract = new web3.eth.Contract(erc20Standard, tokenAddress);
+                const tokenContract = new wssInfura.eth.Contract(erc20Standard, tokenAddress);
 
                 // On call toutes les fonctions du contrat en même temps
                 const [decimals, rawSupply, ownerRaw] = await Promise.all([
@@ -287,7 +274,7 @@ unxcContract.events.onDeposit()
 
 
             // on récupère les infos de la pool uniswap
-            const pairContract = new web3.eth.Contract(pairContractAbi, pairAddress);
+            const pairContract = new wssInfura.eth.Contract(pairContractAbi, pairAddress);
             const token0 = (await pairContract.methods.token0().call()).toLowerCase()
             const token1 = (await pairContract.methods.token1().call()).toLowerCase()
             const reserves = await pairContract.methods.getReserves().call();
@@ -316,7 +303,7 @@ unxcContract.events.onDeposit()
 
 
                 // On initialise le contrat
-                const tokenContract = new web3.eth.Contract(erc20Standard, tokenAddress);
+                const tokenContract = new wssInfura.eth.Contract(erc20Standard, tokenAddress);
 
                 // On call toutes les fonctions du contrat en même temps
                 const [decimals, rawSupply, ownerRaw] = await Promise.all([

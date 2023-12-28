@@ -16,14 +16,6 @@ const moment = require('moment');
 const fs = require('fs')
 const targetsJSON = 'contracts/uniswap/tracker.json';
 
-const encrypt = require("../../../functions/encrypt")
-const decrypt = require("../../../functions/decrypt")
-
-
-//Web3 API + Cloudfare Provider
-const Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
 
 function isPrivateKeyValid(privateKey) {
     // Vérifie si la clé privée a une longueur de 64 caractères.

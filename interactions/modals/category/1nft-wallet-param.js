@@ -16,11 +16,7 @@ const moment = require('moment');
 const encrypt = require("../../../functions/encrypt")
 const decrypt = require("../../../functions/decrypt")
 
-
-//Web3 API + Cloudfare Provider
-const Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
+const { web3CloudflarePublic } = require("../../../config/web3config")
 
 function isPrivateKeyValid(privateKey) {
     // Vérifie si la clé privée a une longueur de 64 caractères.
@@ -32,16 +28,9 @@ function isPrivateKeyValid(privateKey) {
     const hexRegex = /^[0-9a-f]+$/;
     return hexRegex.test(privateKey);
 }
-
-
 function removeCharacter(str, charToRemove) {
     return str.split(charToRemove).filter(char => char !== charToRemove).join('');
 }
-
-
-
-
-
 
 const buttonsRowNew = new ActionRowBuilder()
     .addComponents(
@@ -94,10 +83,6 @@ const buttonsRowConfig = new ActionRowBuilder()
     );
 
 
-
-
-
-
 module.exports = {
     id: "modal_infra_nft_walletsetup_",
 
@@ -123,7 +108,6 @@ module.exports = {
             const customId = interaction.customId
 
             const match = customId.match(/modal_infra_nft_walletsetup_(.+)/);
-            console.log(match)
 
             if (match && match[1]) {
 
@@ -142,7 +126,7 @@ module.exports = {
 
                     if (isPrivateKeyValid(privateKey)) {
 
-                        const account = await web3.eth.accounts.privateKeyToAccount(privateKey);
+                        const account = await web3CloudflarePublic.eth.accounts.privateKeyToAccount(privateKey);
 
                         const walletAddress = account.address.toLowerCase()
 
@@ -167,7 +151,7 @@ module.exports = {
                             })
 
 
-                            const balance = await web3.eth.getBalance(walletAddress) / 10 ** 18
+                            const balance = await web3CloudflarePublic.eth.getBalance(walletAddress) / 10 ** 18
 
                             const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle("NFT Setup")
@@ -223,7 +207,7 @@ module.exports = {
 
 
 
-                            const balance = await web3.eth.getBalance(walletAddress) / 10 ** 18
+                            const balance = await web3CloudflarePublic.eth.getBalance(walletAddress) / 10 ** 18
 
                             const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle("NFT Setup")
@@ -280,7 +264,7 @@ module.exports = {
 
 
 
-                            const balance = await web3.eth.getBalance(walletAddress) / 10 ** 18
+                            const balance = await web3CloudflarePublic.eth.getBalance(walletAddress) / 10 ** 18
 
                             const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle("NFT Setup")

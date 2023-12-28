@@ -1,14 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const infuraApiKey = process.env.infuraApiKey
-
-// WEB3
-const Web3 = require('web3');
-const web3 = new Web3('wss://mainnet.infura.io/ws/v3/' + infuraApiKey);
-
+const { wssInfura } = require("../config/web3config")
 
 // Fonctions
 const formatCoinValueSign = require("../functions/formatNumberEmbed")
@@ -24,7 +15,7 @@ const factoryContractAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
 const wETHAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
 
 // Création de l'instance du Factory Contract
-const factoryContract = new web3.eth.Contract(factoryContractAbi, factoryContractAddress);
+const factoryContract = new wssInfura.eth.Contract(factoryContractAbi, factoryContractAddress);
 
 // On définit les addresse DEAD
 const deadAddress = [
@@ -105,7 +96,7 @@ factoryContract.events.PairCreated()
 
             // On lance le call du prix de l'ETH
             const ethPriceCALL = getEthPrice()
-            const txCALL = web3.eth.getTransaction(hash)
+            const txCALL = wssInfura.eth.getTransaction(hash)
 
 
 
@@ -128,14 +119,14 @@ factoryContract.events.PairCreated()
 
                 // On récupère les reserves de la paire
                 // C'est le seul call qu'on fait à la paire
-                const pairContract = new web3.eth.Contract(pairContractAbi, pairAddress);
+                const pairContract = new wssInfura.eth.Contract(pairContractAbi, pairAddress);
                 const reserves = await pairContract.methods.getReserves().call();
 
 
 
 
                 // On initialise le contrat
-                const tokenContract = new web3.eth.Contract(erc20Standard, tokenAddress);
+                const tokenContract = new wssInfura.eth.Contract(erc20Standard, tokenAddress);
 
                 // On call toutes les fonctions du contrat en même temps
                 const [decimals, rawSupply, ownerRaw] = await Promise.all([

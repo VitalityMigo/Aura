@@ -2,6 +2,13 @@
 const { EmbedBuilder } = require("discord.js");
 const { apimonitorsql, apiproviderssql, adminsql, paymentHistory, accessSql, interactionData, reportsql, sequelize, erc20 } = require('./database')
 
+//Récupérer les clefs API
+const dotenv = require("dotenv")
+dotenv.config()
+const etherscanApiKey = process.env.etherscanApiKey
+
+const { web3CloudflarePublic } = require("../config/web3config")
+
 const erc20Standard = require("../contracts/uniswap/erc20standart.json")
 const erc721Standard = require("../contracts/blur/erc721standard.json")
 const factoryContractAbi = require("../contracts/uniswap/factory.json")
@@ -11,19 +18,8 @@ const formatCoinValueSign = require("../functions/formatNumberEmbed")
 const reduceText = require("../functions/reducetext")
 const contractType = require("../functions/contracttype")
 
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const infuraApiKey = process.env.infuraApiKey
-const etherscanApiKey = process.env.etherscanApiKey
-
 
 const { HttpsProxyAgent} = require('https-proxy-agent');
-
-
-const Web3 = require('web3');
-const web3 = new Web3("https://cloudflare-eth.com")
-
 const axios = require('axios')
 
 
@@ -69,7 +65,7 @@ const wETHAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
 
 
 // Création de l'instance du Factory Contract
-const factoryContract = new web3.eth.Contract(factoryContractAbi, factoryContractAddress);
+const factoryContract = new web3CloudflarePublic.eth.Contract(factoryContractAbi, factoryContractAddress);
 
 
 
@@ -391,7 +387,7 @@ async function executeNewVerified() {
 
 
                     // Obtenir les détails du contrat
-                    const contractInstance = new web3.eth.Contract(ABI, contract);
+                    const contractInstance = new web3CloudflarePublic.eth.Contract(ABI, contract);
                     console.log(contract)
                     decimals = await contractInstance.methods.decimals().call();
                     name = await contractInstance.methods.name().call();
@@ -549,7 +545,7 @@ async function executeNewVerified() {
 
 
                     // Obtenir les détails du contrat
-                    const contractInstance = new web3.eth.Contract(ABI, contract);
+                    const contractInstance = new web3CloudflarePublic.eth.Contract(ABI, contract);
                     console.log(contract)
                     name = await contractInstance.methods.name().call();
                     symbol = await contractInstance.methods.symbol().call();
@@ -830,7 +826,7 @@ async function executeNewVerified() {
 
 
                     // Obtenir les détails du contrat
-                    const contractInstance = new web3.eth.Contract(ABI, contract);
+                    const contractInstance = new web3CloudflarePublic.eth.Contract(ABI, contract);
                     console.log(contract)
                     decimals = await contractInstance.methods.decimals().call();
                     name = await contractInstance.methods.name().call();
@@ -976,7 +972,7 @@ async function executeNewVerified() {
 
 
                     // Obtenir les détails du contrat
-                    const contractInstance = new web3.eth.Contract(ABI, contract);
+                    const contractInstance = new web3CloudflarePublic.eth.Contract(ABI, contract);
                     console.log(contract)
                     name = await contractInstance.methods.name().call();
                     symbol = await contractInstance.methods.symbol().call();

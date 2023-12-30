@@ -21,8 +21,10 @@ const dotenv = require("dotenv")
 dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
 
+const { web3CloudflarePublic } = require("../../../config/web3config")
 
 
+const axios = require('axios')
 const fs = require('fs');
 const Chart = require('chart.js');
 const { createCanvas, loadImage, registerFont } = require('canvas');
@@ -32,14 +34,6 @@ const generateRandomString = require('../../../functions/randomkey');
 registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
-
-
-
-const axios = require('axios')
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
 
 
 
@@ -149,7 +143,7 @@ module.exports = {
 
 
                             const getBlock = await axios.get('https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=' + timestamp + '&closest=before&apikey=' + etherscanApiKey)
-                            const eth = await web3.eth.getBalance(selectedWallet, getBlock.data.result);
+                            const eth = await web3CloudflarePublic.eth.getBalance(selectedWallet, getBlock.data.result);
                             const ethValueSpecific = eth / (10 ** 18)
 
 
@@ -366,7 +360,7 @@ module.exports = {
                             for (const selectedWallet of allWalletAddressOfAuthorTable) {
 
                                 const getBlock = await axios.get('https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=' + timestamp + '&closest=before&apikey=' + etherscanApiKey)
-                                const eth = await web3.eth.getBalance(selectedWallet, getBlock.data.result);
+                                const eth = await web3CloudflarePublic.eth.getBalance(selectedWallet, getBlock.data.result);
                                 ethValueSpecific += eth / (10 ** 18)
 
                             }
@@ -600,7 +594,7 @@ module.exports = {
 
 
                             const getBlock = await axios.get('https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=' + timestamp + '&closest=before&apikey=' + etherscanApiKey)
-                            const eth = await web3.eth.getBalance(selectedWallet, getBlock.data.result);
+                            const eth = await web3CloudflarePublic.eth.getBalance(selectedWallet, getBlock.data.result);
                             const ethValueSpecific = eth / (10 ** 18)
 
 
@@ -817,7 +811,7 @@ module.exports = {
                             for (const selectedWallet of allWalletAddressOfAuthorTable) {
 
                                 const getBlock = await axios.get('https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=' + timestamp + '&closest=before&apikey=' + etherscanApiKey)
-                                const eth = await web3.eth.getBalance(selectedWallet, getBlock.data.result);
+                                const eth = await web3CloudflarePublic.eth.getBalance(selectedWallet, getBlock.data.result);
                                 ethValueSpecific += eth / (10 ** 18)
 
                             }

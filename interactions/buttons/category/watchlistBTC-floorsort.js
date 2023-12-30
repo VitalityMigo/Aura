@@ -16,19 +16,6 @@ const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
 const { accessSql, profileData, interactionData, watchlistSql, adminsql, usersql, reportsql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-
-const dotenv = require("dotenv")
-dotenv.config()
-const magicedenApiKey = process.env.magicedenApiKey
-
-const axios = require('axios')
-
-
-// Configuration de l'en-tête d'autorisation
-const headers = {
-    'Authorization': `Bearer ${magicedenApiKey}`
-};
-
 function estLienHTTPS(val) {
     var lienRegex = /^(https:\/\/)/i; // Regex pour vérifier si le lien commence par "https://"
 

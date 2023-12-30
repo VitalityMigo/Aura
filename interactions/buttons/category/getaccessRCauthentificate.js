@@ -15,27 +15,10 @@ const { ButtonInteraction } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
 const { accessSql, profileData, adminsql, reportsql, sequelize, interactionData } = require('../../../events/database');
 const moment = require('moment');
-
-
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const openseaApiKey = process.env.openseaApiKey
-const reservoirApiKey = process.env.reservoirApiKey
-
-const sdk = require('api')('@reservoirprotocol/v3.0#5fxm01pliufqnan');
-sdk.auth(reservoirApiKey);
-sdk.server('https://api.reservoir.tools');
-
-
 const axios = require('axios')
 
-// Configuration de l'en-tête d'autorisation
-const headers = {
-    'X-Api-Key': openseaApiKey
-};
-
-const addTimeout = require("../../../functions/addtimeout")
+const addTimeout = require("../../../functions/addtimeout");
+const { openseaHead, reservoirH } = require('../../../config/web3config');
 
 function generateProgressBar(tryCount) {
     // Limiter tryCount entre 0 et 20 pour s'assurer que la barre de progression ne dépasse pas 100%
@@ -117,7 +100,7 @@ module.exports = {
                     if (tryCount === 10 || tryCount % 10 === 0) {
 
                         const url = 'https://api.opensea.io/user/' + wallet + '?format=json'
-                        const response = await axios.get(url, { headers });
+                        const response = await axios.get(url, { headers: openseaHead });
                         const data = await response.data;
 
                         username = await data.username
@@ -153,7 +136,7 @@ module.exports = {
 
 
 
-                        sdk.getUsersUserTokensV7({ collection: rcContract, user: wallet, accept: '*/*' })
+                        reservoirH.getUsersUserTokensV7({ collection: rcContract, user: wallet, accept: '*/*' })
                             .then(async ({ data }) => {
 
 

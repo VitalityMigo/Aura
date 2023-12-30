@@ -17,6 +17,7 @@ const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBu
 const { accessSql, profileData, reportsql, adminsql, interactionData, infra_coin, sequelize, exe_coin, infra_nft } = require('../../../events/database');
 const moment = require('moment');
 
+// Bouttons
 const buttonsRowNew = new ActionRowBuilder()
     .addComponents(
         new ButtonBuilder()

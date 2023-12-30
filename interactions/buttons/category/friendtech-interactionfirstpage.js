@@ -16,15 +16,9 @@ const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
 const { accessSql, profileData, reportsql, adminsql, interactionData, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-function reduceTextCurrent(text, maxLength) {
-    if (text.length > maxLength) {
-        return text.substring(0, maxLength - 3) + '…';
-    }
-    return text;
-}
+
 
 const getTimeAgoSmall = require("../../../functions/timeagosmall");
-const { info } = require('console');
 
 const buttonsRow = new ActionRowBuilder()
     .addComponents(
@@ -47,10 +41,6 @@ const buttonsRow = new ActionRowBuilder()
             .setLabel('last page')
             .setStyle(2),
     );
-
-
-
-
 
 module.exports = {
     id: 'friendtech-interactionfirstpage-button',

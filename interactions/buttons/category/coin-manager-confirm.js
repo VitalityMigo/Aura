@@ -13,11 +13,6 @@ const addTimeount = require("../../../functions/addtimeout")
 const chainId = 1
 
 
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
-
 function formatWallet(input) {
     return input.length > 35 ? `${input.substring(0, 5)}…${input.substring(input.length - 4)}` : input;
 }

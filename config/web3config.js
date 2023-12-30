@@ -15,6 +15,9 @@ const magicedenApiKey = process.env.magicedenApiKey
 const alchemyApiKey = process.env.alchemyApiKey
 const nftgoApiKey = process.env.nftgoApiKey
 const quicknodebaseApiKey = process.env.quicknodebaseApiKey
+const openseaApiKey = process.env.openseaApiKey
+const bestinslotApiKey = process.env.bestinslotApiKey
+
 
 // On appel web3.js
 const Web3 = require('web3');
@@ -51,6 +54,12 @@ reservoirE.auth(reservoirApiKey);
 const reservoirF = require('api')('@reservoirprotocol/v3.0#434y7jljnak92y');
 reservoirF.auth(reservoirApiKey);
 
+const reservoirG = require('api')('@reservoirprotocol/v3.0#9eilkbbprl8');
+reservoirG.auth(reservoirApiKey);
+
+const reservoirH = require('api')('@reservoirprotocol/v3.0#5fxm01pliufqnan');
+reservoirH.auth(reservoirApiKey);
+
 const reservoirHead = {
   "X-Api-Key": reservoirApiKey,
   "accept": "*/*",
@@ -70,12 +79,21 @@ nftgo.auth(nftgoApiKey);
 const nftGoB = require('api')('@nftgo/v1.0#i65d19lewn3l7h');
 nftGoB.auth(nftgoApiKey);
 
-// Headers Call API
 const nftgoHead = {
   "Accept": "application/json",
   "X-Api-Key": nftgoApiKey,
   "Host": "data-api.nftgo.io"
 }
+
+const openseaHead = {
+  'X-Api-Key': openseaApiKey
+};
+
+// Configuration de l'en-tête d'autorisation
+const bestinslot = {
+  'x-api-key': bestinslotApiKey
+};
+
 
 module.exports = {
   web3CloudflarePublic,
@@ -93,6 +111,8 @@ module.exports = {
   reservoirD,
   reservoirE,
   reservoirF,
+  reservoirG,
+  reservoirH,
   reservoirHead,
   blockspan,
   magiceden,
@@ -100,6 +120,8 @@ module.exports = {
   nftgo,
   nftGoB,
   nftgoHead,
+  openseaHead,
+  bestinslot,
 };
 
 console.log(colors.green("Web3 config succefsuly initiated"))

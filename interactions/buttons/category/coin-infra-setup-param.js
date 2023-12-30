@@ -19,11 +19,7 @@ const encrypt = require("../../../functions/encrypt")
 const decrypt = require('../../../functions/decrypt');
 const { stringify } = require('csv-stringify');
 
-
-
-//Web3 API + Cloudfare Provider
-const Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
+const { web3CloudflarePublic } = require("../../../config/web3config")
 
 
 
@@ -185,7 +181,7 @@ module.exports = {
 
 
 
-                    const account = await web3.eth.accounts.create();
+                    const account = await web3CloudflarePublic.eth.accounts.create();
 
                     const walletAddress = account.address
                     const privateKey = (account.privateKey).replace("0x", "")
@@ -358,7 +354,7 @@ module.exports = {
 
                     if (isDMOpen == true) {
 
-                        const balance = await web3.eth.getBalance(walletAddress) / 10 ** 18
+                        const balance = await web3CloudflarePublic.eth.getBalance(walletAddress) / 10 ** 18
 
                         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                             .setTitle("Coin Setup")
@@ -392,7 +388,7 @@ module.exports = {
 
                     } else if (isDMOpen == false) {
 
-                        const balance = await web3.eth.getBalance(walletAddress) / 10 ** 18
+                        const balance = await web3CloudflarePublic.eth.getBalance(walletAddress) / 10 ** 18
 
                         const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                             .setTitle("Coin Setup")

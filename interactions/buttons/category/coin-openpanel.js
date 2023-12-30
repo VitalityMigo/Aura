@@ -10,39 +10,14 @@ const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize, infra_coin } = require('../../../events/database');
 const moment = require('moment');
 
-const reduceText = require("../../../functions/reducetext")
-const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
-const getEthPrice = require('../../../functions/getethprice')
-const decrypt = require("../../../functions/decrypt")
-const encrypt = require("../../../functions/encrypt")
-
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const reservoirApiKey = process.env.reservoirApiKey
-const blockspanApiKey = process.env.blockspanApiKey
-const alchemyApiKey = process.env.alchemyApiKey
-const chartApiKey = process.env.chartApiKey
-
-
-// Axios
 const axios = require('axios')
 
+const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
+const getEthPrice = require('../../../functions/getethprice')
+const { getToken } = require('../../../functions/coin-utils')
+const reduceText = require("../../../functions/reducetext")
 
-//Reservoir API
-const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
-sdk.auth(reservoirApiKey);
-//;
-
-//Alchemy API 
-const { Network, Alchemy } = require('alchemy-sdk')
-const settings = {
-    apiKey: alchemyApiKey, // Replace with your Alchemy API Key.
-    network: Network.ETH_MAINNET, // Replace with your network.
-};
-const alchemy = new Alchemy(settings);
-const alchemy2 = require('api')('@alchemy-docs/v1.0#24zcsa23lfbpdnv5');
-
+// Fonctions
 function formatWallet(input) {
     return input.length > 35 ? `${input.substring(0, 6)}…${input.substring(input.length - 6)}` : input;
 }
@@ -141,14 +116,14 @@ module.exports = {
 
 
                     //On récupère les infos du coin
-                    const coinInfos = await alchemy.core.getTokenMetadata(coinTicker)
+                    const coinInfos = await getToken([coinTicker])
 
-                    if (coinInfos.symbol !== "") {
+                    if (coinInfos.length > 0) {
 
 
-                        coinName = coinInfos.name
-                        coinSymbol = coinInfos.symbol
-                        coinDecimal = coinInfos.decimals
+                        coinName = coinInfos[0].name
+                        coinSymbol = coinInfos[0].symbol
+                        coinDecimal = coinInfos[0].decimals
 
 
                         // On renvoi le premier embed
@@ -174,7 +149,7 @@ module.exports = {
 
 
                         //On load l'image
-                       // const chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
+                        // const chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
 
 
 
@@ -335,75 +310,75 @@ module.exports = {
 
 
                         const buttonsRow = new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId('button_coin_exec_buy_' + coinTicker + "@xETH")
-                                .setLabel('Buy x ETH')
-                                .setStyle(3),
-                            new ButtonBuilder()
-                                .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.05ETH")
-                                .setLabel('Buy 0.05 ETH')
-                                .setStyle(3),
-                            new ButtonBuilder()
-                                .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.1ETH")
-                                .setLabel('Buy 0.1 ETH')
-                                .setStyle(3),
-                            new ButtonBuilder()
-                                .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.2ETH")
-                                .setLabel('Buy 0.2 ETH')
-                                .setStyle(3),
-                            new ButtonBuilder()
-                                .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.5ETH")
-                                .setLabel('Buy 0.5 ETH')
-                                .setStyle(3),
+                            .addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_exec_buy_' + coinTicker + "@xETH")
+                                    .setLabel('Buy x ETH')
+                                    .setStyle(3),
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.05ETH")
+                                    .setLabel('Buy 0.05 ETH')
+                                    .setStyle(3),
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.1ETH")
+                                    .setLabel('Buy 0.1 ETH')
+                                    .setStyle(3),
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.2ETH")
+                                    .setLabel('Buy 0.2 ETH')
+                                    .setStyle(3),
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_exec_buy_' + coinTicker + "@0.5ETH")
+                                    .setLabel('Buy 0.5 ETH')
+                                    .setStyle(3),
 
-                        );
+                            );
 
 
                         const buttonsRow1 = new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId('button_coin_exec_sell_' + coinTicker + "@x%")
-                                .setLabel('Sell x %')
-                                .setStyle(4),
-                            new ButtonBuilder()
-                                .setCustomId('button_coin_exec_sell_' + coinTicker + "@25%")
-                                .setLabel('Sell 25%')
-                                .setStyle(4),
-                            new ButtonBuilder()
-                                .setCustomId('button_coin_exec_sell_' + coinTicker + "@50%")
-                                .setLabel('Sell 50%')
-                                .setStyle(4),
-                            new ButtonBuilder()
-                                .setCustomId('button_coin_exec_sell_' + coinTicker + "@75%")
-                                .setLabel('Sell 75%')
-                                .setStyle(4),
-                            new ButtonBuilder()
-                                .setCustomId('button_coin_exec_sell_' + coinTicker + "@100%")
-                                .setLabel('Sell 100%')
-                                .setStyle(4),
+                            .addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_exec_sell_' + coinTicker + "@x%")
+                                    .setLabel('Sell x %')
+                                    .setStyle(4),
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_exec_sell_' + coinTicker + "@25%")
+                                    .setLabel('Sell 25%')
+                                    .setStyle(4),
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_exec_sell_' + coinTicker + "@50%")
+                                    .setLabel('Sell 50%')
+                                    .setStyle(4),
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_exec_sell_' + coinTicker + "@75%")
+                                    .setLabel('Sell 75%')
+                                    .setStyle(4),
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_exec_sell_' + coinTicker + "@100%")
+                                    .setLabel('Sell 100%')
+                                    .setStyle(4),
 
-                        );
+                            );
 
-                    const buttonsRow2 = new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId('button_coin_tradepanel_refresh_' + coinTicker)
-                                .setLabel('🔁 Refresh')
-                                .setStyle(1),
-                            new ButtonBuilder()
-                                .setCustomId('coin_infra_tradepanel_help-button')
-                                .setLabel('📑 Tutorial')
-                                .setStyle(1),
-                            new ButtonBuilder()
-                                .setCustomId('coin_infra_tradepanel_audit-button')
-                                .setLabel('📡 Audit')
-                                .setStyle(1),
-                            new ButtonBuilder()
-                                .setCustomId('button_coin_tradepanel_setup')
-                                .setLabel('💻 Setup')
-                                .setStyle(1)
-                        );
+                        const buttonsRow2 = new ActionRowBuilder()
+                            .addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_tradepanel_refresh_' + coinTicker)
+                                    .setLabel('🔁 Refresh')
+                                    .setStyle(1),
+                                new ButtonBuilder()
+                                    .setCustomId('coin_infra_tradepanel_help-button')
+                                    .setLabel('📑 Tutorial')
+                                    .setStyle(1),
+                                new ButtonBuilder()
+                                    .setCustomId('coin_infra_tradepanel_audit-button')
+                                    .setLabel('📡 Audit')
+                                    .setStyle(1),
+                                new ButtonBuilder()
+                                    .setCustomId('button_coin_tradepanel_setup')
+                                    .setLabel('💻 Setup')
+                                    .setStyle(1)
+                            );
 
 
 

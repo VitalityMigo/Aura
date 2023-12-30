@@ -16,13 +16,6 @@ const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
 const { accessSql, profileData, reportsql, adminsql, interactionData, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-function reduceTextCurrent(text, maxLength) {
-    if (text.length > maxLength) {
-        return text.substring(0, maxLength - 3) + '…';
-    }
-    return text;
-}
-
 const getTimeAgoSmall = require("../../../functions/timeagosmall")
 
 const buttonsRow = new ActionRowBuilder()

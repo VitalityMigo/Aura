@@ -21,14 +21,12 @@ const moment = require('moment');
 const generateRandomString = require('../../../functions/randomkey');
 const formatNumberVisual = require("../../../functions/reducenumbervisual")
 const { registerFont, createCanvas, loadImage } = require('canvas');
+const getEthPrice = require("../../../functions/getethprice")
 
-
+// On enregistre les fonts
 registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
-
-
-const axios = require('axios')
 
 
 
@@ -67,8 +65,7 @@ module.exports = {
         console.log("// Step 2 : Authorization - Executed ✅")
 
         // Prix de l'ETH
-        const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=RH7J523GC2J7GV34WQGJZQPB8ZWKZP57Y8')
-        const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
+        const ethUsdPrice = await getEthPrice()
 
 
         //On stock le call API

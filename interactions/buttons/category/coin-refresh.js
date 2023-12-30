@@ -15,65 +15,14 @@ const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
 const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-const reduceText = require("../../../functions/reducetext")
-const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
-const getApprovals = require("../../../functions/getApprovals")
-const getEthPrice = require('../../../functions/getethprice')
 
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const etherscanApiKey = process.env.etherscanApiKey
-const reservoirApiKey = process.env.reservoirApiKey
-const blockspanApiKey = process.env.blockspanApiKey
-const alchemyApiKey = process.env.alchemyApiKey
-const moralisApiKey = process.env.moralisApiKey
-const chartApiKey = process.env.chartApiKey
-const magicedenApiKey = process.env.chainbaseApiKey
-
-
-// Axios
 const axios = require('axios')
 
+const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
+const getEthPrice = require('../../../functions/getethprice')
+const { getToken } = require('../../../functions/coin-utils')
+const reduceText = require("../../../functions/reducetext")
 
-// Instance des APIs cryptos
-const Moralis = require("moralis").default;
-
-//Reservoir API
-const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
-sdk.auth(reservoirApiKey);
-//;
-
-//Block Span API
-const bsp = require('api')('@blockspan/v1.0#9zxl2sledru983');
-bsp.auth(blockspanApiKey);
-
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
-//Alchemy API 
-const { Network, Alchemy } = require('alchemy-sdk')
-const settings = {
-    apiKey: alchemyApiKey, // Replace with your Alchemy API Key.
-    network: Network.ETH_MAINNET, // Replace with your network.
-};
-const alchemy = new Alchemy(settings);
-const alchemy2 = require('api')('@alchemy-docs/v1.0#24zcsa23lfbpdnv5');
-
-
-// Fonctions
-function isValidEthereumAddress(address) {
-    return /^0x[a-fA-F0-9]{40}$/.test(address);
-}
-
-
-function isBRC20BitcoinWallet(wallet) {
-    const regex = /^bc1[a-zA-Z0-9]{39,59}$/;
-
-    return regex.test(wallet);
-}
 
 function formatWallet(input) {
     return input.length > 35 ? `${input.substring(0, 6)}…${input.substring(input.length - 6)}` : input;
@@ -167,18 +116,18 @@ module.exports = {
 
 
                 //On récupère les infos du coin
-                const coinInfos = await alchemy.core.getTokenMetadata(coinTicker)
+                const coinInfos = await getToken([coinTicker])
 
-                if (coinInfos.symbol !== "") {
+                if (coinInfos.length > 0) {
 
 
-                    coinName = coinInfos.name
-                    coinSymbol = coinInfos.symbol
-                    coinDecimal = coinInfos.decimals
+                    coinName = coinInfos[0].name
+                    coinSymbol = coinInfos[0].symbol
+                    coinDecimal = coinInfos[0].decimals
 
 
                     //On load l'image et fait les calls API de base
-                   // const chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
+                    // const chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
 
                     const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinTicker.toLowerCase())
 
@@ -250,7 +199,7 @@ module.exports = {
                         if (holdersCount) { holdersCount = values[0].holder_count }
                     }
 
-                
+
 
                     if (owner.toLowerCase() == "0x0000000000000000000000000000000000000000" || owner.toLowerCase() == "0x000000000000000000000000000000000000dead") {
 
@@ -341,7 +290,7 @@ module.exports = {
                         .setTitle(reduceText(coinName, 40) + " (" + coinSymbol.toUpperCase() + ")")
                         .setDescription(">>> Displaying data for `$" + coinSymbol.toUpperCase() + "`.")
                         .setAuthor({ name: authorName, iconURL: userAvatar })
-                       // .setImage(chartImageLink)
+                        // .setImage(chartImageLink)
                         .addFields(
                             { name: "Contract", value: "`" + coinTicker.toLowerCase() + "`", inline: false },
                             { name: "ETH Price", value: "`" + parseFloat(coinActualPriceEth).toFixed(5) + "Ξ`", inline: true },

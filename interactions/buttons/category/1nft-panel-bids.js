@@ -7,27 +7,17 @@
 
 const { EmbedBuilder, SlashCommandBuilder, ButtonInteraction } = require("discord.js");
 const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
-const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize, infra_coin, tracker_coin, infra_nft } = require('../../../events/database');
+const { profileData, accessSql, reportsql, adminsql } = require('../../../events/database');
 const moment = require('moment');
 
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const reservoirApiKey = process.env.reservoirApiKey
-
-
-const sdk3 = require('api')('@reservoirprotocol/v3.0#9eilkbbprl8');
-sdk3.auth(reservoirApiKey);
-
+// On appelle le node
+const { reservoirG } = require("../../../config/web3config")
 
 
 // Fonctions
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
 }
-
-
-
 
 
 module.exports = {
@@ -77,7 +67,7 @@ module.exports = {
 
 
                     // Premier Call API Reservoir : Stats et infos sur la collection
-                    await sdk3.getOrdersBidsV6({
+                    await reservoirG.getOrdersBidsV6({
                         collection: selectedCollection,
                         sources: 'blur.io',
                         includeCriteriaMetadata: 'true',
@@ -105,7 +95,7 @@ module.exports = {
 
                                 const maxTotalBidValue = Math.max(...bidTableFull.map(item => parseFloat(item.price) * item.executableSize));
 
-                                
+
                                 // Calculer le nombre de ❚ en fonction de la valeur de "price x executableSize" et normaliser à une limite maximum de 25
                                 await bidTableFull.forEach(item => {
                                     const normalizedBars = Math.ceil((parseFloat(item.price) * item.executableSize) / maxTotalBidValue * 25);
@@ -192,24 +182,24 @@ module.exports = {
                                 const linksFormatted = interaction.message.embeds[0].data.fields.find(obj => obj.name === "Links").value
 
                                 const getBlurOneWallet = new EmbedBuilder().setColor("#060A8F")
-                                .setTitle("Bids Depth")
-                                .setDescription(">>> Displaying the top bids")
-                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                .addFields(
-                                    { name: " ", value: " ", inline: false },
-                                    { name: "Total Bids Value", value: "`0.000Ξ`", inline: true },
-                                    { name: "Bid Count", value: "`0`", inline: true },
-                                    { name: "Unique Bidders", value: "`0`", inline: true },
-                                    { name: " ", value: " ", inline: false },
-                                    { name: "Bids", value: "```No bids found for this collection                        ```", inline: true },
-                                    { name: "Links", value: linksFormatted, inline: false },
-                                    // { name: "Page", value: "`[1/" + pageIndex + "]`", inline: true },
+                                    .setTitle("Bids Depth")
+                                    .setDescription(">>> Displaying the top bids")
+                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    .addFields(
+                                        { name: " ", value: " ", inline: false },
+                                        { name: "Total Bids Value", value: "`0.000Ξ`", inline: true },
+                                        { name: "Bid Count", value: "`0`", inline: true },
+                                        { name: "Unique Bidders", value: "`0`", inline: true },
+                                        { name: " ", value: " ", inline: false },
+                                        { name: "Bids", value: "```No bids found for this collection                        ```", inline: true },
+                                        { name: "Links", value: linksFormatted, inline: false },
+                                        // { name: "Page", value: "`[1/" + pageIndex + "]`", inline: true },
 
-                                )
-                                .setTimestamp()
-                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                    )
+                                    .setTimestamp()
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                            await interaction.editReply({ embeds: [getBlurOneWallet], components: [] })
+                                await interaction.editReply({ embeds: [getBlurOneWallet], components: [] })
 
 
                             }

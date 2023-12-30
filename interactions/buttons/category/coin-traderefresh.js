@@ -15,63 +15,16 @@ const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
 const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-// Fonctions d'execution et de formattage
-const { createFactory } = require('../../../functions/coin-utils')
 
-const reduceText = require("../../../functions/reducetext")
-const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
-const getApprovals = require("../../../functions/getApprovals")
-const getEthPrice = require('../../../functions/getethprice')
-
-
-
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const etherscanApiKey = process.env.etherscanApiKey
-const reservoirApiKey = process.env.reservoirApiKey
-const blockspanApiKey = process.env.blockspanApiKey
-const alchemyApiKey = process.env.alchemyApiKey
-const moralisApiKey = process.env.moralisApiKey
-const chartApiKey = process.env.chartApiKey
-const magicedenApiKey = process.env.chainbaseApiKey
-
-
-// Axios
+// Nodes
+const { web3CloudflarePublic } = require("../../../config/web3config")
 const axios = require('axios')
 
-
-// Instance des APIs cryptos
-const Moralis = require("moralis").default;
-
-//Reservoir API
-const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
-sdk.auth(reservoirApiKey);
-//;
-
-//Block Span API
-const bsp = require('api')('@blockspan/v1.0#9zxl2sledru983');
-bsp.auth(blockspanApiKey);
-
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
-//Alchemy API 
-const { Network, Alchemy } = require('alchemy-sdk');
-const { match } = require('assert');
-const settings = {
-    apiKey: alchemyApiKey, // Replace with your Alchemy API Key.
-    network: Network.ETH_MAINNET, // Replace with your network.
-};
-const alchemy = new Alchemy(settings);
-const alchemy2 = require('api')('@alchemy-docs/v1.0#24zcsa23lfbpdnv5');
-
+// Fonctions d'execution et de formattage
+const { getToken } = require('../../../functions/coin-utils')
+const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
 
 // Fonctions
-
-
 function formatWallet2(input) {
     return input.length > 35 ? `${input.substring(0, 4)}…${input.substring(input.length - 4)}` : input;
 }
@@ -123,237 +76,232 @@ module.exports = {
                 await interaction.deferUpdate({ ephemeral: true })
 
 
-                    const date = Date.now()
-                    const timestamp = parseInt(date / 1000)
+                const date = Date.now()
+                const timestamp = parseInt(date / 1000)
 
 
-                    const contract = "0x" + matches[1]
+                const contract = "0x" + matches[1]
 
-                    const random_address = "0x862284B87b774bbEC86c4f13bA6c283C4552AfAB"
-                    const random_slippage = 0
-                    const transfer_events = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 
-                    // On crée la paire grâce à la factory
-                    const factory = await createFactory(
-                        "swap_eth_to_token",
-                        contract,
-                        random_address,
-                        random_slippage
+                //On récupère les infos du coin
+                const coinInfos = await getToken([contract])
+                const symbol = coinInfos[0].symbol
+                const decimals = coinInfos[0].decimals
+
+
+                const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
+                    .setTitle(symbol)
+                    .setDescription(">>> Displaying the last trades on `" + symbol + "`.")
+                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                    .setTimestamp()
+                    .addFields(
+                        { name: "Symbol", value: "`" + symbol + "`", inline: false },
+                        { name: "Contract", value: "`" + contract + "`", inline: false },
+                        { name: " ", value: " ", inline: false },
+
                     )
+                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                    const userFTEmbed = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle(factory.toToken.symbol)
-                        .setDescription(">>> Displaying the last trades on`" + factory.toToken.symbol + "`.")
-                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .setTimestamp()
-                        .addFields(
-                            { name: "Symbol", value: "`" + factory.toToken.symbol + "`", inline: false },
-                            { name: "Contract", value: "`" + contract + "`", inline: false },
-                            { name: " ", value: " ", inline: false },
 
-                        )
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                const coinData = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + contract)
 
+                if (coinData.data.pairs != null) {
 
-                    const coinData = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + contract)
+                    const pairData = coinData.data.pairs.filter((item) => item.quoteToken.address.toLowerCase() === wETH.toLowerCase() && item.dexId === "uniswap")[0]
 
-                    if (coinData.data.pairs != null) {
 
-                        const pairData = coinData.data.pairs.filter((item) => item.quoteToken.address.toLowerCase() === wETH.toLowerCase() && item.dexId === "uniswap")[0]
+                    //const pool = pairData.pairAddress
+                    const version = pairData.labels[0]
+                    const tokenDecimals = decimals
+                    const pool = pairData.pairAddress
 
+                    // Définition des deux topics uniswap de swap
+                    const uniswap_swap_topicV2 = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822'; // Remplacez par le vrai topic V2
+                    const uniswap_swap_topicV3 = '0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67'; // Remplacez par le vrai topic V3
 
-                        //const pool = pairData.pairAddress
-                        const version = pairData.labels[0]
-                        const tokenDecimals = factory.toToken.decimals
-                        const pool = pairData.pairAddress
+                    // On séléctionne le topic approprié
+                    let uniswap_topic = uniswap_swap_topicV2
+                    if (version == "v3") { uniswap_topic = uniswap_swap_topicV3 }
 
-                        // Définition des deux topics uniswap de swap
-                        const uniswap_swap_topicV2 = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822'; // Remplacez par le vrai topic V2
-                        const uniswap_swap_topicV3 = '0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67'; // Remplacez par le vrai topic V3
+                    if (version == 'v2') {
 
-                        // On séléctionne le topic approprié
-                        let uniswap_topic = uniswap_swap_topicV2
-                        if (version == "v3") { uniswap_topic = uniswap_swap_topicV3 }
 
-                        if (version == 'v2') {
+                        // Dernier bloc
+                        const blockRange = 799
+                        const toBlock = await web3CloudflarePublic.eth.getBlockNumber();
+                        const fromBlock = toBlock - blockRange
 
 
-                            // Dernier bloc
-                            const blockRange = 799
-                            const toBlock = await web3.eth.getBlockNumber();
-                            const fromBlock = toBlock - blockRange
+                        // Obtenez les événements avec les deux topics
+                        // On regarde les derniers évênements
+                        const eventsCall = await web3CloudflarePublic.eth.getPastLogs({
+                            fromBlock: fromBlock,
+                            toBlock: toBlock,
+                            address: pool,
+                            topics: [uniswap_topic],
+                        })
 
+                        const events = eventsCall.reverse()
 
-                            // Obtenez les événements avec les deux topics
-                            // On regarde les derniers évênements
-                            const eventsCall = await web3.eth.getPastLogs({
-                                fromBlock: fromBlock,
-                                toBlock: toBlock,
-                                address: pool,
-                                topics: [uniswap_topic],
-                            })
+                        const eventsCount = events.length
 
-                            const events = eventsCall.reverse()
 
-                            const eventsCount = events.length
 
+                        // INDEX
+                        let index = 0
+                        let trades = ""
+                        let trades2 = ""
+                        let trades3 = ""
+                        let trades4 = ""
+                        let trades5 = ""
+                        let trades6 = ""
 
+                        for (const swap of events) {
 
-                            // INDEX
-                            let index = 0
-                            let trades = ""
-                            let trades2 = ""
-                            let trades3 = ""
-                            let trades4 = ""
-                            let trades5 = ""
-                            let trades6 = ""
+                            const decode = await decodeUniswapSwapEventV2(swap.data, swap.topics, swap.blockNumber, toBlock, contract, wETH, tokenDecimals, timestamp)
 
-                            for (const swap of events) {
+                            // Formattage
+                            let act1 = "🟢"
+                            let act2 = "bought"
+                            if (decode.action == "sell") {
+                                act1 = "🔴"
+                                act2 = "sold"
+                            }
 
-                                const decode = await decodeUniswapSwapEventV2(swap.data, swap.topics, swap.blockNumber, toBlock, contract, wETH, tokenDecimals, timestamp)
+                            if (index <= 5) {
 
-                                // Formattage
-                                let act1 = "🟢"
-                                let act2 = "bought"
-                                if (decode.action == "sell") {
-                                    act1 = "🔴"
-                                    act2 = "sold"
-                                }
+                                trades += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
 
-                                if (index <= 5) {
+                                if (index == 5 || index == eventsCount) {
 
-                                    trades += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
 
-                                    if (index == 5 || index == eventsCount) {
+                                    userFTEmbed.addFields(
+                                        { name: 'Coin Trades:', value: trades, inline: false },
 
-
-                                        userFTEmbed.addFields(
-                                            { name: 'Coin Trades:', value: trades, inline: false },
-
-                                        );
-
-                                    }
-
-
-                                } else if (index <= 10) {
-
-                                    trades2 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
-
-                                    if (index == 10 || index == eventsCount) {
-
-                                        userFTEmbed.addFields(
-                                            { name: ' ', value: trades2, inline: false },
-
-                                        );
-
-                                    }
-
-
-                                } else if (index <= 15) {
-
-                                    trades3 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
-
-
-                                    if (index == 15 || index == eventsCount) {
-
-                                        userFTEmbed.addFields(
-                                            { name: ' ', value: trades3, inline: false },
-
-                                        );
-
-                                    }
-
-                                } else if (index <= 20) {
-
-                                    trades4 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
-
-
-                                    if (index == 20 || index == eventsCount) {
-
-                                        userFTEmbed.addFields(
-                                            { name: ' ', value: trades4, inline: false },
-
-                                        );
-
-                                    }
-
-                                } else if (index <= 25) {
-
-                                    trades5 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
-
-
-                                    if (index == 25 || index == eventsCount) {
-
-                                        userFTEmbed.addFields(
-                                            { name: ' ', value: trades5, inline: false },
-
-                                        );
-
-                                    }
-
-                                } else if (index <= 30) {
-
-                                    trades6 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
-
-
-                                    if (index == 30 || index == eventsCount) {
-
-                                        userFTEmbed.addFields(
-                                            { name: ' ', value: trades6, inline: false },
-
-                                        );
-
-                                    }
-
-                                } else {
-                                    break
+                                    );
 
                                 }
 
 
-                                index++
+                            } else if (index <= 10) {
+
+                                trades2 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+                                if (index == 10 || index == eventsCount) {
+
+                                    userFTEmbed.addFields(
+                                        { name: ' ', value: trades2, inline: false },
+
+                                    );
+
+                                }
+
+
+                            } else if (index <= 15) {
+
+                                trades3 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+
+                                if (index == 15 || index == eventsCount) {
+
+                                    userFTEmbed.addFields(
+                                        { name: ' ', value: trades3, inline: false },
+
+                                    );
+
+                                }
+
+                            } else if (index <= 20) {
+
+                                trades4 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+
+                                if (index == 20 || index == eventsCount) {
+
+                                    userFTEmbed.addFields(
+                                        { name: ' ', value: trades4, inline: false },
+
+                                    );
+
+                                }
+
+                            } else if (index <= 25) {
+
+                                trades5 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+
+                                if (index == 25 || index == eventsCount) {
+
+                                    userFTEmbed.addFields(
+                                        { name: ' ', value: trades5, inline: false },
+
+                                    );
+
+                                }
+
+                            } else if (index <= 30) {
+
+                                trades6 += "`" + act1 + "` " + "[" + formatWallet2(decode.sender, 18) + "](https://etherscan.io/address/" + decode.sender + ") `" + act2 + " " + formatCoinValueSign(decode.coin) + "` for `" + parseFloat(decode.eth).toFixed(3) + "Ξ` at `" + parseFloat(decode.price).toFixed(6) + "$` ∙ <t:" + decode.timestamp + ":R>\n"
+
+
+                                if (index == 30 || index == eventsCount) {
+
+                                    userFTEmbed.addFields(
+                                        { name: ' ', value: trades6, inline: false },
+
+                                    );
+
+                                }
+
+                            } else {
+                                break
 
                             }
 
 
-
-
+                            index++
 
                         }
 
 
-                  
-
-                        await interaction.editReply({ embeds: [userFTEmbed]  });
 
 
-
-                    } else {
-
-                        const notMember = new EmbedBuilder().setColor("#060A8F")
-                            .setTitle(`Token Data`)
-                            .setDescription("The coin address you entered can't be retreive. This can happen for few reasons :\n\n• The token address (ERC20) doesn't exist\n• The coin isn't available anymore or is suspicious\n• You entered a symbol for a ERC20 and not a token address, double check.\n\nIf you think the problem is on our end, please use `/report` or contact an admin.")
-                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                            .setTimestamp()
-                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-                        await interaction.reply({ embeds: [notMember], components: [], ephemeral: true });
 
                     }
 
 
 
 
+                    await interaction.editReply({ embeds: [userFTEmbed] });
+
+
+
+                } else {
+
+                    const notMember = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle(`Token Data`)
+                        .setDescription("The coin address you entered can't be retreive. This can happen for few reasons :\n\n• The token address (ERC20) doesn't exist\n• The coin isn't available anymore or is suspicious\n• You entered a symbol for a ERC20 and not a token address, double check.\n\nIf you think the problem is on our end, please use `/report` or contact an admin.")
+                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                    await interaction.reply({ embeds: [notMember], components: [], ephemeral: true });
+
+                }
 
 
 
 
-                
 
 
-             
+
+
+
+
+
+
 
             } else {
 
@@ -512,7 +460,7 @@ async function decodeUniswapSwapEventV2(input, topics, block, toBlock, contract,
 
 
     // // GET CODE POUR TAG (Est ce que c'est un bot ?)
-    // const code = await web3.eth.getCode(sender);
+    // const code = await web3CloudflarePublic.eth.getCode(sender);
     // let tag = ""
     // if (code != "0x") { tag = "🤖" }
 

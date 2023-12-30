@@ -7,7 +7,6 @@
 const { sequelize } = require('./database');
 
 //Importation des fonctions à répéter
-const intervalalerts = require('./intervalalerts')
 const apiMonthlyChecker = require('./intervalapimonth')
 const apiDayChecker = require('./intervalapidaily')
 const apiConstantChecker = require('./intervalapiconstant')

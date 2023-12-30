@@ -5,102 +5,27 @@
 
 
 
-const { EmbedBuilder, SlashCommandBuilder, ButtonInteraction } = require("discord.js");
+const { EmbedBuilder, ButtonInteraction } = require("discord.js");
 const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
-const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize, infra_coin, tracker_coin, infra_nft } = require('../../../events/database');
+const { accessSql, reportsql, apimonitorsql, adminsql } = require('../../../events/database');
 const moment = require('moment');
-
-// Fonctions d'execution et de formattage
-const { createFactory } = require('../../../functions/coin-utils')
-
-const reduceText = require("../../../functions/reducetext")
-const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
-const getApprovals = require("../../../functions/getApprovals")
-const getEthPrice = require('../../../functions/getethprice')
-const decrypt = require("../../../functions/decrypt")
-const encrypt = require("../../../functions/encrypt")
-const isHttps = require('../../../functions/isHttps')
+const axios = require('axios')
 
 //Récupérer les clefs API
 const dotenv = require("dotenv")
 dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
-const reservoirApiKey = process.env.reservoirApiKey
-const blockspanApiKey = process.env.blockspanApiKey
-const alchemyApiKey = process.env.alchemyApiKey
-const moralisApiKey = process.env.moralisApiKey
-const chartApiKey = process.env.chartApiKey
-const magicedenApiKey = process.env.chainbaseApiKey
-const gallopApiKey = process.env.gallopApiKey
 
+const { reservoirA, magiceden } = require("../../../config/web3config")
 
-// Axios
-const axios = require('axios')
+const getEthPrice = require('../../../functions/getethprice')
+const isHttps = require('../../../functions/isHttps')
 
-
-// Instance des APIs cryptos
-const Moralis = require("moralis").default;
-
-//Reservoir API
-const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
-sdk.auth(reservoirApiKey);
-//;
-
-const sdk3 = require('api')('@reservoirprotocol/v3.0#9eilkbbprl8');
-sdk3.auth(reservoirApiKey);
-
-//Gallop API
-const gallop = require('api')('@gallop/v1.0#4uq6vlfu0opx7');
-gallop.auth(gallopApiKey);
-
-
-//Block Span API
-const bsp = require('api')('@blockspan/v1.0#9zxl2sledru983');
-bsp.auth(blockspanApiKey);
-
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
-//Alchemy API 
-const { Network, Alchemy } = require('alchemy-sdk')
-const settings = {
-    apiKey: alchemyApiKey, // Replace with your Alchemy API Key.
-    network: Network.ETH_MAINNET, // Replace with your network.
-};
-const alchemy = new Alchemy(settings);
-const alchemy2 = require('api')('@alchemy-docs/v1.0#24zcsa23lfbpdnv5');
-
-// Initialisation du contrat de pair
-const wETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-
-// Configuration de l'en-tête d'autorisation
-const headers = {
-    'Authorization': `Bearer ${magicedenApiKey}`
-};
 
 // Fonctions
 function isValidEthereumAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
 }
-
-
-function isBRC20BitcoinWallet(wallet) {
-    const regex = /^bc1[a-zA-Z0-9]{39,59}$/;
-
-    return regex.test(wallet);
-}
-
-function formatWallet(input) {
-    return input.length > 35 ? `${input.substring(0, 6)}…${input.substring(input.length - 6)}` : input;
-}
-
-function formatWallet2(input) {
-    return input.length > 35 ? `${input.substring(0, 4)}…${input.substring(input.length - 4)}` : input;
-}
-
-
 function cutString(string) {
     stringLength = string.length
     if (stringLength > 300) {
@@ -206,7 +131,7 @@ module.exports = {
 
 
                     // Premier Call API Reservoir : Stats et infos sur la collection
-                    sdk.getCollectionsV5({ id: selectedCollection, accept: '*/*', includeTopBid: 'true', includeOwnerCount: 'true', includeSalesCount: 'true' })
+                    reservoirA.getCollectionsV5({ id: selectedCollection, accept: '*/*', includeTopBid: 'true', includeOwnerCount: 'true', includeSalesCount: 'true' })
                         .then(async ({ data: collectionData }) => {
 
 
@@ -455,7 +380,7 @@ module.exports = {
 
 
                     const url = `https://api-mainnet.magiceden.dev/v2/ord/btc/collections/` + coinAddress;
-                    const response = await axios.get(url, { headers });
+                    const response = await axios.get(url, { headers: magiceden });
                     const data = await response.data;
 
                     const description = data.description
@@ -470,7 +395,7 @@ module.exports = {
 
 
                     const url2 = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=` + coinAddress;
-                    const response2 = await axios.get(url2, { headers });
+                    const response2 = await axios.get(url2, { headers: magiceden });
                     const data2 = await response2.data;
 
 

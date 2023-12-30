@@ -15,18 +15,8 @@ const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
 const { accessSql, profileData, paymentHistory, adminsql, reportsql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const openseaApiKey = process.env.openseaApiKey
-
 const axios = require('axios')
-
-// Configuration de l'en-tête d'autorisation
-const headers = {
-    'X-Api-Key': openseaApiKey
-};
-
+const { openseaHead } = require("../../../config/web3config")
 const addTimeout = require("../../../functions/addtimeout")
 
 function generateProgressBar(tryCount) {
@@ -39,8 +29,6 @@ function generateProgressBar(tryCount) {
 
     return `${progressBar} [${percentage}%]`;
 }
-
-
 
 module.exports = {
     id: 'getaccessauthentificatewallet-button',
@@ -106,7 +94,7 @@ module.exports = {
                 if (tryCount === 10 || tryCount % 10 === 0) {
 
                     const url = 'https://api.opensea.io/user/' + wallet + '?format=json'
-                    const response = await axios.get(url, { headers });
+                    const response = await axios.get(url, { headers: openseaHead });
                     const data = await response.data;
 
                     username = await data.username

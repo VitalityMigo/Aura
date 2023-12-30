@@ -1,6 +1,6 @@
 //;
 const { isBuffer } = require('util');
-const { alertsDown, alertsUp, Collections, Authors, adminsql, reportsql, sequelize } = require('./database');
+const { alertsDown, alertsUp, Collections, Authors, adminsql, reportsql, sequelize } = require('../events/database');
 
 const { EmbedBuilder } = require("discord.js");
 

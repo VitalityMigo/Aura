@@ -5,10 +5,7 @@ const { profileData, accessSql, apimonitorsql, wallets, reportsql, adminsql, inf
 const moment = require('moment');
 const decrypt = require("../../../functions/decrypt")
 
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
+const { web3CloudflarePublic } = require("../../../config/web3config")
 
 
 module.exports = {
@@ -115,7 +112,7 @@ module.exports = {
 
                 if (ape_mode == "true") { ape_mode = "✅" } else { ape_mode = "❌" }
 
-                const balance = await web3.eth.getBalance(walletAddress) / 10 ** 18
+                const balance = await web3CloudflarePublic.eth.getBalance(walletAddress) / 10 ** 18
 
                 const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("NFT Setup")

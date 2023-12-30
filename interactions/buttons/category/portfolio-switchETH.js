@@ -16,26 +16,6 @@ const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
 const { accessSql, profileData, interactionData, adminsql, wallets, reportsql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const magicedenApiKey = process.env.magicedenApiKey
-
-// Configuration de l'en-tête d'autorisation
-const headers = {
-    'Authorization': `Bearer ${magicedenApiKey}`
-};
-
-//https request
-const axios = require('axios')
-
-function isBRC20BitcoinWallet(wallet) {
-    const regex = /^bc1[a-zA-Z0-9]{39,59}$/;
-
-    return regex.test(wallet);
-}
-
-
 
 const chartVisual1 = new ActionRowBuilder()
     .addComponents(

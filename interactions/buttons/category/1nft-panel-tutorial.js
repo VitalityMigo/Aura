@@ -17,8 +17,6 @@ const { accessSql, profileData, reportsql, adminsql, interactionData, sequelize 
 const moment = require('moment');
 
 
-
-
 module.exports = {
     id: 'nft_infra_tradepanel_help-button',
 

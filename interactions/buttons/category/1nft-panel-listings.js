@@ -10,14 +10,8 @@ const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize, infra_coin, tracker_coin, infra_nft } = require('../../../events/database');
 const moment = require('moment');
 
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const reservoirApiKey = process.env.reservoirApiKey
-
-
-const sdk3 = require('api')('@reservoirprotocol/v3.0#9eilkbbprl8');
-sdk3.auth(reservoirApiKey);
+// On appelle le node
+const { reservoirG } = require("../../../config/web3config")
 
 
 // Fonctions
@@ -68,7 +62,7 @@ module.exports = {
 
 
                     // Premier Call API Reservoir : Stats et infos sur la collection
-                    await sdk3.getOrdersDepthV1({
+                    await reservoirG.getOrdersDepthV1({
                         side: 'sell',
                         collection: selectedCollection,
                         accept: '*/*'

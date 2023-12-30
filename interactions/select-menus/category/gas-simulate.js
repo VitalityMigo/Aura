@@ -12,18 +12,14 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const { profileData, accessSql, apimonitorsql, wallets, reportsql, adminsql, usersql, interactionData, watchlistSql, sequelize } = require('../../../events/database');
 
-
 //Récupérer les clefs API
 const dotenv = require("dotenv")
 dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
 
-
-//Web3 API + Cloudfare Provider
-var Web3 = require("web3")
-const web3 = new Web3("https://cloudflare-eth.com")
-
+const { web3CloudflarePublic  } = require("../../../config/web3config")
 const axios = require("axios");
+
 
 
 
@@ -160,12 +156,12 @@ module.exports = {
             }
             console.log(sender)
 
-            const gasPriceCall = await web3.eth.getGasPrice()
+            const gasPriceCall = await web3CloudflarePublic.eth.getGasPrice()
             const gasPriceGwei = gasPriceCall / 10 ** 9
             const gasPriceEth = gasPriceCall / 10 ** 18
 
 
-            const myContract = await new web3.eth.Contract(abi, contract);
+            const myContract = await new web3CloudflarePublic.eth.Contract(abi, contract);
 
 
             let gasEstimation = 0
@@ -212,7 +208,7 @@ module.exports = {
 
                 console.log("sig : " + signatureString)
 
-                encodedABI = await web3.utils.keccak256(signatureString)
+                encodedABI = await web3CloudflarePublic.utils.keccak256(signatureString)
                 encodedABI = encodedABI.substring(0, 10) + " + encoded arguments"
 
 
@@ -314,7 +310,7 @@ module.exports = {
 
 
 
-            const gasPriceCall = await web3.eth.getGasPrice()
+            const gasPriceCall = await web3CloudflarePublic.eth.getGasPrice()
             const gasPriceGwei = gasPriceCall / 10 ** 9
 
 
@@ -358,7 +354,7 @@ module.exports = {
 
             console.log("sig : " + signatureString)
 
-            signatureFunction = await web3.utils.keccak256(signatureString)
+            signatureFunction = await web3CloudflarePublic.utils.keccak256(signatureString)
             signatureFunction = signatureFunction.substring(0, 10) + " + encoded arguments"
 
 

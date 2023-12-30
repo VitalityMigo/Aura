@@ -14,17 +14,8 @@ const moment = require('moment');
 const getEthPrice = require('../../../functions/getethprice')
 const isHttps = require('../../../functions/isHttps')
 
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const reservoirApiKey = process.env.reservoirApiKey
-
-
-//Reservoir API
-const sdk = require('api')('@reservoirprotocol/v2.0#2672bklexdpsbi');
-sdk.auth(reservoirApiKey);
-//;
-
+// On appelle le node
+const { reservoirA } = require("../../../config/web3config")
 
 
 // Fonctions
@@ -141,7 +132,7 @@ module.exports = {
 
 
                         // Premier Call API Reservoir : Stats et infos sur la collection
-                        sdk.getCollectionsV5({ id: collection, accept: '*/*', includeTopBid: 'true', includeOwnerCount: 'true', includeSalesCount: 'true' })
+                        reservoirA.getCollectionsV5({ id: collection, accept: '*/*', includeTopBid: 'true', includeOwnerCount: 'true', includeSalesCount: 'true' })
                             .then(async ({ data: collectionData }) => {
 
 

@@ -15,37 +15,18 @@ const { ButtonInteraction } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
 const { accessSql, profileData, interactionData, adminsql, wallets, reportsql, sequelize } = require('../../../events/database');
 const moment = require('moment');
-const reduceText = require("../../../functions/reducetext")
 
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const magicedenApiKey = process.env.magicedenApiKey
-const bestinslotApiKey = process.env.bestinslotApiKey
-
-
-// Configuration de l'en-tête d'autorisation
-const headers = {
-    'Authorization': `Bearer ${magicedenApiKey}`
-};
-
-
-// Configuration de l'en-tête d'autorisation
-const BISHeader = {
-    'x-api-key': bestinslotApiKey
-};
-
-
+const { magiceden, bestinslot } = require("../../../config/web3config")
 
 //https request
 const axios = require('axios')
 
+// Fonctions
 function isBRC20BitcoinWallet(wallet) {
     const regex = /^bc1[a-zA-Z0-9]{39,59}$/;
 
     return regex.test(wallet);
 }
-
 
 
 const chartVisual1 = new ActionRowBuilder()
@@ -134,7 +115,7 @@ module.exports = {
 
 
                             const urlBRC20 = "https://api.bestinslot.xyz/v3/brc20/wallet_balances?address=" + selectedWallet;
-                            const responseBRC20 = await axios.get(urlBRC20, { headers: BISHeader });
+                            const responseBRC20 = await axios.get(urlBRC20, { headers: bestinslot });
                             const brc20Call = await responseBRC20.data;
 
                             for (const ticker of brc20Call.data) {
@@ -144,7 +125,7 @@ module.exports = {
                             }
 
                             const url5 = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?ownerAddress=${selectedWallet}&showAll=true&sortBy=priceDesc`;
-                            const response5 = await axios.get(url5, { headers });
+                            const response5 = await axios.get(url5, { headers: magiceden });
                             const data5 = await response5.data;
 
                             // Filtrer les objets qui ne contiennent pas de valeur collectionSymbol
@@ -214,7 +195,7 @@ module.exports = {
                             let obj = {}
 
                             const url6 = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=${collectionSymbol}`;
-                            const response6 = await axios.get(url6, { headers });
+                            const response6 = await axios.get(url6, { headers: magiceden });
                             const data6 = await response6.data;
 
                             if (data6.floorPrice) {

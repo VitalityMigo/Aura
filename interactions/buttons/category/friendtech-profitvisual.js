@@ -66,10 +66,7 @@ module.exports = {
                 //Checkpoint
                 console.log("// Step 2 : Authorization - Executed ✅")
 
-                // Prix de l'ETH
-                const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=RH7J523GC2J7GV34WQGJZQPB8ZWKZP57Y8')
-                const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
-
+                
 
                 //On stock le call API
                 const timeStamp = Date.now();

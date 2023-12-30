@@ -18,20 +18,7 @@ const moment = require('moment');
 
 const getTimeAgo = require("../../../functions/timeago")
 
-
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const magicedenApiKey = process.env.magicedenApiKey
-
-
-
-// Configuration de l'en-tête d'autorisation
-const headers = {
-    'Authorization': `Bearer ${magicedenApiKey}`
-};
-
-
+const { magiceden } = require("../../../config/web3config")
 const axios = require('axios')
 
 
@@ -177,11 +164,11 @@ module.exports = {
                         for (const wallet of walletAddresses) {
 
                             const createCall = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?ownerAddress=` + wallet + "&kind=create";
-                            const createCallFormatted = await axios.get(createCall, { headers });
+                            const createCallFormatted = await axios.get(createCall, { headers:  magiceden });
                             const createData = await createCallFormatted.data.activities;
 
                             const mintCall = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?ownerAddress=` + wallet + "&kind=mint_broadcasted";
-                            const mintCallFormatted = await axios.get(mintCall, { headers });
+                            const mintCallFormatted = await axios.get(mintCall, { headers:  magiceden });
                             const mintData = await mintCallFormatted.data.activities;
 
 

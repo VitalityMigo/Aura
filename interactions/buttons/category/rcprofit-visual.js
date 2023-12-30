@@ -16,6 +16,7 @@ const { ButtonInteraction } = require('discord.js');
 const { EmbedBuilder } = require("discord.js");
 const { accessSql, profileData, apimonitorsql, interactionData, adminsql, reportsql, sequelize } = require('../../../events/database');
 const moment = require('moment');
+const axios = require('axios')
 
 const generateRandomString = require('../../../functions/randomkey');
 const { registerFont, createCanvas, loadImage } = require('canvas');
@@ -23,11 +24,6 @@ const { registerFont, createCanvas, loadImage } = require('canvas');
 registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
-
-
-
-const axios = require('axios')
-
 
 
 module.exports = {

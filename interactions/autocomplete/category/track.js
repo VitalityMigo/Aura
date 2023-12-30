@@ -54,7 +54,7 @@ module.exports = {
 
 
                     // const popularCollectionsLink = "https://api-mainnet.magiceden.dev/v2/ord/btc/popular_collections?window=30d&limit=120"
-                    // const popularCollectionsCall = await axios.get(popularCollectionsLink, { magiceden });
+                    // const popularCollectionsCall = await axios.get(popularCollectionsLink, { headers: magiceden });
                     // const result = await popularCollectionsCall.data;
                     const result = []
 

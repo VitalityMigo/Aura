@@ -264,11 +264,11 @@ module.exports = {
 
 
                                                 const url = "https://api-mainnet.magiceden.dev/v2/ord/btc/collections/" + selectedCollection
-                                                const response = await axios.get(url, { magiceden });
+                                                const response = await axios.get(url, { headers: magiceden });
                                                 const collectionData = await response.data;
 
                                                 const url2 = "https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=" + selectedCollection
-                                                const response2 = await axios.get(url2, { magiceden });
+                                                const response2 = await axios.get(url2, { headers: magiceden });
                                                 const collectionData2 = await response2.data;
 
 

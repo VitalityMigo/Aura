@@ -597,7 +597,7 @@ module.exports = {
 
 
                                             const recentSalesLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&ownerAddress=` + selectedWallet
-                                            const recentSalesCall = await axios.get(recentSalesLink, { magiceden });
+                                            const recentSalesCall = await axios.get(recentSalesLink, { headers: magiceden });
                                             const recentSales = await recentSalesCall.data.activities;
 
                                             const filteredTable = recentSales.filter(activity => activity.oldOwner.toLowerCase() == selectedWallet.toLowerCase() && activity.newOwner.toLowerCase() !== selectedWallet.toLowerCase());
@@ -643,7 +643,7 @@ module.exports = {
 
 
                                                 const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token.tokenInscription
-                                                const tokenBuyCall = await axios.get(tokenBuyLink, { magiceden });
+                                                const tokenBuyCall = await axios.get(tokenBuyLink, { headers: magiceden });
                                                 const tokenBuy = await tokenBuyCall.data.activities;
 
                                                 const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== selectedWallet.toLowerCase() && activity.newOwner.toLowerCase() == selectedWallet.toLowerCase());
@@ -674,7 +674,7 @@ module.exports = {
 
 
                                                     const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenInscription
-                                                    const tokenCreateCall = await axios.get(tokenCreateLink, { magiceden });
+                                                    const tokenCreateCall = await axios.get(tokenCreateLink, { headers: magiceden });
                                                     const tokenCreate = await tokenCreateCall.data.activities;
 
                                                     const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == selectedWallet.toLowerCase());
@@ -700,7 +700,7 @@ module.exports = {
                                                     } else {
 
                                                         const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenInscription
-                                                        const tokenMintCall = await axios.get(tokenMintLink, { magiceden });
+                                                        const tokenMintCall = await axios.get(tokenMintLink, { headers: magiceden });
                                                         const tokenMint = await tokenMintCall.data.activities;
 
                                                         const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == selectedWallet.toLowerCase());
@@ -1222,11 +1222,11 @@ module.exports = {
 
 
                                             const createCall = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?ownerAddress=` + selectedWallet + "&kind=create";
-                                            const createCallFormatted = await axios.get(createCall, { magiceden });
+                                            const createCallFormatted = await axios.get(createCall, { headers: magiceden });
                                             const createData = await createCallFormatted.data.activities;
 
                                             const mintCall = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?ownerAddress=` + selectedWallet + "&kind=mint_broadcasted";
-                                            const mintCallFormatted = await axios.get(mintCall, { magiceden });
+                                            const mintCallFormatted = await axios.get(mintCall, { headers: magiceden });
                                             const mintData = await mintCallFormatted.data.activities;
 
 
@@ -1892,7 +1892,7 @@ module.exports = {
                                         let BTCUsdPrice = btcCallPrice.data
 
                                         const url5 = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?collectionSymbol=bitcoin-frogs&ownerAddress=bc1qc5cd94mq8juv953hqqqgefaqunuanqpk9t762d&showAll=true&limit=120&sortBy=priceAsc`;
-                                        const response5 = await axios.get(url5, { magiceden });
+                                        const response5 = await axios.get(url5, { headers: magiceden });
                                         const data5 = await response5.data;
 
 
@@ -1911,7 +1911,7 @@ module.exports = {
                                             let holdingTable = []
 
                                             const statCall = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=` + selectedCollection
-                                            const stats = await axios.get(statCall, { magiceden });
+                                            const stats = await axios.get(statCall, { headers: magiceden });
                                             const statsResponse = await stats.data;
 
                                             collectionFloor = statsResponse.floorPrice / (10 ** 8)
@@ -1922,7 +1922,7 @@ module.exports = {
 
 
                                                 const url = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?collectionSymbol=` + selectedCollection + "&ownerAddress=" + wallet + `&showAll=true&limit=120&sortBy=priceAsc`;
-                                                const response = await axios.get(url, { magiceden });
+                                                const response = await axios.get(url, { headers: magiceden });
                                                 const data = await response.data;
 
 
@@ -1953,7 +1953,7 @@ module.exports = {
                                             if (holdingTable.length <= 0) {
 
                                                 const infoCall = `https://api-mainnet.magiceden.dev/v2/ord/btc/collections/` + selectedCollection
-                                                const infos = await axios.get(infoCall, { magiceden });
+                                                const infos = await axios.get(infoCall, { headers: magiceden });
                                                 const infoAnswer = await infos.data;
 
                                                 if (infoAnswer.name) {

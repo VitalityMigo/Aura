@@ -664,7 +664,7 @@ module.exports = {
 
 
                                                 const url = `https://api-mainnet.magiceden.dev/v2/ord/btc/collections/` + selectedCollection;
-                                                const response = await axios.get(url, { magiceden });
+                                                const response = await axios.get(url, { headers: magiceden });
                                                 const data = await response.data;
 
                                                 collectionLogo = data.imageURI
@@ -675,7 +675,7 @@ module.exports = {
 
 
                                                 const url2 = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=` + selectedCollection;
-                                                const response2 = await axios.get(url2, { magiceden });
+                                                const response2 = await axios.get(url2, { headers: magiceden });
                                                 const data2 = await response2.data;
 
 
@@ -688,7 +688,7 @@ module.exports = {
                                                 for (const wallet of walletsAuthorTable) {
 
                                                     const url3 = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?collectionSymbol=` + selectedCollection + `&ownerAddress=` + wallet + `&showAll=true&sortBy=priceAsc`;
-                                                    const response3 = await axios.get(url3, { magiceden });
+                                                    const response3 = await axios.get(url3, { headers: magiceden });
                                                     const data3 = await response3.data;
 
 
@@ -711,7 +711,7 @@ module.exports = {
 
                                                         //Buy classic
                                                         const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token.tokenId
-                                                        const tokenBuyCall = await axios.get(tokenBuyLink, { magiceden });
+                                                        const tokenBuyCall = await axios.get(tokenBuyLink, { headers: magiceden });
                                                         const tokenBuy = await tokenBuyCall.data.activities;
 
                                                         const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== token.wallet.toLowerCase() && activity.newOwner.toLowerCase() == token.wallet.toLowerCase());
@@ -729,7 +729,7 @@ module.exports = {
 
                                                             //Create
                                                             const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenInscription
-                                                            const tokenCreateCall = await axios.get(tokenCreateLink, { magiceden });
+                                                            const tokenCreateCall = await axios.get(tokenCreateLink, { headers: magiceden });
                                                             const tokenCreate = await tokenCreateCall.data.activities;
 
                                                             const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == token.wallet.toLowerCase());
@@ -746,7 +746,7 @@ module.exports = {
 
                                                                 //Mint
                                                                 const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenInscription
-                                                                const tokenMintCall = await axios.get(tokenMintLink, { magiceden });
+                                                                const tokenMintCall = await axios.get(tokenMintLink, { headers: magiceden });
                                                                 const tokenMint = await tokenMintCall.data.activities;
 
                                                                 const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == token.wallet.toLowerCase());
@@ -1363,7 +1363,7 @@ module.exports = {
 
 
                                                 const url = `https://api-mainnet.magiceden.dev/v2/ord/btc/collections/` + selectedCollection;
-                                                const response = await axios.get(url, { magiceden });
+                                                const response = await axios.get(url, { headers: magiceden });
                                                 const data = await response.data;
 
                                                 collectionLogo = data.imageURI
@@ -1374,7 +1374,7 @@ module.exports = {
 
 
                                                 const url2 = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=` + selectedCollection;
-                                                const response2 = await axios.get(url2, { magiceden });
+                                                const response2 = await axios.get(url2, { headers: magiceden });
                                                 const data2 = await response2.data;
 
 
@@ -1382,7 +1382,7 @@ module.exports = {
 
 
                                                 const url3 = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?collectionSymbol=` + selectedCollection + `&ownerAddress=` + selectedWallet + `&showAll=true&sortBy=priceAsc`;
-                                                const response3 = await axios.get(url3, { magiceden });
+                                                const response3 = await axios.get(url3, { headers: magiceden });
                                                 const data3 = await response3.data;
 
 
@@ -1404,7 +1404,7 @@ module.exports = {
 
                                                         //Buy classic
                                                         const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token
-                                                        const tokenBuyCall = await axios.get(tokenBuyLink, { magiceden });
+                                                        const tokenBuyCall = await axios.get(tokenBuyLink, { headers: magiceden });
                                                         const tokenBuy = await tokenBuyCall.data.activities;
 
                                                         const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== selectedWallet.toLowerCase() && activity.newOwner.toLowerCase() == selectedWallet.toLowerCase());
@@ -1422,7 +1422,7 @@ module.exports = {
 
                                                             //Create
                                                             const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenInscription
-                                                            const tokenCreateCall = await axios.get(tokenCreateLink, { magiceden });
+                                                            const tokenCreateCall = await axios.get(tokenCreateLink, { headers: magiceden });
                                                             const tokenCreate = await tokenCreateCall.data.activities;
 
                                                             const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == selectedWallet.toLowerCase());
@@ -1438,7 +1438,7 @@ module.exports = {
 
                                                                 //Mint
                                                                 const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenInscription
-                                                                const tokenMintCall = await axios.get(tokenMintLink, { magiceden });
+                                                                const tokenMintCall = await axios.get(tokenMintLink, { headers: magiceden });
                                                                 const tokenMint = await tokenMintCall.data.activities;
 
                                                                 const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == selectedWallet.toLowerCase());

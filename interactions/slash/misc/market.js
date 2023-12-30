@@ -561,7 +561,7 @@ module.exports = {
 
 
                                             const url5 = `https://api-mainnet.magiceden.dev/v2/ord/btc/popular_collections?window=` + timeRange3 + `&limit=12`;
-                                            const response5 = await axios.get(url5, { magiceden });
+                                            const response5 = await axios.get(url5, { headers: magiceden });
                                             const data5 = await response5.data;
 
 

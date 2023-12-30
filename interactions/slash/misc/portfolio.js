@@ -483,7 +483,7 @@ module.exports = {
 
 
                                         const url5 = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?ownerAddress=${selectedWallet}&showAll=true&sortBy=priceDesc`;
-                                        const response5 = await axios.get(url5, { magiceden });
+                                        const response5 = await axios.get(url5, { headers: magiceden });
                                         const data5 = await response5.data;
 
 
@@ -512,7 +512,7 @@ module.exports = {
                                             let obj = {}
 
                                             const url6 = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=${collectionSymbol}`;
-                                            const response6 = await axios.get(url6, { magiceden });
+                                            const response6 = await axios.get(url6, { headers: magiceden });
                                             const data6 = await response6.data;
 
                                             if (data6.floorPrice) {

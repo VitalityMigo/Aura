@@ -1,34 +1,17 @@
+// const dotenv = require("dotenv");
+// dotenv.config();
+// const etherscanApiKey = process.env.etherscanApiKey;
 
-// //Récupérer les clefs API
-// const dotenv = require("dotenv")
-// dotenv.config()
-// const etherscanApiKey = process.env.etherscanApiKey
-// const reservoirApiKey = process.env.reservoirApiKey
-// const alchemyApiKey = process.env.alchemyApiKey
+// const axios = require("axios");
 
+// let ethPrice; // Variable globale pour stocker le prix de l'ETH
 
-
-
-// const addTimeout = require("../functions/addtimeout")
-
-// const axios = require("axios")
-
-// async function xxx() {
-// await addTimeout(2)
+// async function runConfig() {
+//   // Mise à jour du prix de l'ETH
+//   ethPrice = await getEthPrice();
+//   console.log("Mise à jour du prix de l'ETH :", ethPrice);
 // }
 
-
-
-
-
-// module.exports = {
-// }
-
-
-
-// // FONCTIONS
-
-// // Prix de l'eth
 // async function getEthPrice() {
 
 //     const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
@@ -36,3 +19,18 @@
 
 //     return ethUsdPrice
 // }
+// // Appeler runConfig au démarrage
+// runConfig();
+
+// // Mise à jour toutes les heures (3600000 millisecondes)
+// setInterval(runConfig, 15000);
+
+// // Fonction pour récupérer la valeur actuelle de ethPrice
+// function getEthPriceValue() {
+//   return ethPrice;
+// }
+
+// // Exporte la fonction getEthPriceValue
+// module.exports = {
+//   getEthPriceValue,
+// };

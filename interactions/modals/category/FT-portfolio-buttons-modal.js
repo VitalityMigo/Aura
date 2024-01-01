@@ -27,7 +27,7 @@ const shareContract = new web3BaseBlast.eth.Contract(shareContractAbi, shareCont
 
 
 const getTwitterUserInfo = require("../../../functions/twitteruserinfo")
-const ethPrice = require("../../../functions/getethprice")
+const { getEthPrice } = require("../../../config/web3data")
 const { formatHoldersData, formatTradesData } = require('../../../functions/FT-useraccelerator');
 const decrypt = require("../../../functions/decrypt")
 const encrypt = require("../../../functions/encrypt")
@@ -728,7 +728,7 @@ module.exports = {
                     if (user) {
 
 
-                        const ethUsdPricePromise = ethPrice()
+                        const ethUsdPrice = getEthPrice()
 
                         userAddress = user.address
 
@@ -864,7 +864,7 @@ module.exports = {
                             //  let airdropRank = airdropInfos.data.leaderboard
 
 
-                            let [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersPromise, tradersPromise, ethUsdPricePromise]);
+                            let [holdersFormattedEmbeds, tradersFormatted] = await Promise.all([holdersPromise, tradersPromise]);
 
 
                             if (holdersFormattedEmbeds == "") { holdersFormattedEmbeds = "```No holders found for this share.                         ```" }

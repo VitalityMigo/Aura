@@ -15,7 +15,7 @@ const { reservoirA, web3CloudflarePublic } = require("../../../config/web3config
 
 
 // On importe les fonctions importantes
-const getEthPrice = require('../../../functions/getethprice')
+const { getEthPrice } = require('../../../config/web3data')
 const decrypt = require("../../../functions/decrypt")
 const isHttps = require('../../../functions/isHttps')
 const { nftProfitSingle, nftProfitGlobal } = require("../../../functions/pnlcaclulator")
@@ -275,9 +275,7 @@ module.exports = {
                                             .then(async ({ data: collectionData }) => {
 
 
-                                                // const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-
-                                                const ethPricePromise = getEthPrice()
+                                                const ethPriceUsd = getEthPrice()
 
 
 
@@ -455,7 +453,6 @@ module.exports = {
                                                     collectionDescription = cutString(collectionDescription)
                                                 }
 
-                                                [ethPriceUsd] = await Promise.all([ethPricePromise])
 
                                                 const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
                                                     .setTitle(collectionName)
@@ -831,6 +828,10 @@ module.exports = {
                                                     realisedProfit: parseFloat(raw.realisedPNL).toFixed(3),
                                                     potentialProfit: parseFloat(raw.potentialPNL).toFixed(3),
                                                     roi: raw.potentialROI.toString(),
+                                                    totalTradeCount: JSON.stringify({
+                                                        buy: (raw.buyTotal + raw.mintTotal).toString(),
+                                                        sell: raw.sellTotal.toString(),
+                                                    }),
                                                     userAvatar: userAvatar,
                                                 })
 
@@ -1055,7 +1056,7 @@ module.exports = {
 
 
 
-                                } 
+                                }
 
 
 

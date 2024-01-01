@@ -18,6 +18,7 @@ dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
 const alchemyApiKey = process.env.alchemyApiKey
 
+const { getEthPrice } = require("../../../config/web3data")
 
 
 const getTimeAgo = require("../../../functions/timeago")
@@ -257,8 +258,7 @@ module.exports = {
 
 
                                             //Récupère le prix de l'ETH
-                                            const ethCallPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-                                            let ethusdtPrice = ethCallPrice.data.result.ethusd
+                                            const ethusdtPrice = getEthPrice()
 
 
 
@@ -997,8 +997,7 @@ module.exports = {
 
 
                                             //Récupère le prix de l'ETH
-                                            const ethCallPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-                                            let ethusdtPrice = ethCallPrice.data.result.ethusd
+                                            const ethusdtPrice = getEthPrice()
 
 
 
@@ -1464,8 +1463,7 @@ module.exports = {
 
 
                                             //Récupère le prix de l'ETH
-                                            const ethCallPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-                                            let ethusdtPrice = ethCallPrice.data.result.ethusd
+                                            const ethusdtPrice = getEthPrice()
 
 
 
@@ -1738,7 +1736,7 @@ module.exports = {
                                         const walletCount = walletAddresses.length
 
                                         // Prix de l'ETH
-                                        const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                                        const etherscanTokenPrice = getEthPrice()
                                         const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
 
 

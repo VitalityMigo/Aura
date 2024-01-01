@@ -13,7 +13,7 @@ const axios = require('axios')
 
 const { magiceden } = require("../../../config/web3config")
 
-const getEthPrice = require('../../../functions/getethprice')
+const {getEthPrice} = require('../../../config/web3data')
 const isHttps = require('../../../functions/isHttps')
 const capFirstLetter = require("../../../functions/capfirstletter")
 
@@ -259,7 +259,7 @@ module.exports = {
 
 
                                     // // Prix de l'ETH
-                                    // const ethUsdPrice = await getEthPrice()
+                                    // const ethUsdPrice = getEthPrice()
 
                                     // // Prix du BTC
                                     // const cryptoUsdtPrice = await axios.get('https://api-testnet.bybit.com/v5/market/tickers?category=linear')

@@ -10,7 +10,7 @@ const axios = require("axios")
 const { getToken, getBalance, getSupply, getMetrics } = require("./coin-utils")
 const getApprovals = require("./getApprovals")
 const formatCoinValueSign = require("./formatNumberEmbed")
-const getEthPrice = require("./getethprice")
+const { getEthPrice } = require('../config/web3data.js')
 
 const quoteTab = require("../contracts/uniswap/quote.json")
 const quotes = quoteTab.map(item => item.contract.toLowerCase())
@@ -53,7 +53,7 @@ async function coinProfitSingle(cont, wall, time) {
         const timestamp = getTimestamp(time)
 
         // On lance tous les calls du début (résolu plus bas)
-        const ethPrice = await getEthPrice()
+        const ethPrice = getEthPrice()
         const priceCALL = getMetrics(contract)
         const heldCALL = getBalance(contract, wallet)
         const approvalsCALL = getApprovals(wallet, contract)
@@ -434,7 +434,7 @@ async function nftProfitSingle(cont, wall, time) {
 
         // On lance les calls en synchrone
         // Ils seront résolu plus bas pour gagner du temps
-        const ethPriceCALL = getEthPrice()
+        const ethPrice = getEthPrice()
         const collectionCALL = getCollection([contract])
         const approvalsCALL = getApprovalForAll(wallet, contract)
 
@@ -731,7 +731,7 @@ async function nftProfitSingle(cont, wall, time) {
 
 
         // On résolve les call en attente lancé au début du code
-        const [ethPrice, collectionRaw] = await Promise.all([ethPriceCALL, collectionCALL]);
+        const [collectionRaw] = await Promise.all([collectionCALL]);
         // On construit l'objet collectio
         const floor = collectionRaw[0].floor
 
@@ -836,7 +836,7 @@ async function nftProfitGlobal(wall) {
         const wallet = wall.toLowerCase()
 
         // On envoi le call non résolu pour récupérer le prix de l'ETH
-        const ethPriceCALL = getEthPrice()
+        const ethPrice = getEthPrice()
 
         // On fait le call à l'API
         const portfolio = (await axios.get("https://data-api.nftgo.io/eth/v2/address/metrics?address=" + wallet, { headers: nftgoHead })).data
@@ -844,8 +844,6 @@ async function nftProfitGlobal(wall) {
 
         if (portfolio.address_tag) {
             // On vérifie que le tableau de data est présent
-
-            const [ethPrice] = await Promise.all([ethPriceCALL]);
 
 
             const data = {

@@ -74,8 +74,8 @@ module.exports = {
                         { name: " ", value: " ", inline: false },
                         { name: "Roles Mecanism", value: "The roles detection is what allows the user and admins to use the bot. You can change the roles by using the button below.", inline: true },
                         { name: " ", value: " ", inline: false },
-                        { name: "Admin Role ID", value: "`" + adminRoleId + "`", inline: true },
-                        { name: "Member Role ID", value: "`" + memberRoleId + "`", inline: true },
+                        { name: "Admin Role", value: "<@&" + adminRoleId + ">", inline: true },
+                        { name: "Member Role", value: "<@&" + memberRoleId + ">", inline: true },
                         { name: " ", value: " ", inline: false },
 
 

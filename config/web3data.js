@@ -1,36 +1,46 @@
-// const dotenv = require("dotenv");
-// dotenv.config();
-// const etherscanApiKey = process.env.etherscanApiKey;
+const dotenv = require("dotenv");
+dotenv.config();
+const etherscanApiKey = process.env.etherscanApiKey;
 
-// const axios = require("axios");
+const axios = require("axios");
+const colors = require('colors')
 
-// let ethPrice; // Variable globale pour stocker le prix de l'ETH
+// On initialise les valeurs qu'on va utiliser souvent
+let ethPrice
 
-// async function runConfig() {
-//   // Mise à jour du prix de l'ETH
-//   ethPrice = await getEthPrice();
-//   console.log("Mise à jour du prix de l'ETH :", ethPrice);
-// }
+async function main() {
 
-// async function getEthPrice() {
+    // Mise à jour du prix de l'ETH
+    ethPrice = await callETH();
+    console.log(colors.blue("⛩ New ETH price:", ethPrice));
 
-//     const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-//     const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
+    // D'autre valeurs peuvent être rajouter
+}
 
-//     return ethUsdPrice
-// }
-// // Appeler runConfig au démarrage
-// runConfig();
 
-// // Mise à jour toutes les heures (3600000 millisecondes)
-// setInterval(runConfig, 15000);
+async function callETH() {
 
-// // Fonction pour récupérer la valeur actuelle de ethPrice
-// function getEthPriceValue() {
-//   return ethPrice;
-// }
+    const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+    const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
 
-// // Exporte la fonction getEthPriceValue
-// module.exports = {
-//   getEthPriceValue,
-// };
+    return ethUsdPrice
+}
+
+
+// Fonction pour récupérer la valeur actuelle de ethPrice
+function getEthPrice() {
+    return ethPrice;
+}
+
+
+// On appelle main au démarrage
+// Mise à jour tous les X temps
+// setInterval(main, 15000);
+main();
+
+
+// Exporte la fonction getEthPriceValue
+module.exports = {
+    main,
+    getEthPrice,
+};

@@ -11,7 +11,7 @@ const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize, infra_coin, tracker_coin, infra_nft } = require('../../../events/database');
 const moment = require('moment');
 
-const getEthPrice = require('../../../functions/getethprice')
+const { getEthPrice } = require('../../../config/web3data')
 const isHttps = require('../../../functions/isHttps')
 
 // On appelle le node
@@ -136,9 +136,7 @@ module.exports = {
                             .then(async ({ data: collectionData }) => {
 
 
-                                // const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-
-                                const ethPricePromise = getEthPrice()
+                                const ethPriceUsd = getEthPrice()
 
 
 
@@ -329,7 +327,6 @@ module.exports = {
                                     collectionDescription = cutString(collectionDescription)
                                 }
 
-                                [ethPriceUsd] = await Promise.all([ethPricePromise])
 
                                 const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
                                     .setTitle(collectionName)

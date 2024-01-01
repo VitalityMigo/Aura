@@ -93,6 +93,8 @@ module.exports = {
         let potentialProfit = lastInteractionRcprofit.dataValues.potentialProfit
         let potentialRoi = lastInteractionRcprofit.dataValues.roi
         let potentialRoiFormatted = "0.00"
+        let totalBuy = JSON.parse(lastInteractionRcprofit.dataValues.totalTradeCount).buy
+        let totalSell = JSON.parse(lastInteractionRcprofit.dataValues.totalTradeCount).sell
 
 
 
@@ -768,6 +770,125 @@ module.exports = {
 
 
 
+        } else if (serverId == "1177408233799954443") {
+          // EGL Family
+
+
+          const templateOneCollection = await loadImage("./visual/eglfamily/permanent/cryptoprofittemplate1.png");
+
+
+          const canvasFormatted = createCanvas(1000, 630.2);
+          const ctx = canvasFormatted.getContext('2d');
+
+          ctx.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+
+          // Nom du coin
+          // ON commence par formatter le texte
+          const collectionTxt = collectionName
+          const MAX_WIDTH = 515;
+          let fontSize = 50;
+          ctx.font = `${fontSize}px roboto`;
+          let collectionSz = ctx.measureText(collectionTxt).width;
+          while (collectionSz > MAX_WIDTH) {
+            fontSize -= 1;
+            ctx.font = `${fontSize}px roboto`;
+            collectionSz = ctx.measureText(collectionTxt).width;
+          }
+          ctx.fillStyle = "#FFFFFF";
+          ctx.textAlign = "left";
+          ctx.fillText(collectionTxt, 500 - collectionSz / 2, 110);
+
+
+
+          // Profit potentiel
+          // ON commence par formatter le texte
+          let profitTx = parseFloat(potentialProfit).toFixed(3) + " eth"
+          if (potentialProfit > 0) { profitTx = "+" + parseFloat(potentialProfit).toFixed(3) + " eth" }
+          // Puis on met la font et la couleur
+          ctx.font = "107px roboto";
+          ctx.fillStyle = "#04D9FF";
+          // Enfin on calcul la taille et remplit
+          const profitSz = ctx.measureText(profitTx).width;
+          ctx.fillText(profitTx, 500 - profitSz / 2, 330);
+
+          // Effet de lueur
+          ctx.shadowColor = 'rgba(4, 217, 255, 0.7)';
+          ctx.shadowBlur = 10;
+          // Duplique le texte avec une couleur de fond différente
+          ctx.fillStyle = '#04D9FF';
+          ctx.fillText(profitTx, 500 - profitSz / 2, 330);
+
+          // USD Profit
+          ctx.textAlign = 'right';
+          ctx.font = "38px rbt";
+          ctx.fillStyle = "#04D9FF";
+          const usdTx = parseFloat(potentialProfit * ethUsdPrice).toFixed(2) + " USD"
+          ctx.fillText(usdTx, 725, 390);
+
+          // ROI
+          ctx.textAlign = 'left';
+          ctx.font = "38px rbt";
+          ctx.fillStyle = "#04D9FF";
+          const roiTx = "ROI: " + parseFloat(potentialRoi).toFixed(0) + "%"
+          ctx.fillText(roiTx, 270, 390);
+
+
+          // Réinitialise l'effet de lueur
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+
+
+
+
+          // Cout total
+          // ON commence par formatter le texte
+          const spentTx = parseFloat(totalBuy).toFixed(3) + "Ξ"
+          // Puis on met la font et la couleur
+          ctx.font = "light 19px rbt";
+          ctx.fillStyle = "#E7E7E7";
+          // Enfin on calcul la taille et remplit
+          ctx.fillText(spentTx, 410, 490);
+
+
+          // Sales total
+          // ON commence par formatter le texte
+          const salesTx = parseFloat(totalSell).toFixed(3) + "Ξ"
+          // Puis on met la font et la couleur
+          ctx.font = "light 19px rbt";
+          ctx.fillStyle = "#E7E7E7";
+          // Enfin on calcul la taille et remplit
+          ctx.fillText(salesTx, 688, 490);
+
+
+
+          //NOM USER
+          ctx.font = " 18px roboto";
+          ctx.fillStyle = "#E7E7E7";
+          ctx.fillText(authorName.toString(), 830, 569);
+
+
+          // Dessin du cercle de découpe
+          const imagesize = 35;
+          const imagex = 783
+          const imagey = 544;
+          const profileImage = await loadImage(userLogo);
+          ctx.beginPath();
+          ctx.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
+
+
+
+
+          // Dessiner l'image de profil sur le canvas
+          const buffer2 = canvasFormatted.toBuffer('image/png');
+
+          await interaction.editReply({ files: [buffer2] })
+
+
+
+
         } else {
 
 
@@ -943,6 +1064,8 @@ module.exports = {
 
     } catch (error) {
 
+      console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
+
 
       console.log("// Error - sent in report ❌")
 
@@ -988,30 +1111,29 @@ module.exports = {
 
 
 
-      console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
-            const reduceText = require("../../../functions/reducetext")
-            const roleTag = "1121510423687090186"
-
-
-            const updateEmbed = new EmbedBuilder().setColor("#060A8F")
-                .setTitle("New Report")
-                .setDescription(">>> A new report has just been sent.")
-                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
-                .setTimestamp()
-                .addFields(
-                    { name: " ", value: " ", inline: false },
-                    { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
-                    { name: " ", value: " ", inline: false },
-                    { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
-                )
-                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+      const reduceText = require("../../../functions/reducetext")
+      const roleTag = "1121510423687090186"
 
 
-            await channel.send("<@&" + roleTag + ">");
+      const updateEmbed = new EmbedBuilder().setColor("#060A8F")
+        .setTitle("New Report")
+        .setDescription(">>> A new report has just been sent.")
+        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+        .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+        .setTimestamp()
+        .addFields(
+          { name: " ", value: " ", inline: false },
+          { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
+          { name: " ", value: " ", inline: false },
+          { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
+        )
+        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-            await channel.send({ embeds: [updateEmbed] });
+
+      await channel.send("<@&" + roleTag + ">");
+
+      await channel.send({ embeds: [updateEmbed] });
 
 
 

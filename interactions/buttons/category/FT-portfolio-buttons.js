@@ -26,7 +26,6 @@ const shareContract = new web3BaseBlast.eth.Contract(shareContractAbi, shareCont
 
 
 
-const ethPrice = require("../../../functions/getethprice")
 const decrypt = require("../../../functions/decrypt")
 const encrypt = require("../../../functions/encrypt")
 const reduceText = require("../../../functions/reducetext")

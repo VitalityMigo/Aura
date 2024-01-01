@@ -16,7 +16,8 @@ dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
 
 // On récupère les nodes et API
-const { nftgo, magiceden } = require("../../../config/web3config")
+const { nftgo, magiceden } = require("../../../config/web3config");
+const { getEthPrice } = require("../../../config/web3data");
 
 
 module.exports = {
@@ -205,7 +206,6 @@ module.exports = {
                                     let marketCap = 0
                                     let marketSentiment = 0
                                     let marketSentimentFormatted = "Neutral"
-                                    let ethusdtPrice = 0
                                     let holderCount = 0
                                     let whaleCount = 0
                                     let traderCount = 0
@@ -235,8 +235,7 @@ module.exports = {
                                     let globalEvolutionFormatted = "Neutral"
 
                                     //Récupère le prix de l'ETH
-                                    const ethCallPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-                                    ethusdtPrice = ethCallPrice.data.result.ethusd
+                                    const ethusdtPrice = getEthPrice()
 
 
                                     //Call API sur les data générales

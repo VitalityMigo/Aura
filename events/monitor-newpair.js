@@ -4,7 +4,7 @@ const { wssInfura } = require("../config/web3config")
 // Fonctions
 const formatCoinValueSign = require("../functions/formatNumberEmbed")
 const reduceText = require("../functions/reducetext")
-const getEthPrice = require("../functions/getethprice")
+const { getEthPrice } = require('../config/web3data')
 const colors = require('colors');
 
 // JSON et contrats ERC20 & Uniswap
@@ -83,11 +83,6 @@ factoryContract.events.PairCreated()
             const created = "<t:" + actualTimestamp + ":R>"
 
 
-            // const ethCallPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-            // let ethPrice = ethCallPrice.data.result.ethusd
-
-
-
             // On récupère les logs de création
             const token0 = eventData.returnValues.token0.toLowerCase()
             const token1 = eventData.returnValues.token1.toLowerCase()
@@ -95,7 +90,7 @@ factoryContract.events.PairCreated()
             const hash = eventData.transactionHash.toLowerCase()
 
             // On lance le call du prix de l'ETH
-            const ethPriceCALL = getEthPrice()
+            const ethPrice = getEthPrice()
             const txCALL = wssInfura.eth.getTransaction(hash)
 
 
@@ -140,7 +135,7 @@ factoryContract.events.PairCreated()
 
                 // On résolve les promesses envoyés au début du code
                 // Il y'a le prix de l'ETH est la transaction de création complète
-                const [ethPrice, tx] = await Promise.all([ethPriceCALL, txCALL]);
+                const [tx] = await Promise.all([txCALL]);
 
                 // On formatte les reserves
                 // Puis on assigne les différentes valeurs

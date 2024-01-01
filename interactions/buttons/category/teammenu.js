@@ -32,15 +32,18 @@ const buttonRowAdminDashboard = new ActionRowBuilder()
         new ButtonBuilder()
             .setCustomId('adminDashboardUpdate-button')
             .setLabel('update')
-            .setStyle(2),
+            .setStyle(2)
+            .setDisabled(true),
         new ButtonBuilder()
             .setCustomId('adminDashboardSubscribtion-button')
             .setLabel('subscribtion')
-            .setStyle(2),
+            .setStyle(2)
+            .setDisabled(true),
         new ButtonBuilder()
             .setCustomId('adminDashboardHelp-button')
             .setLabel('marketing')
-            .setStyle(2),
+            .setStyle(2)
+            .setDisabled(true),
     );
 
 

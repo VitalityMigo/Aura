@@ -19,7 +19,7 @@ const moment = require('moment');
 const axios = require('axios')
 
 const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
-const getEthPrice = require('../../../functions/getethprice')
+const { getEthPrice } = require('../../../config/web3data')
 const { getToken } = require('../../../functions/coin-utils')
 const reduceText = require("../../../functions/reducetext")
 
@@ -74,7 +74,7 @@ module.exports = {
                 const coinTicker = "0x" + matches[1]
 
 
-                const ethPriceUsdPromise = getEthPrice()
+                const ethPriceUsd = getEthPrice()
 
 
 
@@ -132,8 +132,6 @@ module.exports = {
                     const coinPriceHistory = await axios.get("https://api.dexscreener.io/latest/dex/tokens/" + coinTicker.toLowerCase())
 
                     const goPlusCallPromise = axios.get("https://api.gopluslabs.io/api/v1/token_security/1?contract_addresses=" + coinTicker)
-
-                    const [ethPriceUsd] = await Promise.all([ethPriceUsdPromise]);
 
 
                     if (coinPriceHistory.data.pairs !== null) {

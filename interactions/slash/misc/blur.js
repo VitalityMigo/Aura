@@ -19,6 +19,8 @@ const alchemyApiKey = process.env.alchemyApiKey
 
 // On récupère les nodes et API
 const { web3CloudflarePublic, reservoirA, alchemyB } = require("../../../config/web3config")
+const { getEthPrice } = require('../../../config/web3data')
+
 
 // Fonctions
 function formatWallet(input) {
@@ -227,7 +229,7 @@ module.exports = {
 
 
                                             // On récupère le prix USD des différentes cryptos
-                                            const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                                            const ethUsdPrice = getEthPrice()
                                             const cryptoUsdtPrice = await axios.get('https://api-testnet.bybit.com/v5/market/tickers?category=linear')
                                             const blurUsdTPrice = cryptoUsdtPrice.data.result.list.find(obj => obj.symbol === "BLURUSDT").lastPrice;
 
@@ -330,7 +332,7 @@ module.exports = {
                                             const blurPoolContractBalance = await web3CloudflarePublic.eth.getBalance("0x0000000000A39bb272e79075ade125fd351887Ac")
 
                                             // On récupère le prix USD des différentes cryptos
-                                            const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                                            const ethUsdPrice = getEthPrice()
                                             const cryptoUsdtPrice = await axios.get('https://api-testnet.bybit.com/v5/market/tickers?category=linear')
                                             const blurUsdTPrice = cryptoUsdtPrice.data.result.list.find(obj => obj.symbol === "BLURUSDT").lastPrice;
 

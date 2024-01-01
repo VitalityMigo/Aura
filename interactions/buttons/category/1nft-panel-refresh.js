@@ -18,7 +18,7 @@ const etherscanApiKey = process.env.etherscanApiKey
 
 const { reservoirA, magiceden } = require("../../../config/web3config")
 
-const getEthPrice = require('../../../functions/getethprice')
+const { getEthPrice } = require('../../../config/web3data')
 const isHttps = require('../../../functions/isHttps')
 
 
@@ -135,9 +135,7 @@ module.exports = {
                         .then(async ({ data: collectionData }) => {
 
 
-                              // const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
-
-                              const ethPricePromise = getEthPrice()
+                              const ethPriceUsd = getEthPrice()
 
 
 
@@ -313,7 +311,6 @@ module.exports = {
                                   collectionDescription = cutString(collectionDescription)
                               }
 
-                              [ethPriceUsd] = await Promise.all([ethPricePromise])
 
                               const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
                                   .setTitle(collectionName)
@@ -370,7 +367,7 @@ module.exports = {
 
 
                     // Prix de l'ETH
-                    const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                    const etherscanTokenPrice = getEthPrice()
                     const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
 
 

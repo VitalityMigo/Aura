@@ -16,6 +16,8 @@ const dotenv = require("dotenv")
 dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
 
+const { getEthPrice } = require("../../../config/web3data")
+
 
 // On récupère les nodes et API
 const { web3CloudflarePublic, magiceden, nftGoB, reservoirE } = require("../../../config/web3config")
@@ -186,7 +188,7 @@ module.exports = {
                                     //Si wallet ETH
                                     if (isValidEthereumAddress(selectedWallet)) {
 
-                                        const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                                        const ethUsdPrice = getEthPrice()
                                         const ethUsdPriceFormatted = await ethUsdPrice.data.result.ethusd
 
 
@@ -635,7 +637,7 @@ module.exports = {
                                         if (walletCount > 0) {
 
 
-                                            const ethUsdPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                                            const ethUsdPrice = getEthPrice()
 
 
 

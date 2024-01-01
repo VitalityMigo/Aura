@@ -40,7 +40,6 @@ const web3 = new Web3("https://cloudflare-eth.com")
 
 //Alchemy API 
 const { Network, Alchemy } = require('alchemy-sdk');
-const { isValid } = require("date-fns");
 const settings = {
     apiKey: alchemyApiKey, // Replace with your Alchemy API Key.
     network: Network.ETH_MAINNET, // Replace with your network.
@@ -278,7 +277,7 @@ module.exports = {
 
 
                                 // Prix de l'ETH
-                                const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                                const etherscanTokenPrice = getEthPrice()
                                 const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
 
 

@@ -25,7 +25,7 @@ const newUserFile = "contracts/friendtech/newuser.json"
 const reduceText = require("./reducetext")
 const addTimeout = require("./addtimeout")
 const getTwitterUserInfo = require("../functions/twitteruserinfo")
-const getEthPrice = require("./getethprice")
+const { getEthPrice } = require('../config/web3data.js')
 const getPrice = require("./FT-getprice")
 
 
@@ -90,7 +90,7 @@ async function newFriendtechUser(obj) {
         const timeStamp = Date.now();
         const actualTimestamp = parseFloat(timeStamp / 1000).toFixed(0)
 
-        const ethUsdPrice = await getEthPrice()
+        const ethUsdPrice = getEthPrice()
 
 
 

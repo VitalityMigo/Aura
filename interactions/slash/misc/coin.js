@@ -19,7 +19,7 @@ const { coinProfitSingle } = require('../../../functions/pnlcaclulator')
 const reduceText = require("../../../functions/reducetext")
 const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
 const getApprovals = require("../../../functions/getApprovals")
-const getEthPrice = require('../../../functions/getethprice')
+const { getEthPrice } = require("../../../config/web3data")
 const decrypt = require("../../../functions/decrypt")
 const encrypt = require("../../../functions/encrypt")
 
@@ -310,40 +310,6 @@ module.exports = {
 
 
 
-                                                    // Embed de réponse
-                                                    // const cryptoProfitOneWallet = new EmbedBuilder().setColor("#060A8F")
-                                                    //     .setTitle(reduceText(coinName, 35) + " (" + coinSymbol.toUpperCase() + ")")
-                                                    //     .setDescription(">>> Displaying the profits made by the wallet `" + walletName + "` on `" + coinSymbol + "`.")
-                                                    //     .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                    //     .setImage(chartImageLink) // INSERER TRADING VIEW
-                                                    //     .addFields(
-                                                    //         { name: "Contract", value: "`" + coinAddress.toLowerCase() + "`", inline: false },
-                                                    //         { name: "Buy Spent", value: "`" + parseFloat(buySpent).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(buySpent * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    //         { name: "Buy Gas Spent", value: "`" + parseFloat(buyGasSpent).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(buyGasSpent * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    //         { name: "Total Spent", value: "`" + parseFloat(totalBuySpent).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(totalBuySpent * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    //         { name: "Sold Value", value: "`" + parseFloat(soldValue).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(soldValue * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    //         { name: "Sold Gas Value", value: "`" + parseFloat(soldGasValue).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(soldGasValue * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    //         { name: "Total Sold Value", value: "`" + parseFloat(totalSoldValue).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(totalSoldValue * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    //         { name: "Token Bought", value: "`" + new Intl.NumberFormat('en-US').format(tokenBoughtCount.toFixed(2)) + "`", inline: true },
-                                                    //         { name: "Token Sold", value: "`" + new Intl.NumberFormat('en-US').format(tokenSoldCount.toFixed(2)) + "`", inline: true },
-                                                    //         { name: "Token Held", value: "`" + new Intl.NumberFormat('en-US').format(tokenHeldCount.toFixed(2)) + "`", inline: true },
-                                                    //         { name: "Trades in", value: "`" + tradeInCount + "`", inline: true },
-                                                    //         { name: "Trades out", value: "`" + tradeOutCount + "`", inline: true },
-                                                    //         { name: "Airdrop/Claim", value: "`" + airdropCount + "`", inline: true },
-                                                    //         { name: "AVG MC Bought", value: "`" + parseFloat(avgBuy).toFixed(3) + "Ξ (" + formatCoinValueSign(avgBuy * ethUsdPrice) + "$)`", inline: true },
-                                                    //         { name: "AVG MC Sold", value: "`" + parseFloat(avgSell).toFixed(3) + "Ξ (" + formatCoinValueSign(avgSell * ethUsdPrice) + "$)`", inline: true },
-                                                    //         { name: "Held Value", value: "`" + parseFloat(avgHeld).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(avgHeld * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    //         { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(realisedProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    //         { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(potentialProfit * ethUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    //         { name: "Potential ROI", value: roiFormatted, inline: true },
-                                                    //         { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + coinAddress + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + coinAddress + ") ∙ " + '[Uniswap](https://app.uniswap.org/#/tokens/ethereum/' + coinAddress + ") ∙ " + '[DefiLlama](https://swap.defillama.com/?chain=ethereum&from=0x0000000000000000000000000000000000000000&to=' + coinAddress + ") ∙ " + '[Honeypot](   https://honeypot.is/ethereum?address=' + coinAddress + ")", inline: false },
-                                                    //     )
-                                                    //     .setTimestamp()
-                                                    //     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                                    // await interaction.editReply({ embeds: [cryptoProfitOneWallet], components: [buttonsRow] });
-
-
 
                                                     //On stock les data d'interaction pour le visuel
                                                     await interactionData.destroy({ where: { authorId: authorId, commandName: "cryptoprofit", serverId: serverId } })
@@ -360,6 +326,7 @@ module.exports = {
                                                         selectedCollection: contract,
                                                         floorPrice: token.priceETH.toString(),
                                                         collectionName: token.name + " (" + token.symbol + ")",
+                                                        collectionSlug: token.symbol,
                                                         mintCount: raw.transfer.toString(),
                                                         buyCount: raw.buyAmount.toString(),
                                                         soldCount: raw.sellAmount.toString(),
@@ -369,6 +336,10 @@ module.exports = {
                                                         realisedProfit: parseFloat(raw.realizedPNL).toFixed(3),
                                                         potentialProfit: parseFloat(raw.potentialPNL).toFixed(3),
                                                         roi: raw.potentialROI.toString(),
+                                                        totalTradeCount: JSON.stringify({
+                                                            buy: (raw.buyValue + raw.buyGas).toString(),
+                                                            sell: (raw.sellValue - raw.sellGas).toString(),
+                                                        }),
                                                         userAvatar: userAvatar,
 
                                                     })
@@ -475,7 +446,7 @@ module.exports = {
                                     const coinTicker = interaction.options.getString("coin")
 
                                     // On récupère le prix de l'ETH
-                                    const ethPriceUsdPromise = getEthPrice()
+                                    const ethPriceUsd = getEthPrice()
 
                                     // On charge l'image de la chart (pas obligatoire)
                                     //const chartImageLink = "https://api.chart-img.com/v1/tradingview/advanced-chart?key=" + chartApiKey + "&symbol=" + coinSymbol + "WETH&interval=1D&theme=dark&width=800&height=400"
@@ -531,7 +502,6 @@ module.exports = {
                                             const goPlusCallPromise = axios.get("https://api.gopluslabs.io/api/v1/token_security/1?contract_addresses=" + coinTicker)
 
 
-                                            const [ethPriceUsd] = await Promise.all([ethPriceUsdPromise]);
 
                                             if (coinPriceHistory.data.pairs !== null) {
 

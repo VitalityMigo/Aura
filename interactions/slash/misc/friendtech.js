@@ -13,7 +13,7 @@ const getTimeAgo = require("../../../functions/timeago")
 const getTimeAgoSmall = require("../../../functions/timeagosmall")
 const countEmojis = require("../../../functions/isemoji")
 
-const ethPrice = require("../../../functions/getethprice")
+const { getEthPrice } = require("../../../config/web3data")
 const { formatHoldersData, formatTradesData } = require('../../../functions/FT-useraccelerator');
 
 
@@ -433,12 +433,12 @@ module.exports = {
                                     let isExactMatch = true
                                     let pfp2 = ""
 
-                                    const ethUsdPricePromise = ethPrice()
 
 
                                     const usernameProvided = interaction.options.getString("twitter").toLowerCase()
 
                                     const givenUsername = removeAtSymbol(usernameProvided)
+                                    const ethUsdPrice = getEthPrice()
 
 
                                     try {
@@ -573,7 +573,7 @@ module.exports = {
                                                 //  let airdropRank = airdropInfos.data.leaderboard
 
 
-                                                let [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersPromise, tradersPromise, ethUsdPricePromise]);
+                                                let [holdersFormattedEmbeds, tradersFormatted] = await Promise.all([holdersPromise, tradersPromise]);
 
 
                                                 if (holdersFormattedEmbeds == "") { holdersFormattedEmbeds = "```No holders found for this share.                         ```" }
@@ -2433,7 +2433,7 @@ module.exports = {
 
 
                                                 // Prix de l'ETH
-                                                const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                                                const etherscanTokenPrice = getEthPrice()
                                                 const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
 
 

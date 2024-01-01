@@ -9,7 +9,7 @@ const addTimeout = require("./addtimeout")
 const { getTokenSupply, getToken } = require('./coin-utils')
 const uniswapDecoder = require("./uniswap-decoder.js")
 const formatCoinValueSign = require("./formatNumberEmbed.js")
-const getEthPrice = require("./getethprice.js")
+const { getEthPrice } = require('../config/web3data')
 
 
 const approvalSig = "0x095ea7b3"
@@ -156,7 +156,7 @@ async function coinTracker(transaction) {
                             filteredTasks = trackList.filter(item => item.dataValues.buy == "true")
 
                             let sign = "$"
-                            if (swap.tokenIn.address.toLowerCase() == wETH) { sign = "Ξ"; quote = await getEthPrice() }
+                            if (swap.tokenIn.address.toLowerCase() == wETH) { sign = "Ξ"; quote = getEthPrice() }
                             trade = "Token In: " + parseFloat(value).toFixed(3) + sign + "\nToken Out: " + new Intl.NumberFormat('en-US').format(Math.ceil(swap.tokenOut.amount))
                         } else {
                             value = swap.tokenOut.amount
@@ -165,7 +165,7 @@ async function coinTracker(transaction) {
                             filteredTasks = trackList.filter(item => item.dataValues.sell == "true")
 
                             let sign = "$"
-                            if (swap.tokenOut.address.toLowerCase() == wETH) { sign = "Ξ"; quote = await getEthPrice() }
+                            if (swap.tokenOut.address.toLowerCase() == wETH) { sign = "Ξ"; quote = getEthPrice() }
                             trade = "Token In: " + new Intl.NumberFormat('en-US').format(Math.ceil(swap.tokenIn.amount)) + "\nToken Out: " + parseFloat(value).toFixed(3) + sign
                         }
 

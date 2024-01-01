@@ -19,6 +19,7 @@ const etherscanApiKey = process.env.etherscanApiKey
 // Packages
 const axios = require('axios');
 const csv = require('fast-csv');
+const { getEthPrice } = require("../../../config/web3data");
 
 
 function formatString(input) {
@@ -1318,7 +1319,7 @@ module.exports = {
 
 
                                     // Prix de l'ETH
-                                    const etherscanTokenPrice = await axios.get('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + etherscanApiKey)
+                                    const etherscanTokenPrice = getEthPrice()
                                     const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
 
                                     const btcCallPrice = await axios.get("https://blockchain.info/q/24hrprice")

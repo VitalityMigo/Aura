@@ -7,7 +7,7 @@ const { web3CloudflarePublic } = require("../config/web3config")
 const addTimeout = require("./addtimeout")
 const uniswapDecoder = require("./uniswap-decoder.js")
 const { getTokenSupply } = require("./coin-utils.js")
-const getEthPrice = require("./getethprice.js")
+const { getEthPrice } = require('../config/web3data.js')
 
 // On récupère la liste des wallet track
 const coinSMFile = require("../contracts/uniswap/smartmoney.json");
@@ -128,7 +128,7 @@ async function coinSmartmoney(transaction) {
                         supply = await getTokenSupply(swap.tokenOut.address, 16) / 10 ** swap.tokenOut.decimals
 
                         let sign = "$"
-                        if (swap.tokenIn.address.toLowerCase() == wETH) { sign = "Ξ"; quote = await getEthPrice() }
+                        if (swap.tokenIn.address.toLowerCase() == wETH) { sign = "Ξ"; quote = getEthPrice() }
                         trade = "Token In: " + parseFloat(value).toFixed(3) + sign + "\nToken Out: " + new Intl.NumberFormat('en-US').format(Math.ceil(swap.tokenOut.amount))
                     } else {
                         value = swap.tokenOut.amount
@@ -136,7 +136,7 @@ async function coinSmartmoney(transaction) {
                         supply = await getTokenSupply(swap.tokenIn.address, 16) / 10 ** swap.tokenIn.decimals
 
                         let sign = "$"
-                        if (swap.tokenOut.address.toLowerCase() == wETH) { sign = "Ξ"; quote = await getEthPrice() }
+                        if (swap.tokenOut.address.toLowerCase() == wETH) { sign = "Ξ"; quote = getEthPrice() }
                         trade = "Token In: " + new Intl.NumberFormat('en-US').format(Math.ceil(swap.tokenIn.amount)) + "\nToken Out: " + parseFloat(value).toFixed(3) + sign
                     }
 

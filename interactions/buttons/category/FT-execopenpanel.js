@@ -28,7 +28,7 @@ const getTimeAgo = require("../../../functions/timeago")
 const countEmojis = require("../../../functions/isemoji")
 
 
-const ethPrice = require("../../../functions/getethprice")
+const { getEthPrice } = require('../../../config/web3data')
 const { formatHoldersData, formatTradesData } = require('../../../functions/FT-useraccelerator');
 
 const { web3Base1RPC, web3BaseUnifra, web3BaseDRPC } = require('../../../config/web3config');
@@ -138,10 +138,9 @@ module.exports = {
                 try {
 
 
-                    const ethUsdPricePromise = ethPrice()
+                    const ethUsdPrice = getEthPrice()
                     const tradersPromise = formatTradesData(userAddress)
-                   // const airdropInfoCall = axios.get("https://prod-api.kosetto.com/points/" + userAddress, { headers: friendtechHeaders })
-                   const balanceCall = web3BaseUnifra.eth.getBalance(userAddress)
+                    const balanceCall = web3BaseUnifra.eth.getBalance(userAddress)
 
 
                     const userInfoCall = await axios.get("https://prod-api.kosetto.com/users/" + userAddress)
@@ -246,7 +245,7 @@ module.exports = {
                         )
 
 
-                        let [balanceRaw, twitterInfos] = await Promise.all([balanceCall, twitterPromise]);
+                    let [balanceRaw, twitterInfos] = await Promise.all([balanceCall, twitterPromise]);
 
                     if (twitterInfos) {
                         followers = twitterInfos.followers_count
@@ -270,7 +269,7 @@ module.exports = {
 
 
 
-                    let [holdersFormattedEmbeds, tradersFormatted, ethUsdPrice] = await Promise.all([holdersPromise, tradersPromise, ethUsdPricePromise]);
+                    let [holdersFormattedEmbeds, tradersFormatted] = await Promise.all([holdersPromise, tradersPromise]);
 
 
                     if (holdersFormattedEmbeds == "") { holdersFormattedEmbeds = "```No holders found for this share.                         ```" }

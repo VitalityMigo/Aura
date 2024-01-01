@@ -5,7 +5,7 @@ const colors = require('colors');
 // Fonctions
 const formatCoinValueSign = require("../functions/formatNumberEmbed")
 const reduceText = require("../functions/reducetext")
-const getEthPrice = require("../functions/getethprice")
+const { getEthPrice } = require('../config/web3data')
 const { getDeployment } = require("../functions/coin-utils")
 
 // ON importe les fonctions de contrat
@@ -70,7 +70,7 @@ pinklockContract.events.LockAdded()
         try {
 
             // Envoyer le call non résolu de l'ETH
-            const ethPriceCALL = getEthPrice()
+            const ethPrice = getEthPrice()
 
 
             const pairAddress = eventData.returnValues.token.toLowerCase()
@@ -123,10 +123,6 @@ pinklockContract.events.LockAdded()
                 ]);
                 const supply = rawSupply / 10 ** decimals
                 const owner = ownerRaw.toLowerCase()
-
-                // On récupère le prix de l'ETH
-                // La promesse est résolu ici, mais call en haut
-                const [ethPrice] = await Promise.all([ethPriceCALL]);
 
 
                 // On formatte les reserves
@@ -259,7 +255,7 @@ unxcContract.events.onDeposit()
 
 
             // Envoyer le call non résolu de l'ETH
-            const ethPriceCALL = getEthPrice()
+            const ethPrice = getEthPrice()
 
 
             const pairAddress = eventData.returnValues.lpToken.toLowerCase()
@@ -314,10 +310,6 @@ unxcContract.events.onDeposit()
                 const supply = rawSupply / 10 ** decimals
                 const owner = ownerRaw.toLowerCase()
 
-                // On récupère le prix de l'ETH
-                // La promesse est résolu ici, mais call en haut
-                const [ethPrice] = await Promise.all([ethPriceCALL]);
-
 
                 // On formatte les reserves
                 // Puis on assigne les différentes valeurs
@@ -328,7 +320,7 @@ unxcContract.events.onDeposit()
                 const price = easyPrice((pooledETH / pooledTKN) * ethPrice)
                 const marketCap = price * supply
 
-                
+
 
                 // On récupère les information sur le deployer
                 const deployerOBJ = await getDeployment(tokenAddress)
@@ -353,7 +345,7 @@ unxcContract.events.onDeposit()
                 }
 
 
-                
+
                 // 0n crée les valeurs formattés
                 // Ces valeurs vont directement dans l'embed
                 const liquidityFRMT = "• Pair: [" + formatWallet(pairAddress) + "](https://etherscan.io/address/" + pairAddress + ")\n• Liquidity: `" + formatCoinValueSign(liquidity, 2) + "$`\n• Pooled WETH: `" + parseFloat(pooledETH).toFixed(3) + "Ξ`\n• Pooled Tokens: `" + formatCoinValueSign(pooledTKN, 2) + "`"

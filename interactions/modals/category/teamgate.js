@@ -24,18 +24,21 @@ const buttonRowAdminDashboard = new ActionRowBuilder()
             .setCustomId('adminDashboardRoles-button')
             .setLabel('roles')
             .setStyle(2),
-        new ButtonBuilder()
+            new ButtonBuilder()
             .setCustomId('adminDashboardUpdate-button')
             .setLabel('update')
-            .setStyle(2),
+            .setStyle(2)
+            .setDisabled(true),
         new ButtonBuilder()
             .setCustomId('adminDashboardSubscribtion-button')
             .setLabel('subscribtion')
-            .setStyle(2),
+            .setStyle(2)
+            .setDisabled(true),
         new ButtonBuilder()
             .setCustomId('adminDashboardHelp-button')
             .setLabel('marketing')
-            .setStyle(2),
+            .setStyle(2)
+            .setDisabled(true),
     );
 
 const buttonRowAdminDashboard2 = new ActionRowBuilder()

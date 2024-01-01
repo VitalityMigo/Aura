@@ -18,6 +18,9 @@ const executeNewVerified = require('./monitor-verifiedcontracts')
 const interval_ftaccess = require("./ft-verifyaccess")
 const intervalCleanFTnewId = require("./interval-cleanFTnewid")
 
+// On importe les différentes data des configs
+const { main } = require("../config/web3data")
+
 const schedule = require('node-schedule');
 
 
@@ -40,9 +43,22 @@ module.exports = {
         try {
 
 
-
+            // On se connecte à la DB
             await sequelize.authenticate();
             console.log(`Ready! Logged in as ${client.user.tag}`);
+
+
+
+
+            ////// CONFIG \\\\\\\\
+
+            // Config node + api
+            const web3Config = require("../config/web3config")
+
+            // Data
+            const configDATA = schedule.scheduleJob('*/30 * * * *', function () {
+                main();
+            });
 
 
 
@@ -127,15 +143,12 @@ module.exports = {
             const interval_FTnewUserCleanId = schedule.scheduleJob('0 19 * * *', function () {
                 intervalCleanFTnewId(client)
             });
-        
 
-            
+
+
             ////////////////////////////////////////////////////////////////////////////////////
 
             ////// CHARGEMENT DES FICHIER DE CONFIG //////
-
-            const web3Config = require("../config/web3config")
-
 
 
 

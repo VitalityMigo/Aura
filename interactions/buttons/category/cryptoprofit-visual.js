@@ -21,12 +21,14 @@ const moment = require('moment');
 const generateRandomString = require('../../../functions/randomkey');
 const formatNumberVisual = require("../../../functions/reducenumbervisual")
 const { registerFont, createCanvas, loadImage } = require('canvas');
-const getEthPrice = require("../../../functions/getethprice")
+const { getEthPrice } = require("../../../config/web3data")
 
 // On enregistre les fonts
 registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
+registerFont("./visual/eglfamily/font/roboto.ttf", { family: "roboto" })
+registerFont("./visual/eglfamily/font/robotovr.ttf", { family: "rbt" })
 
 
 
@@ -41,7 +43,6 @@ module.exports = {
     let authorName = interaction.user.username;
     let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
     let serverId = interaction.member.guild.id
-
 
 
     try {
@@ -65,7 +66,7 @@ module.exports = {
         console.log("// Step 2 : Authorization - Executed ✅")
 
         // Prix de l'ETH
-        const ethUsdPrice = await getEthPrice()
+        const ethUsdPrice = getEthPrice()
 
 
         //On stock le call API
@@ -81,6 +82,7 @@ module.exports = {
         let userLogo = lastInteractionRcprofit.dataValues.userAvatar
         let selectedTimestamp = lastInteractionRcprofit.dataValues.selecedTimestamp
         let collectionName = lastInteractionRcprofit.dataValues.collectionName
+        let collectionSlug = lastInteractionRcprofit.dataValues.collectionSlug
         let floorPrice = lastInteractionRcprofit.dataValues.floorPrice
         let buyCount = lastInteractionRcprofit.dataValues.buyCount
         let airdropCount = lastInteractionRcprofit.dataValues.mintCount
@@ -92,6 +94,8 @@ module.exports = {
         let potentialProfit = lastInteractionRcprofit.dataValues.potentialProfit
         let potentialRoi = lastInteractionRcprofit.dataValues.roi
         let potentialRoiFormatted = "0.00"
+        let totalBuy = JSON.parse(lastInteractionRcprofit.dataValues.totalTradeCount).buy
+        let totalSell = JSON.parse(lastInteractionRcprofit.dataValues.totalTradeCount).sell
 
 
 
@@ -125,9 +129,8 @@ module.exports = {
 
 
 
-        //if (serverId === "949291624389816331" || serverId === "1071576735298113667") {
-
         if (serverId === "949291624389816331") {
+          // Rolls Chasers
 
 
 
@@ -139,75 +142,75 @@ module.exports = {
 
 
             const canvasFormatted = createCanvas(1000, 1000);
-            const ctxFormatted = canvasFormatted.getContext('2d');
+            const ctx = canvasFormatted.getContext('2d');
 
-            ctxFormatted.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+            ctx.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
 
 
 
             //MINT COUNT
-            ctxFormatted.font = "bold 22px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(formatNumberVisual(buyCount), 337, 226.5);
+            ctx.font = "bold 22px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(formatNumberVisual(buyCount), 337, 226.5);
 
             //BUY COUNT
-            ctxFormatted.font = "bold 22px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(airdropCount.toString(), 337, 271.5);
+            ctx.font = "bold 22px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(airdropCount.toString(), 337, 271.5);
 
             //AVG BUY
-            ctxFormatted.font = "bold 22px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText((formatNumberVisual(avgBuy)).toString() + "$", 337, 316.5);
+            ctx.font = "bold 22px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText((formatNumberVisual(avgBuy)).toString() + "$", 337, 316.5);
 
 
             //SOLD COUNT
-            ctxFormatted.font = "bold 22px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(formatNumberVisual(soldCount), 337, 387.5);
+            ctx.font = "bold 22px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(formatNumberVisual(soldCount), 337, 387.5);
 
             //REMAINING
-            ctxFormatted.font = "bold 22px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(formatNumberVisual(remaining), 337, 433);
+            ctx.font = "bold 22px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(formatNumberVisual(remaining), 337, 433);
 
             //AVG SOLD
-            ctxFormatted.font = "bold 22px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText((formatNumberVisual(avgSold)).toString() + "$", 337, 477.5);
+            ctx.font = "bold 22px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText((formatNumberVisual(avgSold)).toString() + "$", 337, 477.5);
 
 
             //HELD VALUE
-            ctxFormatted.font = "bold 22px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText((parseFloat((remaining * floorPrice).toFixed(3))).toString() + "Ξ", 337, 548.5);
+            ctx.font = "bold 22px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText((parseFloat((remaining * floorPrice).toFixed(3))).toString() + "Ξ", 337, 548.5);
 
 
             //REALIZED PROFIT
-            ctxFormatted.font = "bold 22px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(parseFloat(realisedProfit).toFixed(3) + "Ξ", 337, 594);
+            ctx.font = "bold 22px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(parseFloat(realisedProfit).toFixed(3) + "Ξ", 337, 594);
 
             //Potential ROI
-            ctxFormatted.font = "bold 22px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(parseFloat(potentialRoiFormatted).toFixed(3) + "%", 337, 639);
+            ctx.font = "bold 22px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(parseFloat(potentialRoiFormatted).toFixed(3) + "%", 337, 639);
 
 
 
             //////////////////////////////////////////////////////////////////////
 
             // POTENTIAL PROFIT
-            ctxFormatted.font = "bold 68px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
+            ctx.font = "bold 68px Futura";
+            ctx.fillStyle = "#ffffff";
             const text = parseFloat(potentialProfit).toFixed(3) + "Ξ" // (" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
-            ctxFormatted.font = "bold 35px Futura";
+            ctx.font = "bold 35px Futura";
             const text2 = "(" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
-            
 
-            const bigTextSize2 = ctxFormatted.measureText(text2).width;
-            ctxFormatted.font = "bold 54px Futura";
-            const bigTextSize = ctxFormatted.measureText(text).width;
+
+            const bigTextSize2 = ctx.measureText(text2).width;
+            ctx.font = "bold 54px Futura";
+            const bigTextSize = ctx.measureText(text).width;
             const x = 285 - bigTextSize / 2;
             const y = 795 - 68; // 68 est la hauteur de la police
             const padding = 15; // Ajoutez du padding autour du texte
@@ -215,49 +218,49 @@ module.exports = {
             let lineLonger = 11
 
             // Dessinez les coins arrondis sans liaisons
-            ctxFormatted.strokeStyle = "#ffffff";
-            ctxFormatted.lineWidth = 4;
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 4;
 
 
-            ctxFormatted.beginPath();
-            ctxFormatted.arc(x - padding + borderRadius - 7, y - padding + borderRadius, borderRadius, Math.PI, 3 * Math.PI / 2);
-            ctxFormatted.moveTo(x - padding - 7, y + 68 + padding - borderRadius + 40); // définir le point de départ de la ligne avec un padding de 20
-            ctxFormatted.lineTo(x - padding - 7, y + 68 - lineLonger + padding - borderRadius + 40);
-            ctxFormatted.moveTo(x - padding + borderRadius - 7, y + 68 + padding + 40); // définir le point de départ de la ligne avec un padding de 20
-            ctxFormatted.lineTo(x + lineLonger - padding + borderRadius - 7, y + 68 + padding + 40);
+            ctx.beginPath();
+            ctx.arc(x - padding + borderRadius - 7, y - padding + borderRadius, borderRadius, Math.PI, 3 * Math.PI / 2);
+            ctx.moveTo(x - padding - 7, y + 68 + padding - borderRadius + 40); // définir le point de départ de la ligne avec un padding de 20
+            ctx.lineTo(x - padding - 7, y + 68 - lineLonger + padding - borderRadius + 40);
+            ctx.moveTo(x - padding + borderRadius - 7, y + 68 + padding + 40); // définir le point de départ de la ligne avec un padding de 20
+            ctx.lineTo(x + lineLonger - padding + borderRadius - 7, y + 68 + padding + 40);
 
-            ctxFormatted.stroke();
+            ctx.stroke();
 
-            ctxFormatted.beginPath();
-            ctxFormatted.arc(x + bigTextSize + padding - borderRadius + 7, y - padding + borderRadius, borderRadius, 3 * Math.PI / 2, 2 * Math.PI);
-            ctxFormatted.moveTo(x + padding + bigTextSize + 7, y - padding + borderRadius); // définir le point de départ de la ligne avec un padding de 20
-            ctxFormatted.lineTo(x + padding + bigTextSize + 7, y + lineLonger - padding + borderRadius);
-            ctxFormatted.moveTo(x + padding + bigTextSize - borderRadius + 7, y - padding); // définir le point de départ de la ligne avec un padding de 20
-            ctxFormatted.lineTo(x + bigTextSize - lineLonger + padding - borderRadius + 7, y - padding);
-            ctxFormatted.stroke();
-            ctxFormatted.beginPath();
+            ctx.beginPath();
+            ctx.arc(x + bigTextSize + padding - borderRadius + 7, y - padding + borderRadius, borderRadius, 3 * Math.PI / 2, 2 * Math.PI);
+            ctx.moveTo(x + padding + bigTextSize + 7, y - padding + borderRadius); // définir le point de départ de la ligne avec un padding de 20
+            ctx.lineTo(x + padding + bigTextSize + 7, y + lineLonger - padding + borderRadius);
+            ctx.moveTo(x + padding + bigTextSize - borderRadius + 7, y - padding); // définir le point de départ de la ligne avec un padding de 20
+            ctx.lineTo(x + bigTextSize - lineLonger + padding - borderRadius + 7, y - padding);
+            ctx.stroke();
+            ctx.beginPath();
 
-            ctxFormatted.arc(x + bigTextSize + padding - borderRadius + 7, y + 68 + padding - borderRadius + 40, borderRadius, 0, Math.PI / 2);
-            ctxFormatted.moveTo(x + bigTextSize + padding + 7, y + 68 + padding - borderRadius + 40); // définir le point de départ de la ligne avec un padding de 20
-            ctxFormatted.lineTo(x + bigTextSize + padding + 7, y + 68 - lineLonger + padding - borderRadius + 40);
-            ctxFormatted.moveTo(x + padding + bigTextSize - borderRadius + 7, y + 68 + padding + 40); // définir le point de départ de la ligne avec un padding de 20
-            ctxFormatted.lineTo(x + bigTextSize - lineLonger + padding - borderRadius + 7, y + 68 + padding + 40);
-            ctxFormatted.stroke();
+            ctx.arc(x + bigTextSize + padding - borderRadius + 7, y + 68 + padding - borderRadius + 40, borderRadius, 0, Math.PI / 2);
+            ctx.moveTo(x + bigTextSize + padding + 7, y + 68 + padding - borderRadius + 40); // définir le point de départ de la ligne avec un padding de 20
+            ctx.lineTo(x + bigTextSize + padding + 7, y + 68 - lineLonger + padding - borderRadius + 40);
+            ctx.moveTo(x + padding + bigTextSize - borderRadius + 7, y + 68 + padding + 40); // définir le point de départ de la ligne avec un padding de 20
+            ctx.lineTo(x + bigTextSize - lineLonger + padding - borderRadius + 7, y + 68 + padding + 40);
+            ctx.stroke();
 
-            ctxFormatted.beginPath();
-            ctxFormatted.arc(x - padding + borderRadius - 7, y + 68 + padding - borderRadius + 40, borderRadius, Math.PI / 2, Math.PI);
-            ctxFormatted.moveTo(x - padding - 7, y - padding + borderRadius); // définir le point de départ de la ligne avec un padding de 20
-            ctxFormatted.lineTo(x - padding - 7, y + lineLonger - padding + borderRadius);
-            ctxFormatted.moveTo(x - padding + borderRadius - 7, y - padding); // définir le point de départ de la ligne avec un padding de 20
-            ctxFormatted.lineTo(x + lineLonger - padding + borderRadius - 7, y - padding);
-            ctxFormatted.stroke();
+            ctx.beginPath();
+            ctx.arc(x - padding + borderRadius - 7, y + 68 + padding - borderRadius + 40, borderRadius, Math.PI / 2, Math.PI);
+            ctx.moveTo(x - padding - 7, y - padding + borderRadius); // définir le point de départ de la ligne avec un padding de 20
+            ctx.lineTo(x - padding - 7, y + lineLonger - padding + borderRadius);
+            ctx.moveTo(x - padding + borderRadius - 7, y - padding); // définir le point de départ de la ligne avec un padding de 20
+            ctx.lineTo(x + lineLonger - padding + borderRadius - 7, y - padding);
+            ctx.stroke();
 
             // Dessinez le texte
-            ctxFormatted.fillStyle = "#e60015";
-            if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-            ctxFormatted.fillText(text, x, y + 51);
-            ctxFormatted.font = "bold 35px Futura";
-            ctxFormatted.fillText(text2, 285 - bigTextSize2 / 2, y + 103);
+            ctx.fillStyle = "#e60015";
+            if (potentialProfit >= 0) { ctx.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctx.fillStyle = "#e60015"; }
+            ctx.fillText(text, x, y + 51);
+            ctx.font = "bold 35px Futura";
+            ctx.fillText(text2, 285 - bigTextSize2 / 2, y + 103);
 
 
 
@@ -266,11 +269,11 @@ module.exports = {
 
 
             //NOM COLLECTION
-            ctxFormatted.font = "bold 40px Futura";
-            ctxFormatted.fillStyle = "rgba(255, 255, 255, 0.93)";
-            ctxFormatted.lineWidth = 2;
-            ctxFormatted.strokeStyle = "#ffffff";
-            //ctxFormatted.fillStyle = "#E0E7FF";
+            ctx.font = "bold 40px Futura";
+            ctx.fillStyle = "rgba(255, 255, 255, 0.93)";
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#ffffff";
+            //ctx.fillStyle = "#E0E7FF";
 
             const collectionNameWords = collectionName.toString().split(' ');
             let collectionNameFirstPart = '';
@@ -280,7 +283,7 @@ module.exports = {
             // Loop through the words to determine where to split the collection name
             for (let i = 0; i < collectionNameWords.length; i++) {
               const word = collectionNameWords[i];
-              const wordSize = ctxFormatted.measureText(word + ' ').width;
+              const wordSize = ctx.measureText(word + ' ').width;
 
               if (collectionNameTextSize + wordSize <= 610) {
                 collectionNameFirstPart += word + ' ';
@@ -292,27 +295,27 @@ module.exports = {
             }
 
             if (!collectionNameSecondPart) {
-              ctxFormatted.font = "bold 40px Futura";
-              ctxFormatted.fillText(collectionNameFirstPart.trim(), 126, 145);
-              ctxFormatted.strokeText(collectionNameFirstPart, 126, 145);
+              ctx.font = "bold 40px Futura";
+              ctx.fillText(collectionNameFirstPart.trim(), 126, 145);
+              ctx.strokeText(collectionNameFirstPart, 126, 145);
             } else if (collectionNameSecondPart) {
-              ctxFormatted.font = "bold 34px Futura";
-              ctxFormatted.fillText(collectionNameFirstPart.trim(), 126, 100);
-              ctxFormatted.strokeText(collectionNameFirstPart, 126, 100);
-              ctxFormatted.fillText(collectionNameSecondPart.trim(), 126, 145);
-              ctxFormatted.strokeText(collectionNameSecondPart, 126, 145);
+              ctx.font = "bold 34px Futura";
+              ctx.fillText(collectionNameFirstPart.trim(), 126, 100);
+              ctx.strokeText(collectionNameFirstPart, 126, 100);
+              ctx.fillText(collectionNameSecondPart.trim(), 126, 145);
+              ctx.strokeText(collectionNameSecondPart, 126, 145);
             }
 
 
 
 
             // Dessiner une ligne diagonale
-            ctxFormatted.lineWidth = 3;
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.beginPath();
-            ctxFormatted.moveTo(129, 178);
-            ctxFormatted.lineTo(129 + 65, 178);
-            ctxFormatted.stroke();
+            ctx.lineWidth = 3;
+            ctx.fillStyle = "#ffffff";
+            ctx.beginPath();
+            ctx.moveTo(129, 178);
+            ctx.lineTo(129 + 65, 178);
+            ctx.stroke();
 
 
 
@@ -320,10 +323,10 @@ module.exports = {
 
 
             //NOM USER
-            ctxFormatted.font = "bold 34px SFTransrobotic";
-            ctxFormatted.fillStyle = "#ffffff";
-            const userNameSize = ctxFormatted.measureText(authorName.toString()).width;
-            ctxFormatted.fillText(authorName.toString(), (975 - userNameSize), 976);
+            ctx.font = "bold 34px SFTransrobotic";
+            ctx.fillStyle = "#ffffff";
+            const userNameSize = ctx.measureText(authorName.toString()).width;
+            ctx.fillText(authorName.toString(), (975 - userNameSize), 976);
 
 
             // Dessin du cercle de découpe
@@ -331,11 +334,11 @@ module.exports = {
             const imagesize = 53;
             const imagex = 965 - userNameSize - imagesize;
             const imagey = 938;
-            ctxFormatted.beginPath();
-            ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
-            ctxFormatted.closePath();
-            ctxFormatted.clip();
-            ctxFormatted.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
+            ctx.beginPath();
+            ctx.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.clip();
+            ctx.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
 
 
 
@@ -368,32 +371,32 @@ module.exports = {
 
 
             const canvasFormatted = createCanvas(1000, 1000);
-            const ctxFormatted = canvasFormatted.getContext('2d');
+            const ctx = canvasFormatted.getContext('2d');
 
-            ctxFormatted.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
-
-
+            ctx.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
 
 
-            ctxFormatted.font = "bold 58px SFTransrobotic";
-            ctxFormatted.textBaseline = "alphabetic";
+
+
+            ctx.font = "bold 58px SFTransrobotic";
+            ctx.textBaseline = "alphabetic";
             const MAX_WIDTH = 766;
             let fontSize = 58;
 
 
-            ctxFormatted.fillStyle = "#ffffff";
-            let collectionNameTextSize = ctxFormatted.measureText(collectionName).width;
+            ctx.fillStyle = "#ffffff";
+            let collectionNameTextSize = ctx.measureText(collectionName).width;
 
             while (collectionNameTextSize > MAX_WIDTH) {
               fontSize -= 0.5;
-              ctxFormatted.font = `bold ${fontSize}px Futura`;
-              collectionNameTextSize = ctxFormatted.measureText(collectionName).width;
+              ctx.font = `bold ${fontSize}px Futura`;
+              collectionNameTextSize = ctx.measureText(collectionName).width;
             }
 
-            ctxFormatted.font = `bold ${fontSize}px SFTransrobotic`;
-            ctxFormatted.textBaseline = "middle";
-            ctxFormatted.fillText(collectionName, 40, 542);
-            ctxFormatted.textBaseline = "alphabetic";
+            ctx.font = `bold ${fontSize}px SFTransrobotic`;
+            ctx.textBaseline = "middle";
+            ctx.fillText(collectionName, 40, 542);
+            ctx.textBaseline = "alphabetic";
 
 
 
@@ -403,61 +406,61 @@ module.exports = {
 
 
             //Mint COUNT
-            ctxFormatted.font = "bold 28px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(formatNumberVisual(buyCount), 343, 726);
+            ctx.font = "bold 28px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(formatNumberVisual(buyCount), 343, 726);
 
             //BUY COUNT
-            ctxFormatted.font = "bold 28px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(airdropCount.toString(), 343, 774);
+            ctx.font = "bold 28px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(airdropCount.toString(), 343, 774);
 
             //AVG SPENT VALUE
-            ctxFormatted.font = "bold 28px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(parseFloat(avgBuy).toFixed(3) + "Ξ", 343, 823);
+            ctx.font = "bold 28px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(parseFloat(avgBuy).toFixed(3) + "Ξ", 343, 823);
 
             //AVG SALE VALUE
-            ctxFormatted.font = "bold 28px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(parseFloat(avgSold).toFixed(3) + "Ξ", 343, 872);
+            ctx.font = "bold 28px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(parseFloat(avgSold).toFixed(3) + "Ξ", 343, 872);
 
 
             //SOLD COUNT
-            ctxFormatted.font = "bold 28px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(formatNumberVisual(soldCount), 840, 726);
+            ctx.font = "bold 28px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(formatNumberVisual(soldCount), 840, 726);
 
             //REMAINING COUNT
-            ctxFormatted.font = "bold 28px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(formatNumberVisual(remaining), 840, 774);
+            ctx.font = "bold 28px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(formatNumberVisual(remaining), 840, 774);
 
 
             //TOTAL HELD VALUE
-            ctxFormatted.font = "bold 28px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText((parseFloat(remaining * floorPrice).toFixed(3)).toString() + "Ξ", 840, 823);
+            ctx.font = "bold 28px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText((parseFloat(remaining * floorPrice).toFixed(3)).toString() + "Ξ", 840, 823);
 
             //REALIZED PROFIT
-            ctxFormatted.font = "bold 28px Futura";
-            ctxFormatted.fillStyle = "#ffffff";
-            ctxFormatted.fillText(parseFloat(realisedProfit).toFixed(3) + "Ξ", 840, 872);
+            ctx.font = "bold 28px Futura";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(parseFloat(realisedProfit).toFixed(3) + "Ξ", 840, 872);
 
             //REALIZED ROI
-            ctxFormatted.font = "bold 35px SFTransrobotic";
-            if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-            ctxFormatted.fillText(potentialRoiFormatted.toString() + "%", 840, 540);
+            ctx.font = "bold 35px SFTransrobotic";
+            if (potentialProfit >= 0) { ctx.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctx.fillStyle = "#e60015"; }
+            ctx.fillText(potentialRoiFormatted.toString() + "%", 840, 540);
 
             //POTENTIAL PROFIT (USD)
-            ctxFormatted.font = "bold 80px SFTransrobotic";
-            if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-            ctxFormatted.fillText("$" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))), 45, 653);
+            ctx.font = "bold 80px SFTransrobotic";
+            if (potentialProfit >= 0) { ctx.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctx.fillStyle = "#e60015"; }
+            ctx.fillText("$" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))), 45, 653);
 
             //POTENTIAL PROFIT (ETH)
-            ctxFormatted.font = "bold 80px SFTransrobotic";
-            if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-            ctxFormatted.fillText(parseFloat(potentialProfit).toFixed(3) + "Ξ", 547, 653);
+            ctx.font = "bold 80px SFTransrobotic";
+            if (potentialProfit >= 0) { ctx.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctx.fillStyle = "#e60015"; }
+            ctx.fillText(parseFloat(potentialProfit).toFixed(3) + "Ξ", 547, 653);
 
 
 
@@ -465,10 +468,10 @@ module.exports = {
 
 
             //NOM USER
-            ctxFormatted.font = "bold 34px SFTransrobotic";
-            ctxFormatted.fillStyle = "#ffffff";
-            const userNameSize = ctxFormatted.measureText(authorName.toString()).width;
-            ctxFormatted.fillText(authorName.toString(), (975 - userNameSize), 973);
+            ctx.font = "bold 34px SFTransrobotic";
+            ctx.fillStyle = "#ffffff";
+            const userNameSize = ctx.measureText(authorName.toString()).width;
+            ctx.fillText(authorName.toString(), (975 - userNameSize), 973);
 
 
             // Dessin du cercle de découpe
@@ -476,11 +479,11 @@ module.exports = {
             const imagex = 965 - userNameSize - imagesize;
             const imagey = 940;
             const profileImage = await loadImage(userLogo);
-            ctxFormatted.beginPath();
-            ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
-            ctxFormatted.closePath();
-            ctxFormatted.clip();
-            ctxFormatted.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
+            ctx.beginPath();
+            ctx.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.clip();
+            ctx.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
 
 
 
@@ -512,66 +515,66 @@ module.exports = {
             const templateOneCollection = await loadImage("./visual/rollschasers/permanent/cryptoprofittemplate1.png");
 
             const canvasFormatted = createCanvas(1000, 1000);
-            const ctxFormatted = canvasFormatted.getContext('2d');
+            const ctx = canvasFormatted.getContext('2d');
 
-            ctxFormatted.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+            ctx.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
 
 
 
             //MINT COUNT
-            ctxFormatted.font = "bold 31px Futura";
-            ctxFormatted.fillStyle = "#E5EAFF";
-            const mintCountText = ctxFormatted.measureText(formatNumberVisual(buyCount)).width
-            ctxFormatted.fillText(formatNumberVisual(buyCount), 197 - mintCountText / 2, 420);
+            ctx.font = "bold 31px Futura";
+            ctx.fillStyle = "#E5EAFF";
+            const mintCountText = ctx.measureText(formatNumberVisual(buyCount)).width
+            ctx.fillText(formatNumberVisual(buyCount), 197 - mintCountText / 2, 420);
 
             //BUY COUNT
-            ctxFormatted.font = "bold 31px Futura";
-            ctxFormatted.fillStyle = "#E5EAFF";
-            const buyCountText = ctxFormatted.measureText(airdropCount.toString()).width
-            ctxFormatted.fillText(airdropCount.toString(), 498 - buyCountText / 2, 420);
+            ctx.font = "bold 31px Futura";
+            ctx.fillStyle = "#E5EAFF";
+            const buyCountText = ctx.measureText(airdropCount.toString()).width
+            ctx.fillText(airdropCount.toString(), 498 - buyCountText / 2, 420);
 
             //AVG BUY
-            ctxFormatted.font = "bold 31px Futura";
-            ctxFormatted.fillStyle = "#E5EAFF";
-            const avgBuyCountText = ctxFormatted.measureText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ").width
-            ctxFormatted.fillText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ", 795 - avgBuyCountText / 2, 420);
+            ctx.font = "bold 31px Futura";
+            ctx.fillStyle = "#E5EAFF";
+            const avgBuyCountText = ctx.measureText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ").width
+            ctx.fillText((parseFloat(avgBuy).toFixed(3)).toString() + "Ξ", 795 - avgBuyCountText / 2, 420);
 
             //SOLD COUNT
-            ctxFormatted.font = "bold 31px Futura";
-            ctxFormatted.fillStyle = "#E5EAFF";
-            const soldCountText = ctxFormatted.measureText(formatNumberVisual(soldCount)).width
-            ctxFormatted.fillText(formatNumberVisual(soldCount), 197 - soldCountText / 2, 585);
+            ctx.font = "bold 31px Futura";
+            ctx.fillStyle = "#E5EAFF";
+            const soldCountText = ctx.measureText(formatNumberVisual(soldCount)).width
+            ctx.fillText(formatNumberVisual(soldCount), 197 - soldCountText / 2, 585);
 
             //REMAINING
-            ctxFormatted.font = "bold 31px Futura";
-            ctxFormatted.fillStyle = "#E5EAFF";
-            const remainingText = ctxFormatted.measureText(formatNumberVisual(remaining)).width
-            ctxFormatted.fillText(formatNumberVisual(remaining), 498 - remainingText / 2, 585);
+            ctx.font = "bold 31px Futura";
+            ctx.fillStyle = "#E5EAFF";
+            const remainingText = ctx.measureText(formatNumberVisual(remaining)).width
+            ctx.fillText(formatNumberVisual(remaining), 498 - remainingText / 2, 585);
 
             //AVG SOLD
-            ctxFormatted.font = "bold 31px Futura";
-            ctxFormatted.fillStyle = "#E5EAFF";
-            const avgSoldText = ctxFormatted.measureText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ").width
-            ctxFormatted.fillText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ", 795 - avgSoldText / 2, 585);
+            ctx.font = "bold 31px Futura";
+            ctx.fillStyle = "#E5EAFF";
+            const avgSoldText = ctx.measureText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ").width
+            ctx.fillText((parseFloat(avgSold).toFixed(3)).toString() + "Ξ", 795 - avgSoldText / 2, 585);
 
 
             //REALIZED PROFIT
-            ctxFormatted.font = "bold 31px Futura";
-            if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-            const realisedProfitText = ctxFormatted.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ").width
-            ctxFormatted.fillText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ", 201 - realisedProfitText / 2, 749);
+            ctx.font = "bold 31px Futura";
+            if (realisedProfit >= 0) { ctx.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctx.fillStyle = "#e60015"; }
+            const realisedProfitText = ctx.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ").width
+            ctx.fillText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ", 201 - realisedProfitText / 2, 749);
 
             //Potential PROFIT
-            ctxFormatted.font = "bold 31px Futura";
-            if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-            const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ").width
-            ctxFormatted.fillText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ", 498 - potentialProfitText / 2, 749);
+            ctx.font = "bold 31px Futura";
+            if (potentialProfit >= 0) { ctx.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctx.fillStyle = "#e60015"; }
+            const potentialProfitText = ctx.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ").width
+            ctx.fillText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ", 498 - potentialProfitText / 2, 749);
 
             //Potential ROI
-            ctxFormatted.font = "bold 31px Futura";
-            if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-            const potentialRoiText = ctxFormatted.measureText(potentialRoiFormatted.toString() + "%").width
-            ctxFormatted.fillText(potentialRoiFormatted.toString() + "%", 795 - potentialRoiText / 2, 749);
+            ctx.font = "bold 31px Futura";
+            if (potentialProfit >= 0) { ctx.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctx.fillStyle = "#e60015"; }
+            const potentialRoiText = ctx.measureText(potentialRoiFormatted.toString() + "%").width
+            ctx.fillText(potentialRoiFormatted.toString() + "%", 795 - potentialRoiText / 2, 749);
 
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -583,18 +586,18 @@ module.exports = {
             const targetHeight = 400;
 
 
-            ctxFormatted.fillStyle = "rgba(255, 255, 255, 0.93)";
-            let collectionNameTextSize = ctxFormatted.measureText(collectionName.toUpperCase()).width;
+            ctx.fillStyle = "rgba(255, 255, 255, 0.93)";
+            let collectionNameTextSize = ctx.measureText(collectionName.toUpperCase()).width;
 
             while (collectionNameTextSize > MAX_WIDTH) {
               fontSize -= 1;
-              ctxFormatted.font = `bold ${fontSize}px Futura`;
-              collectionNameTextSize = ctxFormatted.measureText(collectionName.toUpperCase()).width;
+              ctx.font = `bold ${fontSize}px Futura`;
+              collectionNameTextSize = ctx.measureText(collectionName.toUpperCase()).width;
             }
 
-            ctxFormatted.font = `bold ${fontSize}px Futura`;
-            ctxFormatted.textBaseline = "middle";
-            ctxFormatted.fillText(collectionName.toUpperCase(), 500 - collectionNameTextSize / 2, 303);
+            ctx.font = `bold ${fontSize}px Futura`;
+            ctx.textBaseline = "middle";
+            ctx.fillText(collectionName.toUpperCase(), 500 - collectionNameTextSize / 2, 303);
 
 
 
@@ -602,10 +605,10 @@ module.exports = {
             const profileImage = await loadImage(userLogo);
 
             //NOM USER
-            ctxFormatted.font = "bold 38px SFTransrobotic";
-            ctxFormatted.fillStyle = "#ffffff";
-            const userNameSize = ctxFormatted.measureText(authorName.toString()).width;
-            ctxFormatted.fillText(authorName.toString(), (975 - userNameSize), 966);
+            ctx.font = "bold 38px SFTransrobotic";
+            ctx.fillStyle = "#ffffff";
+            const userNameSize = ctx.measureText(authorName.toString()).width;
+            ctx.fillText(authorName.toString(), (975 - userNameSize), 966);
 
 
             const imagesize = 56;
@@ -614,12 +617,12 @@ module.exports = {
 
 
             // Dessin du cercle de découpe
-            ctxFormatted.beginPath();
-            ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
-            ctxFormatted.closePath();
-            ctxFormatted.clip();
+            ctx.beginPath();
+            ctx.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.clip();
 
-            ctxFormatted.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
+            ctx.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
 
 
 
@@ -638,6 +641,7 @@ module.exports = {
           }
 
         } else if (serverId == "944918328135286804") {
+          // Embassy
 
 
 
@@ -645,81 +649,81 @@ module.exports = {
 
 
           const canvasFormatted = createCanvas(1000, 1000);
-          const ctxFormatted = canvasFormatted.getContext('2d');
+          const ctx = canvasFormatted.getContext('2d');
 
-          ctxFormatted.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+          ctx.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
 
 
 
-          ctxFormatted.font = "33px EmbassyGothic";
-          ctxFormatted.textBaseline = "alphabetic";
+          ctx.font = "33px EmbassyGothic";
+          ctx.textBaseline = "alphabetic";
           const MAX_WIDTH = 850;
           let fontSize = 33;
 
 
-          ctxFormatted.fillStyle = "#ffffff";
-          let collectionNameTextSize = ctxFormatted.measureText(collectionName).width;
+          ctx.fillStyle = "#ffffff";
+          let collectionNameTextSize = ctx.measureText(collectionName).width;
 
           while (collectionNameTextSize > MAX_WIDTH) {
             fontSize -= 0.5;
-            ctxFormatted.font = `${fontSize}px EmbassyGothic`;
-            collectionNameTextSize = ctxFormatted.measureText(collectionName).width;
+            ctx.font = `${fontSize}px EmbassyGothic`;
+            collectionNameTextSize = ctx.measureText(collectionName).width;
           }
 
-          ctxFormatted.font = `${fontSize}px EmbassyGothic`;
-          ctxFormatted.textBaseline = "middle";
-          ctxFormatted.fillText(collectionName, 500 - collectionNameTextSize / 2, 455);
-          ctxFormatted.textBaseline = "alphabetic";
+          ctx.font = `${fontSize}px EmbassyGothic`;
+          ctx.textBaseline = "middle";
+          ctx.fillText(collectionName, 500 - collectionNameTextSize / 2, 455);
+          ctx.textBaseline = "alphabetic";
 
 
 
           //BUY COUNT
-          ctxFormatted.font = "bold 38px Courrier New";
-          ctxFormatted.fillStyle = "#ffffff";
-          const buyCountTextSize = ctxFormatted.measureText(formatNumberVisual(buyCount)).width;
-          ctxFormatted.fillText(formatNumberVisual(buyCount), 222 - buyCountTextSize / 2, 590);
+          ctx.font = "bold 38px Courrier New";
+          ctx.fillStyle = "#ffffff";
+          const buyCountTextSize = ctx.measureText(formatNumberVisual(buyCount)).width;
+          ctx.fillText(formatNumberVisual(buyCount), 222 - buyCountTextSize / 2, 590);
 
 
 
           //SOLD COUNT
-          ctxFormatted.font = "bold 38px Courrier New";
-          ctxFormatted.fillStyle = "#ffffff";
-          const soldCountTextSize = ctxFormatted.measureText(formatNumberVisual(soldCount)).width;
-          ctxFormatted.fillText(formatNumberVisual(soldCount), 504 - soldCountTextSize / 2, 590);
+          ctx.font = "bold 38px Courrier New";
+          ctx.fillStyle = "#ffffff";
+          const soldCountTextSize = ctx.measureText(formatNumberVisual(soldCount)).width;
+          ctx.fillText(formatNumberVisual(soldCount), 504 - soldCountTextSize / 2, 590);
 
           //REMAINING COUNT
-          ctxFormatted.font = "bold 38px Courrier New";
-          ctxFormatted.fillStyle = "#ffffff";
-          const remainingTextSize = ctxFormatted.measureText(formatNumberVisual(remaining)).width;
-          ctxFormatted.fillText(formatNumberVisual(remaining), 803 - remainingTextSize / 2, 590);
+          ctx.font = "bold 38px Courrier New";
+          ctx.fillStyle = "#ffffff";
+          const remainingTextSize = ctx.measureText(formatNumberVisual(remaining)).width;
+          ctx.fillText(formatNumberVisual(remaining), 803 - remainingTextSize / 2, 590);
 
 
           //AVG SPENT VALUE
-          ctxFormatted.font = "bold 38px Courrier New";
-          ctxFormatted.fillStyle = "#ffffff";
-          const avgSpentTextSize = ctxFormatted.measureText(parseFloat(avgBuy).toFixed(3) + "Ξ").width;
-          ctxFormatted.fillText(parseFloat(avgBuy).toFixed(3) + "Ξ", 222 - avgSpentTextSize / 2, 740);
+          ctx.font = "bold 38px Courrier New";
+          ctx.fillStyle = "#ffffff";
+          const avgSpentTextSize = ctx.measureText(parseFloat(avgBuy).toFixed(3) + "Ξ").width;
+          ctx.fillText(parseFloat(avgBuy).toFixed(3) + "Ξ", 222 - avgSpentTextSize / 2, 740);
 
           //AVG SALE VALUE
-          ctxFormatted.font = "bold 38px Courrier New";
-          ctxFormatted.fillStyle = "#ffffff";
-          const avgSaleTextSize = ctxFormatted.measureText(parseFloat(avgSold).toFixed(3) + "Ξ").width;
-          ctxFormatted.fillText(parseFloat(avgSold).toFixed(3) + "Ξ", 504 - avgSaleTextSize / 2, 740);
+          ctx.font = "bold 38px Courrier New";
+          ctx.fillStyle = "#ffffff";
+          const avgSaleTextSize = ctx.measureText(parseFloat(avgSold).toFixed(3) + "Ξ").width;
+          ctx.fillText(parseFloat(avgSold).toFixed(3) + "Ξ", 504 - avgSaleTextSize / 2, 740);
 
 
           //Realized PROFIT (ETH)
-          ctxFormatted.font = "bold 38px Courrier New";
-          //if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (realisedProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-          const realizedProfitTextSize = ctxFormatted.measureText(parseFloat(realisedProfit).toFixed(3) + "Ξ").width;
-          ctxFormatted.fillText(parseFloat(realisedProfit).toFixed(3) + "Ξ", 803 - realizedProfitTextSize / 2, 740);
+          ctx.font = "bold 38px Courrier New";
+          //if (realisedProfit >= 0) { ctx.fillStyle = "#00db00"; } else if (realisedProfit < 0) { ctx.fillStyle = "#e60015"; }
+          const realizedProfitTextSize = ctx.measureText(parseFloat(realisedProfit).toFixed(3) + "Ξ").width;
+          ctx.fillText(parseFloat(realisedProfit).toFixed(3) + "Ξ", 803 - realizedProfitTextSize / 2, 740);
 
 
 
           //POTENTIAL PROFIT (ETH)
-          ctxFormatted.font = "bold 45px EmbassyGothic";
-          if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-          const potentialProfitTextSize = ctxFormatted.measureText(parseFloat(potentialProfit).toFixed(3) + "Ξ (" + potentialRoiFormatted + "%)").width;
-          ctxFormatted.fillText(parseFloat(potentialProfit).toFixed(3) + "Ξ (" + potentialRoiFormatted + "%)", 500 - potentialProfitTextSize / 2, 876);
+          ctx.font = "bold 45px EmbassyGothic";
+          if (potentialProfit >= 0) { ctx.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctx.fillStyle = "#e60015"; }
+          const potentialProfitTextSize = ctx.measureText(parseFloat(potentialProfit).toFixed(3) + "Ξ (" + potentialRoiFormatted + "%)").width;
+          ctx.fillText(parseFloat(potentialProfit).toFixed(3) + "Ξ (" + potentialRoiFormatted + "%)", 500 - potentialProfitTextSize / 2, 876);
 
 
 
@@ -727,10 +731,10 @@ module.exports = {
 
 
           //NOM USER
-          ctxFormatted.font = "bold 34px Courrier New";
-          ctxFormatted.fillStyle = "#ffffff";
-          const userNameSize = ctxFormatted.measureText(authorName.toString()).width;
-          ctxFormatted.fillText(authorName.toString(), (945 - userNameSize), 950);
+          ctx.font = "bold 34px Courrier New";
+          ctx.fillStyle = "#ffffff";
+          const userNameSize = ctx.measureText(authorName.toString()).width;
+          ctx.fillText(authorName.toString(), (945 - userNameSize), 950);
 
 
           // Dessin du cercle de découpe
@@ -738,15 +742,135 @@ module.exports = {
           const imagex = 935 - userNameSize - imagesize;
           const imagey = 914;
           const profileImage = await loadImage(userLogo);
-          ctxFormatted.beginPath();
-          ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
-          ctxFormatted.closePath();
-          ctxFormatted.clip();
-          ctxFormatted.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
+          ctx.beginPath();
+          ctx.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
 
 
 
           const randomString = generateRandomString(10);
+
+          // Dessiner l'image de profil sur le canvas
+          const buffer2 = canvasFormatted.toBuffer('image/png');
+
+          await interaction.editReply({ files: [buffer2] })
+
+
+
+
+
+
+
+
+
+        } else if (serverId == "1177408233799954443") {
+          // EGL Family
+
+
+          const templateOneCollection = await loadImage("./visual/eglfamily/permanent/cryptoprofittemplate1.png");
+
+
+          const canvasFormatted = createCanvas(1000, 630.2);
+          const ctx = canvasFormatted.getContext('2d');
+
+          ctx.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+
+          // Nom du coin
+          // ON commence par formatter le texte
+          const coinTx = "$" + collectionSlug
+          // Puis on met la font et la couleur
+          ctx.font = "65px roboto";
+          ctx.fillStyle = "#FFFFFF";
+          // Enfin on calcul la taille et remplit
+          const coinSz = ctx.measureText(coinTx).width;
+          ctx.fillText(coinTx, 500 - coinSz / 2, 110);
+
+
+          // Profit potentiel
+          // ON commence par formatter le texte
+          let profitTx = parseFloat(potentialProfit).toFixed(3) + " eth"
+          if (potentialProfit > 0) { profitTx = "+" + parseFloat(potentialProfit).toFixed(3) + " eth" }
+          // Puis on met la font et la couleur
+          ctx.font = "107px roboto";
+          ctx.fillStyle = "#04D9FF";
+          // Enfin on calcul la taille et remplit
+          const profitSz = ctx.measureText(profitTx).width;
+          ctx.fillText(profitTx, 500 - profitSz / 2, 330);
+
+          // Effet de lueur
+          ctx.shadowColor = 'rgba(4, 217, 255, 0.7)';
+          ctx.shadowBlur = 10;
+          // Duplique le texte avec une couleur de fond différente
+          ctx.fillStyle = '#04D9FF';
+          ctx.fillText(profitTx, 500 - profitSz / 2, 330);
+
+          // USD Profit
+          ctx.textAlign = 'right';
+          ctx.font = "38px rbt";
+          ctx.fillStyle = "#04D9FF";
+          const usdTx = parseFloat(potentialProfit * ethUsdPrice).toFixed(2) + " USD"
+          ctx.fillText(usdTx, 725, 390);
+
+          // ROI
+          ctx.textAlign = 'left';
+          ctx.font = "38px rbt";
+          ctx.fillStyle = "#04D9FF";
+          const roiTx = "ROI: " + parseFloat(potentialRoi).toFixed(0) + "%"
+          ctx.fillText(roiTx, 270, 390);
+
+
+          // Réinitialise l'effet de lueur
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+
+
+
+
+          // Cout total
+          // ON commence par formatter le texte
+          const spentTx = parseFloat(totalBuy).toFixed(3) + "Ξ"
+          // Puis on met la font et la couleur
+          ctx.font = "light 19px rbt";
+          ctx.fillStyle = "#E7E7E7";
+          // Enfin on calcul la taille et remplit
+          ctx.fillText(spentTx, 410, 490);
+
+
+          // Sales total
+          // ON commence par formatter le texte
+          const salesTx = parseFloat(totalSell).toFixed(3) + "Ξ"
+          // Puis on met la font et la couleur
+          ctx.font = "light 19px rbt";
+          ctx.fillStyle = "#E7E7E7";
+          // Enfin on calcul la taille et remplit
+          ctx.fillText(salesTx, 688, 490);
+
+
+
+          344
+
+          //NOM USER
+          ctx.font = " 18px roboto";
+          ctx.fillStyle = "#E7E7E7";
+          const userNameSize = ctx.measureText(authorName.toString()).width;
+          ctx.fillText(authorName.toString(), 830, 569);
+
+
+          // Dessin du cercle de découpe
+          const imagesize = 35;
+          const imagex = 783
+          const imagey = 544;
+          const profileImage = await loadImage(userLogo);
+          ctx.beginPath();
+          ctx.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
+
+
+
 
           // Dessiner l'image de profil sur le canvas
           const buffer2 = canvasFormatted.toBuffer('image/png');
@@ -771,70 +895,70 @@ module.exports = {
 
 
           const canvasFormatted = createCanvas(1000, 1000);
-          const ctxFormatted = canvasFormatted.getContext('2d');
+          const ctx = canvasFormatted.getContext('2d');
 
-          ctxFormatted.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+          ctx.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
 
 
 
           //MINT COUNT
-          ctxFormatted.font = "700 35px 'Fira Code'";
-          ctxFormatted.fillStyle = "#E5EAFF";
-          const mintCountText = ctxFormatted.measureText(formatNumberVisual(buyCount)).width
-          ctxFormatted.fillText(formatNumberVisual(buyCount), 190 - mintCountText / 2, 420);
+          ctx.font = "700 35px 'Fira Code'";
+          ctx.fillStyle = "#E5EAFF";
+          const mintCountText = ctx.measureText(formatNumberVisual(buyCount)).width
+          ctx.fillText(formatNumberVisual(buyCount), 190 - mintCountText / 2, 420);
 
           //BUY COUNT
-          ctxFormatted.font = "700 35px 'Fira Code'";
-          ctxFormatted.fillStyle = "#E5EAFF";
-          const buyCountText = ctxFormatted.measureText(airdropCount.toString()).width
-          ctxFormatted.fillText(airdropCount.toString(), 498 - buyCountText / 2, 420);
+          ctx.font = "700 35px 'Fira Code'";
+          ctx.fillStyle = "#E5EAFF";
+          const buyCountText = ctx.measureText(airdropCount.toString()).width
+          ctx.fillText(airdropCount.toString(), 498 - buyCountText / 2, 420);
 
           //AVG BUY
-          ctxFormatted.font = "700 35px 'Fira Code'";
-          ctxFormatted.fillStyle = "#E5EAFF";
-          const avgBuyCountText = ctxFormatted.measureText((formatNumberVisual(avgBuy)).toString() + "$").width
-          ctxFormatted.fillText((formatNumberVisual(avgBuy)).toString() + "$", 812 - avgBuyCountText / 2, 420);
+          ctx.font = "700 35px 'Fira Code'";
+          ctx.fillStyle = "#E5EAFF";
+          const avgBuyCountText = ctx.measureText((formatNumberVisual(avgBuy)).toString() + "$").width
+          ctx.fillText((formatNumberVisual(avgBuy)).toString() + "$", 812 - avgBuyCountText / 2, 420);
 
           //SOLD COUNT
-          ctxFormatted.font = "700 35px 'Fira Code'";
-          ctxFormatted.fillStyle = "#E5EAFF";
-          const soldCountText = ctxFormatted.measureText(formatNumberVisual(soldCount)).width
-          ctxFormatted.fillText(formatNumberVisual(soldCount), 190 - soldCountText / 2, 585);
+          ctx.font = "700 35px 'Fira Code'";
+          ctx.fillStyle = "#E5EAFF";
+          const soldCountText = ctx.measureText(formatNumberVisual(soldCount)).width
+          ctx.fillText(formatNumberVisual(soldCount), 190 - soldCountText / 2, 585);
 
           //REMAINING
-          ctxFormatted.font = "700 35px 'Fira Code'";
-          ctxFormatted.fillStyle = "#E5EAFF";
-          const remainingText = ctxFormatted.measureText(formatNumberVisual(remaining)).width
-          ctxFormatted.fillText(formatNumberVisual(remaining), 500 - remainingText / 2, 585);
+          ctx.font = "700 35px 'Fira Code'";
+          ctx.fillStyle = "#E5EAFF";
+          const remainingText = ctx.measureText(formatNumberVisual(remaining)).width
+          ctx.fillText(formatNumberVisual(remaining), 500 - remainingText / 2, 585);
 
           //AVG SOLD
-          ctxFormatted.font = "700 35px 'Fira Code'";
-          ctxFormatted.fillStyle = "#E5EAFF";
-          const avgSoldText = ctxFormatted.measureText((formatNumberVisual(avgSold)).toString() + "$").width
-          ctxFormatted.fillText((formatNumberVisual(avgSold)).toString() + "$", 812 - avgSoldText / 2, 585);
+          ctx.font = "700 35px 'Fira Code'";
+          ctx.fillStyle = "#E5EAFF";
+          const avgSoldText = ctx.measureText((formatNumberVisual(avgSold)).toString() + "$").width
+          ctx.fillText((formatNumberVisual(avgSold)).toString() + "$", 812 - avgSoldText / 2, 585);
 
 
           //REALIZED PROFIT
-          ctxFormatted.font = "700 35px 'Fira Code'";
-          if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-          const realisedProfitText = ctxFormatted.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ").width
-          ctxFormatted.fillText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ", 190 - realisedProfitText / 2, 749);
+          ctx.font = "700 35px 'Fira Code'";
+          if (realisedProfit >= 0) { ctx.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctx.fillStyle = "#e60015"; }
+          const realisedProfitText = ctx.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ").width
+          ctx.fillText((parseFloat(realisedProfit).toFixed(3)).toString() + "Ξ", 190 - realisedProfitText / 2, 749);
 
           //Potential PROFIT
-          ctxFormatted.font = "700 35px 'Fira Code'";
-          if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-          const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ").width
-          ctxFormatted.fillText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ", 500 - potentialProfitText / 2, 749);
+          ctx.font = "700 35px 'Fira Code'";
+          if (potentialProfit >= 0) { ctx.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctx.fillStyle = "#e60015"; }
+          const potentialProfitText = ctx.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ").width
+          ctx.fillText((parseFloat(potentialProfit).toFixed(3)).toString() + "Ξ", 500 - potentialProfitText / 2, 749);
 
           //Potential ROI
-          ctxFormatted.font = "700 35px 'Fira Code'";
-          if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+          ctx.font = "700 35px 'Fira Code'";
+          if (potentialProfit >= 0) { ctx.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctx.fillStyle = "#e60015"; }
           if (potentialRoiFormatted.toLowerCase() !== "infinity") {
-            const potentialRoiText = ctxFormatted.measureText(potentialRoiFormatted.toString() + "%").width
-            ctxFormatted.fillText(potentialRoiFormatted.toString() + "%", 812 - potentialRoiText / 2, 749);
+            const potentialRoiText = ctx.measureText(potentialRoiFormatted.toString() + "%").width
+            ctx.fillText(potentialRoiFormatted.toString() + "%", 812 - potentialRoiText / 2, 749);
           } else {
-            const potentialRoiText = ctxFormatted.measureText(potentialRoiFormatted.toString()).width
-            ctxFormatted.fillText(potentialRoiFormatted.toString(), 812 - potentialRoiText / 2, 749);
+            const potentialRoiText = ctx.measureText(potentialRoiFormatted.toString()).width
+            ctx.fillText(potentialRoiFormatted.toString(), 812 - potentialRoiText / 2, 749);
           }
 
           ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -846,18 +970,18 @@ module.exports = {
           const targetHeight = 400;
 
 
-          ctxFormatted.fillStyle = "rgba(255, 255, 255, 0.93)";
-          let collectionNameTextSize = ctxFormatted.measureText(collectionName.toUpperCase()).width;
+          ctx.fillStyle = "rgba(255, 255, 255, 0.93)";
+          let collectionNameTextSize = ctx.measureText(collectionName.toUpperCase()).width;
 
           while (collectionNameTextSize > MAX_WIDTH) {
             fontSize -= 1;
-            ctxFormatted.font = `700 ${fontSize}px 'Fira Code'`;
-            collectionNameTextSize = ctxFormatted.measureText(collectionName.toUpperCase()).width;
+            ctx.font = `700 ${fontSize}px 'Fira Code'`;
+            collectionNameTextSize = ctx.measureText(collectionName.toUpperCase()).width;
           }
 
-          ctxFormatted.font = `700 ${fontSize}px 'Fira Code'`;
-          ctxFormatted.textBaseline = "middle";
-          ctxFormatted.fillText(collectionName.toUpperCase(), 500 - collectionNameTextSize / 2, 304);
+          ctx.font = `700 ${fontSize}px 'Fira Code'`;
+          ctx.textBaseline = "middle";
+          ctx.fillText(collectionName.toUpperCase(), 500 - collectionNameTextSize / 2, 304);
 
 
 
@@ -870,13 +994,13 @@ module.exports = {
           let fontSize2 = 21;
 
 
-          ctxFormatted.fillStyle = "#ffffff";
-          const userNameSize = ctxFormatted.measureText(authorName.toUpperCase()).width;
+          ctx.fillStyle = "#ffffff";
+          const userNameSize = ctx.measureText(authorName.toUpperCase()).width;
 
           while (userNameSize > MAX_WIDTH2) {
             fontSize2 -= 1;
-            ctxFormatted.font = `${fontSize2}px opt`;
-            userNameSize = ctxFormatted.measureText(authorName.toUpperCase()).width;
+            ctx.font = `${fontSize2}px opt`;
+            userNameSize = ctx.measureText(authorName.toUpperCase()).width;
           }
 
 
@@ -887,11 +1011,11 @@ module.exports = {
           const startImageAndName = 792
 
 
-          let pfpAndNameSize = ctxFormatted.measureText(imagesize + 8 + authorName.toUpperCase()).width;
+          let pfpAndNameSize = ctx.measureText(imagesize + 8 + authorName.toUpperCase()).width;
 
-          ctxFormatted.font = `${fontSize2}px opt`;
-          ctxFormatted.textBaseline = "middle";
-          ctxFormatted.fillText(authorName.toUpperCase(), startImageAndName + imagesize + 12 - (pfpAndNameSize / 2), 969);
+          ctx.font = `${fontSize2}px opt`;
+          ctx.textBaseline = "middle";
+          ctx.fillText(authorName.toUpperCase(), startImageAndName + imagesize + 12 - (pfpAndNameSize / 2), 969);
 
 
           const imagex = startImageAndName - (pfpAndNameSize / 2)
@@ -899,12 +1023,12 @@ module.exports = {
 
 
           // Dessin du cercle de découpe
-          ctxFormatted.beginPath();
-          ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
-          ctxFormatted.closePath();
-          ctxFormatted.clip();
+          ctx.beginPath();
+          ctx.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
+          ctx.closePath();
+          ctx.clip();
 
-          ctxFormatted.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
+          ctx.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
 
 
 
@@ -942,6 +1066,7 @@ module.exports = {
 
     } catch (error) {
 
+      console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
       console.log("// Error - sent in report ❌")
 
@@ -987,7 +1112,6 @@ module.exports = {
 
 
 
-      console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
       const reduceText = require("../../../functions/reducetext")
       const roleTag = "1121510423687090186"

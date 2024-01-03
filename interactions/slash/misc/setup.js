@@ -111,7 +111,6 @@ module.exports = {
                         const guildFetch = interaction.client.guilds.cache.get(guildId);
                         const channelFetch = guildFetch.channels.cache.get(channelId);
 
-                        const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
 
 
 

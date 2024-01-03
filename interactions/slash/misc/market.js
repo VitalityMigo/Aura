@@ -9,11 +9,8 @@ const { profileData, accessSql, apimonitorsql, adminsql, usersql, reportsql, seq
 const moment = require('moment');
 const axios = require('axios')
 
-
-//Récupérer les clefs API
-const dotenv = require("dotenv")
-dotenv.config()
-const etherscanApiKey = process.env.etherscanApiKey
+// Param d'infrastructure
+const { authPrivacy, communityInfos } = require("../../../functions/infra-utils")
 
 // On récupère les nodes et API
 const { nftgo, magiceden } = require("../../../config/web3config");
@@ -88,564 +85,498 @@ module.exports = {
 
             try {
 
-                const botAdmins = await adminsql.findOne({ where: { botId: botId } })
-                const botGlobalState = botAdmins.dataValues.botState
+                console.log("Initialization: executed ✅")
 
-                let communityMemberRoleId = ""
-                let communityAdminRoleId = ""
-                let botPowerStatut = ""
-                let communityStatut = ""
-                let accessTier = ""
-
-                //Récupère info varibale sur le bot et le serveur
-                const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
-                if (communityRolePerms != null) {
-                    communityMemberRoleId = communityRolePerms.dataValues.memberRoleId
-                    communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
-                    botPowerStatut = communityRolePerms.dataValues.actualPower
-                    communityStatut = communityRolePerms.dataValues.statut
-                    accessTier = communityRolePerms.dataValues.accessTier
-                }
-
-
+                // Récupère les infos de la communauté
+                const community = await communityInfos(serverId)
 
                 //Récupère régagle de privé/ou pas de l'utilisateur
-                const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
+                const privacy = await authPrivacy(authorId)
+                if (privacy) { await interaction.deferReply({ ephemeral: true }) }
+                else { await interaction.deferReply() }
+
+
+                // Les vérifications
+                if (community.statut) {
+
+                    if (community.tier === 's-tier' || community.tier === 'a-tier') {
+
+                        if (member.roles.cache.has(community.member)) {
+
+
+                            const selectedTimestamp = interaction.options.getString("timelapse");
+                            const selectedChain = interaction.options.getString("chain");
+
+
+                            let timeRange = ""
+                            if (selectedTimestamp === "1 hour") {
+                                timeRange = "1h"
+                            } else if (selectedTimestamp === "6 hours") {
+                                timeRange = "6h"
+                            } else if (selectedTimestamp === "12 hours") {
+                                timeRange = "12h"
+                            } else if (selectedTimestamp === "1 Day" || !selectedTimestamp) {
+                                console.log("hi")
+                                timeRange = "24h"
+                            } else if (selectedTimestamp === "7 Days") {
+                                timeRange = "7d"
+                            }
+
+                            let timeRange2 = ""
+                            if (selectedTimestamp === "1 hour") {
+                                timeRange2 = "24h"
+                            } else if (selectedTimestamp === "6 hours") {
+                                timeRange2 = "24h"
+                            } else if (selectedTimestamp === "12 hours") {
+                                timeRange2 = "24h"
+                            } else if (selectedTimestamp === "1 Day" || !selectedTimestamp) {
+                                console.log("hi")
+
+                                timeRange2 = "24h"
+                            } else if (selectedTimestamp === "7 Days") {
+                                timeRange2 = "7d"
+                            }
+
+                            let timeRange3 = ""
+                            if (selectedTimestamp === "1 hour") {
+                                timeRange3 = "1h"
+                            } else if (selectedTimestamp === "6 hours") {
+                                timeRange3 = "6h"
+                            } else if (selectedTimestamp === "12 hours") {
+                                timeRange3 = "1d"
+                            } else if (selectedTimestamp === "1 Day" || !selectedTimestamp) {
+                                timeRange3 = "1d"
+                            } else if (selectedTimestamp === "7 Days") {
+                                timeRange3 = "7d"
+                            }
+
+                            let timeRange4 = selectedTimestamp
+                            if (!selectedTimestamp) { timeRange4 = '1 day' }
+
+                            if (selectedChain.toLowerCase() == "ethereum") {
+
+
+
+
+                                let marketCap = 0
+                                let marketSentiment = 0
+                                let marketSentimentFormatted = "Neutral"
+                                let holderCount = 0
+                                let whaleCount = 0
+                                let traderCount = 0
+                                let saleCount = 0
+                                let totalVolume = 0
+                                let trendingFormatted = ""
+                                let marketplacesFormatted = ""
+                                let liveMintsFormatted = ""
+
+                                let indicator = ""
+                                let avgVolume30D = 0
+                                let avgTrader30D = 0
+                                let avgSaleCount30D = 0
+                                let traderRatio = 0
+                                let volumeRatio = 0
+                                let salesRatio = 0
+                                let globalEvolution = 0
+                                let roiPrefix1 = ""
+                                let roiSuffix1 = ""
+                                let roiPrefix2 = ""
+                                let roiSuffix2 = ""
+                                let roiPrefix3 = ""
+                                let roiSuffix3 = ""
+                                let traderRatioFormatted = "0.00%"
+                                let volumeRatioFormatted = "0.00%"
+                                let salesRatioFormatted = "0.00%"
+                                let globalEvolutionFormatted = "Neutral"
+
+                                //Récupère le prix de l'ETH
+                                const ethusdtPrice = getEthPrice()
+
 
-                if (authorProfile === null) { await interaction.deferReply(); } else {
-                    const authorPrivacyMode = authorProfile.dataValues.privacyMode
+                                //Call API sur les data générales
+                                nftgo.get_metrics_eth_v1_market_metrics_get()
+                                    .then(async ({ data: marketdata }) => {
+                                        console.log("check 1")
 
-                    if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
-                    if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
-                }
 
-                //Checkpoint
-                console.log("// Step 1 : Initialization - Executed ✅")
+                                        nftgo.get_collection_ranking_eth_v1_market_rank_collection__time_range__get({ by: 'volume', with_rarity: 'false', asc: 'false', offset: '0', limit: '10', time_range: timeRange })
+                                            .then(async ({ data: topCollectionRanking }) => {
 
+                                                console.log("check 2")
 
 
-                if (botGlobalState.toLowerCase() === "on") {
+                                                nftgo.get_marketplace_leaderboard_eth_v1_market_rank_marketplaces__time_range__get({ sort_by: 'volume', asc: 'false', offset: '0', limit: '6', exclude_wash_trading: 'false', time_range: timeRange2 })
+                                                    .then(async ({ data: topMarketplacesRanking }) => {
+                                                        console.log("check 3")
 
+                                                        marketCap = marketdata.market_cap_usd
+                                                        marketSentiment = marketdata.market_sentiment.score
+                                                        holderCount = marketdata.holder_num
+                                                        whaleCount = marketdata.whale_num
 
-                    if (communityStatut.toLowerCase() === "active" || communityStatut == "") {
 
-                        if (accessTier.toLowerCase() == "b-tier" || accessTier.toLowerCase() == "a-tier" || accessTier.toLowerCase() == "s-tier") {
+                                                        if (marketSentiment <= 20) { marketSentimentFormatted = "Extreme Fear" }
+                                                        else if (marketSentiment > 20 && marketSentiment <= 40) { marketSentimentFormatted = "Fear" }
+                                                        else if (marketSentiment > 40 && marketSentiment <= 60) { marketSentimentFormatted == "Neutral" }
+                                                        else if (marketSentiment > 60 && marketSentiment <= 80) { marketSentimentFormatted = "Greed" }
+                                                        else if (marketSentiment > 80 && marketSentiment <= 100) { marketSentimentFormatted = "Extreme Greed" }
 
-                            if (member.roles.cache.has(communityMemberRoleId)) {
 
-                                //Checkpoint
-                                console.log("// Step 2 : Authorization - Executed ✅")
+                                                        // CALCUL DES VALEURS VARIABLES DU CALL
+                                                        if (selectedTimestamp === "1 hour") {
+                                                            saleCount = marketdata.sale_num['24h'] / 24
+                                                            traderCount = marketdata.trader_num['24h'] / 24
+                                                            totalVolume = marketdata.volume['24h'] / 24
 
+                                                            avgVolume30D = (marketdata.volume['30d'] / 30) / 24
+                                                            avgTrader30D = (marketdata.trader_num['30d'] / 30) / 24
+                                                            avgSaleCount30D = (marketdata.sale_num['30d'] / 30) / 24
 
+                                                            indicator = "1H"
+                                                        } else if (selectedTimestamp === "6 hours") {
+                                                            saleCount = marketdata.sale_num['24h'] / 4
+                                                            traderCount = marketdata.trader_num['24h'] / 4
+                                                            totalVolume = marketdata.volume['24h'] / 4
 
-                                //On enregistre le user si il est pas encore dans la database
-                                const timeStamp1 = Date.now();
-                                const actualTimestamp1 = parseFloat(timeStamp1 / 1000).toFixed(0)
-                                const isUser = await usersql.findOne({ where: { userId: authorId, serverId: serverId } })
-                                if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp1 }) }
+                                                            avgVolume30D = (marketdata.volume['30d'] / 30) / 4
+                                                            avgTrader30D = (marketdata.trader_num['30d'] / 30) / 4
+                                                            avgSaleCount30D = (marketdata.sale_num['30d'] / 30) / 4
 
 
+                                                            indicator = "6H"
+                                                        } else if (selectedTimestamp === "12 hour") {
+                                                            saleCount = marketdata.sale_num['24h'] / 2
+                                                            traderCount = marketdata.trader_num['24h'] / 2
+                                                            totalVolume = marketdata.volume['24h'] / 2
 
-                                const selectedTimestamp = interaction.options.getString("timelapse");
-                                const selectedChain = interaction.options.getString("chain");
+                                                            avgVolume30D = (marketdata.volume['30d'] / 30) / 2
+                                                            avgTrader30D = (marketdata.trader_num['30d'] / 30) / 2
+                                                            avgSaleCount30D = (marketdata.sale_num['30d'] / 30) / 2
 
 
+                                                            indicator = "12H"
+                                                        } else if (selectedTimestamp === "1 Day" || !selectedTimestamp) {
+                                                            saleCount = marketdata.sale_num['24h']
+                                                            traderCount = marketdata.trader_num['24h']
+                                                            totalVolume = marketdata.volume['24h']
 
+                                                            avgVolume30D = marketdata.volume['30d'] / 30
+                                                            avgTrader30D = marketdata.trader_num['30d'] / 30
+                                                            avgSaleCount30D = marketdata.sale_num['30d'] / 30
 
 
-                                let timeRange = ""
-                                if (selectedTimestamp === "1 hour") {
-                                    timeRange = "1h"
-                                } else if (selectedTimestamp === "6 hours") {
-                                    timeRange = "6h"
-                                } else if (selectedTimestamp === "12 hours") {
-                                    timeRange = "12h"
-                                } else if (selectedTimestamp === "1 Day" || !selectedTimestamp) {
-                                    console.log("hi")
-                                    timeRange = "24h"
-                                } else if (selectedTimestamp === "7 Days") {
-                                    timeRange = "7d"
-                                }
+                                                            indicator = "1D"
+                                                        } else if (selectedTimestamp === "7 Days") {
+                                                            saleCount = marketdata.sale_num['7d']
+                                                            traderCount = marketdata.trader_num['7d']
+                                                            totalVolume = marketdata.volume['7d']
 
-                                let timeRange2 = ""
-                                if (selectedTimestamp === "1 hour") {
-                                    timeRange2 = "24h"
-                                } else if (selectedTimestamp === "6 hours") {
-                                    timeRange2 = "24h"
-                                } else if (selectedTimestamp === "12 hours") {
-                                    timeRange2 = "24h"
-                                } else if (selectedTimestamp === "1 Day" || !selectedTimestamp) {
-                                    console.log("hi")
+                                                            avgVolume30D = (marketdata.volume['30d'] / 30) * 7
+                                                            avgTrader30D = (marketdata.trader_num['30d'] / 30) * 7
+                                                            avgSaleCount30D = (marketdata.sale_num['30d'] / 30) * 7
 
-                                    timeRange2 = "24h"
-                                } else if (selectedTimestamp === "7 Days") {
-                                    timeRange2 = "7d"
-                                }
 
-                                let timeRange3 = ""
-                                if (selectedTimestamp === "1 hour") {
-                                    timeRange3 = "1h"
-                                } else if (selectedTimestamp === "6 hours") {
-                                    timeRange3 = "6h"
-                                } else if (selectedTimestamp === "12 hours") {
-                                    timeRange3 = "1d"
-                                } else if (selectedTimestamp === "1 Day" || !selectedTimestamp) {
-                                    timeRange3 = "1d"
-                                } else if (selectedTimestamp === "7 Days") {
-                                    timeRange3 = "7d"
-                                }
+                                                            indicator = "7D"
+                                                        }
 
-                                let timeRange4 = selectedTimestamp
-                                if (!selectedTimestamp) { timeRange4 = '1 day' }
 
-                                if (selectedChain.toLowerCase() == "ethereum") {
+                                                        //Calcul des ratio
+                                                        traderRatio = ((traderCount - avgTrader30D) / avgTrader30D) * 100
+                                                        salesRatio = ((saleCount - avgSaleCount30D) / avgSaleCount30D) * 100
+                                                        volumeRatio = ((totalVolume - avgVolume30D) / avgVolume30D) * 100
 
+                                                        // Formattage des ratio
+                                                        if (traderRatio > 0) {
+                                                            roiPrefix1 = "+";
+                                                            roiSuffix1 = " :chart_with_upwards_trend:";
+                                                        } else if (traderRatio < 0) {
+                                                            roiSuffix1 = " :chart_with_downwards_trend:";
+                                                        }
+                                                        traderRatioFormatted = "`" + roiPrefix1 + parseFloat(traderRatio).toFixed(2) + "%" + "`" + roiSuffix1;
 
+                                                        if (salesRatio > 0) {
+                                                            roiPrefix2 = "+";
+                                                            roiSuffix2 = " :chart_with_upwards_trend:";
+                                                        } else if (salesRatio < 0) {
+                                                            roiSuffix2 = " :chart_with_downwards_trend:";
+                                                        }
+                                                        salesRatioFormatted = "`" + roiPrefix2 + parseFloat(salesRatio).toFixed(2) + "%" + "`" + roiSuffix2;
 
+                                                        if (volumeRatio > 0) {
+                                                            roiPrefix3 = "+";
+                                                            roiSuffix3 = " :chart_with_upwards_trend:";
+                                                        } else if (volumeRatio < 0) {
+                                                            roiSuffix3 = " :chart_with_downwards_trend:";
+                                                        }
+                                                        volumeRatioFormatted = "`" + roiPrefix3 + parseFloat(volumeRatio).toFixed(2) + "%" + "`" + roiSuffix3;
 
-                                    let marketCap = 0
-                                    let marketSentiment = 0
-                                    let marketSentimentFormatted = "Neutral"
-                                    let holderCount = 0
-                                    let whaleCount = 0
-                                    let traderCount = 0
-                                    let saleCount = 0
-                                    let totalVolume = 0
-                                    let trendingFormatted = ""
-                                    let marketplacesFormatted = ""
-                                    let liveMintsFormatted = ""
-
-                                    let indicator = ""
-                                    let avgVolume30D = 0
-                                    let avgTrader30D = 0
-                                    let avgSaleCount30D = 0
-                                    let traderRatio = 0
-                                    let volumeRatio = 0
-                                    let salesRatio = 0
-                                    let globalEvolution = 0
-                                    let roiPrefix1 = ""
-                                    let roiSuffix1 = ""
-                                    let roiPrefix2 = ""
-                                    let roiSuffix2 = ""
-                                    let roiPrefix3 = ""
-                                    let roiSuffix3 = ""
-                                    let traderRatioFormatted = "0.00%"
-                                    let volumeRatioFormatted = "0.00%"
-                                    let salesRatioFormatted = "0.00%"
-                                    let globalEvolutionFormatted = "Neutral"
 
-                                    //Récupère le prix de l'ETH
-                                    const ethusdtPrice = getEthPrice()
-
-
-                                    //Call API sur les data générales
-                                    nftgo.get_metrics_eth_v1_market_metrics_get()
-                                        .then(async ({ data: marketdata }) => {
-                                            console.log("check 1")
-
-
-                                            nftgo.get_collection_ranking_eth_v1_market_rank_collection__time_range__get({ by: 'volume', with_rarity: 'false', asc: 'false', offset: '0', limit: '10', time_range: timeRange })
-                                                .then(async ({ data: topCollectionRanking }) => {
-
-                                                    console.log("check 2")
-
-
-                                                    nftgo.get_marketplace_leaderboard_eth_v1_market_rank_marketplaces__time_range__get({ sort_by: 'volume', asc: 'false', offset: '0', limit: '6', exclude_wash_trading: 'false', time_range: timeRange2 })
-                                                        .then(async ({ data: topMarketplacesRanking }) => {
-                                                            console.log("check 3")
-
-                                                            marketCap = marketdata.market_cap_usd
-                                                            marketSentiment = marketdata.market_sentiment.score
-                                                            holderCount = marketdata.holder_num
-                                                            whaleCount = marketdata.whale_num
-
-
-                                                            if (marketSentiment <= 20) { marketSentimentFormatted = "Extreme Fear" }
-                                                            else if (marketSentiment > 20 && marketSentiment <= 40) { marketSentimentFormatted = "Fear" }
-                                                            else if (marketSentiment > 40 && marketSentiment <= 60) { marketSentimentFormatted == "Neutral" }
-                                                            else if (marketSentiment > 60 && marketSentiment <= 80) { marketSentimentFormatted = "Greed" }
-                                                            else if (marketSentiment > 80 && marketSentiment <= 100) { marketSentimentFormatted = "Extreme Greed" }
+                                                        if (volumeRatio > 0) { globalEvolution += 1 } else if (volumeRatio < 0) { globalEvolution -= 1 }
+                                                        if (salesRatio > 0) { globalEvolution += 1 } else if (salesRatio < 0) { globalEvolution -= 1 }
+                                                        if (traderRatio > 0) { globalEvolution += 1 } else if (traderRatio < 0) { globalEvolution -= 1 }
 
+                                                        if (globalEvolution > 0) { globalEvolutionFormatted = "Positive" } else if (globalEvolution < 0) { globalEvolutionFormatted = "Negative" }
 
-                                                            // CALCUL DES VALEURS VARIABLES DU CALL
-                                                            if (selectedTimestamp === "1 hour") {
-                                                                saleCount = marketdata.sale_num['24h'] / 24
-                                                                traderCount = marketdata.trader_num['24h'] / 24
-                                                                totalVolume = marketdata.volume['24h'] / 24
 
-                                                                avgVolume30D = (marketdata.volume['30d'] / 30) / 24
-                                                                avgTrader30D = (marketdata.trader_num['30d'] / 30) / 24
-                                                                avgSaleCount30D = (marketdata.sale_num['30d'] / 30) / 24
 
-                                                                indicator = "1H"
-                                                            } else if (selectedTimestamp === "6 hours") {
-                                                                saleCount = marketdata.sale_num['24h'] / 4
-                                                                traderCount = marketdata.trader_num['24h'] / 4
-                                                                totalVolume = marketdata.volume['24h'] / 4
 
-                                                                avgVolume30D = (marketdata.volume['30d'] / 30) / 4
-                                                                avgTrader30D = (marketdata.trader_num['30d'] / 30) / 4
-                                                                avgSaleCount30D = (marketdata.sale_num['30d'] / 30) / 4
+                                                        for (const obj of topCollectionRanking.collections) {
 
 
-                                                                indicator = "6H"
-                                                            } else if (selectedTimestamp === "12 hour") {
-                                                                saleCount = marketdata.sale_num['24h'] / 2
-                                                                traderCount = marketdata.trader_num['24h'] / 2
-                                                                totalVolume = marketdata.volume['24h'] / 2
+                                                            let collectionName = obj.slug
+                                                            let collectionFloor = obj.floor_price_eth
+                                                            let collectionHolder = obj.holder_num
+                                                            let collectionWhale = obj.whale_num
+                                                            let collectionVolume = obj.volume_eth
+                                                            let collectionWhaleRatio = (collectionWhale * 100 / collectionHolder)
 
-                                                                avgVolume30D = (marketdata.volume['30d'] / 30) / 2
-                                                                avgTrader30D = (marketdata.trader_num['30d'] / 30) / 2
-                                                                avgSaleCount30D = (marketdata.sale_num['30d'] / 30) / 2
+                                                            // let collectionNameFormatted = truncatePhrase(collectionName);
 
+                                                            let lignMaxSize = 69
+                                                            let leftPartNfts = "`" + collectionName + ":"
+                                                            let rightPartNfts = parseFloat(collectionFloor).toFixed(3) + "Ξ ∙ " + parseFloat(collectionVolume).toFixed(0) + "Ξ ∙ " + collectionHolder + " owners ∙ " + parseFloat(collectionWhaleRatio).toFixed(2) + "% whales\n"
+                                                            let leftPartNFTsLenght = leftPartNfts.length
+                                                            let rightPartNftsLenght = rightPartNfts.length
+                                                            let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
+                                                            let spaceLenght = ""
+                                                            for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
 
-                                                                indicator = "12H"
-                                                            } else if (selectedTimestamp === "1 Day" || !selectedTimestamp) {
-                                                                saleCount = marketdata.sale_num['24h']
-                                                                traderCount = marketdata.trader_num['24h']
-                                                                totalVolume = marketdata.volume['24h']
+                                                            trendingFormatted += "`" + collectionName + ":" + spaceLenght + parseFloat(collectionFloor).toFixed(3) + "Ξ ∙ " + parseFloat(collectionVolume).toFixed(0) + "Ξ ∙ " + collectionHolder + " owners ∙ " + parseFloat(collectionWhaleRatio).toFixed(2) + "% whales`\n"
 
-                                                                avgVolume30D = marketdata.volume['30d'] / 30
-                                                                avgTrader30D = marketdata.trader_num['30d'] / 30
-                                                                avgSaleCount30D = marketdata.sale_num['30d'] / 30
 
+                                                        }
 
-                                                                indicator = "1D"
-                                                            } else if (selectedTimestamp === "7 Days") {
-                                                                saleCount = marketdata.sale_num['7d']
-                                                                traderCount = marketdata.trader_num['7d']
-                                                                totalVolume = marketdata.volume['7d']
 
-                                                                avgVolume30D = (marketdata.volume['30d'] / 30) * 7
-                                                                avgTrader30D = (marketdata.trader_num['30d'] / 30) * 7
-                                                                avgSaleCount30D = (marketdata.sale_num['30d'] / 30) * 7
+                                                        let volume = 0;
+                                                        topMarketplacesRanking.marketplaces_info.forEach((marketplace) => {
+                                                            volume += marketplace.volume_eth;
+                                                        });
+                                                        const marketShares = {};
+                                                        topMarketplacesRanking.marketplaces_info.forEach((marketplace) => {
+                                                            const share = ((marketplace.volume_eth / volume) * 100).toFixed(2);
+                                                            marketShares[marketplace.marketplace_name] = share;
+                                                        });
 
 
-                                                                indicator = "7D"
-                                                            }
+                                                        for (const obj of topMarketplacesRanking.marketplaces_info) {
 
+                                                            let marketplaceName = obj.marketplace_name
+                                                            let marketplaceNameFormatted = (obj.marketplace_name).toLowerCase()
 
-                                                            //Calcul des ratio
-                                                            traderRatio = ((traderCount - avgTrader30D) / avgTrader30D) * 100
-                                                            salesRatio = ((saleCount - avgSaleCount30D) / avgSaleCount30D) * 100
-                                                            volumeRatio = ((totalVolume - avgVolume30D) / avgVolume30D) * 100
 
-                                                            // Formattage des ratio
-                                                            if (traderRatio > 0) {
-                                                                roiPrefix1 = "+";
-                                                                roiSuffix1 = " :chart_with_upwards_trend:";
-                                                            } else if (traderRatio < 0) {
-                                                                roiSuffix1 = " :chart_with_downwards_trend:";
-                                                            }
-                                                            traderRatioFormatted = "`" + roiPrefix1 + parseFloat(traderRatio).toFixed(2) + "%" + "`" + roiSuffix1;
+                                                            if (marketplaceName !== "Blur Aggregator" && marketplaceName !== "CryptoPunks") {
 
-                                                            if (salesRatio > 0) {
-                                                                roiPrefix2 = "+";
-                                                                roiSuffix2 = " :chart_with_upwards_trend:";
-                                                            } else if (salesRatio < 0) {
-                                                                roiSuffix2 = " :chart_with_downwards_trend:";
-                                                            }
-                                                            salesRatioFormatted = "`" + roiPrefix2 + parseFloat(salesRatio).toFixed(2) + "%" + "`" + roiSuffix2;
+                                                                let marketplaceVolume = obj.volume_eth
+                                                                let marketplaceSales = obj.sale_num
+                                                                let marketplaceTrader = obj.trader_num
+                                                                let marketShare = 0
 
-                                                            if (volumeRatio > 0) {
-                                                                roiPrefix3 = "+";
-                                                                roiSuffix3 = " :chart_with_upwards_trend:";
-                                                            } else if (volumeRatio < 0) {
-                                                                roiSuffix3 = " :chart_with_downwards_trend:";
-                                                            }
-                                                            volumeRatioFormatted = "`" + roiPrefix3 + parseFloat(volumeRatio).toFixed(2) + "%" + "`" + roiSuffix3;
+                                                                marketShare = marketShares[marketplaceName]
 
 
-                                                            if (volumeRatio > 0) { globalEvolution += 1 } else if (volumeRatio < 0) { globalEvolution -= 1 }
-                                                            if (salesRatio > 0) { globalEvolution += 1 } else if (salesRatio < 0) { globalEvolution -= 1 }
-                                                            if (traderRatio > 0) { globalEvolution += 1 } else if (traderRatio < 0) { globalEvolution -= 1 }
 
-                                                            if (globalEvolution > 0) { globalEvolutionFormatted = "Positive" } else if (globalEvolution < 0) { globalEvolutionFormatted = "Negative" }
+                                                                if (selectedTimestamp === "1 hour") {
+                                                                    marketplaceVolume = (obj.volume_eth) / 24
+                                                                    marketplaceSales = (obj.sale_num) / 24
+                                                                    marketplaceTrader = (obj.trader_num) / 24
 
+                                                                } else if (selectedTimestamp === "6 hours") {
+                                                                    marketplaceVolume = (obj.volume_eth) / 4
+                                                                    marketplaceSales = (obj.sale_num) / 4
+                                                                    marketplaceTrader = (obj.trader_num) / 4
 
+                                                                } else if (selectedTimestamp === "12 hour") {
+                                                                    marketplaceVolume = (obj.volume_eth) / 2
+                                                                    marketplaceSales = (obj.sale_num) / 2
+                                                                    marketplaceTrader = (obj.trader_num) / 2
 
+                                                                } else if (selectedTimestamp === "1 Day") {
+                                                                    marketplaceVolume = obj.volume_eth
+                                                                    marketplaceSales = obj.sale_num
+                                                                    marketplaceTrader = obj.trader_num
 
-                                                            for (const obj of topCollectionRanking.collections) {
+                                                                } else if (selectedTimestamp === "7 Days") {
+                                                                    marketplaceVolume = obj.volume_eth
+                                                                    marketplaceSales = obj.sale_num
+                                                                    marketplaceTrader = obj.trader_num
+                                                                }
 
 
-                                                                let collectionName = obj.slug
-                                                                let collectionFloor = obj.floor_price_eth
-                                                                let collectionHolder = obj.holder_num
-                                                                let collectionWhale = obj.whale_num
-                                                                let collectionVolume = obj.volume_eth
-                                                                let collectionWhaleRatio = (collectionWhale * 100 / collectionHolder)
-
-                                                                // let collectionNameFormatted = truncatePhrase(collectionName);
 
                                                                 let lignMaxSize = 69
-                                                                let leftPartNfts = "`" + collectionName + ":"
-                                                                let rightPartNfts = parseFloat(collectionFloor).toFixed(3) + "Ξ ∙ " + parseFloat(collectionVolume).toFixed(0) + "Ξ ∙ " + collectionHolder + " owners ∙ " + parseFloat(collectionWhaleRatio).toFixed(2) + "% whales\n"
+                                                                let leftPartNfts = "`" + marketplaceNameFormatted + ":"
+                                                                let rightPartNfts = parseFloat(marketplaceVolume).toFixed(0) + "Ξ ∙ " + parseFloat(marketplaceSales).toFixed(0) + " sales ∙ " + parseFloat(marketplaceTrader).toFixed(0) + " traders ∙ " + parseFloat(marketShare).toFixed(2) + "%`\n"
                                                                 let leftPartNFTsLenght = leftPartNfts.length
                                                                 let rightPartNftsLenght = rightPartNfts.length
                                                                 let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
                                                                 let spaceLenght = ""
                                                                 for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
 
-                                                                trendingFormatted += "`" + collectionName + ":" + spaceLenght + parseFloat(collectionFloor).toFixed(3) + "Ξ ∙ " + parseFloat(collectionVolume).toFixed(0) + "Ξ ∙ " + collectionHolder + " owners ∙ " + parseFloat(collectionWhaleRatio).toFixed(2) + "% whales`\n"
-
+                                                                marketplacesFormatted += "`" + marketplaceNameFormatted + ":" + spaceLenght + parseFloat(marketplaceVolume).toFixed(0) + "Ξ ∙ " + parseFloat(marketplaceSales).toFixed(0) + " sales ∙ " + parseFloat(marketplaceTrader).toFixed(0) + " traders ∙ " + parseFloat(marketShare).toFixed(2) + "%`\n"
 
                                                             }
+                                                        }
 
 
-                                                            let volume = 0;
-                                                            topMarketplacesRanking.marketplaces_info.forEach((marketplace) => {
-                                                                volume += marketplace.volume_eth;
-                                                            });
-                                                            const marketShares = {};
-                                                            topMarketplacesRanking.marketplaces_info.forEach((marketplace) => {
-                                                                const share = ((marketplace.volume_eth / volume) * 100).toFixed(2);
-                                                                marketShares[marketplace.marketplace_name] = share;
-                                                            });
 
 
-                                                            for (const obj of topMarketplacesRanking.marketplaces_info) {
+                                                        const marketOverviewEmbed1 = new EmbedBuilder().setColor("#060A8F")
+                                                            .setTitle(`Market overview`)
+                                                            .setDescription(">>> Displaying the `" + timeRange4 + "` Ethereum NFT market metrics")
+                                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                            .addFields(
+                                                                { name: "ETH Price", value: "`" + parseFloat(ethusdtPrice).toFixed(2) + "$`", inline: true },
+                                                                { name: "Market Cap", value: "`" + parseFloat(marketCap / ethusdtPrice).toFixed(3) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(marketCap).toFixed(0)) + "$)`", inline: true },
+                                                                { name: "Market Sentiment", value: "`" + marketSentimentFormatted + "`", inline: true },
+                                                                { name: indicator + " Volume", value: "`" + parseFloat(totalVolume / ethusdtPrice).toFixed(3) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(totalVolume).toFixed(0)) + "$)`", inline: true },
+                                                                { name: "90D Average", value: "`" + parseFloat(avgVolume30D / ethusdtPrice).toFixed(3) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(avgVolume30D).toFixed(0)) + "$)`", inline: true },
+                                                                { name: "Volume Evolution", value: volumeRatioFormatted, inline: true },
+                                                                { name: indicator + " Trader Count", value: "`" + parseFloat(traderCount).toFixed(0) + " traders`", inline: true },
+                                                                { name: "90D Average", value: "`" + parseFloat(avgTrader30D).toFixed(0) + " traders`", inline: true },
+                                                                { name: "Traders Evolution", value: traderRatioFormatted, inline: true },
+                                                                { name: indicator + " Sale Count", value: "`" + parseFloat(saleCount).toFixed(0) + " sales`", inline: true },
+                                                                { name: "90D Average", value: "`" + parseFloat(avgSaleCount30D).toFixed(0) + " sales`", inline: true },
+                                                                { name: "Sales Evolution", value: salesRatioFormatted, inline: true },
+                                                                { name: "Holder Count", value: "`" + holderCount + " holders`", inline: true },
+                                                                { name: "Whale Count", value: "`" + whaleCount + " whales`", inline: true },
+                                                                { name: "Global Evolution", value: "`" + globalEvolutionFormatted + "`", inline: true },
+                                                                { name: " ", value: " ", inline: false },
+                                                                { name: "Trending (" + timeRange + ")", value: trendingFormatted, inline: false },
+                                                                { name: " ", value: " ", inline: false },
+                                                                { name: "Marketplaces (" + timeRange + ")", value: marketplacesFormatted, inline: false },
+                                                                { name: "Page", value: "`[1/1]`", inline: false },
 
-                                                                let marketplaceName = obj.marketplace_name
-                                                                let marketplaceNameFormatted = (obj.marketplace_name).toLowerCase()
+                                                            )
+                                                            .setTimestamp()
+                                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                                                        await interaction.editReply({ embeds: [marketOverviewEmbed1] });
 
-                                                                if (marketplaceName !== "Blur Aggregator" && marketplaceName !== "CryptoPunks") {
 
-                                                                    let marketplaceVolume = obj.volume_eth
-                                                                    let marketplaceSales = obj.sale_num
-                                                                    let marketplaceTrader = obj.trader_num
-                                                                    let marketShare = 0
 
-                                                                    marketShare = marketShares[marketplaceName]
+                                                        //On enregistre le call API dans la database
+                                                        const timeStamp = Date.now();
+                                                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/market", apiCallName: "ethUsdPrice", apiProvider: "etherscan", timestamp: timeStamp.toString() })
+                                                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/market", apiCallName: "get_metrics_eth_v1_market_metrics_get", apiProvider: "nftgo", timestamp: timeStamp.toString() })
+                                                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/market", apiCallName: "get_collection_ranking_eth_v1_market_rank_collection__time_range__get", apiProvider: "nftgo", timestamp: timeStamp.toString() })
+                                                        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/market", apiCallName: "get_marketplace_leaderboard_eth_v1_market_rank_marketplaces__time_range__get", apiProvider: "nftgo", timestamp: timeStamp.toString() })
 
 
 
-                                                                    if (selectedTimestamp === "1 hour") {
-                                                                        marketplaceVolume = (obj.volume_eth) / 24
-                                                                        marketplaceSales = (obj.sale_num) / 24
-                                                                        marketplaceTrader = (obj.trader_num) / 24
 
-                                                                    } else if (selectedTimestamp === "6 hours") {
-                                                                        marketplaceVolume = (obj.volume_eth) / 4
-                                                                        marketplaceSales = (obj.sale_num) / 4
-                                                                        marketplaceTrader = (obj.trader_num) / 4
+                                                    })
 
-                                                                    } else if (selectedTimestamp === "12 hour") {
-                                                                        marketplaceVolume = (obj.volume_eth) / 2
-                                                                        marketplaceSales = (obj.sale_num) / 2
-                                                                        marketplaceTrader = (obj.trader_num) / 2
+                                            })
+                                    })
 
-                                                                    } else if (selectedTimestamp === "1 Day") {
-                                                                        marketplaceVolume = obj.volume_eth
-                                                                        marketplaceSales = obj.sale_num
-                                                                        marketplaceTrader = obj.trader_num
 
-                                                                    } else if (selectedTimestamp === "7 Days") {
-                                                                        marketplaceVolume = obj.volume_eth
-                                                                        marketplaceSales = obj.sale_num
-                                                                        marketplaceTrader = obj.trader_num
-                                                                    }
+                            } else if (selectedChain.toLowerCase() == "bitcoin") {
 
 
 
-                                                                    let lignMaxSize = 69
-                                                                    let leftPartNfts = "`" + marketplaceNameFormatted + ":"
-                                                                    let rightPartNfts = parseFloat(marketplaceVolume).toFixed(0) + "Ξ ∙ " + parseFloat(marketplaceSales).toFixed(0) + " sales ∙ " + parseFloat(marketplaceTrader).toFixed(0) + " traders ∙ " + parseFloat(marketShare).toFixed(2) + "%`\n"
-                                                                    let leftPartNFTsLenght = leftPartNfts.length
-                                                                    let rightPartNftsLenght = rightPartNfts.length
-                                                                    let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
-                                                                    let spaceLenght = ""
-                                                                    for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+                                const btcCallPrice = await axios.get("https://blockchain.info/q/24hrprice")
+                                let BTCUsdPrice = btcCallPrice.data
 
-                                                                    marketplacesFormatted += "`" + marketplaceNameFormatted + ":" + spaceLenght + parseFloat(marketplaceVolume).toFixed(0) + "Ξ ∙ " + parseFloat(marketplaceSales).toFixed(0) + " sales ∙ " + parseFloat(marketplaceTrader).toFixed(0) + " traders ∙ " + parseFloat(marketShare).toFixed(2) + "%`\n"
+                                const marketCapCall = await axios.get("https://blockchain.info/q/marketcap")
+                                let BTCMarketCap = marketCapCall.data
 
-                                                                }
-                                                            }
+                                const btcSupplyCall = await axios.get("https://blockchain.info/q/totalbc")
+                                let supply = (btcSupplyCall.data) / (10 ** 8)
 
+                                // const timeBetweenBlockCall = await axios.get("https://blockchain.info/q/interval")
+                                // let timeBetweenBlock = timeBetweenBlockCall.data
 
+                                const volumeCall = await axios.get("https://blockchain.info/q/24hrbtcsent")
+                                let volume = (volumeCall.data) / (10 ** 8)
 
+                                const txnCountCall = await axios.get("https://blockchain.info/q/24hrtransactioncount")
+                                let txnCount = txnCountCall.data
 
-                                                            const marketOverviewEmbed1 = new EmbedBuilder().setColor("#060A8F")
-                                                                .setTitle(`Market overview`)
-                                                                .setDescription(">>> Displaying the `" + timeRange4 + "` Ethereum NFT market metrics")
-                                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                                .addFields(
-                                                                    { name: "ETH Price", value: "`" + parseFloat(ethusdtPrice).toFixed(2) + "$`", inline: true },
-                                                                    { name: "Market Cap", value: "`" + parseFloat(marketCap / ethusdtPrice).toFixed(3) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(marketCap).toFixed(0)) + "$)`", inline: true },
-                                                                    { name: "Market Sentiment", value: "`" + marketSentimentFormatted + "`", inline: true },
-                                                                    { name: indicator + " Volume", value: "`" + parseFloat(totalVolume / ethusdtPrice).toFixed(3) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(totalVolume).toFixed(0)) + "$)`", inline: true },
-                                                                    { name: "90D Average", value: "`" + parseFloat(avgVolume30D / ethusdtPrice).toFixed(3) + "Ξ\n(" + new Intl.NumberFormat('en-US').format(parseFloat(avgVolume30D).toFixed(0)) + "$)`", inline: true },
-                                                                    { name: "Volume Evolution", value: volumeRatioFormatted, inline: true },
-                                                                    { name: indicator + " Trader Count", value: "`" + parseFloat(traderCount).toFixed(0) + " traders`", inline: true },
-                                                                    { name: "90D Average", value: "`" + parseFloat(avgTrader30D).toFixed(0) + " traders`", inline: true },
-                                                                    { name: "Traders Evolution", value: traderRatioFormatted, inline: true },
-                                                                    { name: indicator + " Sale Count", value: "`" + parseFloat(saleCount).toFixed(0) + " sales`", inline: true },
-                                                                    { name: "90D Average", value: "`" + parseFloat(avgSaleCount30D).toFixed(0) + " sales`", inline: true },
-                                                                    { name: "Sales Evolution", value: salesRatioFormatted, inline: true },
-                                                                    { name: "Holder Count", value: "`" + holderCount + " holders`", inline: true },
-                                                                    { name: "Whale Count", value: "`" + whaleCount + " whales`", inline: true },
-                                                                    { name: "Global Evolution", value: "`" + globalEvolutionFormatted + "`", inline: true },
-                                                                    { name: " ", value: " ", inline: false },
-                                                                    { name: "Trending (" + timeRange + ")", value: trendingFormatted, inline: false },
-                                                                    { name: " ", value: " ", inline: false },
-                                                                    { name: "Marketplaces (" + timeRange + ")", value: marketplacesFormatted, inline: false },
-                                                                    { name: "Page", value: "`[1/1]`", inline: false },
 
-                                                                )
-                                                                .setTimestamp()
-                                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                                            await interaction.editReply({ embeds: [marketOverviewEmbed1] });
 
 
+                                //Call API sur les data générales
+                                nftgo.get_metrics_eth_v1_market_metrics_get()
+                                    .then(async ({ data: marketdata }) => {
 
-                                                            //On enregistre le call API dans la database
-                                                            const timeStamp = Date.now();
-                                                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/market", apiCallName: "ethUsdPrice", apiProvider: "etherscan", timestamp: timeStamp.toString() })
-                                                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/market", apiCallName: "get_metrics_eth_v1_market_metrics_get", apiProvider: "nftgo", timestamp: timeStamp.toString() })
-                                                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/market", apiCallName: "get_collection_ranking_eth_v1_market_rank_collection__time_range__get", apiProvider: "nftgo", timestamp: timeStamp.toString() })
-                                                            await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/market", apiCallName: "get_marketplace_leaderboard_eth_v1_market_rank_marketplaces__time_range__get", apiProvider: "nftgo", timestamp: timeStamp.toString() })
 
+                                        //ON FAIT LE MARKET SENTIMENT
+                                        marketSentiment = marketdata.market_sentiment.score
 
+                                        if (marketSentiment <= 20) { marketSentimentFormatted = "Extreme Fear" }
+                                        else if (marketSentiment > 20 && marketSentiment <= 40) { marketSentimentFormatted = "Fear" }
+                                        else if (marketSentiment > 40 && marketSentiment <= 60) { marketSentimentFormatted == "Neutral" }
+                                        else if (marketSentiment > 60 && marketSentiment <= 80) { marketSentimentFormatted = "Greed" }
+                                        else if (marketSentiment > 80 && marketSentiment <= 100) { marketSentimentFormatted = "Extreme Greed" }
 
 
-                                                        })
 
-                                                })
-                                        })
 
 
-                                } else if (selectedChain.toLowerCase() == "bitcoin") {
+                                        const url5 = `https://api-mainnet.magiceden.dev/v2/ord/btc/popular_collections?window=` + timeRange3 + `&limit=12`;
+                                        const response5 = await axios.get(url5, { headers: magiceden });
+                                        const data5 = await response5.data;
 
 
+                                        let trendingFormatted = ""
 
-                                    const btcCallPrice = await axios.get("https://blockchain.info/q/24hrprice")
-                                    let BTCUsdPrice = btcCallPrice.data
+                                        for (const obj of data5) {
 
-                                    const marketCapCall = await axios.get("https://blockchain.info/q/marketcap")
-                                    let BTCMarketCap = marketCapCall.data
 
-                                    const btcSupplyCall = await axios.get("https://blockchain.info/q/totalbc")
-                                    let supply = (btcSupplyCall.data) / (10 ** 8)
+                                            let collectionName = (obj.name).toLowerCase()
+                                            let collectionFloor = (obj.floorPrice) / (10 ** 8)
+                                            let collectionHolder = obj.owners
+                                            let collectionSupply = obj.supply
+                                            let collectionVolume = (obj.totalVolume) / (10 ** 8)
+                                            let collectionSales = obj.sales
 
-                                    // const timeBetweenBlockCall = await axios.get("https://blockchain.info/q/interval")
-                                    // let timeBetweenBlock = timeBetweenBlockCall.data
+                                            // let collectionNameFormatted = truncatePhrase(collectionName);
 
-                                    const volumeCall = await axios.get("https://blockchain.info/q/24hrbtcsent")
-                                    let volume = (volumeCall.data) / (10 ** 8)
+                                            let lignMaxSize = 69
+                                            let leftPartNfts = "`" + collectionName + ":"
+                                            let rightPartNfts = parseFloat(collectionFloor).toFixed(3) + "₿ ∙ " + parseFloat(collectionVolume).toFixed(0) + "₿ ∙ " + parseFloat(collectionSales).toFixed(0) + " sales ∙ " + collectionHolder + " owners`\n"
+                                            let leftPartNFTsLenght = leftPartNfts.length
+                                            let rightPartNftsLenght = rightPartNfts.length
+                                            let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
+                                            let spaceLenght = ""
+                                            for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
 
-                                    const txnCountCall = await axios.get("https://blockchain.info/q/24hrtransactioncount")
-                                    let txnCount = txnCountCall.data
+                                            trendingFormatted += "`" + collectionName + ":" + spaceLenght + parseFloat(collectionFloor).toFixed(3) + "₿ ∙ " + parseFloat(collectionVolume).toFixed(0) + "₿ ∙ " + parseFloat(collectionSales).toFixed(0) + " sales ∙ " + collectionHolder + " owners`\n"
 
 
+                                        }
 
 
 
-                                    //Call API sur les data générales
-                                    nftgo.get_metrics_eth_v1_market_metrics_get()
-                                        .then(async ({ data: marketdata }) => {
 
 
-                                            //ON FAIT LE MARKET SENTIMENT
-                                            marketSentiment = marketdata.market_sentiment.score
 
-                                            if (marketSentiment <= 20) { marketSentimentFormatted = "Extreme Fear" }
-                                            else if (marketSentiment > 20 && marketSentiment <= 40) { marketSentimentFormatted = "Fear" }
-                                            else if (marketSentiment > 40 && marketSentiment <= 60) { marketSentimentFormatted == "Neutral" }
-                                            else if (marketSentiment > 60 && marketSentiment <= 80) { marketSentimentFormatted = "Greed" }
-                                            else if (marketSentiment > 80 && marketSentiment <= 100) { marketSentimentFormatted = "Extreme Greed" }
+                                        const marketOverviewEmbed1 = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle(`Market overview`)
+                                            .setDescription(">>> Displaying the `" + timeRange4 + "` Bitcoin NFT market metrics")
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .addFields(
+                                                { name: "BTC Price", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(BTCUsdPrice).toFixed(2)) + "$)`", inline: true },
+                                                { name: "BTC Market Cap", value: "`" + parseFloat(BTCMarketCap / BTCUsdPrice).toFixed(3) + "₿\n(" + new Intl.NumberFormat('en-US').format(parseFloat(BTCMarketCap).toFixed(0)) + "$)`", inline: true },
+                                                { name: "Market Sentiment", value: "`" + marketSentimentFormatted + "`", inline: true },
 
+                                                { name: "Global Supply", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(supply).toFixed(0)) + "`", inline: true },
+                                                { name: "1D Volume", value: "`" + parseFloat(volume).toFixed(3) + "₿\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume * BTCUsdPrice).toFixed(0)) + "$)`", inline: true },
+                                                { name: "Total Trades", value: "`" + txnCount + "`", inline: true },
 
+                                                { name: " ", value: " ", inline: false },
+                                                { name: "Trending (" + timeRange3 + ")", value: trendingFormatted, inline: false },
+                                                { name: "Page", value: "`[1/1]`", inline: false },
 
+                                            )
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                                        await interaction.editReply({ embeds: [marketOverviewEmbed1] });
 
-                                            const url5 = `https://api-mainnet.magiceden.dev/v2/ord/btc/popular_collections?window=` + timeRange3 + `&limit=12`;
-                                            const response5 = await axios.get(url5, { headers: magiceden });
-                                            const data5 = await response5.data;
+                                    })
 
-
-                                            let trendingFormatted = ""
-
-                                            for (const obj of data5) {
-
-
-                                                let collectionName = (obj.name).toLowerCase()
-                                                let collectionFloor = (obj.floorPrice) / (10 ** 8)
-                                                let collectionHolder = obj.owners
-                                                let collectionSupply = obj.supply
-                                                let collectionVolume = (obj.totalVolume) / (10 ** 8)
-                                                let collectionSales = obj.sales
-
-                                                // let collectionNameFormatted = truncatePhrase(collectionName);
-
-                                                let lignMaxSize = 69
-                                                let leftPartNfts = "`" + collectionName + ":"
-                                                let rightPartNfts = parseFloat(collectionFloor).toFixed(3) + "₿ ∙ " + parseFloat(collectionVolume).toFixed(0) + "₿ ∙ " + parseFloat(collectionSales).toFixed(0) + " sales ∙ " + collectionHolder + " owners`\n"
-                                                let leftPartNFTsLenght = leftPartNfts.length
-                                                let rightPartNftsLenght = rightPartNfts.length
-                                                let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
-                                                let spaceLenght = ""
-                                                for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
-
-                                                trendingFormatted += "`" + collectionName + ":" + spaceLenght + parseFloat(collectionFloor).toFixed(3) + "₿ ∙ " + parseFloat(collectionVolume).toFixed(0) + "₿ ∙ " + parseFloat(collectionSales).toFixed(0) + " sales ∙ " + collectionHolder + " owners`\n"
-
-
-                                            }
-
-
-
-
-
-
-                                            const marketOverviewEmbed1 = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle(`Market overview`)
-                                                .setDescription(">>> Displaying the `" + timeRange4 + "` Bitcoin NFT market metrics")
-                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                .addFields(
-                                                    { name: "BTC Price", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(BTCUsdPrice).toFixed(2)) + "$)`", inline: true },
-                                                    { name: "BTC Market Cap", value: "`" + parseFloat(BTCMarketCap / BTCUsdPrice).toFixed(3) + "₿\n(" + new Intl.NumberFormat('en-US').format(parseFloat(BTCMarketCap).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Market Sentiment", value: "`" + marketSentimentFormatted + "`", inline: true },
-
-                                                    { name: "Global Supply", value: "`" + new Intl.NumberFormat('en-US').format(parseFloat(supply).toFixed(0)) + "`", inline: true },
-                                                    { name: "1D Volume", value: "`" + parseFloat(volume).toFixed(3) + "₿\n(" + new Intl.NumberFormat('en-US').format(parseFloat(volume * BTCUsdPrice).toFixed(0)) + "$)`", inline: true },
-                                                    { name: "Total Trades", value: "`" + txnCount + "`", inline: true },
-
-                                                    { name: " ", value: " ", inline: false },
-                                                    { name: "Trending (" + timeRange3 + ")", value: trendingFormatted, inline: false },
-                                                    { name: "Page", value: "`[1/1]`", inline: false },
-
-                                                )
-                                                .setTimestamp()
-                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                            await interaction.editReply({ embeds: [marketOverviewEmbed1] });
-
-                                        })
-
-
-
-
-                                }
-
-                            } else if (!member.roles.cache.has(communityMemberRoleId)) {
-
-
-
-                                const notMember = new EmbedBuilder().setColor("#060A8F")
-                                    .setTitle(`Bot Access`)
-                                    .setDescription(">>> Showing access data")
-                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    .addFields(
-                                        { name: " ", value: " ", inline: false },
-                                        { name: "Status", value: "`Access Denied ❌`", inline: true },
-                                        { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
-                                        { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
-                                    )
-                                    .setTimestamp()
-                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-                                await interaction.editReply({ embeds: [notMember] });
 
 
 
@@ -653,75 +584,51 @@ module.exports = {
 
                         } else {
 
-                            if (accessTier == "") {
-                                accessTier = "Free Tier"
-                            }
 
-                            const botOff = new EmbedBuilder().setColor("#060A8F")
+
+                            const notMember = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle(`Bot Access`)
-                                .setDescription(">>> Showing the community's bot access")
+                                .setDescription(">>> Showing access data")
                                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                 .addFields(
-                                    { name: 'Access Status', value: "`Denied 🔴`", inline: false },
-                                    { name: 'Access Tier', value: "`" + accessTier.toUpperCase() + "`", inline: true },
-                                    { name: 'Required Tier', value: "`B-TIER`", inline: true },
-                                    { name: "Problem Detected", value: "Your access to this command has been denied. You need a higher access tier to use this feature. You can consult the available commands in this community by using `/access`.", inline: false },
+                                    { name: " ", value: " ", inline: false },
+                                    { name: "Status", value: "`Denied ❌`", inline: true },
+                                    { name: "Required Role", value: "<@&" + community.member + ">", inline: true },
+                                    { name: "Reason:", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community.", inline: false },
                                 )
                                 .setTimestamp()
                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                            await interaction.editReply({ embeds: [botOff] });
-                        }
+                            await interaction.editReply({ embeds: [notMember] });
 
+
+                        }
 
                     } else {
 
-
                         const botOff = new EmbedBuilder().setColor("#060A8F")
                             .setTitle(`Bot Access`)
-                            .setDescription(">>> Showing the community's bot access")
+                            .setDescription("You can't use this feature. The access tier of this community is too low. Please contact an admin of the community to upgrade the access ❌")
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                            .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
-                            .addFields(
-                                { name: 'Access Status', value: "`Denied 🔴`", inline: true },
-                                { name: 'Commands', value: "`Not available`", inline: true },
-                                { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
-                            )
+                            .setAuthor({ name: authorName, iconURL: userAvatar })
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
                         await interaction.editReply({ embeds: [botOff] });
-
-
-
                     }
-
-
 
                 } else {
 
-
-                    console.log("// Step 2 : Unauthorized - Executed ✅")
-
-
                     const botOff = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle(`Bot status`)
-                        .setDescription(">>> Showing the bot status")
+                        .setTitle(`Bot Access`)
+                        .setDescription("You can't use this feature. Aura is currently inactive in this community. Please contact an admin of the community to sort out an access to the bot ❌")
                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                         .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .addFields(
-                            { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
-                            { name: 'Commands', value: "`Not available`", inline: true },
-                            { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
-                        )
                         .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
                     await interaction.editReply({ embeds: [botOff] });
-
-                    console.log("// Step 3 : Answer - Executed ✅")
-
 
                 }
 

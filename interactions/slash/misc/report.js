@@ -8,7 +8,6 @@ const { ActionRowBuilder, EmbedBuilder, SlashCommandBuilder, ModalBuilder, TextI
 const { profileData, accessSql, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("report")
@@ -30,133 +29,70 @@ module.exports = {
             let member = interaction.member;
             let botId = interaction.applicationId
 
-            
+
             try {
 
-                const botAdmins = await adminsql.findOne({ where: { botId: botId } })
-                const botGlobalState = botAdmins.dataValues.botState
-
-                let communityMemberRoleId = ""
-                let communityAdminRoleId = ""
-                let botPowerStatut = ""
-                let communityStatut = ""
-                let accessTier = ""
-
-                //Récupère info varibale sur le bot et le serveur
-                const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
-                if (communityRolePerms != null) {
-                    communityMemberRoleId = communityRolePerms.dataValues.memberRoleId
-                    communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
-                    botPowerStatut = communityRolePerms.dataValues.actualPower
-                    communityStatut = communityRolePerms.dataValues.statut
-                    accessTier = communityRolePerms.dataValues.accessTier
-                }
+                console.log("Initialization: executed ✅")
 
 
-                //Checkpoint
-                console.log("// Step 1 : Initialization - Executed ✅")
+                const sendReportModal = new ModalBuilder()
+                    .setCustomId('sendReportModal')
+                    .setTitle('Report');
+
+                // Add components to modal
+
+                // Create the text input components
+                const reportType = new TextInputBuilder()
+                    .setCustomId('reportType')
+                    .setLabel("What's the reason behind your report")
+                    .setPlaceholder('e.g. bug, idea, problem')
+                    .setStyle(TextInputStyle.Short)
+                    .setMaxLength(30);
 
 
-                if (botGlobalState.toLowerCase() === "on") {
-
-                    //Checkpoint
-                    console.log("// Step 2 : Authorization - Executed ✅")
-
-
-                    //On enregistre le user si il est pas encore dans la database
-                    const timeStamp1 = Date.now();
-                    const actualTimestamp1 = parseFloat(timeStamp1 / 1000).toFixed(0)
-                    const isUser = await usersql.findOne({ where: { userId: authorId, serverId: serverId } })
-                    if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp1 }) }
+                const reportCommand = new TextInputBuilder()
+                    .setCustomId('reportCommand')
+                    .setLabel("Which command is the object of your report ?")
+                    .setPlaceholder('e.g. /blur, /profit')
+                    .setStyle(TextInputStyle.Short)
+                    .setMaxLength(50);
 
 
-
-                    const sendReportModal = new ModalBuilder()
-                        .setCustomId('sendReportModal')
-                        .setTitle('Report');
-
-                    // Add components to modal
-
-                    // Create the text input components
-                    const reportType = new TextInputBuilder()
-                        .setCustomId('reportType')
-                        .setLabel("What's the reason behind your report")
-                        .setPlaceholder('e.g. bug, idea, problem')
-                        .setStyle(TextInputStyle.Short)
-                        .setMaxLength(30);
+                const reportProblem = new TextInputBuilder()
+                    .setCustomId('reportProblem')
+                    .setLabel("Describe your problem/idea precisely")
+                    .setPlaceholder('e.g. "When I try to use the command, the bot is not responding. This were my inputs : X, Y, Z etc"')
+                    .setStyle(TextInputStyle.Paragraph)
+                    .setMaxLength(500);
 
 
-                    const reportCommand = new TextInputBuilder()
-                        .setCustomId('reportCommand')
-                        .setLabel("Which command is the object of your report ?")
-                        .setPlaceholder('e.g. /blur, /profit')
-                        .setStyle(TextInputStyle.Short)
-                        .setMaxLength(50);
-
-
-                    const reportProblem = new TextInputBuilder()
-                        .setCustomId('reportProblem')
-                        .setLabel("Describe your problem/idea precisely")
-                        .setPlaceholder('e.g. "When I try to use the command, the bot is not responding. This were my inputs : X, Y, Z etc"')
-                        .setStyle(TextInputStyle.Paragraph)
-                        .setMaxLength(500);
-
-
-                    const reportScale = new TextInputBuilder()
-                        .setCustomId('reportScale')
-                        .setLabel("How important that problem/idea is (1 to 10)?")
-                        .setPlaceholder('e.g. 1, 4, 7')
-                        .setStyle(TextInputStyle.Short)
-                        .setMaxLength(10);
+                const reportScale = new TextInputBuilder()
+                    .setCustomId('reportScale')
+                    .setLabel("How important that problem/idea is (1 to 10)?")
+                    .setPlaceholder('e.g. 1, 4, 7')
+                    .setStyle(TextInputStyle.Short)
+                    .setMaxLength(10);
 
 
 
-                    // An action row only holds one text input,
-                    // so you need one action row per text input.
-                    const firstActionRowSetProfile = new ActionRowBuilder().addComponents(reportType);
-                    const secondActionRowSetProfile = new ActionRowBuilder().addComponents(reportCommand);
-                    const fourthActionRowSetProfile = new ActionRowBuilder().addComponents(reportProblem);
-                    const fifthActionRowSetProfile = new ActionRowBuilder().addComponents(reportScale);
+                // An action row only holds one text input,
+                // so you need one action row per text input.
+                const firstActionRowSetProfile = new ActionRowBuilder().addComponents(reportType);
+                const secondActionRowSetProfile = new ActionRowBuilder().addComponents(reportCommand);
+                const fourthActionRowSetProfile = new ActionRowBuilder().addComponents(reportProblem);
+                const fifthActionRowSetProfile = new ActionRowBuilder().addComponents(reportScale);
 
-                    // Add inputs to the modal
-                    sendReportModal.addComponents(firstActionRowSetProfile, secondActionRowSetProfile, fourthActionRowSetProfile, fifthActionRowSetProfile);
+                // Add inputs to the modal
+                sendReportModal.addComponents(firstActionRowSetProfile, secondActionRowSetProfile, fourthActionRowSetProfile, fifthActionRowSetProfile);
 
-                    // Show the modal to the user
-                    await interaction.showModal(sendReportModal);
+                // Show the modal to the user
+                await interaction.showModal(sendReportModal);
 
-
-
-
-
-                } else {
-
-
-                    console.log("// Step 2 : Unauthorized - Executed ✅")
-
-
-                    const botOff = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle(`Bot status`)
-                        .setDescription(">>> Showing the bot status")
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .addFields(
-                            { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
-                            { name: 'Commands', value: "`Not available`", inline: true },
-                            { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
-                        )
-                        .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                    await interaction.editReply({ embeds: [botOff] });
-
-                    console.log("// Step 3 : Answer - Executed ✅")
-
-
-                }
 
 
             } catch (error) {
 
+                console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
                 console.log("// Error - sent in report ❌")
 
@@ -201,8 +137,6 @@ module.exports = {
                 })
 
 
-
-                console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
                 const reduceText = require("../../../functions/reducetext")
                 const roleTag = "1121510423687090186"

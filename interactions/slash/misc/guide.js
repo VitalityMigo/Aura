@@ -9,6 +9,9 @@ const { EmbedBuilder, SlashCommandBuilder, StringSelectMenuBuilder, StringSelect
 const { profileData, reportsql, usersql, accessSql, adminsql } = require('../../../events/database');
 const moment = require('moment');
 
+// Param d'infrastructure
+const { authPrivacy } = require("../../../functions/infra-utils")
+
 
 
 const selectMenuCommand = new StringSelectMenuBuilder()
@@ -118,27 +121,16 @@ module.exports = {
             let member = interaction.member;
             let botId = interaction.applicationId
 
-            
+
             try {
 
-                const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
+                console.log("Initialization: executed ✅")
 
-                if (authorProfile === null) { await interaction.deferReply(); } else {
-                    const authorPrivacyMode = authorProfile.dataValues.privacyMode
+                //Récupère régagle de privé/ou pas de l'utilisateur
+                const privacy = await authPrivacy(authorId)
+                if (privacy) { await interaction.deferReply({ ephemeral: true }) }
+                else { await interaction.deferReply() }
 
-                    if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
-                    if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
-                }
-
-                //Checkpoint
-                console.log("// Step 1 : Initialization - Executed ✅")
-
-                //Checkpoint
-                console.log("// Step 2 : Authorization - Executed ✅")
-
-
-
-                // Vérifie si le wallet est une addresse ETH valide
 
                 const guideAllEmbed = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("Guide")

@@ -4,32 +4,30 @@
  */
 
 
+const fs = require('fs');
 
 
-const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
-const { profileData, accessSql, apimonitorsql, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
-
+const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { profileData, accessSql, adminsql, walletsgenerated, wallets, apimonitorsql, reportsql, usersql, sequelize } = require('../events/database');
 const moment = require('moment');
-const axios = require('axios')
+const decrypt = require('../functions/decrypt');
+const encrypt = require('../functions/encrypt');
 
-// Initialisation des nodes
-const { web3CloudflarePublic } = require("../../../config/web3config")
 
-// Fonctions
-function isENS(str) {
-    const lowerCaseStr = str.toLowerCase();
-    return lowerCaseStr.endsWith(".eth");
-}
+
+// Nodes
+const {web3CloudflarePublic} = require("../config/web3config")
+
 
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("ens")
-        .setDescription("Display all the infos about an ENS name")
+        .setName("walletgenerator")
+        .setDescription("Create hundreeds of wallet in few seconds")
         .addStringOption(option =>
             option
-                .setName("ens")
-                .setDescription("The ENS name to lookup for")
+                .setName("count")
+                .setDescription("The number of wallets you want to create.")
                 .setRequired(true)
         ),
 
@@ -40,6 +38,10 @@ module.exports = {
         if (interaction.guildId != null) {
 
 
+            await interaction.deferReply({ ephemeral: true });
+
+
+
             //Récupérer informations de l'utilisateur de la commande
             let authorId = interaction.user.id;
             let authorName = interaction.user.username;
@@ -48,13 +50,9 @@ module.exports = {
             let member = interaction.member;
             let botId = interaction.applicationId
 
-
             try {
 
-
-                const botAdmins = await adminsql.findOne({ where: { botId: botId } })
-                const botGlobalState = botAdmins.dataValues.botState
-
+    
                 let communityMemberRoleId = ""
                 let communityAdminRoleId = ""
                 let botPowerStatut = ""
@@ -71,31 +69,21 @@ module.exports = {
                     accessTier = communityRolePerms.dataValues.accessTier
                 }
 
-
-
-                const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
-
-                if (authorProfile === null) { await interaction.deferReply(); } else {
-                    const authorPrivacyMode = authorProfile.dataValues.privacyMode
-
-                    if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
-                    if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
-                }
-
                 //Checkpoint
                 console.log("// Step 1 : Initialization - Executed ✅")
 
 
-                if (botGlobalState.toLowerCase() === "on") {
 
                     if (communityStatut.toLowerCase() === "active" || communityStatut == "") {
 
-                        if (accessTier.toLowerCase() == "s-tier" || accessTier.toLowerCase() == "a-tier") {
+                        if (accessTier.toLowerCase() == "s-tier") {
 
                             if (member.roles.cache.has(communityMemberRoleId)) {
 
+
                                 //Checkpoint
                                 console.log("// Step 2 : Authorization - Executed ✅")
+
 
 
 
@@ -107,112 +95,153 @@ module.exports = {
 
 
 
-                                //Variable pour les options
-                                const selectedEns = interaction.options.getString("ens");
+                                let walletNumber = interaction.options.getString("count");
 
-
-
-                                if (isENS(selectedEns)) {
-
-
-                                    const ensToWallet = await web3CloudflarePublic.eth.ens.getOwner(selectedEns)
-                                    //const ensUserOpenSeaInfos = await axios.get('https://api.opensea.io/user/' + ensToWallet + '?format=json')
-
-
-                                    //let profileOsName = ensUserOpenSeaInfos.data.account.user.username
-                                    //let profileOsPicture = ensUserOpenSeaInfos.data.account.profile_image_url
-
-
-                                    let configOtherEnsOfUserRequest = { method: 'get', url: 'https://api.gomu.co/rest/ens/reverse-resolve?address=' + ensToWallet, headers: { 'Accept': 'application/json' } };
-
-                                    let otherEnsOfUserTable = [];
-                                    let otherEnsOfUserField = "";
-
-                                    axios(configOtherEnsOfUserRequest)
-                                        .then(async (response) => {
-
-                                            if (response.data.data) {
-
-
-
-                                                for (let i = 0; i < response.data.data.length; i++) {
-
-                                                    if (response.data.data[i].name !== selectedEns) {
-                                                        otherEnsOfUserTable.push(response.data.data[i].name);
-                                                    }
-                                                }
-
-
-
-
-                                                let otherEnsOfUserTableTop15 = otherEnsOfUserTable.slice(0, 15);
-
-                                                otherEnsOfUserTableTop15.forEach(ens => {
-
-
-
-                                                    otherEnsOfUserField += ens + "\n"
+                                let walletTable = []
+                                let walletCreatedList = ""
+                                let generationStatut = "`Failed`"
 
 
 
 
 
+                                for (let i = 0; i < walletNumber; i++) {
 
-                                                })
-                                            } else if (!response.data.data) {
+                                    const wallet = web3CloudflarePublic.eth.accounts.create();
 
-                                                otherEnsOfUserField = "``No other ENS name detected``"
-
-                                            }
+                                    walletTable.push(wallet);
 
 
-                                            const ensFinder = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle(selectedEns)
-                                                .setDescription(">>> Informations about the ENS")
-                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                //.setThumbnail(profileOsPicture)
-                                                .setTimestamp()
-                                                .addFields(
-                                                    { name: "ENS Name", value: "`" + selectedEns + "`", inline: true },
-                                                    { name: "Network", value: "`Ethereum`", inline: true },
-                                                    { name: "Wallet", value: "`" + ensToWallet + "`", inline: false },
-                                                    { name: "Alt. ens", value: "`" + otherEnsOfUserField + "`", inline: false },
-                                                    { name: ' ', value: '<:ASxRCPNG:1070385409080696902> [Magically](https://magically.gg/portfolio/wallet/' + ensToWallet + ")", inline: true },
-                                                    { name: ' ', value: '<:opensea:1062318570761101352> [OpenSea](https://opensea.io/' + ensToWallet + ")", inline: true },
-                                                    { name: ' ', value: '<:etherscan:1062318582328987648> [Etherscan](https://etherscan.io/address/' + ensToWallet + ")", inline: true },
+                                }
 
-                                                )
-                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                const filteredWalletTable = walletTable.map(obj => ({ address: obj.address, privateKey: obj.privateKey, authorId: authorId }));
+                                const filteredWalletAddresses = walletTable.map(obj => obj.address);
 
-                                            await interaction.editReply({ embeds: [ensFinder] });
+                                await walletsgenerated.destroy({ where: { authorId: authorId } })
+
+                                for (let i = 0; i < filteredWalletTable.length; i++) {
+
+                                    await walletsgenerated.create({
+
+                                        authorId: filteredWalletTable[i].authorId,
+                                        walletAddress: encrypt(filteredWalletTable[i].address),
+                                        privateKey: encrypt(filteredWalletTable[i].privateKey),
+
+                                    })
+
+                                }
+
+                                let walletDisplayLimit = 0
+
+                                for (const address of filteredWalletAddresses) {
+
+
+                                    if (walletDisplayLimit < 19) {
+
+                                        walletCreatedList += address + ",        \n"
+
+                                    } else if (walletDisplayLimit === 19) {
+
+                                        walletCreatedList += "and " + (walletNumber - 19) + " more..."
+
+                                    } else if (walletDisplayLimit > 19) {
+
+
+
+                                    }
+                                    walletDisplayLimit += 1
+
+
+                                }
+
+
+                                generationStatut = "`Succeed`"
 
 
 
 
-                                        })
 
-                                    //On enregistre le call API dans la database
-                                    const timeStamp = Date.now();
-                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/ens", apiCallName: "ensToWallet", apiProvider: "web3.eth", timestamp: timeStamp.toString() })
-                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/ens", apiCallName: "ensUserOpenSeaInfos", apiProvider: "opensea", timestamp: timeStamp.toString() })
-                                    await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/ens", apiCallName: "relatedEns", apiProvider: "gomu", timestamp: timeStamp.toString() })
+
+
+                                const walletUserAll = await wallets.findAll({ where: { authorId: authorId } })
+
+                                const registeredWalletLength = walletUserAll.length
+                                // const walletTableLength = walletsTable.length
+                                // const walletLength = uniqueWalletAddresses.length
+                                const walletAvailable = 24 - registeredWalletLength
+
+
+
+
+
+                                let buttonsRow = ''
+                                let walletAvailableButton = 24 - registeredWalletLength
+                                if (walletNumber < walletAvailableButton) { walletAvailableButton = walletNumber }
+
+                                if (walletAvailable > 0) {
+
+                                    buttonsRow = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('download-button')
+                                                .setLabel('Download CSV')
+                                                .setStyle(2),
+                                            new ButtonBuilder()
+                                                .setCustomId('walletgeneratoraddwallets-button')
+                                                .setLabel('Add ' + walletAvailableButton + " wallets")
+                                                .setStyle(2),
+                                            // new ButtonBuilder()
+                                            //   .setCustomId('walletmanagermenu-button')
+                                            //   .setLabel('menu')
+                                            //   .setStyle(2), 
+
+                                        );
 
                                 } else {
 
 
-                                    const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
-                                        .setTitle(`${authorName}'s portfolio`)
-                                        .setDescription("The ENS name you provided isn't valid. Try again using the appropriate form `.eth`.")
-                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                                        .setTimestamp()
-                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                    buttonsRow = new ActionRowBuilder()
+                                        .addComponents(
+                                            new ButtonBuilder()
+                                                .setCustomId('download-button')
+                                                .setLabel('Download CSV')
+                                                .setStyle(2),
+                                            // new ButtonBuilder()
+                                            //   .setCustomId('walletmanagermenu-button')
+                                            //   .setLabel('menu')
+                                            //   .setStyle(2), 
 
-                                    await interaction.editReply({ embeds: [setwalletErrorEmbed] });
-
-
+                                        );
 
                                 }
+
+
+
+                                const walletGenerator = new EmbedBuilder().setColor("#060A8F")
+                                    .setTitle("Wallet Generator")
+                                    .setDescription(">>> `" + walletNumber + "` wallets have been successfully generated")
+                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    .setTimestamp()
+                                    .addFields(
+                                        { name: "Wallet Count", value: "`" + walletNumber + "`", inline: true },
+                                        { name: "Network", value: "`Ethereum (ETH)`", inline: true },
+                                        { name: "Generation Status", value: generationStatut, inline: true },
+                                        { name: "Wallets Created:", value: "```" + walletCreatedList + "```", inline: false },
+                                    )
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                await interaction.editReply({ embeds: [walletGenerator], components: [buttonsRow] });
+
+
+
+
+                                //On enregistre le call API dans la database
+                                const timeStamp = Date.now();
+                                await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/walletgenerator", apiCallName: "walletCreate", apiProvider: "web3.eth", timestamp: timeStamp.toString() })
+
+
+
+
                             } else if (!member.roles.cache.has(communityMemberRoleId)) {
 
 
@@ -233,15 +262,18 @@ module.exports = {
 
                                 await interaction.editReply({ embeds: [notMember] });
 
+
+
                             }
+
 
 
                         } else {
 
 
                             if (accessTier == "") {
-                                accessTier = "Free Tier"
-                            }
+								accessTier = "Free Tier"
+							}
 
 
                             const botOff = new EmbedBuilder().setColor("#060A8F")
@@ -252,7 +284,7 @@ module.exports = {
                                 .addFields(
                                     { name: 'Access Status', value: "`Denied 🔴`", inline: false },
                                     { name: 'Access Tier', value: "`" + accessTier.toUpperCase() + "`", inline: true },
-                                    { name: 'Required Tier', value: "`A-TIER`", inline: true },
+                                    { name: 'Required Tier', value: "`S-TIER`", inline: true },
                                     { name: "Problem Detected", value: "Your access to this command has been denied. You need a higher access tier to use this feature. You can consult the available commands in this community by using `/access`.", inline: false },
                                 )
                                 .setTimestamp()
@@ -261,6 +293,8 @@ module.exports = {
                             await interaction.editReply({ embeds: [botOff] });
 
                         }
+
+
 
 
                     } else {
@@ -281,38 +315,19 @@ module.exports = {
 
                         await interaction.editReply({ embeds: [botOff] });
 
+
+
                     }
 
 
-                } else {
 
-
-                    console.log("// Step 2 : Unauthorized - Executed ✅")
-
-
-                    const botOff = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle(`Bot status`)
-                        .setDescription(">>> Showing the bot status")
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .addFields(
-                            { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
-                            { name: 'Commands', value: "`Not available`", inline: true },
-                            { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
-                        )
-                        .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                    await interaction.editReply({ embeds: [botOff] });
-
-                    console.log("// Step 3 : Answer - Executed ✅")
-
-
-                }
+               
 
             } catch (error) {
 
+
                 console.log("// Error - sent in report ❌")
+                console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
                 //On envoi une notif
                 let botId = interaction.applicationId
@@ -329,7 +344,7 @@ module.exports = {
                 const userRoleList = interaction.member._roles
                 let userHighestRole = "Member"
                 if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-                let reportCommand = "/ens"
+                let reportCommand = "/walletgenerator"
 
                 const timeStamp = Date.now();
                 const date = new Date(timeStamp);
@@ -358,7 +373,7 @@ module.exports = {
 
                 console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
-                const reduceText = require("../../../functions/reducetext")
+                const reduceText = require("../functions/reducetext")
                 const roleTag = "1121510423687090186"
 
 
@@ -393,8 +408,9 @@ module.exports = {
 
                 await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
 
-
             }
+
+
         } else if (interaction.guildId == null) {
 
             const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
@@ -414,4 +430,6 @@ module.exports = {
 
     }
 }
+
+
 

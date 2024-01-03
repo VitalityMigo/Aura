@@ -8,6 +8,11 @@ const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = r
 const { profileData, accessSql, apimonitorsql, wallets, reportsql, adminsql, usersql, interactionData, watchlistSql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
+// Param d'infrastructure
+const { authPrivacyMulti, communityInfos } = require("../../../functions/infra-utils")
+const privateCMD = []
+
+
 // Nodes
 const {magiceden, reservoirA} = require("../../../config/web3config")
 
@@ -82,65 +87,28 @@ module.exports = {
             let member = interaction.member;
             let botId = interaction.applicationId
 
+            const subcommand = interaction.options.getSubcommand()
 
-            
+
             try {
 
-                const botAdmins = await adminsql.findOne({ where: { botId: botId } })
-                const botGlobalState = botAdmins.dataValues.botState
+                console.log("Initialization: executed ✅")
 
-                let communityMemberRoleId = ""
-                let communityAdminRoleId = ""
-                let botPowerStatut = ""
-                let communityStatut = ""
-                let accessTier = ""
-
-                //Récupère info varibale sur le bot et le serveur
-                const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
-                if (communityRolePerms != null) {
-                    communityMemberRoleId = communityRolePerms.dataValues.memberRoleId
-                    communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
-                    botPowerStatut = communityRolePerms.dataValues.actualPower
-                    communityStatut = communityRolePerms.dataValues.statut
-                    accessTier = communityRolePerms.dataValues.accessTier
-                }
-
-
+                // Récupère les infos de la communauté
+                const community = await communityInfos(serverId)
 
                 //Récupère régagle de privé/ou pas de l'utilisateur
-                const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
-
-                if (authorProfile === null) { await interaction.deferReply(); } else {
-                    const authorPrivacyMode = authorProfile.dataValues.privacyMode
-
-                    if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
-                    if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
-                }
+                const privacy = await authPrivacyMulti(authorId, subcommand, privateCMD)
+                if (privacy) { await interaction.deferReply({ ephemeral: true }) }
+                else { await interaction.deferReply() }
 
 
+                // Les vérifications
+                if (community.statut) {
 
-                //Checkpoint
-                console.log("// Step 1 : Initialization - Executed ✅")
+                    if (community.tier === 's-tier' || community.tier === 'a-tier') {
 
-                if (botGlobalState.toLowerCase() === "on") {
-
-
-                    if (communityStatut.toLowerCase() === "active" || communityStatut == "") {
-
-                        if (accessTier.toLowerCase() == "s-tier" || accessTier.toLowerCase() == "a-tier") {
-
-                            if (member.roles.cache.has(communityMemberRoleId)) {
-
-                                //Checkpoint
-                                console.log("// Step 2 : Authorization - Executed ✅")
-
-
-
-                                //On enregistre le user si il est pas encore dans la database
-                                const timeStamp1 = Date.now();
-                                const actualTimestamp1 = parseFloat(timeStamp1 / 1000).toFixed(0)
-                                const isUser = await usersql.findOne({ where: { userId: authorId, serverId: serverId } })
-                                if (isUser == null) { await usersql.create({ userId: authorId, userName: authorName, userAvatar: userAvatar, serverId: serverId, timestamp: actualTimestamp1 }) }
+                        if (member.roles.cache.has(community.member)) {
 
 
                                 if (interaction.options.getSubcommand() === 'set') {
@@ -707,11 +675,7 @@ module.exports = {
 
 
 
-                            } else if (!member.roles.cache.has(communityMemberRoleId)) {
-
-
-
-
+                            } else {
 
                                 const notMember = new EmbedBuilder().setColor("#060A8F")
                                     .setTitle(`Bot Access`)
@@ -720,94 +684,49 @@ module.exports = {
                                     .setAuthor({ name: authorName, iconURL: userAvatar })
                                     .addFields(
                                         { name: " ", value: " ", inline: false },
-                                        { name: "Status", value: "`Access Denied ❌`", inline: true },
-                                        { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
-                                        { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
+                                        { name: "Status", value: "`Denied ❌`", inline: true },
+                                        { name: "Required Role", value: "<@&" + community.member + ">", inline: true },
+                                        { name: "Reason:", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community.", inline: false },
                                     )
                                     .setTimestamp()
                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
+    
                                 await interaction.editReply({ embeds: [notMember] });
-
+    
+    
                             }
-
-
+    
                         } else {
-
-
-                            if (accessTier == "") {
-								accessTier = "Free Tier"
-							}
-
-
+    
                             const botOff = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle(`Bot Access`)
-                                .setDescription(">>> Showing the community's bot access")
+                                .setDescription("You can't use this feature. The access tier of this community is too low. Please contact an admin of the community to upgrade the access ❌")
                                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
-                                .addFields(
-                                    { name: 'Access Status', value: "`Denied 🔴`", inline: false },
-                                    { name: 'Access Tier', value: "`" + accessTier.toUpperCase() + "`", inline: true },
-                                    { name: 'Required Tier', value: "`A-TIER`", inline: true },
-                                    { name: "Problem Detected", value: "Your access to this command has been denied. You need a higher access tier to use this feature. You can consult the available commands in this community by using `/access`.", inline: false },
-                                )
                                 .setTimestamp()
                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
+    
                             await interaction.editReply({ embeds: [botOff] });
-
                         }
-
-
+    
+    
+    
                     } else {
-
-
+    
+    
                         const botOff = new EmbedBuilder().setColor("#060A8F")
                             .setTitle(`Bot Access`)
-                            .setDescription(">>> Showing the community's bot access")
+                            .setDescription("You can't use this feature. Aura is currently inactive in this community. Please contact an admin of the community to sort out an access to the bot ❌")
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .setAuthor({ name: authorName, iconURL: userAvatar })
-                            .addFields(
-                                { name: 'Access Status', value: "`Denied 🔴`", inline: true },
-                                { name: 'Commands', value: "`Not available`", inline: true },
-                                { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
-                            )
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
+    
                         await interaction.editReply({ embeds: [botOff] });
-
-
-
+    
+    
                     }
-
-
-                } else {
-
-
-                    console.log("// Step 2 : Unauthorized - Executed ✅")
-
-
-                    const botOff = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle(`Bot status`)
-                        .setDescription(">>> Showing the bot status")
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .addFields(
-                            { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
-                            { name: 'Commands', value: "`Not available`", inline: true },
-                            { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
-                        )
-                        .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                    await interaction.editReply({ embeds: [botOff] });
-
-                    console.log("// Step 3 : Answer - Executed ✅")
-
-
-                }
-
+                
             } catch (error) {
 
 

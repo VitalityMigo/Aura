@@ -11,9 +11,14 @@ const { profileData, accessSql, reportsql, interactionData, wallets, apimonitors
 const moment = require('moment');
 const axios = require('axios')
 
+// Param d'infrastructure
+const { authPrivacyMulti, communityInfos } = require("../../../functions/infra-utils")
+const privateCMD = []
+
+
 const { magiceden } = require("../../../config/web3config")
 
-const {getEthPrice} = require('../../../config/web3data')
+const { getEthPrice } = require('../../../config/web3data')
 const isHttps = require('../../../functions/isHttps')
 const capFirstLetter = require("../../../functions/capfirstletter")
 
@@ -177,736 +182,687 @@ module.exports = {
             let member = interaction.member;
             let botId = interaction.applicationId
 
+            const subcommand = interaction.options.getSubcommand()
+
             try {
 
+                console.log("Initialization: executed ✅")
 
+                // Récupère les infos de la communauté
+                const community = await communityInfos(serverId)
 
-                const botAdmins = await adminsql.findOne({ where: { botId: botId } })
-                const botGlobalState = botAdmins.dataValues.botState
+                //Récupère régagle de privé/ou pas de l'utilisateur
+                const privacy = await authPrivacyMulti(authorId, subcommand, privateCMD)
+                if (privacy) { await interaction.deferReply({ ephemeral: true }) }
+                else { await interaction.deferReply() }
 
-                let communityMemberRoleId = ""
-                let communityAdminRoleId = ""
-                let botPowerStatut = ""
-                let communityStatut = ""
-                let accessTier = ""
 
-                //Récupère info varibale sur le bot et le serveur
-                const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
-                if (communityRolePerms != null) {
-                    communityMemberRoleId = communityRolePerms.dataValues.memberRoleId
-                    communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
-                    botPowerStatut = communityRolePerms.dataValues.actualPower
-                    communityStatut = communityRolePerms.dataValues.statut
-                    accessTier = communityRolePerms.dataValues.accessTier
-                }
+                // Les vérifications
+                if (community.statut) {
 
-                const subcommand = interaction.options.getSubcommand()
+                    if (community.tier === 's-tier' || community.tier === 'a-tier') {
 
+                        if (member.roles.cache.has(community.member)) {
 
 
-                const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
+                            if (subcommand === "data") {
 
-                if (authorProfile === null) {
 
-                    if (subcommand != 'wallet') {
-                        await interaction.deferReply();
-                    } else { await interaction.deferReply({ ephemeral: true }) }
+                                // Toute les collections ont été séléctionner
 
-                } else {
-                    const authorPrivacyMode = authorProfile.dataValues.privacyMode
 
-                    if (authorPrivacyMode.toLowerCase() === "private" || subcommand === 'wallet') { await interaction.deferReply({ ephemeral: true }); }
-                    if (authorPrivacyMode.toLowerCase() === "public" && subcommand != 'wallet') { await interaction.deferReply(); }
-                }
+                                const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
+                                    .setTitle(`Not available`)
+                                    .setDescription("We are currently optimising this feature. You can still use our Ethereum NFT features with `/nft`.")
+                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    .setTimestamp()
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                //Checkpoint
-                console.log("// Step 1 : Initialization - Executed ✅")
+                                await interaction.editReply({ embeds: [setwalletErrorEmbed] });
 
 
-                if (botGlobalState.toLowerCase() === "on") {
 
-                    if (communityStatut.toLowerCase() === "active" || communityStatut == "") {
 
-                        if (accessTier.toLowerCase() == "s-tier" || accessTier.toLowerCase() == "a-tier") {
+                                /// API de Magic Eden renvoi "trop de request", à vérifier \\\
 
-                            if (member.roles.cache.has(communityMemberRoleId)) {
 
+                                //   //Variable pour les options
+                                //   const coinAddress = interaction.options.getString("collection");
 
-                                if (subcommand === "data") {
 
+                                // // Prix de l'ETH
+                                // const ethUsdPrice = getEthPrice()
 
-                                    // Toute les collections ont été séléctionner
+                                // // Prix du BTC
+                                // const cryptoUsdtPrice = await axios.get('https://api-testnet.bybit.com/v5/market/tickers?category=linear')
+                                // const BTCUsdtPrice = cryptoUsdtPrice.data.result.list.find(obj => obj.symbol === "BTCUSDT").lastPrice;
 
 
-                                    const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
-                                        .setTitle(`Not available`)
-                                        .setDescription("We are currently optimising this feature. You can still use our Ethereum NFT features with `/nft`.")
-                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                                        .setTimestamp()
-                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                    await interaction.editReply({ embeds: [setwalletErrorEmbed] });
+                                // const url = `https://api-mainnet.magiceden.dev/v2/ord/btc/collections/` + coinAddress;
+                                // const response = await axios.get(url, { headers: magiceden });
+                                // const data = await response.data;
 
+                                // if (response.data) {
 
+                                //     const description = data.description
+                                //     const collectionLogo = data.imageURI
+                                //     const supply = data.supply
+                                //     const name = data.name
+                                //     const twitter = data.twitterLink
+                                //     const discord = data.discordLink
+                                //     const website = data.websiteLink
+                                //     const inscriptionIcon = data.inscriptionIcon
 
 
-                                    /// API de Magic Eden renvoi "trop de request", à vérifier \\\
 
+                                //     const url2 = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=` + coinAddress;
+                                //     const response2 = await axios.get(url2, { headers: magiceden });
+                                //     const data2 = await response2.data;
 
-                                    //   //Variable pour les options
-                                    //   const coinAddress = interaction.options.getString("collection");
 
+                                //     const totalVolume = (data2.totalVolume) / (10 ** 8)
+                                //     const owners = data2.owners
+                                //     const floorPrice = (data2.floorPrice) / (10 ** 8)
+                                //     const floorPriceUSD = floorPrice * BTCUsdtPrice
+                                //     const floorPriceETH = floorPriceUSD / ethUsdPrice
+                                //     const totalListed = data2.totalListed
+                                //     const inscriptionNumberMin = data2.inscriptionNumberMin
+                                //     const inscriptionNumberMax = data2.inscriptionNumberMax
+                                //     const pendingTxn = data2.pendingTransactions
 
-                                    // // Prix de l'ETH
-                                    // const ethUsdPrice = getEthPrice()
 
-                                    // // Prix du BTC
-                                    // const cryptoUsdtPrice = await axios.get('https://api-testnet.bybit.com/v5/market/tickers?category=linear')
-                                    // const BTCUsdtPrice = cryptoUsdtPrice.data.result.list.find(obj => obj.symbol === "BTCUSDT").lastPrice;
+                                //     //Quelques calculs
+                                //     const listingRatio = (totalListed / supply) * 100;
+                                //     const holderRatio = (owners / supply) * 100;
 
 
 
-                                    // const url = `https://api-mainnet.magiceden.dev/v2/ord/btc/collections/` + coinAddress;
-                                    // const response = await axios.get(url, { headers: magiceden });
-                                    // const data = await response.data;
 
-                                    // if (response.data) {
+                                //     const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
+                                //         .setTitle(name)
+                                //         .setDescription(description)
+                                //         .setAuthor({ name: authorName, iconURL: userAvatar })
+                                //         .setThumbnail(collectionLogo)
+                                //         .addFields(
+                                //             { name: " ", value: " ", inline: true },
+                                //             { name: "Inscription", value: "`" + inscriptionIcon + "`", inline: false },
+                                //             { name: "BTC Price", value: "`" + parseFloat(floorPrice).toFixed(3) + "₿`", inline: true },
+                                //             { name: "ETH Price", value: "`" + parseFloat(floorPriceETH).toFixed(3) + "Ξ`", inline: true },
+                                //             { name: "USD Price", value: "`" + parseFloat(floorPriceUSD).toFixed(2) + "$`", inline: true },
+                                //             { name: "Supply", value: "`" + supply + "`", inline: true },
+                                //             { name: "Total Volume", value: "`" + parseFloat(totalVolume).toFixed(3) + "₿\n(" + Intl.NumberFormat('en-US').format(parseFloat(totalVolume * BTCUsdtPrice).toFixed(0)) + "$)`", inline: true },
+                                //             { name: "Ongoin Txn", value: "`" + pendingTxn + "`", inline: true },
+                                //             { name: "Listing Count", value: "`" + totalListed + "`", inline: true },
+                                //             { name: "Listing Ratio", value: "`" + parseFloat(listingRatio).toFixed(2) + "%`", inline: true },
+                                //             { name: " ", value: " ", inline: true },
+                                //             { name: "Holder Count", value: "`" + owners + "`", inline: true },
+                                //             { name: "Holder Ratio", value: "`" + parseFloat(holderRatio).toFixed(2) + "%`", inline: true },
+                                //             { name: " ", value: " ", inline: true },
+                                //             { name: "Lowest Inscription", value: "`#" + inscriptionNumberMin + "`", inline: true },
+                                //             { name: "Highest Inscription", value: "`#" + inscriptionNumberMax + "`", inline: true },
+                                //             { name: "Links", value: '[magic eden](https://magiceden.io/ordinals/marketplace/' + coinAddress + ") ∙ " + '[twitter](' + twitter + ") ∙ " + '[discord](' + discord + ") ∙ " + '[website](' + website + ")", inline: false },
 
-                                    //     const description = data.description
-                                    //     const collectionLogo = data.imageURI
-                                    //     const supply = data.supply
-                                    //     const name = data.name
-                                    //     const twitter = data.twitterLink
-                                    //     const discord = data.discordLink
-                                    //     const website = data.websiteLink
-                                    //     const inscriptionIcon = data.inscriptionIcon
 
+                                //         )
+                                //         .setTimestamp()
+                                //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
+                                //     await interaction.editReply({ embeds: [getDataCollectionAddress] });
 
-                                    //     const url2 = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=` + coinAddress;
-                                    //     const response2 = await axios.get(url2, { headers: magiceden });
-                                    //     const data2 = await response2.data;
+                                // } else {
+                                //     // La collection n'est pas trouvé
 
 
-                                    //     const totalVolume = (data2.totalVolume) / (10 ** 8)
-                                    //     const owners = data2.owners
-                                    //     const floorPrice = (data2.floorPrice) / (10 ** 8)
-                                    //     const floorPriceUSD = floorPrice * BTCUsdtPrice
-                                    //     const floorPriceETH = floorPriceUSD / ethUsdPrice
-                                    //     const totalListed = data2.totalListed
-                                    //     const inscriptionNumberMin = data2.inscriptionNumberMin
-                                    //     const inscriptionNumberMax = data2.inscriptionNumberMax
-                                    //     const pendingTxn = data2.pendingTransactions
+                                //     const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
+                                //         .setTitle(`Invalid Collection`)
+                                //         .setDescription("The NFT collection you provided isn't a valid Ordinal collection slug. Please try again using the appropriate form.")
+                                //         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                //         .setAuthor({ name: authorName, iconURL: userAvatar })
+                                //         .setTimestamp()
+                                //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                                //     await interaction.editReply({ embeds: [setwalletErrorEmbed] });
 
-                                    //     //Quelques calculs
-                                    //     const listingRatio = (totalListed / supply) * 100;
-                                    //     const holderRatio = (owners / supply) * 100;
+                                // }
 
+                            } else if (subcommand === 'profit') {
 
 
 
-                                    //     const getDataCollectionAddress = new EmbedBuilder().setColor("#060A8F")
-                                    //         .setTitle(name)
-                                    //         .setDescription(description)
-                                    //         .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    //         .setThumbnail(collectionLogo)
-                                    //         .addFields(
-                                    //             { name: " ", value: " ", inline: true },
-                                    //             { name: "Inscription", value: "`" + inscriptionIcon + "`", inline: false },
-                                    //             { name: "BTC Price", value: "`" + parseFloat(floorPrice).toFixed(3) + "₿`", inline: true },
-                                    //             { name: "ETH Price", value: "`" + parseFloat(floorPriceETH).toFixed(3) + "Ξ`", inline: true },
-                                    //             { name: "USD Price", value: "`" + parseFloat(floorPriceUSD).toFixed(2) + "$`", inline: true },
-                                    //             { name: "Supply", value: "`" + supply + "`", inline: true },
-                                    //             { name: "Total Volume", value: "`" + parseFloat(totalVolume).toFixed(3) + "₿\n(" + Intl.NumberFormat('en-US').format(parseFloat(totalVolume * BTCUsdtPrice).toFixed(0)) + "$)`", inline: true },
-                                    //             { name: "Ongoin Txn", value: "`" + pendingTxn + "`", inline: true },
-                                    //             { name: "Listing Count", value: "`" + totalListed + "`", inline: true },
-                                    //             { name: "Listing Ratio", value: "`" + parseFloat(listingRatio).toFixed(2) + "%`", inline: true },
-                                    //             { name: " ", value: " ", inline: true },
-                                    //             { name: "Holder Count", value: "`" + owners + "`", inline: true },
-                                    //             { name: "Holder Ratio", value: "`" + parseFloat(holderRatio).toFixed(2) + "%`", inline: true },
-                                    //             { name: " ", value: " ", inline: true },
-                                    //             { name: "Lowest Inscription", value: "`#" + inscriptionNumberMin + "`", inline: true },
-                                    //             { name: "Highest Inscription", value: "`#" + inscriptionNumberMax + "`", inline: true },
-                                    //             { name: "Links", value: '[magic eden](https://magiceden.io/ordinals/marketplace/' + coinAddress + ") ∙ " + '[twitter](' + twitter + ") ∙ " + '[discord](' + discord + ") ∙ " + '[website](' + website + ")", inline: false },
+                                const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
+                                    .setTitle(`Not available`)
+                                    .setDescription("We are currently optimising this feature. You can still use our Ethereum NFT features with `/nft`.")
+                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    .setTimestamp()
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
+                                await interaction.editReply({ embeds: [setwalletErrorEmbed] });
 
-                                    //         )
-                                    //         .setTimestamp()
-                                    //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                                    //     await interaction.editReply({ embeds: [getDataCollectionAddress] });
+                                /// API de Magic Eden renvoi "trop de request", à vérifier \\\
 
-                                    // } else {
-                                    //     // La collection n'est pas trouvé
 
+                                // if (isValidInput(selectedCollection)) {
 
-                                    //     const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
-                                    //         .setTitle(`Invalid Collection`)
-                                    //         .setDescription("The NFT collection you provided isn't a valid Ordinal collection slug. Please try again using the appropriate form.")
-                                    //         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                    //         .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    //         .setTimestamp()
-                                    //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                    //     await interaction.editReply({ embeds: [setwalletErrorEmbed] });
+                                //     if (isBRC20BitcoinWallet(walletAddress)) {
 
-                                    // }
 
-                                } else if (subcommand === 'profit') {
 
+                                //         let name = ""
+                                //         let collectionLogo = ""
+                                //         let twitter = ""
+                                //         let discord = ""
+                                //         let website = ""
 
+                                //         let mintSpent = 0
+                                //         let mintGasSpent = 0
+                                //         let totalMintSpent = 0
+                                //         let buyMarketplaceSpent = 0
+                                //         let buyMarketplaceGasSpent = 0
+                                //         let buyMarketplaceTotalSpent = 0
+                                //         let soldValue = 0
+                                //         let soldGasValue = 0
+                                //         let totalSoldValue = 0
+                                //         let mintCount = 0
+                                //         let buyMarketplaceCount = 0
+                                //         let totalBuyCount = 0
+                                //         let holdCount = 0
+                                //         let soldCount = 0
+                                //         let transferCount = 0
+                                //         let transferCountFormated = 0
+                                //         let averageMintValue = 0
+                                //         let averageBuyValue = 0
+                                //         let averageSpentValue = 0
+                                //         let averageSoldValue = 0
+                                //         let averageHeldValue = 0
+                                //         let totalHoldValue = 0
+                                //         let realisedProfit = 0
+                                //         let potentialProfit = 0
+                                //         let roiFormatted = 0
 
-                                    const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
-                                        .setTitle(`Not available`)
-                                        .setDescription("We are currently optimising this feature. You can still use our Ethereum NFT features with `/nft`.")
-                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                                        .setTimestamp()
-                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                    await interaction.editReply({ embeds: [setwalletErrorEmbed] });
+                                //         const btcCallPrice = await axios.get("https://blockchain.info/q/24hrprice")
+                                //         const BTCUsdPrice = btcCallPrice.data
 
 
-                                    /// API de Magic Eden renvoi "trop de request", à vérifier \\\
 
 
-                                    // if (isValidInput(selectedCollection)) {
+                                //         const url = `https://api-mainnet.magiceden.dev/v2/ord/btc/collections/` + selectedCollection;
+                                //         const response = await axios.get(url, { headers: magiceden });
+                                //         const data = await response.data;
 
+                                //         collectionLogo = data.imageURI
+                                //         name = data.name
+                                //         twitter = data.twitterLink
+                                //         discord = data.discordLink
+                                //         website = data.websiteLink
 
-                                    //     if (isBRC20BitcoinWallet(walletAddress)) {
 
+                                //         const url2 = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=` + selectedCollection;
+                                //         const response2 = await axios.get(url2, { headers: magiceden });
+                                //         const data2 = await response2.data;
 
 
-                                    //         let name = ""
-                                    //         let collectionLogo = ""
-                                    //         let twitter = ""
-                                    //         let discord = ""
-                                    //         let website = ""
+                                //         const floorPrice = (data2.floorPrice) / (10 ** 8)
 
-                                    //         let mintSpent = 0
-                                    //         let mintGasSpent = 0
-                                    //         let totalMintSpent = 0
-                                    //         let buyMarketplaceSpent = 0
-                                    //         let buyMarketplaceGasSpent = 0
-                                    //         let buyMarketplaceTotalSpent = 0
-                                    //         let soldValue = 0
-                                    //         let soldGasValue = 0
-                                    //         let totalSoldValue = 0
-                                    //         let mintCount = 0
-                                    //         let buyMarketplaceCount = 0
-                                    //         let totalBuyCount = 0
-                                    //         let holdCount = 0
-                                    //         let soldCount = 0
-                                    //         let transferCount = 0
-                                    //         let transferCountFormated = 0
-                                    //         let averageMintValue = 0
-                                    //         let averageBuyValue = 0
-                                    //         let averageSpentValue = 0
-                                    //         let averageSoldValue = 0
-                                    //         let averageHeldValue = 0
-                                    //         let totalHoldValue = 0
-                                    //         let realisedProfit = 0
-                                    //         let potentialProfit = 0
-                                    //         let roiFormatted = 0
 
+                                //         const url3 = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?collectionSymbol=` + selectedCollection + `&ownerAddress=` + walletAddress + `&showAll=true&sortBy=priceAsc`;
+                                //         const response3 = await axios.get(url3, { headers: magiceden });
+                                //         const data3 = await response3.data;
 
-                                    //         const btcCallPrice = await axios.get("https://blockchain.info/q/24hrprice")
-                                    //         const BTCUsdPrice = btcCallPrice.data
 
+                                //         totalHoldValue = floorPrice * holdCount
+                                //         averageHeldValue = totalHoldValue / holdCount
 
+                                //         let tokenHeldId = []
+                                //         for (const token of data3.tokens) {
+                                //             tokenHeldId.push(token.id)
+                                //         }
 
 
-                                    //         const url = `https://api-mainnet.magiceden.dev/v2/ord/btc/collections/` + selectedCollection;
-                                    //         const response = await axios.get(url, { headers: magiceden });
-                                    //         const data = await response.data;
+                                //         //On calcul le prix et méthode d'achat des token held
+                                //         for (const token of tokenHeldId) {
 
-                                    //         collectionLogo = data.imageURI
-                                    //         name = data.name
-                                    //         twitter = data.twitterLink
-                                    //         discord = data.discordLink
-                                    //         website = data.websiteLink
+                                //             //Buy classic
+                                //             const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token
+                                //             const tokenBuyCall = await axios.get(tokenBuyLink, { headers: magiceden });
+                                //             const tokenBuy = await tokenBuyCall.data.activities;
 
+                                //             const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== walletAddress.toLowerCase() && activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
 
-                                    //         const url2 = `https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=` + selectedCollection;
-                                    //         const response2 = await axios.get(url2, { headers: magiceden });
-                                    //         const data2 = await response2.data;
 
+                                //             if (tokenBuyByWallet.length > 0) {
 
-                                    //         const floorPrice = (data2.floorPrice) / (10 ** 8)
+                                //                 const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
 
+                                //                 buyMarketplaceSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
+                                //                 buyMarketplaceGasSpent += mempoolCall.data.fee / (10 ** 8)
+                                //                 buyMarketplaceCount += 1
 
-                                    //         const url3 = `https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?collectionSymbol=` + selectedCollection + `&ownerAddress=` + walletAddress + `&showAll=true&sortBy=priceAsc`;
-                                    //         const response3 = await axios.get(url3, { headers: magiceden });
-                                    //         const data3 = await response3.data;
+                                //             } else {
 
 
-                                    //         totalHoldValue = floorPrice * holdCount
-                                    //         averageHeldValue = totalHoldValue / holdCount
+                                //                 //Create
+                                //                 const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenInscription
+                                //                 const tokenCreateCall = await axios.get(tokenCreateLink, { headers: magiceden });
+                                //                 const tokenCreate = await tokenCreateCall.data.activities;
 
-                                    //         let tokenHeldId = []
-                                    //         for (const token of data3.tokens) {
-                                    //             tokenHeldId.push(token.id)
-                                    //         }
+                                //                 const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
 
+                                //                 if (tokenCreateByWallet.length > 0) {
 
-                                    //         //On calcul le prix et méthode d'achat des token held
-                                    //         for (const token of tokenHeldId) {
+                                //                     const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
 
-                                    //             //Buy classic
-                                    //             const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token
-                                    //             const tokenBuyCall = await axios.get(tokenBuyLink, { headers: magiceden });
-                                    //             const tokenBuy = await tokenBuyCall.data.activities;
+                                //                     mintSpent += ((tokenBuyByWallet[0].txValue) / (10 ** 8))
+                                //                     mintGasSpent += mempoolCall.data.fee / (10 ** 8)
+                                //                     mintCount += 1
 
-                                    //             const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== walletAddress.toLowerCase() && activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+                                //                 } else {
 
+                                //                     //Mint
+                                //                     const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenInscription
+                                //                     const tokenMintCall = await axios.get(tokenMintLink, { headers: magiceden });
+                                //                     const tokenMint = await tokenMintCall.data.activities;
 
-                                    //             if (tokenBuyByWallet.length > 0) {
+                                //                     const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
 
-                                    //                 const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
+                                //                     if (tokenMintByWallet.length > 0) {
 
-                                    //                 buyMarketplaceSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
-                                    //                 buyMarketplaceGasSpent += mempoolCall.data.fee / (10 ** 8)
-                                    //                 buyMarketplaceCount += 1
+                                //                         const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
 
-                                    //             } else {
+                                //                         mintSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
+                                //                         mintGasSpent += mempoolCall.data.fee / (10 ** 8)
+                                //                         mintCount += 1
 
+                                //                     } else {
 
-                                    //                 //Create
-                                    //                 const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenInscription
-                                    //                 const tokenCreateCall = await axios.get(tokenCreateLink, { headers: magiceden });
-                                    //                 const tokenCreate = await tokenCreateCall.data.activities;
+                                //                         //Transfert & Airdrop
+                                //                         buyMarketplaceSpent += 0
+                                //                         buyMarketplaceGasSpent += 0
+                                //                         transferCount += 1
 
-                                    //                 const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+                                //                     }
+                                //                 }
 
-                                    //                 if (tokenCreateByWallet.length > 0) {
+                                //             }
 
-                                    //                     const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
 
-                                    //                     mintSpent += ((tokenBuyByWallet[0].txValue) / (10 ** 8))
-                                    //                     mintGasSpent += mempoolCall.data.fee / (10 ** 8)
-                                    //                     mintCount += 1
 
-                                    //                 } else {
 
-                                    //                     //Mint
-                                    //                     const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenInscription
-                                    //                     const tokenMintCall = await axios.get(tokenMintLink, { headers: magiceden });
-                                    //                     const tokenMint = await tokenMintCall.data.activities;
 
-                                    //                     const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+                                //         }
 
-                                    //                     if (tokenMintByWallet.length > 0) {
 
-                                    //                         const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
 
-                                    //                         mintSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
-                                    //                         mintGasSpent += mempoolCall.data.fee / (10 ** 8)
-                                    //                         mintCount += 1
+                                //         //Call pour récupérer les token sold
+                                //         const recentSalesLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&ownerAddress=` + walletAddress + "&collectionSymbol=" + selectedCollection
+                                //         const recentSalesCall = await axios.get(recentSalesLink, { headers: magiceden });
+                                //         const recentSales = await recentSalesCall.data.activities;
 
-                                    //                     } else {
+                                //         const filteredTable = recentSales.filter(activity => activity.oldOwner.toLowerCase() == walletAddress.toLowerCase() && activity.newOwner.toLowerCase() !== walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
 
-                                    //                         //Transfert & Airdrop
-                                    //                         buyMarketplaceSpent += 0
-                                    //                         buyMarketplaceGasSpent += 0
-                                    //                         transferCount += 1
 
-                                    //                     }
-                                    //                 }
 
-                                    //             }
 
+                                //         //On calcul le prix et méthode d'achat des token sold
+                                //         for (const token of filteredTable) {
 
 
+                                //             //Calculer le prix de vente + les gas.
+                                //             const mempoolCall = await axios.get("https://mempool.space/api/tx/" + token.txId)
 
+                                //             soldGasValue += mempoolCall.data.fee / (10 ** 8)
+                                //             soldValue += token.listedPrice / (10 ** 8)
+                                //             soldCount += 1
 
-                                    //         }
 
+                                //             ////// SWITCH //////
 
 
-                                    //         //Call pour récupérer les token sold
-                                    //         const recentSalesLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&ownerAddress=` + walletAddress + "&collectionSymbol=" + selectedCollection
-                                    //         const recentSalesCall = await axios.get(recentSalesLink, { headers: magiceden });
-                                    //         const recentSales = await recentSalesCall.data.activities;
+                                //             //Calculer le prix d'achat.
 
-                                    //         const filteredTable = recentSales.filter(activity => activity.oldOwner.toLowerCase() == walletAddress.toLowerCase() && activity.newOwner.toLowerCase() !== walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+                                //             //Buy classic
+                                //             const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token.tokenId
+                                //             const tokenBuyCall = await axios.get(tokenBuyLink, { headers: magiceden });
+                                //             const tokenBuy = await tokenBuyCall.data.activities;
 
+                                //             const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== walletAddress.toLowerCase() && activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
 
 
+                                //             if (tokenBuyByWallet.length > 0) {
 
-                                    //         //On calcul le prix et méthode d'achat des token sold
-                                    //         for (const token of filteredTable) {
+                                //                 const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
 
+                                //                 buyMarketplaceSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
+                                //                 buyMarketplaceGasSpent += mempoolCall.data.fee / (10 ** 8)
+                                //                 buyMarketplaceCount += 1
 
-                                    //             //Calculer le prix de vente + les gas.
-                                    //             const mempoolCall = await axios.get("https://mempool.space/api/tx/" + token.txId)
+                                //             } else {
 
-                                    //             soldGasValue += mempoolCall.data.fee / (10 ** 8)
-                                    //             soldValue += token.listedPrice / (10 ** 8)
-                                    //             soldCount += 1
 
+                                //                 //Create
+                                //                 const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenId
+                                //                 const tokenCreateCall = await axios.get(tokenCreateLink, { headers: magiceden });
+                                //                 const tokenCreate = await tokenCreateCall.data.activities;
 
-                                    //             ////// SWITCH //////
+                                //                 const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
 
+                                //                 if (tokenCreateByWallet.length > 0) {
 
-                                    //             //Calculer le prix d'achat.
+                                //                     const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
 
-                                    //             //Buy classic
-                                    //             const tokenBuyLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=` + token.tokenId
-                                    //             const tokenBuyCall = await axios.get(tokenBuyLink, { headers: magiceden });
-                                    //             const tokenBuy = await tokenBuyCall.data.activities;
+                                //                     mintSpent += ((tokenBuyByWallet[0].txValue) / (10 ** 8))
+                                //                     mintGasSpent += mempoolCall.data.fee / (10 ** 8)
+                                //                     mintCount += 1
 
-                                    //             const tokenBuyByWallet = tokenBuy.filter(activity => activity.oldOwner.toLowerCase() !== walletAddress.toLowerCase() && activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+                                //                 } else {
 
+                                //                     //Mint
+                                //                     const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenId
+                                //                     const tokenMintCall = await axios.get(tokenMintLink, { headers: magiceden });
+                                //                     const tokenMint = await tokenMintCall.data.activities;
 
-                                    //             if (tokenBuyByWallet.length > 0) {
+                                //                     const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
 
-                                    //                 const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
+                                //                     if (tokenMintByWallet.length > 0) {
 
-                                    //                 buyMarketplaceSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
-                                    //                 buyMarketplaceGasSpent += mempoolCall.data.fee / (10 ** 8)
-                                    //                 buyMarketplaceCount += 1
+                                //                         const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
 
-                                    //             } else {
+                                //                         mintSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
+                                //                         mintGasSpent += mempoolCall.data.fee / (10 ** 8)
+                                //                         mintCount += 1
 
+                                //                     } else {
 
-                                    //                 //Create
-                                    //                 const tokenCreateLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=` + token.tokenId
-                                    //                 const tokenCreateCall = await axios.get(tokenCreateLink, { headers: magiceden });
-                                    //                 const tokenCreate = await tokenCreateCall.data.activities;
+                                //                         //Transfert & Airdrop
+                                //                         buyMarketplaceSpent += 0
+                                //                         buyMarketplaceGasSpent += 0
+                                //                         transferCount += 1
 
-                                    //                 const tokenCreateByWallet = tokenCreate.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
+                                //                     }
+                                //                 }
 
-                                    //                 if (tokenCreateByWallet.length > 0) {
+                                //             }
 
-                                    //                     const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
 
-                                    //                     mintSpent += ((tokenBuyByWallet[0].txValue) / (10 ** 8))
-                                    //                     mintGasSpent += mempoolCall.data.fee / (10 ** 8)
-                                    //                     mintCount += 1
+                                //         }
 
-                                    //                 } else {
 
-                                    //                     //Mint
-                                    //                     const tokenMintLink = `https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=` + token.tokenId
-                                    //                     const tokenMintCall = await axios.get(tokenMintLink, { headers: magiceden });
-                                    //                     const tokenMint = await tokenMintCall.data.activities;
+                                //         if (transferCount > 0) { transferCountFormated = "+" + transferCount }
 
-                                    //                     const tokenMintByWallet = tokenMint.filter(activity => activity.newOwner.toLowerCase() == walletAddress.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= selectedTimestamp);
 
-                                    //                     if (tokenMintByWallet.length > 0) {
+                                //         totalMintSpent = mintSpent + mintGasSpent
+                                //         buyMarketplaceTotalSpent = buyMarketplaceSpent - buyMarketplaceGasSpent
+                                //         totalSoldValue = soldValue - soldGasValue
 
-                                    //                         const mempoolCall = await axios.get("https://mempool.space/api/tx/" + tokenBuyByWallet[0].txId)
+                                //         totalBuyCount = mintCount + buyMarketplaceCount
+                                //         holdCount = tokenHeldId.length
+                                //         totalHoldValue = floorPrice * holdCount
+                                //         if (holdCount > 0) { averageHeldValue = floorPrice } else { averageHeldValue = 0 }
 
-                                    //                         mintSpent += ((tokenBuyByWallet[0].listedPrice) / (10 ** 8))
-                                    //                         mintGasSpent += mempoolCall.data.fee / (10 ** 8)
-                                    //                         mintCount += 1
+                                //         if (totalMintSpent > 0) { averageMintValue = totalMintSpent / mintCount }
+                                //         if (buyMarketplaceTotalSpent > 0) { averageBuyValue = buyMarketplaceTotalSpent / buyMarketplaceCount }
+                                //         if (totalBuyCount > 0) { averageSpentValue = (totalMintSpent + buyMarketplaceTotalSpent) / totalBuyCount }
+                                //         if (soldCount > 0) { averageSoldValue = soldValue / soldCount }
 
-                                    //                     } else {
+                                //         realisedProfit = totalSoldValue - (totalMintSpent + buyMarketplaceTotalSpent)
+                                //         potentialProfit = (totalSoldValue + totalHoldValue) - (totalMintSpent + buyMarketplaceTotalSpent)
+                                //         roi = ((((totalHoldValue + totalSoldValue) - (totalMintSpent + buyMarketplaceTotalSpent)) / (totalMintSpent + buyMarketplaceTotalSpent)) * 100).toFixed(2)
 
-                                    //                         //Transfert & Airdrop
-                                    //                         buyMarketplaceSpent += 0
-                                    //                         buyMarketplaceGasSpent += 0
-                                    //                         transferCount += 1
 
-                                    //                     }
-                                    //                 }
+                                //         // ROI format Variable
+                                //         let roiPrefix = ""
+                                //         let roiSuffix = ""
 
-                                    //             }
+                                //         if (roi !== 0 && (totalMintSpent + buyMarketplaceTotalSpent) !== 0 && floorPrice) {
 
+                                //             if (roi > 0) {
+                                //                 roiPrefix = "+";
+                                //                 roiSuffix = " :chart_with_upwards_trend:";
+                                //             } else if (roi < 0) {
+                                //                 roiSuffix = " :chart_with_downwards_trend:";
+                                //             }
+                                //             roiFormatted = "`" + roiPrefix + parseFloat(roi).toFixed(2) + "%" + "`" + roiSuffix;
 
-                                    //         }
 
+                                //         } else if (roi == 0) {
 
-                                    //         if (transferCount > 0) { transferCountFormated = "+" + transferCount }
+                                //             roiFormatted = "`0.00%`"
 
+                                //         } else if (!floorPrice) {
 
-                                    //         totalMintSpent = mintSpent + mintGasSpent
-                                    //         buyMarketplaceTotalSpent = buyMarketplaceSpent - buyMarketplaceGasSpent
-                                    //         totalSoldValue = soldValue - soldGasValue
+                                //             roiFormatted = "'N/A'"
 
-                                    //         totalBuyCount = mintCount + buyMarketplaceCount
-                                    //         holdCount = tokenHeldId.length
-                                    //         totalHoldValue = floorPrice * holdCount
-                                    //         if (holdCount > 0) { averageHeldValue = floorPrice } else { averageHeldValue = 0 }
+                                //         } else if ((totalMintSpent + buyMarketplaceTotalSpent) == 0) {
 
-                                    //         if (totalMintSpent > 0) { averageMintValue = totalMintSpent / mintCount }
-                                    //         if (buyMarketplaceTotalSpent > 0) { averageBuyValue = buyMarketplaceTotalSpent / buyMarketplaceCount }
-                                    //         if (totalBuyCount > 0) { averageSpentValue = (totalMintSpent + buyMarketplaceTotalSpent) / totalBuyCount }
-                                    //         if (soldCount > 0) { averageSoldValue = soldValue / soldCount }
+                                //             roiFormatted = "`INFINITY`<a:RCRich:1044762000837840926>"
 
-                                    //         realisedProfit = totalSoldValue - (totalMintSpent + buyMarketplaceTotalSpent)
-                                    //         potentialProfit = (totalSoldValue + totalHoldValue) - (totalMintSpent + buyMarketplaceTotalSpent)
-                                    //         roi = ((((totalHoldValue + totalSoldValue) - (totalMintSpent + buyMarketplaceTotalSpent)) / (totalMintSpent + buyMarketplaceTotalSpent)) * 100).toFixed(2)
+                                //         }
 
 
-                                    //         // ROI format Variable
-                                    //         let roiPrefix = ""
-                                    //         let roiSuffix = ""
+                                //         let linksFormatted = ""
+                                //         if (estLienHTTPS(discord) && estLienHTTPS(website)) { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ") ∙ " + "[discord](" + discord + ") ∙ " + '[website](' + website + ")" }
+                                //         else if (estLienHTTPS(discord) && !estLienHTTPS(website)) { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ") ∙ " + "[discord](" + discord + ")" }
+                                //         else if (!estLienHTTPS(discord) && estLienHTTPS(website)) { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ") ∙ " + '[website](' + website + ")" }
+                                //         else { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ")" }
 
-                                    //         if (roi !== 0 && (totalMintSpent + buyMarketplaceTotalSpent) !== 0 && floorPrice) {
 
-                                    //             if (roi > 0) {
-                                    //                 roiPrefix = "+";
-                                    //                 roiSuffix = " :chart_with_upwards_trend:";
-                                    //             } else if (roi < 0) {
-                                    //                 roiSuffix = " :chart_with_downwards_trend:";
-                                    //             }
-                                    //             roiFormatted = "`" + roiPrefix + parseFloat(roi).toFixed(2) + "%" + "`" + roiSuffix;
 
 
-                                    //         } else if (roi == 0) {
+                                //         let selectedTimeFormatted = selectedTime
+                                //         if (!selectedTime) { selectedTimeFormatted = "All Time" }
 
-                                    //             roiFormatted = "`0.00%`"
 
-                                    //         } else if (!floorPrice) {
+                                //         //Embed getRCprofitPrecisedAll
+                                //         const embed1 = new EmbedBuilder().setColor("#060A8F")
+                                //             .setTitle(`${name}`)
+                                //             .setDescription(">>> `" + selectedTimeFormatted + "` profits made by the `" + precisedWalletNameofAuthor + "` wallet of " + authorName + " on " + name)
+                                //             .setAuthor({ name: authorName, iconURL: userAvatar })
+                                //             .setThumbnail(collectionLogo)
+                                //             .addFields(
+                                //                 { name: "Mint Spent", value: "`" + parseFloat(mintSpent).toFixed(3) + "₿ (" + parseFloat(mintSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "Mint Gas Spent", value: "`" + parseFloat(mintGasSpent).toFixed(3) + "₿ (" + parseFloat(mintGasSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "Total Mint Spent", value: "`" + parseFloat(totalMintSpent).toFixed(3) + "₿ (" + parseFloat(totalMintSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "Buy Spent", value: "`" + parseFloat(buyMarketplaceSpent).toFixed(3) + "₿ (" + parseFloat(buyMarketplaceSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "Buy Gas Spent", value: "`" + parseFloat(buyMarketplaceGasSpent).toFixed(3) + "₿ (" + parseFloat(buyMarketplaceGasSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "Total Buy Spent", value: "`" + parseFloat(buyMarketplaceTotalSpent).toFixed(3) + "₿ (" + parseFloat(buyMarketplaceTotalSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "Sold Value", value: "`" + parseFloat(soldValue).toFixed(3) + "₿ (" + parseFloat(soldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "Sold Gas Value", value: "`" + parseFloat(soldGasValue).toFixed(3) + "₿ (" + parseFloat(soldGasValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "Total Sold Value", value: "`" + parseFloat(totalSoldValue).toFixed(3) + "₿ (" + parseFloat(totalSoldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "NFT Mint Count", value: "`" + mintCount + "`", inline: true },
+                                //                 { name: "NFT Buy Count", value: "`" + buyMarketplaceCount + "`", inline: true },
+                                //                 { name: "NFT Total Count", value: "`" + totalBuyCount + "`", inline: true },
+                                //                 { name: "NFT Held Count", value: "`" + holdCount + "`", inline: true },
+                                //                 { name: "NFT Sold Count", value: "`" + soldCount + "`", inline: true },
+                                //                 { name: "NFT Transfer Count", value: "`" + transferCountFormated + "`", inline: true },
+                                //                 { name: "AVG Mint Value ", value: "`" + parseFloat(averageMintValue).toFixed(3) + "₿ (" + parseFloat(averageMintValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "AVG Buy Value ", value: "`" + parseFloat(averageBuyValue).toFixed(3) + "₿ (" + parseFloat(averageBuyValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "AVG Spent Value ", value: "`" + parseFloat(averageSpentValue).toFixed(3) + "₿ (" + parseFloat(averageSpentValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "AVG Sold Value", value: "`" + parseFloat(averageSoldValue).toFixed(3) + "₿ (" + parseFloat(averageSoldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "AVG Held Value", value: "`" + parseFloat(averageHeldValue).toFixed(3) + "₿ (" + parseFloat(averageHeldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "Total Held Value", value: "`" + parseFloat(totalHoldValue).toFixed(3) + "₿ (" + parseFloat(totalHoldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "₿ (" + parseFloat(realisedProfit * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "₿ (" + parseFloat(potentialProfit * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
+                                //                 { name: "Potential ROI", value: roiFormatted, inline: true },
+                                //                 { name: " ", value: "*Please note that Aura isn't analyzing Blur V3 contract sales for the moment. We're working on it to make it available ASAP.*", inline: false },
+                                //                 //{ name: "Links", value: linksFormatted, inline: false },
 
-                                    //             roiFormatted = "'N/A'"
+                                //             )
+                                //             .setTimestamp()
+                                //             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                    //         } else if ((totalMintSpent + buyMarketplaceTotalSpent) == 0) {
+                                //         await interaction.editReply({ embeds: [embed1], components: [buttonsRow] });
 
-                                    //             roiFormatted = "`INFINITY`<a:RCRich:1044762000837840926>"
 
-                                    //         }
 
+                                //         await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
 
-                                    //         let linksFormatted = ""
-                                    //         if (estLienHTTPS(discord) && estLienHTTPS(website)) { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ") ∙ " + "[discord](" + discord + ") ∙ " + '[website](' + website + ")" }
-                                    //         else if (estLienHTTPS(discord) && !estLienHTTPS(website)) { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ") ∙ " + "[discord](" + discord + ")" }
-                                    //         else if (!estLienHTTPS(discord) && estLienHTTPS(website)) { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ") ∙ " + '[website](' + website + ")" }
-                                    //         else { linksFormatted = "[magic eden](https://magiceden.io/ordinals/marketplace/" + selectedCollection + ") ∙ " + '[ordinals](https://ordinalswallet.com/collection/' + selectedCollection + ") ∙ " + "[twitter](" + twitter + ")" }
+                                //         await interactionData.create({
 
+                                //             authorId: authorId,
+                                //             authorName: authorName,
+                                //             serverId: serverId,
+                                //             walletAddress: "N/A",
+                                //             commandName: "profit",
+                                //             interactionId: interaction.id,
+                                //             walletName: "N/A",
+                                //             selecedTimestamp: "N/A",
+                                //             embed1: "N/A",
+                                //             embed2: "N/A",
+                                //             embed3: "N/A",
+                                //             pageIndex: "N/A",
+                                //             actualPage: "N/A",
+                                //             walletCategory: "btc",
+                                //             selectedCollection: selectedCollection,
+                                //             collectionSlug: "N/A",
+                                //             collectionBanner: "N/A",
+                                //             avgDeriskPrice: "N/A",
+                                //             floorPrice: floorPrice.toString(),
+                                //             lowerMarketlace: "N/A",
+                                //             collectionName: name,
+                                //             collectionTwitter: "N/A",
+                                //             collectionWebsite: "N/A",
+                                //             buyCount: totalBuyCount.toString(),
+                                //             mintCount: mintCount.toString(),
+                                //             soldCount: soldCount.toString(),
+                                //             remaining: holdCount.toString(),
+                                //             avgBuy: parseFloat(averageSpentValue).toFixed(3),
+                                //             avgSold: parseFloat(averageSoldValue).toFixed(3),
+                                //             realisedProfit: parseFloat(realisedProfit).toFixed(3),
+                                //             potentialProfit: parseFloat(potentialProfit).toFixed(3),
+                                //             roi: roi.toString(),
+                                //             visualTitle: "N/A",
+                                //             userAvatar: userAvatar,
+                                //             nbMembersInvolved: "N/A",
+                                //             totalTradeCount: "N/A",
 
+                                //         })
 
 
-                                    //         let selectedTimeFormatted = selectedTime
-                                    //         if (!selectedTime) { selectedTimeFormatted = "All Time" }
 
+                                //     } else {
 
-                                    //         //Embed getRCprofitPrecisedAll
-                                    //         const embed1 = new EmbedBuilder().setColor("#060A8F")
-                                    //             .setTitle(`${name}`)
-                                    //             .setDescription(">>> `" + selectedTimeFormatted + "` profits made by the `" + precisedWalletNameofAuthor + "` wallet of " + authorName + " on " + name)
-                                    //             .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    //             .setThumbnail(collectionLogo)
-                                    //             .addFields(
-                                    //                 { name: "Mint Spent", value: "`" + parseFloat(mintSpent).toFixed(3) + "₿ (" + parseFloat(mintSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "Mint Gas Spent", value: "`" + parseFloat(mintGasSpent).toFixed(3) + "₿ (" + parseFloat(mintGasSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "Total Mint Spent", value: "`" + parseFloat(totalMintSpent).toFixed(3) + "₿ (" + parseFloat(totalMintSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "Buy Spent", value: "`" + parseFloat(buyMarketplaceSpent).toFixed(3) + "₿ (" + parseFloat(buyMarketplaceSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "Buy Gas Spent", value: "`" + parseFloat(buyMarketplaceGasSpent).toFixed(3) + "₿ (" + parseFloat(buyMarketplaceGasSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "Total Buy Spent", value: "`" + parseFloat(buyMarketplaceTotalSpent).toFixed(3) + "₿ (" + parseFloat(buyMarketplaceTotalSpent * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "Sold Value", value: "`" + parseFloat(soldValue).toFixed(3) + "₿ (" + parseFloat(soldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "Sold Gas Value", value: "`" + parseFloat(soldGasValue).toFixed(3) + "₿ (" + parseFloat(soldGasValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "Total Sold Value", value: "`" + parseFloat(totalSoldValue).toFixed(3) + "₿ (" + parseFloat(totalSoldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "NFT Mint Count", value: "`" + mintCount + "`", inline: true },
-                                    //                 { name: "NFT Buy Count", value: "`" + buyMarketplaceCount + "`", inline: true },
-                                    //                 { name: "NFT Total Count", value: "`" + totalBuyCount + "`", inline: true },
-                                    //                 { name: "NFT Held Count", value: "`" + holdCount + "`", inline: true },
-                                    //                 { name: "NFT Sold Count", value: "`" + soldCount + "`", inline: true },
-                                    //                 { name: "NFT Transfer Count", value: "`" + transferCountFormated + "`", inline: true },
-                                    //                 { name: "AVG Mint Value ", value: "`" + parseFloat(averageMintValue).toFixed(3) + "₿ (" + parseFloat(averageMintValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "AVG Buy Value ", value: "`" + parseFloat(averageBuyValue).toFixed(3) + "₿ (" + parseFloat(averageBuyValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "AVG Spent Value ", value: "`" + parseFloat(averageSpentValue).toFixed(3) + "₿ (" + parseFloat(averageSpentValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "AVG Sold Value", value: "`" + parseFloat(averageSoldValue).toFixed(3) + "₿ (" + parseFloat(averageSoldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "AVG Held Value", value: "`" + parseFloat(averageHeldValue).toFixed(3) + "₿ (" + parseFloat(averageHeldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "Total Held Value", value: "`" + parseFloat(totalHoldValue).toFixed(3) + "₿ (" + parseFloat(totalHoldValue * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "Realised Profit", value: "`" + parseFloat(realisedProfit).toFixed(3) + "₿ (" + parseFloat(realisedProfit * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "Potential Profit", value: "`" + parseFloat(potentialProfit).toFixed(3) + "₿ (" + parseFloat(potentialProfit * BTCUsdPrice).toFixed(0) + "$)`", inline: true },
-                                    //                 { name: "Potential ROI", value: roiFormatted, inline: true },
-                                    //                 { name: " ", value: "*Please note that Aura isn't analyzing Blur V3 contract sales for the moment. We're working on it to make it available ASAP.*", inline: false },
-                                    //                 //{ name: "Links", value: linksFormatted, inline: false },
+                                //         const notMember = new EmbedBuilder().setColor("#060A8F")
+                                //             .setTitle("Profit")
+                                //             .setDescription("Aura can't analyze your wallet metrics because you selected a Ethereum collection and a Bitcoin wallet. Please try again selecting both a Bitcoin or Ethereum collection and wallet.")
+                                //             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                //             .setAuthor({ name: authorName, iconURL: userAvatar })
+                                //             .setTimestamp()
+                                //             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                                    //             )
-                                    //             .setTimestamp()
-                                    //             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                //         await interaction.editReply({ embeds: [notMember] });
 
-                                    //         await interaction.editReply({ embeds: [embed1], components: [buttonsRow] });
 
+                                //     }
 
 
-                                    //         await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
 
-                                    //         await interactionData.create({
 
-                                    //             authorId: authorId,
-                                    //             authorName: authorName,
-                                    //             serverId: serverId,
-                                    //             walletAddress: "N/A",
-                                    //             commandName: "profit",
-                                    //             interactionId: interaction.id,
-                                    //             walletName: "N/A",
-                                    //             selecedTimestamp: "N/A",
-                                    //             embed1: "N/A",
-                                    //             embed2: "N/A",
-                                    //             embed3: "N/A",
-                                    //             pageIndex: "N/A",
-                                    //             actualPage: "N/A",
-                                    //             walletCategory: "btc",
-                                    //             selectedCollection: selectedCollection,
-                                    //             collectionSlug: "N/A",
-                                    //             collectionBanner: "N/A",
-                                    //             avgDeriskPrice: "N/A",
-                                    //             floorPrice: floorPrice.toString(),
-                                    //             lowerMarketlace: "N/A",
-                                    //             collectionName: name,
-                                    //             collectionTwitter: "N/A",
-                                    //             collectionWebsite: "N/A",
-                                    //             buyCount: totalBuyCount.toString(),
-                                    //             mintCount: mintCount.toString(),
-                                    //             soldCount: soldCount.toString(),
-                                    //             remaining: holdCount.toString(),
-                                    //             avgBuy: parseFloat(averageSpentValue).toFixed(3),
-                                    //             avgSold: parseFloat(averageSoldValue).toFixed(3),
-                                    //             realisedProfit: parseFloat(realisedProfit).toFixed(3),
-                                    //             potentialProfit: parseFloat(potentialProfit).toFixed(3),
-                                    //             roi: roi.toString(),
-                                    //             visualTitle: "N/A",
-                                    //             userAvatar: userAvatar,
-                                    //             nbMembersInvolved: "N/A",
-                                    //             totalTradeCount: "N/A",
 
-                                    //         })
 
+                                // } else {
 
 
-                                    //     } else {
+                                //     const notMember = new EmbedBuilder().setColor("#060A8F")
+                                //         .setTitle("Profit")
+                                //         .setDescription("The collection you selected isn't valid. Please try again selecting a valid Bitcoin or Ethereum collection. You can also find the desired collection by using the contract address (Ethereum) or Magic Eden ID (Bitcoin).")
+                                //         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                //         .setAuthor({ name: authorName, iconURL: userAvatar })
+                                //         .setTimestamp()
+                                //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                                    //         const notMember = new EmbedBuilder().setColor("#060A8F")
-                                    //             .setTitle("Profit")
-                                    //             .setDescription("Aura can't analyze your wallet metrics because you selected a Ethereum collection and a Bitcoin wallet. Please try again selecting both a Bitcoin or Ethereum collection and wallet.")
-                                    //             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                    //             .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    //             .setTimestamp()
-                                    //             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+                                //     await interaction.editReply({ embeds: [notMember] });
 
-                                    //         await interaction.editReply({ embeds: [notMember] });
 
 
-                                    //     }
 
+                                // }
 
+                            } else if (subcommand === "inscription") {
 
+                                const selectedID = interaction.options.getString("id");
 
 
+                                if (isValidBtcInscription(selectedID.toLowerCase())) {
 
-                                    // } else {
 
+                                    const btcCallPrice = await axios.get("https://blockchain.info/q/24hrprice")
+                                    let BTCUsdPrice = btcCallPrice.data
 
-                                    //     const notMember = new EmbedBuilder().setColor("#060A8F")
-                                    //         .setTitle("Profit")
-                                    //         .setDescription("The collection you selected isn't valid. Please try again selecting a valid Bitcoin or Ethereum collection. You can also find the desired collection by using the contract address (Ethereum) or Magic Eden ID (Bitcoin).")
-                                    //         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                    //         .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    //         .setTimestamp()
-                                    //         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                                    //     await interaction.editReply({ embeds: [notMember] });
+                                    let isExistingInscription = true
+                                    let call = ''
 
+                                    try {
 
+                                        call = await axios.get("https://api.hiro.so/ordinals/v1/inscriptions/" + selectedID.toLowerCase())
 
 
-                                    // }
+                                    } catch (error) {
 
-                                } else if (subcommand === "inscription") {
+                                        isExistingInscription = false
 
-                                    const selectedID = interaction.options.getString("id");
+                                    }
 
+                                    if (isExistingInscription == true) {
 
-                                    if (isValidBtcInscription(selectedID.toLowerCase())) {
+                                        const inscriptionNumber = call.data.number
+                                        const inscriptionRarity = call.data.sat_rarity
+                                        const inscriptionSatID = call.data.sat_ordinal
+                                        const blockNumber = call.data.genesis_block_height
+                                        const inscriptionCost = ((call.data.genesis_fee) / (10 ** 8)) + ((call.data.value) / (10 ** 8))
+                                        const inscriptionDate = call.data.timestamp
+                                        const inscriptionBlockHash = call.data.genesis_block_hash
+                                        const inscriptionAddress = call.data.genesis_address
+                                        const ownerAddress = call.data.address
+                                        const inscriptionTxnHash = call.data.tx_id
+                                        const inscriptionFullID = call.data.id
 
 
-                                        const btcCallPrice = await axios.get("https://blockchain.info/q/24hrprice")
-                                        let BTCUsdPrice = btcCallPrice.data
+                                        const date = new Date(inscriptionDate);
+                                        const dateLisible = date.toLocaleString();
 
+                                        const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
+                                        const formattedDate = date1.format('Do [of] MMMM YYYY');
 
-                                        let isExistingInscription = true
-                                        let call = ''
 
-                                        try {
 
-                                            call = await axios.get("https://api.hiro.so/ordinals/v1/inscriptions/" + selectedID.toLowerCase())
 
+                                        const marketOverviewEmbed1 = new EmbedBuilder().setColor("#060A8F")
+                                            .setTitle(`Inscription details`)
+                                            .setDescription(">>> Displaying the main data of the Bicoin insctiption.")
+                                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                                            .setThumbnail("https://ord-mirror.magiceden.dev/content/" + inscriptionFullID)
+                                            .addFields(
+                                                { name: " ", value: " ", inline: false },
+                                                { name: "Inscription", value: "`#" + inscriptionNumber + "`", inline: true },
+                                                { name: "Sat. Rarity", value: "`" + capFirstLetter(inscriptionRarity) + "`", inline: true },
+                                                { name: "Sat. ID", value: "`" + inscriptionSatID + "`", inline: true },
+                                                { name: "Inscr. Block", value: "`" + blockNumber + "`", inline: true },
+                                                { name: "Inscr. Cost", value: "`" + inscriptionCost + "₿\n(" + new Intl.NumberFormat('en-US').format(parseFloat(BTCUsdPrice * inscriptionCost).toFixed(3)) + "$)`", inline: true },
+                                                { name: "Inscr. Date", value: "`" + formattedDate + "`", inline: true },
+                                                { name: "Author Address:", value: "`" + inscriptionAddress.toLowerCase() + "`", inline: false },
+                                                { name: "Genesis Txn:", value: "`" + inscriptionTxnHash.toLowerCase() + "`", inline: false },
+                                                { name: "Owner:", value: "`" + ownerAddress.toLowerCase() + "`", inline: false },
+                                                { name: "Links", value: '[inscription](https://ordinals.hiro.so/inscription/' + selectedID + ") ∙ " + '[owner](https://mempool.space/address/' + ownerAddress + ") ∙ " + '[genesis address](https://mempool.space/address/' + inscriptionAddress + ") ∙ " + '[transaction](https://mempool.space/tx/' + inscriptionTxnHash + ") ∙ " + '[block](https://mempool.space/block/' + inscriptionBlockHash + ")", inline: true },
 
-                                        } catch (error) {
+                                            )
+                                            .setTimestamp()
+                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                                            isExistingInscription = false
+                                        await interaction.editReply({ embeds: [marketOverviewEmbed1] });
 
-                                        }
-
-                                        if (isExistingInscription == true) {
-
-                                            const inscriptionNumber = call.data.number
-                                            const inscriptionRarity = call.data.sat_rarity
-                                            const inscriptionSatID = call.data.sat_ordinal
-                                            const blockNumber = call.data.genesis_block_height
-                                            const inscriptionCost = ((call.data.genesis_fee) / (10 ** 8)) + ((call.data.value) / (10 ** 8))
-                                            const inscriptionDate = call.data.timestamp
-                                            const inscriptionBlockHash = call.data.genesis_block_hash
-                                            const inscriptionAddress = call.data.genesis_address
-                                            const ownerAddress = call.data.address
-                                            const inscriptionTxnHash = call.data.tx_id
-                                            const inscriptionFullID = call.data.id
-
-
-                                            const date = new Date(inscriptionDate);
-                                            const dateLisible = date.toLocaleString();
-
-                                            const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
-                                            const formattedDate = date1.format('Do [of] MMMM YYYY');
-
-
-
-
-                                            const marketOverviewEmbed1 = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle(`Inscription details`)
-                                                .setDescription(">>> Displaying the main data of the Bicoin insctiption.")
-                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                .setThumbnail("https://ord-mirror.magiceden.dev/content/" + inscriptionFullID)
-                                                .addFields(
-                                                    { name: " ", value: " ", inline: false },
-                                                    { name: "Inscription", value: "`#" + inscriptionNumber + "`", inline: true },
-                                                    { name: "Sat. Rarity", value: "`" + capFirstLetter(inscriptionRarity) + "`", inline: true },
-                                                    { name: "Sat. ID", value: "`" + inscriptionSatID + "`", inline: true },
-                                                    { name: "Inscr. Block", value: "`" + blockNumber + "`", inline: true },
-                                                    { name: "Inscr. Cost", value: "`" + inscriptionCost + "₿\n(" + new Intl.NumberFormat('en-US').format(parseFloat(BTCUsdPrice * inscriptionCost).toFixed(3)) + "$)`", inline: true },
-                                                    { name: "Inscr. Date", value: "`" + formattedDate + "`", inline: true },
-                                                    { name: "Author Address:", value: "`" + inscriptionAddress.toLowerCase() + "`", inline: false },
-                                                    { name: "Genesis Txn:", value: "`" + inscriptionTxnHash.toLowerCase() + "`", inline: false },
-                                                    { name: "Owner:", value: "`" + ownerAddress.toLowerCase() + "`", inline: false },
-                                                    { name: "Links", value: '[inscription](https://ordinals.hiro.so/inscription/' + selectedID + ") ∙ " + '[owner](https://mempool.space/address/' + ownerAddress + ") ∙ " + '[genesis address](https://mempool.space/address/' + inscriptionAddress + ") ∙ " + '[transaction](https://mempool.space/tx/' + inscriptionTxnHash + ") ∙ " + '[block](https://mempool.space/block/' + inscriptionBlockHash + ")", inline: true },
-
-                                                )
-                                                .setTimestamp()
-                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                                            await interaction.editReply({ embeds: [marketOverviewEmbed1] });
-
-
-                                        } else {
-
-
-                                            const botOff = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle("Invalid Inscription")
-                                                .setDescription("The Bitcoin inscription you provided `" + selectedID.toLowerCase() + "` doesn't exist. Please try again using an existing Bitcoin inscription.")
-                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                .setTimestamp()
-                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-                                            await interaction.editReply({ embeds: [botOff] });
-
-
-
-                                        }
 
                                     } else {
 
 
                                         const botOff = new EmbedBuilder().setColor("#060A8F")
                                             .setTitle("Invalid Inscription")
-                                            .setDescription("The Bitcoin inscription you provided isn't valid. A Bitcoin inscription must be either a number, or a 66 characters string composed of letters and numbers.")
+                                            .setDescription("The Bitcoin inscription you provided `" + selectedID.toLowerCase() + "` doesn't exist. Please try again using an existing Bitcoin inscription.")
                                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                             .setAuthor({ name: authorName, iconURL: userAvatar })
                                             .setTimestamp()
@@ -918,113 +874,75 @@ module.exports = {
 
                                     }
 
+                                } else {
+
+
+                                    const botOff = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle("Invalid Inscription")
+                                        .setDescription("The Bitcoin inscription you provided isn't valid. A Bitcoin inscription must be either a number, or a 66 characters string composed of letters and numbers.")
+                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                    await interaction.editReply({ embeds: [botOff] });
+
+
+
                                 }
-
-
-
-
-
-
-
-                            } else if (!member.roles.cache.has(communityMemberRoleId)) {
-
-
-
-                                const notMember = new EmbedBuilder().setColor("#060A8F")
-                                    .setTitle(`Bot Access`)
-                                    .setDescription(">>> Showing access data")
-                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                    .setAuthor({ name: authorName, iconURL: userAvatar })
-                                    .addFields(
-                                        { name: " ", value: " ", inline: false },
-                                        { name: "Status", value: "`Access Denied ❌`", inline: true },
-                                        { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
-                                        { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. If you usually have access to the bot, make sure you're in the right community or contact an admin.", inline: false },
-                                    )
-                                    .setTimestamp()
-                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-                                await interaction.editReply({ embeds: [notMember] });
 
                             }
 
 
                         } else {
 
-
-                            if (accessTier == "") {
-                                accessTier = "Free Tier"
-                            }
-
-
-                            const botOff = new EmbedBuilder().setColor("#060A8F")
+                            const notMember = new EmbedBuilder().setColor("#060A8F")
                                 .setTitle(`Bot Access`)
-                                .setDescription(">>> Showing the community's bot access")
+                                .setDescription(">>> Showing access data")
                                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                 .addFields(
-                                    { name: 'Access Status', value: "`Denied 🔴`", inline: false },
-                                    { name: 'Access Tier', value: "`" + accessTier.toUpperCase() + "`", inline: true },
-                                    { name: 'Required Tier', value: "`A-TIER`", inline: true },
-                                    { name: "Problem Detected", value: "Your access to this command has been denied. You need a higher access tier to use this feature. You can consult the available commands in this community by using `/access`.", inline: false },
+                                    { name: " ", value: " ", inline: false },
+                                    { name: "Status", value: "`Denied ❌`", inline: true },
+                                    { name: "Required Role", value: "<@&" + community.member + ">", inline: true },
+                                    { name: "Reason:", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community.", inline: false },
                                 )
                                 .setTimestamp()
                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
-                            await interaction.editReply({ embeds: [botOff] });
+                            await interaction.editReply({ embeds: [notMember] });
 
                         }
 
-
-
                     } else {
-
 
                         const botOff = new EmbedBuilder().setColor("#060A8F")
                             .setTitle(`Bot Access`)
-                            .setDescription(">>> Showing the community's bot access")
+                            .setDescription("You can't use this feature. The access tier of this community is too low. Please contact an admin of the community to upgrade the access ❌")
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .setAuthor({ name: authorName, iconURL: userAvatar })
-                            .addFields(
-                                { name: 'Access Status', value: "`Denied 🔴`", inline: true },
-                                { name: 'Commands', value: "`Not available`", inline: true },
-                                { name: "Problem Detected", value: "The bot access is currently inactive in this community. The community's administrator are the only one who can make it active or not, contact them for any inquiries.", inline: false },
-                            )
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
                         await interaction.editReply({ embeds: [botOff] });
-
-
-
                     }
-
 
                 } else {
 
-
-                    console.log("// Step 2 : Unauthorized - Executed ✅")
-
-
                     const botOff = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle(`Bot status`)
-                        .setDescription(">>> Showing the bot status")
+                        .setTitle(`Bot Access`)
+                        .setDescription("You can't use this feature. Aura is currently inactive in this community. Please contact an admin of the community to sort out an access to the bot ❌")
                         .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                         .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .addFields(
-                            { name: 'Global Status', value: "`Inactive 🔴`", inline: true },
-                            { name: 'Commands', value: "`Not available`", inline: true },
-                            { name: "Problem Detected", value: "The bot is currently inactive in this community. The community's administrator are the only who are able to switch the bot on, contact them for any inquiries.", inline: false },
-                        )
                         .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
                     await interaction.editReply({ embeds: [botOff] });
 
-                    console.log("// Step 3 : Answer - Executed ✅")
-
-
                 }
+
+
+                
 
             } catch (error) {
 

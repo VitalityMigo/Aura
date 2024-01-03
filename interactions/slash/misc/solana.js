@@ -3,41 +3,96 @@
  * @author Vitality Migø
  */
 
-const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-const { profileData, accessSql, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
+// Bouh
+
+const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { accessSql, profileData, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 // Param d'infrastructure
-const { authPrivacy, communityInfos } = require("../../../functions/infra-utils")
-
-
-const buttonsRowprivate = new ActionRowBuilder()
-    .addComponents(
-        new ButtonBuilder()
-            .setCustomId('private-button')
-            .setLabel('🔒 turn private')
-            .setStyle(2),
-
-    );
-
-const buttonsRowpublic = new ActionRowBuilder()
-    .addComponents(
-        new ButtonBuilder()
-            .setCustomId('public-button')
-            .setLabel('🔓 turn public')
-            .setStyle(2),
-
-    );
-
-
+const { authPrivacyMulti, communityInfos } = require("../../../functions/infra-utils")
+const privateCMD = []
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("privacy")
-        .setDescription("Choose to be in public or private mode"),
+        .setName("sol")
+        .setDescription("Various solana coin features")
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("coin")
+                .setDescription("Display various data of a collection")
+                .addStringOption(option =>
+                    option
+                        .setName("contract")
+                        .setDescription("The coin's contract address")
+                        .setRequired(true)
+                    //.setAutocomplete(true)
 
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("profit")
+                .setDescription("Display your profit on a collection")
+                .addStringOption(option =>
+                    option
+                        .setName("collection")
+                        .setDescription("The collection to analyse")
+                        .setRequired(true)
+                        .setAutocomplete(true)
+                )
+                .addStringOption(option =>
+                    option
+                        .setName("wallet")
+                        .setDescription("The wallet to analyse")
+                        .setRequired(true)
+                        .setAutocomplete(true)
+                )
+                .addStringOption(option =>
+                    option
+                        .setName("timelapse")
+                        .setDescription("The period of time to analyse")
+                        .setRequired(false)
+                        .setChoices(
+                            {
+                                name: 'All Time',
+                                value: 'All Time',
+                            },
+                            {
+                                name: '1 Day',
+                                value: '1 Day',
+                            },
+                            {
+                                name: '3 Days',
+                                value: '3 Days',
+                            },
+                            {
+                                name: '7 Days',
+                                value: '7 Days',
+                            },
+                            {
+                                name: '14 Days',
+                                value: '14 Days',
+                            },
+                            {
+                                name: '30 Days',
+                                value: '30 Days',
+                            },
+                            {
+                                name: '90 Days',
+                                value: '90 Days',
+                            },
+                            {
+                                name: '1 Year',
+                                value: '1 Year',
+                            }
+                        )
+                ),
+
+        ),
 
     async execute(interaction) {
+
 
         if (interaction.guildId != null) {
 
@@ -50,6 +105,8 @@ module.exports = {
             let member = interaction.member;
             let botId = interaction.applicationId
 
+            const subcommand = interaction.options.getSubcommand()
+
 
             try {
 
@@ -59,7 +116,7 @@ module.exports = {
                 const community = await communityInfos(serverId)
 
                 //Récupère régagle de privé/ou pas de l'utilisateur
-                const privacy = await authPrivacy(authorId)
+                const privacy = await authPrivacyMulti(authorId, subcommand, privateCMD)
                 if (privacy) { await interaction.deferReply({ ephemeral: true }) }
                 else { await interaction.deferReply() }
 
@@ -67,75 +124,20 @@ module.exports = {
                 // Les vérifications
                 if (community.statut) {
 
-                    if (community.tier === 's-tier' || community.tier === 'a-tier' || community.tier === 'b-tier') {
+                    if (community.tier === 's-tier') {
 
                         if (member.roles.cache.has(community.member)) {
 
 
-                            let privacyModeFormatted = ""
-                            let privacyMode = ""
 
-                            const privacyBigDataAuthor = await profileData.findOne({ where: { authorId: authorId } })
+                            if (subcommand == 'coin') {
 
+                                const contract = interaction.options.getString("token")
 
-                            if (privacyBigDataAuthor !== null) {
+                            } else if (subcommand == 'profit') {
 
-                                if (privacyBigDataAuthor.dataValues.privacyMode !== "private" && privacyBigDataAuthor.dataValues.privacyMode !== "public") {
-
-                                    await profileData.update({ privacyMode: "public", }, { where: { authorId: authorId } })
-                                    privacyMode = "public"
-
-
-                                } else if (privacyBigDataAuthor.dataValues.privacyMode === "private" || privacyBigDataAuthor.dataValues.privacyMode === "public") {
-
-                                    privacyMode = privacyBigDataAuthor.dataValues.privacyMode
-                                }
-
-
-                            } else if (privacyBigDataAuthor === null) {
-
-                                await profileData.create({
-                                    authorId: authorId,
-                                    authorAvatar: userAvatar,
-                                    authorName: authorName,
-                                    authorTwitter: "N/A",
-                                    authorDiscord: "N/A",
-                                    authorWeb2: "N/A",
-                                    authorWeb3: "N/A",
-                                    authorJobs: "N/A",
-                                    authorNature: "N/A",
-                                    authorJoined: "N/A",
-                                    privacyMode: "public",
-                                    visualSelect: "1",
-
-                                })
-
-
-                                privacyMode = "public"
 
                             }
-
-
-
-                            if (privacyMode.toLowerCase() === "private") { privacyModeFormatted = "`private mode 🔒`" }
-                            if (privacyMode.toLowerCase() === "public") { privacyModeFormatted = "`public mode 🔓`" }
-
-
-                            const privateMode = new EmbedBuilder().setColor("#060A8F")
-                                .setTitle(authorName + "'s privacy")
-                                .setDescription(">>> Display the current privacy settings of " + authorName)
-                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                .setTimestamp()
-                                .addFields(
-                                    { name: " ", value: " ", inline: false },
-                                    { name: "Privacy Mecanism", value: "In `private mode`, only you can see the result of the commands you're using, which is not the case in `public mode`. Not that some commands are always private.\n\nChanging the privacy settings will modify your privacy settings accross all the servers that are using Aura.", inline: true },
-                                    { name: " ", value: " ", inline: false },
-                                    { name: "Status", value: "Your are in " + privacyModeFormatted, inline: false }
-                                )
-                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
-
-                            if (privacyMode.toLowerCase() === "private") { await interaction.editReply({ embeds: [privateMode], components: [buttonsRowpublic] }); }
-                            if (privacyMode.toLowerCase() === "public") { await interaction.editReply({ embeds: [privateMode], components: [buttonsRowprivate] }); }
 
 
 
@@ -157,6 +159,7 @@ module.exports = {
 
                             await interaction.editReply({ embeds: [notMember] });
 
+
                         }
 
                     } else {
@@ -172,7 +175,10 @@ module.exports = {
                         await interaction.editReply({ embeds: [botOff] });
                     }
 
+
+
                 } else {
+
 
                     const botOff = new EmbedBuilder().setColor("#060A8F")
                         .setTitle(`Bot Access`)
@@ -184,13 +190,16 @@ module.exports = {
 
                     await interaction.editReply({ embeds: [botOff] });
 
+
                 }
+
 
 
             } catch (error) {
 
 
                 console.log("// Error - sent in report ❌")
+                console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
                 //On envoi une notif
                 let botId = interaction.applicationId
@@ -207,7 +216,7 @@ module.exports = {
                 const userRoleList = interaction.member._roles
                 let userHighestRole = "Member"
                 if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-                let reportCommand = "/privacy"
+                let reportCommand = "/access"
 
                 const timeStamp = Date.now();
                 const date = new Date(timeStamp);
@@ -233,7 +242,6 @@ module.exports = {
                 })
 
 
-                console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
                 const reduceText = require("../../../functions/reducetext")
                 const roleTag = "1121510423687090186"
@@ -259,7 +267,6 @@ module.exports = {
                 await channel.send({ embeds: [updateEmbed] });
 
 
-
                 const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("An error occured")
                     .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
@@ -270,7 +277,9 @@ module.exports = {
 
                 await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
 
+
             }
+
 
         } else if (interaction.guildId == null) {
 
@@ -287,8 +296,6 @@ module.exports = {
 
 
         }
-
-
     }
 }
 

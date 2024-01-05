@@ -60,14 +60,6 @@ module.exports = {
 
 
                         let serverTier = communityInfos.dataValues.accessTier
-                        let serverAccessTime = communityInfos.dataValues.accessSince
-                        let serverAccessTimeFormatted = serverAccessTime * 1000
-
-                        const date = new Date(serverAccessTimeFormatted);
-                        const dateLisible = date.toLocaleString();
-
-                        const date1 = moment(dateLisible, 'M/D/YYYY');
-                        const formattedDate = date1.format('Do [of] MMMM YYYY');
 
 
                         //on définit le message renvoyé
@@ -87,7 +79,7 @@ module.exports = {
 
                             // availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/status` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
 
-                            availableCommands = "`/access` ∙ `/getwallets` ∙ `/getprofile` ∙ `/guide` ∙ `/privacy` ∙ `/profit` ∙ `/report` ∙ `/removewallet` ∙ `/setwallet` ∙ `/status ∙ `/vouch` ∙ `/vouchleaderboard`"
+                            availableCommands = "```access ∙ coin profit ∙ friendtech profit ∙ guide ∙ nft profit ∙ ordinal profit ∙ solana profit ∙ wallet"
                         }
 
 
@@ -102,9 +94,9 @@ module.exports = {
                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                             .addFields(
                                 { name: 'Community', value: "`" + serverName + "`", inline: true },
-                                { name: 'Access Tier', value: "`" + serverTier.toUpperCase() + "`", inline: true },
-                                { name: 'Access Date', value: "`" + formattedDate + "`", inline: true },
-                                { name: 'Available Commands:', value: availableCommands, inline: true },)
+                                { name: 'Access Tier', value: "`" + serverTier + "`", inline: true },
+                                { name: ' ', value: " ", inline: false },
+                                { name: 'Available Commands:', value: availableCommands, inline: false },)
                             .setTimestamp()
                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 

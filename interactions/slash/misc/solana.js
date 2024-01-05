@@ -3,52 +3,98 @@
  * @author Vitality Migø
  */
 
+// Bouh
 
-
-
-const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-const { profileData, accessSql, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
+const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { accessSql, profileData, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 // Param d'infrastructure
-const { authPrivacy, communityInfos } = require("../../../functions/infra-utils")
-
-
-
-const buttonRowProfileDashboard = new ActionRowBuilder()
-    .addComponents(
-        new ButtonBuilder()
-            .setCustomId('userProfile-button')
-            .setLabel('public profile')
-            .setStyle(2),
-        new ButtonBuilder()
-            .setCustomId('userPrivacy-button')
-            .setLabel('privacy')
-            .setStyle(2),
-        new ButtonBuilder()
-            .setCustomId('userVisual-button')
-            .setLabel('visual')
-            .setStyle(2),
-        new ButtonBuilder()
-            .setCustomId('userBranding-button')
-            .setLabel('branding')
-            .setStyle(2),
-        new ButtonBuilder()
-            .setCustomId('userHelp-button')
-            .setLabel('help')
-            .setStyle(2),
-    );
-
+const { authPrivacyMulti, communityInfos } = require("../../../functions/infra-utils")
+const privateCMD = []
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("profile")
-        .setDescription("Manage your public and private profile"),
+        .setName("sol")
+        .setDescription("Various solana coin features")
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("coin")
+                .setDescription("Display various data of a collection")
+                .addStringOption(option =>
+                    option
+                        .setName("contract")
+                        .setDescription("The coin's contract address")
+                        .setRequired(true)
+                    //.setAutocomplete(true)
+
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("profit")
+                .setDescription("Display your profit on a collection")
+                .addStringOption(option =>
+                    option
+                        .setName("collection")
+                        .setDescription("The collection to analyse")
+                        .setRequired(true)
+                        .setAutocomplete(true)
+                )
+                .addStringOption(option =>
+                    option
+                        .setName("wallet")
+                        .setDescription("The wallet to analyse")
+                        .setRequired(true)
+                        .setAutocomplete(true)
+                )
+                .addStringOption(option =>
+                    option
+                        .setName("timelapse")
+                        .setDescription("The period of time to analyse")
+                        .setRequired(false)
+                        .setChoices(
+                            {
+                                name: 'All Time',
+                                value: 'All Time',
+                            },
+                            {
+                                name: '1 Day',
+                                value: '1 Day',
+                            },
+                            {
+                                name: '3 Days',
+                                value: '3 Days',
+                            },
+                            {
+                                name: '7 Days',
+                                value: '7 Days',
+                            },
+                            {
+                                name: '14 Days',
+                                value: '14 Days',
+                            },
+                            {
+                                name: '30 Days',
+                                value: '30 Days',
+                            },
+                            {
+                                name: '90 Days',
+                                value: '90 Days',
+                            },
+                            {
+                                name: '1 Year',
+                                value: '1 Year',
+                            }
+                        )
+                ),
+
+        ),
 
     async execute(interaction) {
 
-        if (interaction.guildId != null) {
 
+        if (interaction.guildId != null) {
 
 
             //Récupérer informations de l'utilisateur de la commande
@@ -59,6 +105,8 @@ module.exports = {
             let member = interaction.member;
             let botId = interaction.applicationId
 
+            const subcommand = interaction.options.getSubcommand()
+
 
             try {
 
@@ -68,7 +116,7 @@ module.exports = {
                 const community = await communityInfos(serverId)
 
                 //Récupère régagle de privé/ou pas de l'utilisateur
-                const privacy = await authPrivacy(authorId)
+                const privacy = await authPrivacyMulti(authorId, subcommand, privateCMD)
                 if (privacy) { await interaction.deferReply({ ephemeral: true }) }
                 else { await interaction.deferReply() }
 
@@ -76,29 +124,20 @@ module.exports = {
                 // Les vérifications
                 if (community.statut) {
 
-                    if (community.tier === 's-tier' || community.tier === 'a-tier') {
+                    if (community.tier === 's-tier') {
 
                         if (member.roles.cache.has(community.member)) {
 
 
-                            const profileDashboardMainEmbed = new EmbedBuilder().setColor("#060A8F")
-                                .setTitle(authorName + "'s Dashboard")
-                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                .setDescription(">>> Manage your public and private profile")
-                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                .addFields(
-                                    { name: ' ', value: " ", inline: false },
-                                    { name: 'Dashboard', value: "This page allows you to modify the settings of your public and private profile on the Aura bot. Your profile is common to all the community's your part of that are using the bot.", inline: false },
-                                    { name: ' ', value: " ", inline: false },
-                                    { name: 'Settings', value: "`Profile` - Manage your public profile\n`Privacy` - Manage your privacy settings\n`Visual` - Manage the profit visual you want to use\n`Help` - Ask for any help to RC team members", inline: false },
-                                )
-                                .setTimestamp()
-                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                            await interaction.editReply({ embeds: [profileDashboardMainEmbed], components: [buttonRowProfileDashboard] })
+                            if (subcommand == 'coin') {
+
+                                const contract = interaction.options.getString("token")
+
+                            } else if (subcommand == 'profit') {
 
 
-
+                            }
 
 
 
@@ -120,6 +159,7 @@ module.exports = {
 
                             await interaction.editReply({ embeds: [notMember] });
 
+
                         }
 
                     } else {
@@ -135,7 +175,10 @@ module.exports = {
                         await interaction.editReply({ embeds: [botOff] });
                     }
 
+
+
                 } else {
+
 
                     const botOff = new EmbedBuilder().setColor("#060A8F")
                         .setTitle(`Bot Access`)
@@ -147,9 +190,8 @@ module.exports = {
 
                     await interaction.editReply({ embeds: [botOff] });
 
+
                 }
-
-
 
 
 
@@ -157,6 +199,7 @@ module.exports = {
 
 
                 console.log("// Error - sent in report ❌")
+                console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
                 //On envoi une notif
                 let botId = interaction.applicationId
@@ -173,7 +216,7 @@ module.exports = {
                 const userRoleList = interaction.member._roles
                 let userHighestRole = "Member"
                 if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
-                let reportCommand = "/profile"
+                let reportCommand = "/access"
 
                 const timeStamp = Date.now();
                 const date = new Date(timeStamp);
@@ -199,7 +242,6 @@ module.exports = {
                 })
 
 
-                console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
                 const reduceText = require("../../../functions/reducetext")
                 const roleTag = "1121510423687090186"
@@ -225,7 +267,6 @@ module.exports = {
                 await channel.send({ embeds: [updateEmbed] });
 
 
-
                 const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("An error occured")
                     .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
@@ -236,7 +277,9 @@ module.exports = {
 
                 await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
 
+
             }
+
 
         } else if (interaction.guildId == null) {
 
@@ -253,7 +296,6 @@ module.exports = {
 
 
         }
-
     }
 }
 

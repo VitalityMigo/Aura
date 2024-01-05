@@ -79,7 +79,7 @@ module.exports = {
 
                             // availableCommands = "`/access` ∙ `/alerts set` ∙ `/alerts get` ∙ `/alerts remove` ∙ `/blur data` ∙ `/blur bids` ∙ `/blur holders` ∙ `/cryptoprofit` ∙ `/coin` ∙ `/data` ∙ `/derisk collection` ∙ `/derisk txn` ∙ `/ens` ∙ `/gas calculator` ∙ `/gas tracker` ∙ `/getprofile` ∙ `/guide` ∙ `/inscription` ∙ `/market` ∙ `/portfolio` ∙ `/privacy` ∙ `/profile` ∙ `/profit` ∙ `/rcprofit` ∙ `/report` ∙ `/sats` ∙ `/status` ∙ `/track mints` ∙ `/track tokens` ∙ `/track trades` ∙ `/vouch` ∙ `/vouchleaderboard` ∙ `/wallet set` ∙ `/wallet get` ∙ `/wallet raw` ∙ `/wallet remove` ∙ `/walletgenerator`∙ `/watchlist set` ∙ `/watchlist get` ∙ `/watchlist remove`   "
 
-                            availableCommands = "```access ∙ coin profit ∙ friendtech profit ∙ guide ∙ nft profit ∙ ordinal profit ∙ solana profit ∙ wallet"
+                            availableCommands = "```access ∙ coin profit ∙ friendtech profit ∙ guide ∙ nft profit ∙ ordinal profit ∙ solana profit ∙ wallet```"
                         }
 
 

@@ -8,8 +8,9 @@ const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = r
 const { profileData, accessSql, apimonitorsql, wallets, reportsql, adminsql, usersql, interactionData, watchlistSql, exe_friendTech, infra_friendTech, sequelize } = require('../../../events/database');
 
 // Param d'infrastructure
-const { authPrivacyMulti, communityInfos } = require("../../../functions/infra-utils")
+const { authPrivacyMulti, communityInfos, freeAccess } = require("../../../functions/infra-utils")
 const privateCMD = ['wallet', 'portfolio', 'tasks', 'bridge', 'tracker']
+const excluded = ['profit']
 
 const reduceText = require("../../../functions/reducetext")
 const getTwitterUserInfo = require("../../../functions/twitteruserinfo")
@@ -316,7 +317,7 @@ module.exports = {
                 // Les vérifications
                 if (community.statut) {
 
-                    if (community.tier === 's-tier' || community.tier === 'a-tier') {
+                    if (community.tier === 's-tier' || community.tier === 'a-tier' || freeAccess(subcommand, excluded)) {
 
                         if (member.roles.cache.has(community.member)) {
 

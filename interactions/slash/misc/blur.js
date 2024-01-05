@@ -153,7 +153,7 @@ module.exports = {
                 // Les vérifications
                 if (community.statut) {
 
-                    if (community.tier === 's-tier') {
+                    if (community.tier === 's-tier' || community.tier === 'a-tier') {
 
                         if (member.roles.cache.has(community.member)) {
 

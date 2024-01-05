@@ -12,9 +12,9 @@ const moment = require('moment');
 const axios = require('axios')
 
 // Param d'infrastructure
-const { authPrivacyMulti, communityInfos } = require("../../../functions/infra-utils")
+const { authPrivacyMulti, communityInfos, freeAccess } = require("../../../functions/infra-utils")
 const privateCMD = []
-
+const excluded = ['profit']
 
 const { magiceden } = require("../../../config/web3config")
 
@@ -200,7 +200,7 @@ module.exports = {
                 // Les vérifications
                 if (community.statut) {
 
-                    if (community.tier === 's-tier' || community.tier === 'a-tier') {
+                    if (community.tier === 's-tier' || community.tier === 'a-tier' || freeAccess(subcommand, excluded)) {
 
                         if (member.roles.cache.has(community.member)) {
 

@@ -11,8 +11,9 @@ const { profileData, accessSql, reportsql, interactionData, wallets, apimonitors
 const moment = require('moment');
 
 // Param d'infrastructure
-const { authPrivacyMulti, communityInfos } = require("../../../functions/infra-utils")
+const { authPrivacyMulti, communityInfos, freeAccess } = require("../../../functions/infra-utils")
 const privateCMD = ['wallet', 'tracker']
+const excluded = ['profit']
 
 // On récupère les nodes et API
 const { reservoirA, web3CloudflarePublic } = require("../../../config/web3config")
@@ -173,7 +174,7 @@ module.exports = {
                 // Les vérifications
                 if (community.statut) {
 
-                    if (community.tier === 's-tier' || community.tier === 'a-tier') {
+                    if (community.tier === 's-tier' || community.tier === 'a-tier' || freeAccess(subcommand, excluded)) {
 
                         if (member.roles.cache.has(community.member)) {
 

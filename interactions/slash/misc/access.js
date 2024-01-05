@@ -9,6 +9,9 @@ const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const { accessSql, profileData, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
+// Param d'infrastructure
+const { authPrivacy, communityInfos } = require("../../../functions/infra-utils")
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("access")
@@ -33,36 +36,13 @@ module.exports = {
 
             try {
 
-                let communityMemberRoleId = ""
-                let communityAdminRoleId = ""
-                let botPowerStatut = ""
-                let communityStatut = ""
-                let accessTier = ""
+                console.log("Initialization: executed ✅")
 
-                //Récupère info varibale sur le bot et le serveur
-                const communityRolePerms = await accessSql.findOne({ where: { serverId: serverId } })
-                if (communityRolePerms != null) {
-                    communityMemberRoleId = communityRolePerms.dataValues.memberRoleId
-                    communityAdminRoleId = communityRolePerms.dataValues.adminRoleId
-                    botPowerStatut = communityRolePerms.dataValues.actualPower
-                    communityStatut = communityRolePerms.dataValues.statut
-                    accessTier = communityRolePerms.dataValues.accessTier
-                }
 
                 //Récupère régagle de privé/ou pas de l'utilisateur
-                const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
-
-                if (authorProfile === null) { await interaction.deferReply(); } else {
-                    const authorPrivacyMode = authorProfile.dataValues.privacyMode
-
-                    if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
-                    if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
-                }
-
-                //Checkpoint
-                console.log("// Step 1 : Initialization - Executed ✅")
-                console.log("// Step 2 : Authorization - Executed ✅")
-
+                const privacy = await authPrivacy(authorId)
+                if (privacy) { await interaction.deferReply({ ephemeral: true }) }
+                else { await interaction.deferReply() }
 
 
                 let serverName = interaction.member.guild.name
@@ -75,7 +55,7 @@ module.exports = {
                 if (communityInfos !== null) {
 
 
-                    if (member.roles.cache.has(communityMemberRoleId)) {
+                    if (member.roles.cache.has(communityInfos.dataValues.memberRoleId)) {
 
 
 
@@ -133,7 +113,7 @@ module.exports = {
                         console.log("// Step 4 : Answer - Executed ✅")
 
 
-                    } else if (!member.roles.cache.has(communityMemberRoleId)) {
+                    } else  {
 
                         console.log("// Step 2 : Unauthorized - Executed ✅")
 
@@ -146,7 +126,7 @@ module.exports = {
                             .addFields(
                                 { name: " ", value: " ", inline: false },
                                 { name: "Status", value: "`Access Denied ❌`", inline: true },
-                                { name: "Required Role", value: "<@&" + communityMemberRoleId + ">", inline: true },
+                                { name: "Required Role", value: "<@&" + communityInfos.dataValues.memberRoleId + ">", inline: true },
                                 { name: "Problem Detected", value: "Your access to the bot has been denied. You can only use the bot if you have the required role in this community. In the meantime, you have access to our free commands.", inline: false },
                             )
                             .setTimestamp()

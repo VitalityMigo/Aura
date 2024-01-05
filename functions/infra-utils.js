@@ -108,8 +108,23 @@ async function communityInfos(serverId) {
     return result
 }
 
+// Cette fonction peut être adapter si la DB contient 
+// le level d'accès de chaque commande et sous commandes
+// Permet de mesure le use de chaque commande (potentiellement)
+function freeAccess(subcommand, excluded) {
+
+    if (excluded.includes(subcommand)) {
+        return true
+    } else {
+        return false
+    }
+
+}
+
+
 module.exports = {
     authPrivacyMulti,
     authPrivacy,
-    communityInfos
+    communityInfos,
+    freeAccess
 }

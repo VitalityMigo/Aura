@@ -33,7 +33,7 @@ client.on('guildMemberAdd', async (member) => {
             .setDescription("Hey " + username + ", welcome to Aura 💫.Come back here after completing the first verification.\n\n")
             .addFields(
                 { name: " ", value: " ", inline: false },
-                { name: "Want to know more about Aura ?", value: "You can visit our [Gitbook](https://rolls-chasers.gitbook.io/aura/the-tool/presentation), the tutorial section <#1162832027687587961>, or even read a short resume using `/guide`.", inline: false },
+                { name: "Want to know more about Aura ?", value: "You can visit our [documentation](https://aura-3.gitbook.io/aura), the tutorial section <#1162832027687587961>, or even read a short resume using `/guide`.", inline: false },
                 { name: " ", value: " ", inline: false },
                 { name: "Want to get access ?", value: "All the access are being granted in the access channel : <#1108757700885622784>. ", inline: false },
                 { name: " ", value: " ", inline: false },

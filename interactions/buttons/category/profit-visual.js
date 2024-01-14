@@ -367,7 +367,7 @@ module.exports = {
 
 
 
-            const templateOneCollection = await loadImage("./visual/rollschasers/permanent/profittemplate3.png");
+            const templateOneCollection = await loadImage("./visual/aura/permanent/profittemplate3.png");
 
             const canvasFormatted = createCanvas(1000, 1000);
             const ctxFormatted = canvasFormatted.getContext('2d');
@@ -888,6 +888,136 @@ module.exports = {
 
 
 
+
+        } else if (serverId == "965053346794840174") {
+          // Alpha birds
+
+
+          const templateOneCollection = await loadImage("./visual/alphabirds/permanent/profittemplate1.png");
+
+          const canvasFormatted = createCanvas(1000, 1000);
+          const ctxFormatted = canvasFormatted.getContext('2d');
+
+          ctxFormatted.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+
+
+
+
+          ctxFormatted.font = "bold 58px SFTransrobotic";
+          ctxFormatted.textBaseline = "alphabetic";
+          const MAX_WIDTH = 766;
+          let fontSize = 58;
+
+
+          ctxFormatted.fillStyle = "#ffffff";
+          let collectionNameTextSize = ctxFormatted.measureText(collectionName).width;
+
+          while (collectionNameTextSize > MAX_WIDTH) {
+            fontSize -= 0.5;
+            ctxFormatted.font = `bold ${fontSize}px Futura`;
+            collectionNameTextSize = ctxFormatted.measureText(collectionName).width;
+          }
+
+          ctxFormatted.font = `bold ${fontSize}px SFTransrobotic`;
+          ctxFormatted.textBaseline = "middle";
+          ctxFormatted.fillText(collectionName, 40, 530);
+          ctxFormatted.textBaseline = "alphabetic";
+
+
+
+
+
+
+
+
+          //Mint COUNT
+          ctxFormatted.font = "bold 28px Futura";
+          ctxFormatted.fillStyle = "#ffffff";
+          ctxFormatted.fillText(mintCount.toString(), 343, 726);
+
+          //BUY COUNT
+          ctxFormatted.font = "bold 28px Futura";
+          ctxFormatted.fillStyle = "#ffffff";
+          ctxFormatted.fillText(buyCount.toString(), 343, 774);
+
+          //AVG SPENT VALUE
+          ctxFormatted.font = "bold 28px Futura";
+          ctxFormatted.fillStyle = "#ffffff";
+          ctxFormatted.fillText(avgBuy.toString() + sign, 343, 823);
+
+          //AVG SALE VALUE
+          ctxFormatted.font = "bold 28px Futura";
+          ctxFormatted.fillStyle = "#ffffff";
+          ctxFormatted.fillText(avgSold.toString() + sign, 343, 872);
+
+
+          //SOLD COUNT
+          ctxFormatted.font = "bold 28px Futura";
+          ctxFormatted.fillStyle = "#ffffff";
+          ctxFormatted.fillText(soldCount.toString(), 840, 726);
+
+          //REMAINING COUNT
+          ctxFormatted.font = "bold 28px Futura";
+          ctxFormatted.fillStyle = "#ffffff";
+          ctxFormatted.fillText(remaining.toString(), 840, 774);
+
+
+          //TOTAL HELD VALUE
+          ctxFormatted.font = "bold 28px Futura";
+          ctxFormatted.fillStyle = "#ffffff";
+          ctxFormatted.fillText((parseFloat(remaining * floorPrice).toFixed(3)).toString() + sign, 840, 823);
+
+          //REALIZED PROFIT
+          ctxFormatted.font = "bold 28px Futura";
+          ctxFormatted.fillStyle = "#ffffff";
+          ctxFormatted.fillText(realisedProfit.toString() + sign, 840, 872);
+
+          //REALIZED ROI
+          ctxFormatted.font = "bold 35px SFTransrobotic";
+          if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+          ctxFormatted.fillText(potentialRoiFormatted.toString() + "%", 840, 540);
+
+          //POTENTIAL PROFIT (USD)
+          ctxFormatted.font = "bold 80px SFTransrobotic";
+          if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+          ctxFormatted.fillText("$" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))), 45, 653);
+
+          //POTENTIAL PROFIT (ETH)
+          ctxFormatted.font = "bold 80px SFTransrobotic";
+          if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+          ctxFormatted.fillText(potentialProfit.toString() + sign, 547, 653);
+
+
+
+
+
+
+          //NOM USER
+          ctxFormatted.font = "bold 34px SFTransrobotic";
+          ctxFormatted.fillStyle = "#ffffff";
+          const userNameSize = ctxFormatted.measureText(authorName.toString()).width;
+          ctxFormatted.fillText(authorName.toString(), (975 - userNameSize), 973);
+
+
+          // Dessin du cercle de découpe
+          const imagesize = 48;
+          const imagex = 965 - userNameSize - imagesize;
+          const imagey = 940;
+          const profileImage = await loadImage(userLogo);
+          ctxFormatted.beginPath();
+          ctxFormatted.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
+          ctxFormatted.closePath();
+          ctxFormatted.clip();
+          ctxFormatted.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
+
+
+
+          const randomString = generateRandomString(10);
+
+          // Dessiner l'image de profil sur le canvas
+          const buffer2 = canvasFormatted.toBuffer('image/png');
+
+          await interaction.editReply({ files: [buffer2] })
 
         } else {
 

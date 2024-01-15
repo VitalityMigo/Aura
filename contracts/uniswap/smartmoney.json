@@ -22,5 +22,17 @@
     {
         "name": "0xe3d…59b5b",
         "address": "0xe3dd240ec29a14b7697a4e4ae33f4b783d959b5b"
+    },
+    {
+        "name": "Tomj",
+        "address": "0x7431931094e8bae1ecaa7d0b57d2284e121f760e"
+    },
+    {
+        "name": "Pow",
+        "address": "0x17bc55276d07e506851fe0f1d1597f7f0b875eb1"
+    },
+    {
+        "name": "Cooker",
+        "address": "0xbd6b8d8fa94f7307840252548549b56a33c98054"
     }
 ]

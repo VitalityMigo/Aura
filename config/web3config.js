@@ -95,6 +95,11 @@ const bestinslot = {
 };
 
 
+// On instancie les nodes Solana
+const { Connection } = require('@solana/web3.js');
+const sol = new Connection('https://api.mainnet-beta.solana.com');
+
+
 module.exports = {
   web3CloudflarePublic,
   web3Infura,
@@ -122,6 +127,7 @@ module.exports = {
   nftgoHead,
   openseaHead,
   bestinslot,
+  sol,
 };
 
 console.log(colors.green("Web3 config succefsuly initiated"))

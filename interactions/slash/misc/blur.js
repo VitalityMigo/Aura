@@ -133,7 +133,7 @@ module.exports = {
             let serverId = interaction.member.guild.id
             let member = interaction.member;
             let botId = interaction.applicationId
-            
+
             const subcommand = interaction.options.getSubcommand()
 
 
@@ -813,8 +813,9 @@ module.exports = {
                                                         await reservoirA.getCollectionsV5({ id: contract, accept: '*/*', includeTopBid: 'false', includeOwnerCount: 'false', includeSalesCount: 'false' })
                                                             .then(async ({ data: collectionData }) => {
 
-                                                                let name = await reduceTextCurrent(collectionData.collections[0].name, 22)
-                                                                let floor = await collectionData.collections[0].floorAsk.price.amount.decimal
+                                                                let name = reduceTextCurrent(collectionData.collections[0].name, 22)
+                                                                let floor = 0
+                                                                if (collectionData.collections[0].floorAsk.price) { floor = collectionData.collections[0].floorAsk.price.amount.decimal }
 
                                                                 for (const obj of sortedAuthorBid) {
                                                                     if (obj.contract.toLowerCase() === contract.toLowerCase()) {

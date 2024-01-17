@@ -10,7 +10,7 @@
  */
 
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-const { profileData, reportsql, infra_coin, accessSql, interactionData, adminsql, tracker_coin, infra_friendTech, sequelize } = require('../../../events/database');
+const { profileData, reportsql, accessSql, interactionData, adminsql, tracker_coin, infra_friendTech, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 const fs = require('fs')

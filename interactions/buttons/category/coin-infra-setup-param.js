@@ -89,6 +89,10 @@ const buttonsRowConfig2 = new ActionRowBuilder()
             .setCustomId('button_infra_coin_walletsetup_autoapproval')
             .setLabel('Set Auto Approval')
             .setStyle(2),
+        new ButtonBuilder()
+            .setCustomId('button_infra_coin_walletsetup_antimev')
+            .setLabel('Set Anti MEV')
+            .setStyle(2),
     );
 
 
@@ -203,6 +207,7 @@ module.exports = {
                         sell_preset: "100",
                         ape_mode: 'false',
                         auto_approval: 'false',
+                        mev_protection: "false",
 
 
                     })
@@ -228,6 +233,7 @@ module.exports = {
                             { name: " ", value: " ", inline: false },
                             { name: "Ape Mode", value: "`❌`", inline: true },
                             { name: "Auto Approval", value: "`❌`", inline: true },
+                            { name: "Anti MEV", value: "`❌`", inline: true },
                             { name: " ", value: " ", inline: false },
                             { name: " ", value: "*✅ Your wallet has been succesfuly generated, encrypted and registered to your profile. Use export to donwload the private key.*", inline: false },
 
@@ -284,6 +290,7 @@ module.exports = {
 
                     let ape_mode = userSetup.dataValues.ape_mode
                     let auto_approval = userSetup.dataValues.auto_approval
+                    let mev_protection = userSetup.dataValues.mev_protection
 
                     if (gasPreset == null) { gasPreset = "Auto" } else { gasPreset = "+" + parseFloat(gasPreset).toFixed(0) + "%" }
                     if (slippage == null) { slippage = "Auto" } else { slippage = parseFloat(gasPreset).toFixed(0) + "%" }
@@ -291,6 +298,7 @@ module.exports = {
 
                     if (ape_mode == "true") { ape_mode = "✅" } else { ape_mode = "❌" }
                     if (auto_approval == "true") { auto_approval = "✅" } else { auto_approval = "❌" }
+                    if (mev_protection == "true") { mev_protection = "✅" } else { mev_protection = "❌" }
 
 
 
@@ -373,6 +381,7 @@ module.exports = {
                                 { name: " ", value: " ", inline: false },
                                 { name: "Ape Mode", value: "`" + ape_mode + "`", inline: true },
                                 { name: "Auto Approval", value: "`" + auto_approval + "`", inline: true },
+                                { name: "Anti MEV", value: "`" + mev_protection + "`", inline: true },
                                 { name: " ", value: " ", inline: false },
                                 { name: " ", value: "*✅ The wallets infos have been sent to your DMs. Private keys are crypted.*", inline: false },
 
@@ -407,6 +416,7 @@ module.exports = {
                                 { name: " ", value: " ", inline: false },
                                 { name: "Ape Mode", value: "`" + ape_mode + "`", inline: true },
                                 { name: "Auto Approval", value: "`" + auto_approval + "`", inline: true },
+                                { name: "Anti MEV", value: "`" + mev_protection + "`", inline: true },
                                 { name: " ", value: " ", inline: false },
                                 { name: " ", value: "*❌ Your DMs are closed. Please unable server DMs to receive your wallets.*", inline: false },
 
@@ -633,6 +643,29 @@ module.exports = {
                         taskEmbed.fields.find(obj => obj.name === "Auto Approval").value = "`✅`";
 
                         await infra_coin.update({ auto_approval: "true", }, { where: { authorId: authorId } });
+                        await interaction.update({ embeds: [taskEmbed], ephemeral: true });
+
+                    }
+
+
+                } else if (action === "antimev") {
+
+
+                    let taskEmbed = interaction.message.embeds[0].data
+
+
+                    if (taskEmbed.fields.find(obj => obj.name === "Anti MEV").value == "`✅`") {
+
+                        taskEmbed.fields.find(obj => obj.name === "Anti MEV").value = "`❌`";
+
+                        await infra_coin.update({ mev_protection: "false", }, { where: { authorId: authorId } });
+                        await interaction.update({ embeds: [taskEmbed], ephemeral: true });
+
+                    } else {
+
+                        taskEmbed.fields.find(obj => obj.name === "Anti MEV").value = "`✅`";
+
+                        await infra_coin.update({ mev_protection: "true", }, { where: { authorId: authorId } });
                         await interaction.update({ embeds: [taskEmbed], ephemeral: true });
 
                     }

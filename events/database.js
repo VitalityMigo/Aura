@@ -1205,6 +1205,9 @@ const infra_coin = sequelize.define('infra_coin', {
     auto_approval: {
         type: Sequelize.STRING,
     },
+    mev_protection: {
+       type: Sequelize.STRING,
+   },
     password: {
         type: Sequelize.STRING,
     },

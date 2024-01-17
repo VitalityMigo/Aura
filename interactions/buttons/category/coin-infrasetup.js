@@ -21,7 +21,7 @@ module.exports = {
         let serverId = interaction.member.guild.id
         let botId = interaction.applicationId
 
-        await interaction.deferReply({ ephemeral: true})
+        await interaction.deferReply({ ephemeral: true })
 
         try {
 
@@ -43,72 +43,76 @@ module.exports = {
 
 
             const buttonsRowNew = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_import')
-                    .setLabel('import wallet')
-                    .setStyle(1),
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_generate')
-                    .setLabel('generate wallet')
-                    .setStyle(3),
-        
-            );
-        
-        
-        const buttonsRowModify = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_import')
-                    .setLabel('modify wallet')
-                    .setStyle(1),
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_export')
-                    .setLabel('export')
-                    .setStyle(1),
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_delete')
-                    .setLabel('delete wallet')
-                    .setStyle(4)
-            );
-        
-        const buttonsRowConfig = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_buy')
-                    .setLabel('Set Buy Value')
-                    .setStyle(2),
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_sell')
-                    .setLabel('Set Sell %')
-                    .setStyle(2),
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_gaspreset')
-                    .setLabel('Set Gas Preset')
-                    .setStyle(2),
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_maxgwei')
-                    .setLabel('Set Max Gwei')
-                    .setStyle(2),
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_slippage')
-                    .setLabel('Set Slippage')
-                    .setStyle(2)
-            );
-        
-        const buttonsRowConfig2 = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_apemode')
-                    .setLabel('Set Ape Mode')
-                    .setStyle(2),
-                new ButtonBuilder()
-                    .setCustomId('button_infra_coin_walletsetup_autoapproval')
-                    .setLabel('Set Auto Approval')
-                    .setStyle(2),
-            );
-        
-        
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_import')
+                        .setLabel('import wallet')
+                        .setStyle(1),
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_generate')
+                        .setLabel('generate wallet')
+                        .setStyle(3),
+
+                );
+
+
+            const buttonsRowModify = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_import')
+                        .setLabel('modify wallet')
+                        .setStyle(1),
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_export')
+                        .setLabel('export')
+                        .setStyle(1),
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_delete')
+                        .setLabel('delete wallet')
+                        .setStyle(4)
+                );
+
+            const buttonsRowConfig = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_buy')
+                        .setLabel('Set Buy Value')
+                        .setStyle(2),
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_sell')
+                        .setLabel('Set Sell %')
+                        .setStyle(2),
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_gaspreset')
+                        .setLabel('Set Gas Preset')
+                        .setStyle(2),
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_maxgwei')
+                        .setLabel('Set Max Gwei')
+                        .setStyle(2),
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_slippage')
+                        .setLabel('Set Slippage')
+                        .setStyle(2)
+                );
+
+            const buttonsRowConfig2 = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_apemode')
+                        .setLabel('Set Ape Mode')
+                        .setStyle(2),
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_autoapproval')
+                        .setLabel('Set Auto Approval')
+                        .setStyle(2),
+                    new ButtonBuilder()
+                        .setCustomId('button_infra_coin_walletsetup_antimev')
+                        .setLabel('Set Anti MEV')
+                        .setStyle(2),
+                );
+
+
 
 
             const userSetup = await infra_coin.findOne({ where: { authorId: authorId } })
@@ -127,6 +131,7 @@ module.exports = {
 
                 let ape_mode = userSetup.dataValues.ape_mode
                 let auto_approval = userSetup.dataValues.auto_approval
+                let mev_protection = userSetup.dataValues.mev_protection
 
                 if (gasPreset == null) { gasPreset = "Auto" } else { gasPreset = "+" + parseFloat(gasPreset).toFixed(0) + "%" }
                 if (slippage == null) { slippage = "Auto" } else { slippage = parseFloat(slippage).toFixed(1) + "%" }
@@ -134,8 +139,9 @@ module.exports = {
 
                 if (ape_mode == "true") { ape_mode = "✅" } else { ape_mode = "❌" }
                 if (auto_approval == "true") { auto_approval = "✅" } else { auto_approval = "❌" }
+                if (mev_protection == "true") { mev_protection = "✅" } else { mev_protection = "❌" }
 
-                const balance = await web3CloudflarePublic.eth.getBalance(walletAddress) / 10**18
+                const balance = await web3CloudflarePublic.eth.getBalance(walletAddress) / 10 ** 18
 
                 const errorNotEthereum = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("Coin Setup")
@@ -143,7 +149,7 @@ module.exports = {
                     .setImage('https://cdn.discordapp.com/attachments/949291624389816334/1122703923950665848/Pallette_8.png')
                     .setAuthor({ name: authorName, iconURL: userAvatar })
                     .addFields(
-                        { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`\n∟ Balance: " + parseFloat(balance).toFixed(3) + "Ξ" , inline: true },
+                        { name: "Wallet:", value: "`" + walletAddress.toLowerCase() + "`\n∟ Balance: " + parseFloat(balance).toFixed(3) + "Ξ", inline: true },
                         { name: " ", value: " ", inline: false },
                         { name: "Default Buy Value:", value: "`" + buy_preset + "Ξ`", inline: true },
                         { name: "Default Sell %:", value: "`" + sell_preset + "%`", inline: true },
@@ -154,6 +160,7 @@ module.exports = {
                         { name: " ", value: " ", inline: false },
                         { name: "Ape Mode", value: "`" + ape_mode + "`", inline: true },
                         { name: "Auto Approval", value: "`" + auto_approval + "`", inline: true },
+                        { name: "Anti MEV", value: "`" + mev_protection + "`", inline: true },
                         { name: " ", value: " ", inline: false },
                     )
                     .setTimestamp()

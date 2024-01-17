@@ -11,7 +11,7 @@
 
 const { ButtonInteraction } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
-const { accessSql, profileData, reportsql, adminsql, interactionData, infra_coin, exe_coin, sequelize } = require('../../../events/database');
+const { accessSql, profileData, reportsql, adminsql, interactionData, exe_coin, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 // Fonctions d'execution et de formattage
@@ -79,6 +79,7 @@ module.exports = {
                     const auto_approval = setup[0].auto_approval
                     const gas_preset = setup[0].gas_preset
                     const max_gwei = setup[0].max_gwei
+                    const mev_protection = setup[0].mev_protection
                     const sender = setup[0].sender
                     const privateKey = setup[0].privateKey
 
@@ -142,7 +143,7 @@ module.exports = {
 
                         // Signature et envoi de la transaction
                         // Renvoi le receipt avec les infos
-                        const receipt = await signTransaction(txnInfos, decrypt(privateKey))
+                        const receipt = await signTransaction(txnInfos, decrypt(privateKey), mev_protection)
 
                         // POUR LES TESTS
                         // const receipt = {
@@ -404,6 +405,7 @@ module.exports = {
                     // Infos du sender
                     const gas_preset = setup[0].gas_preset
                     const max_gwei = setup[0].max_gwei
+                    const mev_protection = setup[0].mev_protection
                     const privateKey = setup[0].privateKey
 
 
@@ -466,7 +468,7 @@ module.exports = {
 
                         // Signature et envoi de la transaction
                         // Renvoi le receipt avec les infos
-                        const receipt = await signTransaction(txnInfos, decrypt(privateKey))
+                        const receipt = await signTransaction(txnInfos, decrypt(privateKey), mev_protection)
 
 
                         if (receipt && receipt.status == true) {

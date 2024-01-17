@@ -11,7 +11,7 @@ const infuraApiKey = process.env.infuraApiKey
 const etherscanApiKey = process.env.etherscanApiKey
 
 //Récupérer les clefs API
-const { web3Infura } = require("../config/web3config")
+const { web3Infura, mevblocker } = require("../config/web3config")
 const chainId = 1
 
 const wETH = "0xbcF9C3e618702Ab4a0D2055687C37A2846019C56"
@@ -319,7 +319,7 @@ async function simulateTransaction(param) {
 
 }
 
-async function signTransaction(txnInfos, private_key) {
+async function signTransaction(txnInfos, private_key, mevprotect) {
 
     // Sign and send a transaction using PK
     // Triggers the transaction
@@ -327,11 +327,14 @@ async function signTransaction(txnInfos, private_key) {
     try {
         // On signe
 
-        const signedTx = await web3Infura.eth.accounts.signTransaction(txnInfos, private_key);
+        // En attendant, à remplacer par la valeur a aller chercher en arg de la fonction
+        const customNode = nodeParam(mevprotect)
+
+        const signedTx = await customNode.eth.accounts.signTransaction(txnInfos, private_key);
         const rawTransaction = signedTx.rawTransaction
 
         // On envoie
-        return web3Infura.eth.sendSignedTransaction(rawTransaction)
+        return customNode.eth.sendSignedTransaction(rawTransaction)
             .then(async (receipt) => {
 
                 return {
@@ -371,6 +374,23 @@ async function signTransaction(txnInfos, private_key) {
 
 }
 
+function nodeParam(mevProtection) {
+    // Choisir entre node classique ou MEV protection
+    // Par défaut, le node public Infura est utilisé
+
+    let usedNode = web3Infura
+
+    if (mevProtection == "true") {
+        // Le MEV Protect est activé
+        // Donc on utilise mevblocker comme node
+        // Il est instancié depuis config 
+
+        usedNode = mevblocker
+    }
+
+    return usedNode
+
+}
 
 async function gasOracle(gas_preset, gas_used, max_gwei) {
 

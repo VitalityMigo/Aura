@@ -12,7 +12,7 @@
 
 const { ButtonInteraction } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, exe_coin, infra_coin, sequelize } = require('../../../events/database');
+const { accessSql, profileData, adminsql, reportsql, exe_coin, sequelize } = require('../../../events/database');
 const moment = require('moment');
 const decrypt = require("../../../functions/decrypt")
 
@@ -134,7 +134,7 @@ module.exports = {
                     
 
 
-                    const receipt = await signTransaction(txnInfos, decrypt(privateKey))
+                    const receipt = await signTransaction(txnInfos, decrypt(privateKey), false)
 
 
                     if (receipt && receipt.status == true) {

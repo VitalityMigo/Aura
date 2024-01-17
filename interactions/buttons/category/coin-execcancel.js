@@ -1,10 +1,10 @@
 const { ButtonInteraction } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
-const { accessSql, profileData, reportsql, adminsql, interactionData, infra_coin, exe_coin, sequelize } = require('../../../events/database');
+const { accessSql, profileData, reportsql, adminsql, interactionData, exe_coin, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 // Fonctions d'execution et de formattage
-const { createFactory, generateTrade, encodeSwapExactETHForTokens, signTransaction, gasOracle, gasPreset, quoteToWei, setSlippage, simulateTransaction } = require('../../../functions/coin-utils')
+const { createFactory, generateTrade, encodeSwapExactETHForTokens, gasOracle, gasPreset, quoteToWei, setSlippage, simulateTransaction } = require('../../../functions/coin-utils')
 const decrypt = require("../../../functions/decrypt")
 const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
 const addTimeount = require("../../../functions/addtimeout")

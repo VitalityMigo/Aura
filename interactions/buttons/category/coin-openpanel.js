@@ -7,7 +7,7 @@
 
 const { EmbedBuilder, ButtonInteraction, SlashCommandBuilder } = require("discord.js");
 const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
-const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize, infra_coin } = require('../../../events/database');
+const { profileData, accessSql, reportsql, interactionData, wallets, apimonitorsql, adminsql, usersql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 const axios = require('axios')

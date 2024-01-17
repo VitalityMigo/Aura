@@ -183,7 +183,7 @@ module.exports = {
             let serverId = interaction.member.guild.id
             let member = interaction.member;
             let botId = interaction.applicationId
-           
+
             const subcommand = interaction.options.getSubcommand()
 
             try {
@@ -1140,6 +1140,10 @@ module.exports = {
                                             .setCustomId('button_infra_coin_walletsetup_autoapproval')
                                             .setLabel('Set Auto Approval')
                                             .setStyle(2),
+                                        new ButtonBuilder()
+                                            .setCustomId('button_infra_coin_walletsetup_antimev')
+                                            .setLabel('Set Anti MEV')
+                                            .setStyle(2),
                                     );
 
 
@@ -1161,6 +1165,7 @@ module.exports = {
 
                                     let ape_mode = userSetup.dataValues.ape_mode
                                     let auto_approval = userSetup.dataValues.auto_approval
+                                    let mev_protection = userSetup.dataValues.mev_protection
 
                                     if (gasPreset == null) { gasPreset = "Auto" } else { gasPreset = "+" + parseFloat(gasPreset).toFixed(0) + "%" }
                                     if (slippage == null) { slippage = "Auto" } else { slippage = parseFloat(slippage).toFixed(1) + "%" }
@@ -1168,6 +1173,7 @@ module.exports = {
 
                                     if (ape_mode == "true") { ape_mode = "✅" } else { ape_mode = "❌" }
                                     if (auto_approval == "true") { auto_approval = "✅" } else { auto_approval = "❌" }
+                                    if (mev_protection == "true") { mev_protection = "✅" } else { mev_protection = "❌" }
 
                                     const balance = await web3CloudflarePublic.eth.getBalance(walletAddress) / 10 ** 18
 
@@ -1188,6 +1194,7 @@ module.exports = {
                                             { name: " ", value: " ", inline: false },
                                             { name: "Ape Mode", value: "`" + ape_mode + "`", inline: true },
                                             { name: "Auto Approval", value: "`" + auto_approval + "`", inline: true },
+                                            { name: "Anti MEV", value: "`" + mev_protection + "`", inline: true },
                                             { name: " ", value: " ", inline: false },
                                         )
                                         .setTimestamp()

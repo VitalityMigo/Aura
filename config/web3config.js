@@ -26,6 +26,7 @@ const Web3 = require('web3');
 const web3CloudflarePublic = new Web3(new Web3.providers.HttpProvider(`https://cloudflare-eth.com`))
 const web3Infura = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/" + infuraApiKey))
 const wssInfura = new Web3('wss://mainnet.infura.io/ws/v3/' + infuraApiKey);
+const mevblocker = new Web3(new Web3.providers.HttpProvider("https://rpc.mevblocker.io"))
 
 // On instancie les nodes Base
 const web3BaseAlchemy = new Web3(new Web3.providers.HttpProvider(`https://base-mainnet.g.alchemy.com/v2/` + alchemyNodeBaseApiKey))
@@ -110,6 +111,7 @@ module.exports = {
   web3BaseDRPC,
   web3BaseUnifra,
   wssBase,
+  mevblocker,
   reservoirA,
   reservoirB,
   reservoirC,

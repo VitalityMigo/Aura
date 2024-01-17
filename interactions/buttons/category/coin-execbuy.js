@@ -117,6 +117,7 @@ module.exports = {
                 const slippage_preset = userSetup.dataValues.slippage
                 const auto_approval = userSetup.dataValues.auto_approval
                 const max_gwei = userSetup.dataValues.max_gwei
+                const mev_protection = userSetup.dataValues.mev_protection
                 const sender = userSetup.dataValues.walletAddress
                 const privateKey = userSetup.dataValues.privateKey
 
@@ -253,7 +254,7 @@ module.exports = {
 
                                         // Signature et envoi de la transaction
                                         // Renvoi le receipt avec les infos
-                                        const receipt = await signTransaction(txnInfos, decrypt(privateKey))
+                                        const receipt = await signTransaction(txnInfos, decrypt(privateKey), mev_protection)
 
 
                                         if (receipt && receipt.status == true) {
@@ -795,6 +796,7 @@ module.exports = {
                                             auto_approval: auto_approval,
                                             gas_preset: gas_preset,
                                             max_gwei: max_gwei,
+                                            mev_protection: mev_protection,
                                             sender: sender,
                                             privateKey: privateKey,
 

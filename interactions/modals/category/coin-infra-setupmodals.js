@@ -104,6 +104,10 @@ const buttonsRowConfig2 = new ActionRowBuilder()
             .setCustomId('button_infra_coin_walletsetup_autoapproval')
             .setLabel('Set Auto Approval')
             .setStyle(2),
+        new ButtonBuilder()
+            .setCustomId('button_infra_coin_walletsetup_antimev')
+            .setLabel('Set Anti MEV')
+            .setStyle(2),
     );
 
 
@@ -174,10 +178,7 @@ module.exports = {
                                 sell_preset: "100",
                                 ape_mode: 'false',
                                 auto_approval: 'false',
-
-
-
-
+                                mev_protection: "false",
                             })
 
 
@@ -200,6 +201,7 @@ module.exports = {
                                     { name: " ", value: " ", inline: false },
                                     { name: "Ape Mode", value: "`❌`", inline: true },
                                     { name: "Auto Approval", value: "`❌`", inline: true },
+                                    { name: "Anti MEV", value: "`❌`", inline: true },
                                     { name: " ", value: " ", inline: false },
                                     { name: " ", value: "*✅ Your wallet has been succesfuly encrypted and registered to your profile.*", inline: false },
 
@@ -224,6 +226,7 @@ module.exports = {
 
                             let ape_mode = userSetup.dataValues.ape_mode
                             let auto_approval = userSetup.dataValues.auto_approval
+                            let mev_protection = userSetup.dataValues.mev_protection
 
                             if (gasPreset == null) { gasPreset = "Auto" } else { gasPreset = "+" + parseFloat(gasPreset).toFixed(0) + "%" }
                             if (slippage == null) { slippage = "Auto" } else { slippage = parseFloat(gasPreset).toFixed(0) + "%" }
@@ -231,6 +234,7 @@ module.exports = {
 
                             if (ape_mode == "true") { ape_mode = "✅" } else { ape_mode = "❌" }
                             if (auto_approval == "true") { auto_approval = "✅" } else { auto_approval = "❌" }
+                            if (mev_protection == "true") { mev_protection = "✅" } else { mev_protection = "❌" }
 
 
 
@@ -262,6 +266,7 @@ module.exports = {
                                     { name: " ", value: " ", inline: false },
                                     { name: "Ape Mode", value: "`" + ape_mode + "`", inline: true },
                                     { name: "Auto Approval", value: "`" + auto_approval + "`", inline: true },
+                                    { name: "Anti MEV", value: "`" + mev_protection + "`", inline: true },
                                     { name: " ", value: " ", inline: false },
                                     { name: " ", value: "*✅ Your wallet has been succesfuly encrypted and registered to your profile.*", inline: false },
 
@@ -296,13 +301,15 @@ module.exports = {
 
                             let ape_mode = userSetup.dataValues.ape_mode
                             let auto_approval = userSetup.dataValues.auto_approval
-
+                            let mev_protection = userSetup.dataValues.mev_protection
+                            
                             if (gasPreset == null) { gasPreset = "Auto" } else { gasPreset = "+" + parseFloat(gasPreset).toFixed(0) + "%" }
                             if (slippage == null) { slippage = "Auto" } else { slippage = parseFloat(gasPreset).toFixed(0) + "%" }
                             if (max_gwei == null) { max_gwei = "Auto" } else { max_gwei = parseFloat(max_gwei).toFixed(0) + " gwei" }
 
                             if (ape_mode == "true") { ape_mode = "✅" } else { ape_mode = "❌" }
                             if (auto_approval == "true") { auto_approval = "✅" } else { auto_approval = "❌" }
+                            if (mev_protection == "true") { mev_protection = "✅" } else { mev_protection = "❌" }
 
 
 
@@ -325,9 +332,10 @@ module.exports = {
                                     { name: " ", value: " ", inline: false },
                                     { name: "Ape Mode", value: "`" + ape_mode + "`", inline: true },
                                     { name: "Auto Approval", value: "`" + auto_approval + "`", inline: true },
+                                    { name: "Anti MEV", value: "`" + mev_protection + "`", inline: true },
                                     { name: " ", value: " ", inline: false },
                                     { name: " ", value: "*❌ The private key you provided isn't valid*", inline: false },
-
+                                    
                                 )
                                 .setTimestamp()
                                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })

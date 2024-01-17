@@ -1,6 +1,6 @@
 const { ButtonInteraction } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
-const { accessSql, profileData, reportsql, adminsql, interactionData, infra_coin, manager_coin, sequelize } = require('../../../events/database');
+const { accessSql, profileData, reportsql, adminsql, interactionData, manager_coin, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
 // Fonctions d'execution et de formattage
@@ -111,7 +111,7 @@ module.exports = {
 
                         // On signe
 
-                        const receipt = await signTransaction(txn_param, decrypt(private_key))
+                        const receipt = await signTransaction(txn_param, decrypt(private_key), false)
 
 
                         if (receipt && receipt.status == true) {
@@ -328,7 +328,7 @@ module.exports = {
 
                         // On signe
 
-                        const receipt = await signTransaction(txn_param, decrypt(private_key))
+                        const receipt = await signTransaction(txn_param, decrypt(private_key), false)
 
 
                         if (receipt && receipt.status == true) {
@@ -542,7 +542,7 @@ module.exports = {
 
                     // On signe
 
-                    const receipt = await signTransaction(txn_param, decrypt(private_key))
+                    const receipt = await signTransaction(txn_param, decrypt(private_key), false)
 
 
                     if (receipt && receipt.status == true) {
@@ -739,7 +739,7 @@ module.exports = {
 
                     // On signe
 
-                    const receipt = await signTransaction(txn_param, decrypt(private_key))
+                    const receipt = await signTransaction(txn_param, decrypt(private_key), false)
 
 
                     if (receipt && receipt.status == true) {

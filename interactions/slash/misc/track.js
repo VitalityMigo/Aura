@@ -453,7 +453,7 @@ module.exports = {
 
 
                                                 const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle("Mint Tracker")
+                                                    .setTitle("Trade Tracker")
                                                     .setDescription(">>> Display your last closed position on a specific wallet.")
                                                     .setAuthor({ name: authorName, iconURL: userAvatar })
                                                     .setTimestamp()
@@ -512,7 +512,7 @@ module.exports = {
                                             }).catch(async err => {
 
                                                 const notMember = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle(`Token Tracker`)
+                                                    .setTitle(`Trade Tracker`)
                                                     .setDescription("Aura can't analyze your wallet's data because the wallet you provided isn't active. Please use try again using an active wallet.")
                                                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                                     .setAuthor({ name: authorName, iconURL: userAvatar })
@@ -783,7 +783,7 @@ module.exports = {
 
 
                                         const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
-                                            .setTitle("Mint Tracker")
+                                            .setTitle("Trade Tracker")
                                             .setDescription(">>> Display your last closed position on a specific wallet.")
                                             .setAuthor({ name: authorName, iconURL: userAvatar })
                                             .setTimestamp()

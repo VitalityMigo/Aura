@@ -177,7 +177,7 @@ module.exports = {
 
 
                 const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Mint Tracker")
+                    .setTitle("Trade Tracker")
                     .setDescription(">>> Display your last closed position on a specific wallet.")
                     .setAuthor({ name: authorName, iconURL: userAvatar })
                     .setTimestamp()
@@ -264,7 +264,7 @@ module.exports = {
 
 
                 const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
-                    .setTitle("Mint Tracker")
+                    .setTitle("Trade Tracker")
                     .setDescription(">>> Display your last closed position on a specific wallet.")
                     .setAuthor({ name: authorName, iconURL: userAvatar })
                     .setTimestamp()

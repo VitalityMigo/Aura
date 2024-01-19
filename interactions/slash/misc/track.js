@@ -61,6 +61,10 @@ function formatTokenId(inputString) {
     }
 }
 
+function formatWallet(input) {
+    return input.length > 35 ? `${input.substring(0, 8)}…${input.substring(input.length - 8)}` : input;
+}
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -1697,8 +1701,7 @@ module.exports = {
                                     const walletCount = walletAddresses.length
 
                                     // Prix de l'ETH
-                                    const etherscanTokenPrice = getEthPrice()
-                                    const ethUsdPrice = etherscanTokenPrice.data.result.ethusd
+                                    const ethUsdPrice = getEthPrice()
 
 
                                     if (walletCount > 0) {
@@ -1776,11 +1779,11 @@ module.exports = {
 
                                             index++
 
-                                            if (index <= 13) {
+                                            if (index <= 15) {
 
-                                                let lignMaxSize = 70
-                                                let leftPartNfts = "`" + (address.wallet).toLowerCase()
-                                                let rightPartNfts = address.count + " tokens`\n"
+                                                let lignMaxSize = 55
+                                                let leftPartNfts = address.wallet.toLowerCase()
+                                                let rightPartNfts = address.count + "\n"
                                                 let leftPartNFTsLenght = leftPartNfts.length
                                                 let rightPartNftsLenght = rightPartNfts.length
                                                 let spaceSize = lignMaxSize - (leftPartNFTsLenght + rightPartNftsLenght)
@@ -1798,20 +1801,19 @@ module.exports = {
 
 
                                         if (collectionFloor) { totalHeldValue = parseFloat(collectionFloor * tokenCount).toFixed(3) }
-                                        if (tokenOverview == "") { tokenOverview = "```No tokens of the specified collection detected                          ```" }
+                                        if (tokenOverview == "") { tokenOverview = "No tokens of the specified collection detected                          " }
 
 
-
+                                        
                                         const tokenHolding = new EmbedBuilder().setColor("#060A8F")
                                             .setTitle(collectionName)
                                             .setDescription(">>> Track your tokens of a given collection accross your wallet(s).")
                                             .setAuthor({ name: authorName, iconURL: userAvatar })
                                             // .setImage(collectionBanner)
                                             .addFields(
-                                                { name: "Wallets", value: "`" + walletCount + " addresses`", inline: false },
                                                 { name: "Token Found", value: "`" + tokenCount + " tokens`", inline: true },
                                                 { name: "Total Value", value: "`" + totalHeldValue + "Ξ (" + new Intl.NumberFormat('en-US').format(parseFloat(ethUsdPrice * totalHeldValue).toFixed(2)) + "$)`", inline: true },
-                                                { name: "Tokens:", value: tokenOverview, inline: false },
+                                                { name: "Tokens:", value: "```" + tokenOverview + "```", inline: false },
                                             )
                                             .setTimestamp()
                                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });

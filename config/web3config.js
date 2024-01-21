@@ -61,6 +61,9 @@ reservoirG.auth(reservoirApiKey);
 const reservoirH = require('api')('@reservoirprotocol/v3.0#5fxm01pliufqnan');
 reservoirH.auth(reservoirApiKey);
 
+const reservoirI = require('api')('@reservoirprotocol/v3.0#j7ej3alr9o3etb');
+reservoirH.auth(reservoirApiKey);
+
 const reservoirHead = {
   "X-Api-Key": reservoirApiKey,
   "accept": "*/*",
@@ -120,6 +123,7 @@ module.exports = {
   reservoirF,
   reservoirG,
   reservoirH,
+  reservoirI,
   reservoirHead,
   blockspan,
   magiceden,

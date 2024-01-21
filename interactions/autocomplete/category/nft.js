@@ -10,7 +10,7 @@
  */
 
 const { apimonitorsql, accessSql, adminsql, reportsql, wallets, sequelize } = require('../../../events/database');
-const { magiceden, reservoirA, reservoirB } = require("../../../config/web3config")
+const { magiceden, reservoirA, reservoirB, reservoirI } = require("../../../config/web3config")
 
 const moment = require('moment');
 const calculateSimilarity = require('../../../functions/similarity')
@@ -34,10 +34,10 @@ module.exports = {
         try {
 
 
-            const actualSubcommand = interaction.options._subcommand
+            const actualSubcommand = interaction.options._subcommand.toLowerCase()
 
 
-            if (actualSubcommand.toLowerCase() == "data") {
+            if (actualSubcommand == "data" || actualSubcommand == "chart") {
 
                 const focusedValue = interaction.options.getFocused();
                 const choices = []

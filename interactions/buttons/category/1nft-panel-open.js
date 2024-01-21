@@ -312,6 +312,10 @@ module.exports = {
                                             .setCustomId('button_nft_tradepanel_bidsDepth_' + collection)
                                             .setLabel('👨🏽‍⚖️ Bids')
                                             .setStyle(1),
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_tradepanel_chart_' + selectedCollection)
+                                            .setLabel('🔮 Chart')
+                                            .setStyle(1),
 
                                     )
 

@@ -877,13 +877,6 @@ module.exports = {
           await interaction.editReply({ files: [buffer2] })
 
 
-
-
-
-
-
-
-
         } else if (serverId == "965053346794840174") {
           // Alpha Birds
 

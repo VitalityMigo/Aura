@@ -40,6 +40,7 @@
 		"@discordjs/rest": "^1.0.0",
 		"@moralisweb3/common-evm-utils": "^2.22.0",
 		"@opensea/stream-js": "^0.0.23",
+		"@reservoir0x/reservoir-sdk": "^1.12.9",
 		"@sequelize/core": "^7.0.0-alpha.10",
 		"@solana/web3.js": "^1.89.0",
 		"alchemy-sdk": "^2.6.1",

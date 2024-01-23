@@ -1007,7 +1007,7 @@ module.exports = {
                                                 .setLabel('🔁 Refresh')
                                                 .setStyle(1),
                                             new ButtonBuilder()
-                                                .setCustomId('button_coin_tradepanel_chart_' + coinTicker)
+                                                .setCustomId('button_coin_tradepanel_chart_' + contract)
                                                 .setLabel('📑 Chart')
                                                 .setStyle(1),
                                             new ButtonBuilder()

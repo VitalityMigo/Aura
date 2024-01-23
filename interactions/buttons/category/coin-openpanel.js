@@ -363,9 +363,9 @@ module.exports = {
                                     .setCustomId('button_coin_tradepanel_refresh_' + coinTicker)
                                     .setLabel('🔁 Refresh')
                                     .setStyle(1),
-                                new ButtonBuilder()
-                                    .setCustomId('coin_infra_tradepanel_help-button')
-                                    .setLabel('📑 Tutorial')
+                                    new ButtonBuilder()
+                                    .setCustomId('button_coin_tradepanel_chart_'  + coinTicker)
+                                    .setLabel('📑 Chart')
                                     .setStyle(1),
                                 new ButtonBuilder()
                                     .setCustomId('coin_infra_tradepanel_audit-button')

@@ -440,6 +440,8 @@ module.exports = {
 
                                             if (collectionDescription) {
                                                 collectionDescription = cutString(collectionDescription)
+                                            } else {
+                                                collectionDescription = ">>> Showing collection metrics"
                                             }
 
 

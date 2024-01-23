@@ -895,7 +895,7 @@ async function getMetrics(contract) {
 
         if (call.data.pairs.length > 0) {
 
-            const object = call.data.pairs[0]
+            const object = call.data.pairs.filter(item => item.dexId === "uniswap")[0]
 
             const metrics = {
                 priceUSD: parseFloat(object.priceUsd),
@@ -903,7 +903,9 @@ async function getMetrics(contract) {
                 token: object.baseToken,
                 quote: object.quoteToken,
                 pool: object.pairAddress,
-                dex: object.dexId
+                dex: object.dexId,
+                version: object.labels[0]
+
             }
 
             return metrics

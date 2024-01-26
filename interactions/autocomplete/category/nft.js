@@ -201,7 +201,7 @@ module.exports = {
                 }
 
                 
-            } else if (actualSubcommand.toLowerCase() == "profit") {
+            } else if (actualSubcommand == "profit") {
 
 
                 const focused = interaction.options.getFocused(true);
@@ -401,6 +401,38 @@ module.exports = {
                 }
 
 
+
+            } else if (actualSubcommand == 'portfolio') {
+                 // Extract the focused value from the interaction options
+            const focusedValue = interaction.options.getFocused();
+
+            let authorId = interaction.user.id;
+
+            // Retrieve the wallets for the authorID
+            const walletsFilter = await wallets.findAll({ where: { authorId: authorId } });
+
+            const choices = [{ name: "All", value: "All" }]
+            walletsFilter.forEach(elem => {
+
+                choices.push({ name: elem.walletName + " (" + elem.walletAddress.substring(0, 5) + "..." + elem.walletAddress.substring(elem.walletAddress.length - 4, elem.walletAddress.length) + ")", value: elem.walletAddress })
+
+            })
+
+
+            // Filter the wallet names based on the focused value
+            const filtered = choices.filter((blaze) => blaze.name.startsWith(focusedValue));
+
+            // Respond with the filtered wallet names as autocomplete choices
+            await interaction.respond(
+
+                filtered.map((choice) => ({ name: choice.name, value: choice.value }))
+
+
+            ).catch((err) => {
+                console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+            });
+
+            return;
 
             }
            

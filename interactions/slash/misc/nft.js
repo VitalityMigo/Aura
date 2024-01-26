@@ -12,7 +12,7 @@ const moment = require('moment');
 
 // Param d'infrastructure
 const { authPrivacyMulti, communityInfos, freeAccess } = require("../../../functions/infra-utils")
-const privateCMD = ['wallet', 'tracker']
+const privateCMD = ['wallet', 'tracker', 'portfolio']
 const excluded = ['profit']
 
 // On récupère les nodes et API
@@ -23,9 +23,12 @@ const { getEthPrice } = require('../../../config/web3data')
 const decrypt = require("../../../functions/decrypt")
 const isHttps = require('../../../functions/isHttps')
 const { nftProfitSingle, nftProfitGlobal } = require("../../../functions/pnlcaclulator")
+const { getPortfolio } = require("../../../functions/1nft-utils")
+const reduceText = require("../../../functions/reducetext")
 
 // Nodes Canvas
 const { createCanvas, loadImage } = require('canvas');
+const { add } = require("date-fns");
 
 
 // Fonctions
@@ -154,6 +157,18 @@ module.exports = {
                         .setRequired(true)
                         .setAutocomplete(true)
 
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("portfolio")
+                .setDescription("Analyse and manage your portfolio")
+                .addStringOption(option =>
+                    option
+                        .setName("wallet")
+                        .setDescription("The wallet to analyse")
+                        .setRequired(true)
+                        .setAutocomplete(true)
                 )
         ),
 
@@ -1315,7 +1330,181 @@ module.exports = {
 
 
 
+                            } else if (subcommand === 'portfolio') {
+
+                                // Bouttons
+                                const buttonA = new ActionRowBuilder()
+                                    .addComponents(
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_infra_collectionView')
+                                            .setLabel('Global View')
+                                            .setStyle(1),
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_infra_tokenView')
+                                            .setLabel('Token View')
+                                            .setStyle(2),
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_infra_sortbyvalue')
+                                            .setLabel('Sort by value')
+                                            .setStyle(1),
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_infra_sortbyfloor')
+                                            .setLabel('Sort by floor')
+                                            .setStyle(2),
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_infra_sortbyabc')
+                                            .setLabel('Sort by abc')
+                                            .setStyle(2),
+                                    );
+
+                                const buttonB = new ActionRowBuilder()
+                                    .addComponents(
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_exec_list')
+                                            .setLabel('List')
+                                            .setStyle(3),
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_exec_bulkList')
+                                            .setLabel('Bulk List')
+                                            .setStyle(3),
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_exec_acceptBid')
+                                            .setLabel('Accept Bid')
+                                            .setStyle(3),
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_exec_acceptBulkBid')
+                                            .setLabel('Accept Bulk Bid')
+                                            .setStyle(3),
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_exec_transfer')
+                                            .setLabel('Transfer')
+                                            .setStyle(3),
+                                    );
+
+                                const buttonC = new ActionRowBuilder()
+                                    .addComponents(
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_infra_refresh')
+                                            .setLabel('🔁 Refresh')
+                                            .setStyle(1),
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_infra_tutorial')
+                                            .setLabel('📑 Tutorial')
+                                            .setStyle(1),
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_tradepanel_setup')
+                                            .setLabel('💻 Setup')
+                                            .setStyle(1),
+                                    );
+
+                                const buttonD = new ActionRowBuilder()
+                                    .addComponents(
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_infra_firstPage')
+                                            .setLabel('First page')
+                                            .setStyle(2)
+                                            .setDisabled(true),
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_infra_previousPage')
+                                            .setLabel('Previous page')
+                                            .setStyle(2)
+                                            .setDisabled(true),
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_infra_nextPage')
+                                            .setLabel('Next page')
+                                            .setStyle(2),
+                                        new ButtonBuilder()
+                                            .setCustomId('button_nft_portfolio_infra_lastPage')
+                                            .setLabel('Last page')
+                                            .setStyle(2),
+                                    );
+
+                                //Variable pour les options
+                                const address = interaction.options.getString("wallet").toLowerCase()
+
+                                // On récupère les infos du portfolio
+                                const portfolio = await getPortfolio(address)
+
+                                // On calcul les datas global
+                                const data = portfolio.reduce((acc, item) => {
+                                    acc.totalOwned = (acc.totalOwned || 0) + parseInt(item.owned);
+                                    acc.totalValue = (acc.totalValue || 0) + item.value;
+                                    return acc;
+                                }, {});
+
+
+                                const portfolioFiltered = portfolio.slice(0, 16)
+                                let inventory = "Name                       # Held      Floor       Value\n\n"
+
+                                for (const coll of portfolioFiltered) {
+
+                                    let part1 = reduceText(coll.name, 23)
+                                    let part2 = coll.owned
+                                    let part3 = parseFloat(coll.floor).toFixed(3) + "Ξ"
+                                    let part4 = parseFloat(coll.value).toFixed(3) + "Ξ"
+
+                                    //  let part3 = formatBidPrice(coll.bid)
+                                    //  let part4 = parseFloat(coll.floor).toFixed(3) + "Ξ"
+
+                                    let spaceSize = 33 - part1.length - part2.length
+                                    let spaceLenght = ""
+                                    for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+
+                                    let spaceSize2 = 11 - part3.length
+                                    let spaceLenght2 = ""
+                                    for (let i = 0; i < spaceSize2; i++) { spaceLenght2 += " " }
+
+                                    let spaceSize3 = 12 - part4.length
+                                    let spaceLenght3 = ""
+                                    for (let i = 0; i < spaceSize3; i++) { spaceLenght3 += " " }
+
+
+                                    inventory += part1 + spaceLenght + part2 + spaceLenght2 + part3 + spaceLenght3 + part4 + "\n"
+                                }
+
+                                // On définit le nombre de page
+                                const itemsPerPage = 16; // Nombre d'objets par page
+                                const index = Math.ceil(portfolio.length / itemsPerPage);
+
+
+                                const notMember = new EmbedBuilder().setColor("#060A8F")
+                                    .setTitle(`Portfolio Manager`)
+                                    .setDescription(">>> Manage your NFTs")
+                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    .addFields(
+                                        { name: " ", value: " ", inline: false },
+                                        { name: "Value:", value: "`" + parseFloat(data.totalValue).toFixed(3) + "Ξ`", inline: true },
+                                        { name: "# Held:", value: "`" + data.totalOwned + "`", inline: true },
+                                        { name: "Inventory:", value: "```" + inventory + "```", inline: false },
+                                        { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + address + ") ∙ " + '[Blur](https://blur.io/' + address + ") ∙ " + '[Opensea](https://opensea.io/' + address + ") ∙ " + '[Nansen](https://portfolio.nansen.ai/dashboard/' + address + ") ∙ " + '[Parsec](https://parsec.fi/address/' + address + ")", inline: false },
+                                        { name: "Page:", value: "`[1/" + index + "]`", inline: false },
+
+                                    )
+                                    .setTimestamp()
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                await interaction.editReply({ embeds: [notMember], components: [buttonD, buttonA, buttonB, buttonC] });
+
+
+                                // On construit les objets qu'on va stocker
+                                //On fait le call à la base SQL
+                                await interactionData.destroy({ where: { authorId: authorId, commandName: "nft-portfolio", serverId: serverId } })
+
+                                await interactionData.create({
+
+                                    authorId: authorId,
+                                    authorName: authorName,
+                                    serverId: serverId,
+                                    commandName: "nft-portfolio",
+                                    interactionId: interaction.id,
+                                    walletAddress: address,
+                                    embed1: JSON.stringify(portfolio),
+                                    pageIndex: index.toString(),
+                                    actualPage: "1",
+                                })
                             }
+
+
 
 
                         } else {
@@ -1745,4 +1934,14 @@ function formatTimestamps(timestamps, data) {
         }
     });
     return formattedTimestamps;
+}
+
+function formatBidPrice(bid) {
+
+    if (bid === null) {
+        return "-"
+    } else {
+        return parseFloat(bid).toFixed(2) + "Ξ"
+    }
+
 }

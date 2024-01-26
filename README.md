@@ -1,1 +1,1 @@
-Discord bot for RC
+This bot is made for the degens

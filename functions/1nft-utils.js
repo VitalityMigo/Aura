@@ -1,8 +1,7 @@
 //Récupérer les clefs API
-const { reservoirHead } = require("../config/web3config")
+const { web3CloudflarePublic, reservoirHead } = require("../config/web3config")
 
 const axios = require("axios")
-
 
 async function getCollection(contracts) {
 
@@ -45,6 +44,50 @@ async function getCollection(contracts) {
     }
 }
 
-module.exports = {
-    getCollection
+// Fonction à faire
+// Besoin de bypass Cloudflare
+async function getBlurPortfolio(address) {
+
+    // On définit les endpoints de blur
+    const baseBlurEP = 'https://core-api.prod.blur.io/v1/portfolio/'
+    const tokensBlurEP = baseBlurEP + address + '/owned'
+    const collectionsBlurEP = baseBlurEP + address + '/collections'
 }
+
+async function getPortfolio(address) {
+
+    const endpoint = `https://api.reservoir.tools/users/${address}/collections/v3?includeTopBid=true&limit=100`
+    const portfolioCALL = await axios.get(endpoint)
+    const portfolio = portfolioCALL.data.collections
+
+    const result = portfolio
+        .filter(item => item.collection.floorAskPrice && item.collection.volume["30day"] > 0)
+        .sort((a, b) => (b.collection.floorAskPrice.amount.decimal * b.ownership.tokenCount) - (a.collection.floorAskPrice.amount.decimal * a.ownership.tokenCount))
+        .map((item) => ({
+            name: item.collection.name,
+            contract: item.collection.id,
+            floor: item.collection.floorAskPrice.amount.decimal,
+            bid: filterIfBids(item.collection),
+            value: item.collection.floorAskPrice.amount.decimal * item.ownership.tokenCount,
+            owned: item.ownership.tokenCount
+        }))
+
+    function filterIfBids(item) {
+        if (item.topBidValue) {
+            return item.topBidValue.amount.decimal
+        } else {
+            return null
+        }
+    }
+
+    return result
+}
+
+module.exports = {
+    getCollection,
+    getBlurPortfolio,
+    getPortfolio,
+}
+
+
+

@@ -196,6 +196,14 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_coin_tradepanel_chart_");
 			
+		} else if (customId.startsWith("button_nft_portfolio_infra_")) {
+
+			command = client.buttonCommands.get("button_nft_portfolio_infra_");
+			
+		} else if (customId.startsWith("button_nft_portfolio_exec_")) {
+
+			command = client.buttonCommands.get("button_nft_portfolio_exec_");
+			
 		} 
 		
 		

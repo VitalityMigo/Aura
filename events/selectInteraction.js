@@ -22,8 +22,17 @@ module.exports = {
 
 		if (!interaction.isAnySelectMenu()) return;
 
-		const command = client.selectCommands.get(interaction.customId);
+		let customId = interaction.customId
+		let command = ""
 
+		if (customId.startsWith("selector_portfolio_nft_exec_")) {
+			console.log("here")
+			command = client.selectCommands.get("selector_portfolio_nft_exec_");
+		} 
+		
+		else  {
+			command = client.selectCommands.get(customId);
+		}
 		// If the interaction is not a command in cache, return error message.
 		// You can modify the error message at ./messages/defaultSelectError.js file!
 

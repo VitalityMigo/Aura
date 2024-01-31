@@ -1,5 +1,5 @@
 //Récupérer les clefs API
-const { web3CloudflarePublic, reservoirHead } = require("../config/web3config")
+const { web3CloudflarePublic, reservoirHead, chainbaseHead, web3BaseUnifra, web3Infura } = require("../config/web3config")
 
 const axios = require("axios")
 
@@ -83,10 +83,138 @@ async function getPortfolio(address) {
     return result
 }
 
+async function getTokensByCollection(contract, address) {
+
+    const tokensCALL = await axios.get(`https://api.chainbase.online/v1/account/nfts?chain_id=1&address=${address}&contract_address=${contract}&page=1&limit=100`, { headers: chainbaseHead })
+    const tokens = tokensCALL.data.data.sort((a, b) => b.rarity_rank - a.rarity_rank).map(item => ({
+        name: item.name,
+        contract: item.contract_address,
+        tokenId: item.token_id,
+        rarity: item.rarity_rank != null ? item.rarity_rank : "-",
+    }))
+    return tokens
+
+}
+
+function encodeTransfer(sender, receiver, tokenId) {
+
+    const inputs = ["address", "address", "uint256"]
+    const sig = "0x42842e0e"
+
+    // Encodage des paramètres pour safeTransferFrom
+    const encodedParams = web3CloudflarePublic.eth.abi.encodeParameters(
+        inputs,
+        [sender, receiver, tokenId]
+    );
+
+    return sig + encodedParams.slice(2)
+
+}
+
+async function simulateTransaction(param) {
+
+    try {
+        // On tente de simuler la transaction
+        const gas_used = await web3Infura.eth.estimateGas(param)
+
+        return {
+            result: gas_used,
+            valid: true
+        }
+
+    } catch (error) {
+        // Gestion de l'erreur en cas de simulation ratée
+        let message = error.message
+
+        if (message.startsWith("Returned")) {
+            message = message.replace("Returned error: ", "")
+        }
+
+        if (message.includes("TRANSFER_FROM_FAILED")) {
+            message = "Can't transfer token, probably a honeypot          "
+        }
+        console.log(error.stack)
+
+        return {
+            result: message,
+            valid: false
+        }
+    }
+}
+
+async function getGasPrice() {
+
+    const price = await web3Infura.eth.getGasPrice()
+
+    return {
+        wei: price,
+        gwei: price / 10 ** 9,
+        eth: price / 10 ** 18
+    }
+
+}
+
+async function signTransaction(txnInfos, private_key) {
+
+    // Sign and send a transaction using PK
+    // Triggers the transaction
+
+    try {
+        // On signe
+
+        const signedTx = await web3Infura.eth.accounts.signTransaction(txnInfos, private_key);
+        const rawTransaction = signedTx.rawTransaction
+
+        // On envoie
+        return web3Infura.eth.sendSignedTransaction(rawTransaction)
+            .then(async (receipt) => {
+
+                return {
+                    hash: receipt.transactionHash,
+                    gas_fees: receipt.gasUsed * (receipt.effectiveGasPrice / 10 ** 18),
+                    status: receipt.status,
+                    message: null
+                }
+
+            })
+            .catch(async (error) => {
+
+                console.log('Erreur lors de lenvoi de la transaction signée : ', error.stack);
+
+                let message = error.message
+                if (message.startsWith("Returned")) {
+                    message = message.replace("Returned error: ", "")
+                }
+
+                return {
+                    hash: null,
+                    gas_fees: null,
+                    status: null,
+                    message: message
+
+                }
+
+
+            });
+
+    } catch (error) {
+
+        console.log(error.stack)
+
+        return null
+    }
+
+}
+
 module.exports = {
     getCollection,
     getBlurPortfolio,
     getPortfolio,
+    getTokensByCollection,
+    encodeTransfer,
+    simulateTransaction,
+    getGasPrice,
+    signTransaction,
 }
 
 

@@ -10,14 +10,11 @@
  */
 
 
-const { ButtonInteraction } = require('discord.js');
-const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, sequelize, interactionData } = require('../../../events/database');
+const { ButtonInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('discord.js');
+const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
+const { accessSql, profileData, adminsql, reportsql, sequelize, portfolio_nft } = require('../../../events/database');
 const moment = require('moment');
 
-// Fonctions
-// On récupère les nodes et API
-const { reservoirI } = require("../../../config/web3config")
 
 // On importe les fonctions importantes
 const { getPortfolio } = require("../../../functions/1nft-utils")
@@ -42,7 +39,7 @@ module.exports = {
 
             // On récupère le customID
             const customId = interaction.customId
-            const match = customId.match(/button_nft_portfolio_infra_(.+)/);
+            const match = customId.match(/button_nft_portfolio_infra_([^_@]+)(?:@|$)/);
 
             if (match && match[1]) {
 
@@ -52,9 +49,9 @@ module.exports = {
                 if (action === "firstPage") {
 
                     // On récupère les data qui ont été store
-                    const storage = await interactionData.findOne({ where: { authorId: authorId, commandName: 'nft-portfolio', serverId: serverId } })
-                    const portfolio = JSON.parse(storage.dataValues.embed1)
-                    const address = storage.dataValues.walletAddress
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const portfolio = JSON.parse(storage.dataValues.portfolio)
+                    const address = storage.dataValues.address
                     const index = storage.dataValues.pageIndex
                     const current = storage.dataValues.actualPage
 
@@ -100,15 +97,15 @@ module.exports = {
                     const buttons = formIndexButtons(1, index, buttonsB)
 
                     // Pour finir on modifie l'embed ainsi que les data de l'interaction
-                    await interactionData.update({ actualPage: "1", }, { where: { authorId: authorId, commandName: 'nft-portfolio', serverId: serverId } });
+                    await portfolio_nft.update({ actualPage: "1", current: JSON.stringify(filtered) }, { where: { authorId: authorId, serverId: serverId, treated: null } });
                     await interaction.update({ embeds: [embed], components: buttons });
 
                 } else if (action === 'lastPage') {
 
                     // On récupère les data qui ont été store
-                    const storage = await interactionData.findOne({ where: { authorId: authorId, commandName: 'nft-portfolio', serverId: serverId } })
-                    const portfolio = JSON.parse(storage.dataValues.embed1)
-                    const address = storage.dataValues.walletAddress
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const portfolio = JSON.parse(storage.dataValues.portfolio)
+                    const address = storage.dataValues.address
                     const index = storage.dataValues.pageIndex
                     const current = storage.dataValues.actualPage
 
@@ -158,15 +155,15 @@ module.exports = {
                     const buttons = formIndexButtons(index, index, buttonsB)
 
                     // Pour finir on modifie l'embed ainsi que les data de l'interaction
-                    await interactionData.update({ actualPage: index, }, { where: { authorId: authorId, commandName: 'nft-portfolio', serverId: serverId } });
+                    await portfolio_nft.update({ actualPage: index, current: JSON.stringify(filtered) }, { where: { authorId: authorId, serverId: serverId, treated: null } });
                     await interaction.update({ embeds: [embed], components: buttons });
 
                 } else if (action === 'previousPage') {
 
                     // On récupère les data qui ont été store
-                    const storage = await interactionData.findOne({ where: { authorId: authorId, commandName: 'nft-portfolio', serverId: serverId } })
-                    const portfolio = JSON.parse(storage.dataValues.embed1)
-                    const address = storage.dataValues.walletAddress
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const portfolio = JSON.parse(storage.dataValues.portfolio)
+                    const address = storage.dataValues.address
                     const index = storage.dataValues.pageIndex
                     const current = storage.dataValues.actualPage
 
@@ -217,15 +214,15 @@ module.exports = {
                     const buttons = formIndexButtons(newPage, index, buttonsB)
 
                     // Pour finir on modifie l'embed ainsi que les data de l'interaction
-                    await interactionData.update({ actualPage: newPage.toString(), }, { where: { authorId: authorId, commandName: 'nft-portfolio', serverId: serverId } });
+                    await portfolio_nft.update({ actualPage: newPage.toString(), current: JSON.stringify(filtered) }, { where: { authorId: authorId, serverId: serverId, treated: null } });
                     await interaction.update({ embeds: [embed], components: buttons });
 
                 } else if (action === 'nextPage') {
 
                     // On récupère les data qui ont été store
-                    const storage = await interactionData.findOne({ where: { authorId: authorId, commandName: 'nft-portfolio', serverId: serverId } })
-                    const portfolio = JSON.parse(storage.dataValues.embed1)
-                    const address = storage.dataValues.walletAddress
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const portfolio = JSON.parse(storage.dataValues.portfolio)
+                    const address = storage.dataValues.address
                     const index = storage.dataValues.pageIndex
                     const current = storage.dataValues.actualPage
 
@@ -276,16 +273,16 @@ module.exports = {
                     const buttons = formIndexButtons(newPage, index, buttonsB)
 
                     // Pour finir on modifie l'embed ainsi que les data de l'interaction
-                    await interactionData.update({ actualPage: newPage.toString(), }, { where: { authorId: authorId, commandName: 'nft-portfolio', serverId: serverId } });
+                    await portfolio_nft.update({ actualPage: newPage.toString(), current: JSON.stringify(filtered) }, { where: { authorId: authorId, serverId: serverId, treated: null } });
                     await interaction.update({ embeds: [embed], components: buttons });
 
                 } else if (action === 'sortbyvalue') {
 
 
                     // On récupère les data qui ont été store
-                    const storage = await interactionData.findOne({ where: { authorId: authorId, commandName: 'nft-portfolio', serverId: serverId } })
-                    const portfolio = JSON.parse(storage.dataValues.embed1)
-                    const address = storage.dataValues.walletAddress
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const portfolio = JSON.parse(storage.dataValues.portfolio)
+                    const address = storage.dataValues.address
                     const index = storage.dataValues.pageIndex
                     const current = storage.dataValues.actualPage
 
@@ -332,7 +329,7 @@ module.exports = {
                     const buttons = forSortButtons(action, buttonsD)
 
                     // Pour finir on modifie l'embed ainsi que les data de l'interaction
-                    await interactionData.update({ embed1: JSON.stringify(portfolioByValue), }, { where: { authorId: authorId, commandName: 'nft-portfolio', serverId: serverId } });
+                    await portfolio_nft.update({ portfolio: JSON.stringify(portfolioByValue), current: JSON.stringify(filtered), sort: 'byValue' }, { where: { authorId: authorId, serverId: serverId, treated: null } });
                     await interaction.update({ embeds: [embed], components: buttons });
 
 
@@ -340,9 +337,9 @@ module.exports = {
                 } else if (action === 'sortbyfloor') {
 
                     // On récupère les data qui ont été store
-                    const storage = await interactionData.findOne({ where: { authorId: authorId, commandName: 'nft-portfolio', serverId: serverId } })
-                    const portfolio = JSON.parse(storage.dataValues.embed1)
-                    const address = storage.dataValues.walletAddress
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const portfolio = JSON.parse(storage.dataValues.portfolio)
+                    const address = storage.dataValues.address
                     const index = storage.dataValues.pageIndex
                     const current = storage.dataValues.actualPage
 
@@ -389,7 +386,7 @@ module.exports = {
                     const buttons = forSortButtons(action, buttonsD)
 
                     // Pour finir on modifie l'embed ainsi que les data de l'interaction
-                    await interactionData.update({ embed1: JSON.stringify(portfolioByFloor), }, { where: { authorId: authorId, commandName: 'nft-portfolio', serverId: serverId } });
+                    await portfolio_nft.update({ portfolio: JSON.stringify(portfolioByFloor), current: JSON.stringify(filtered), sort: 'byFloor' }, { where: { authorId: authorId, serverId: serverId, treated: null } });
                     await interaction.update({ embeds: [embed], components: buttons });
 
 
@@ -398,9 +395,9 @@ module.exports = {
 
 
                     // On récupère les data qui ont été store
-                    const storage = await interactionData.findOne({ where: { authorId: authorId, commandName: 'nft-portfolio', serverId: serverId } })
-                    const portfolio = JSON.parse(storage.dataValues.embed1)
-                    const address = storage.dataValues.walletAddress
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const portfolio = JSON.parse(storage.dataValues.portfolio)
+                    const address = storage.dataValues.address
                     const index = storage.dataValues.pageIndex
                     const current = storage.dataValues.actualPage
 
@@ -448,7 +445,7 @@ module.exports = {
 
 
                     // Pour finir on modifie l'embed ainsi que les data de l'interaction
-                    await interactionData.update({ embed1: JSON.stringify(portfolioByABC), }, { where: { authorId: authorId, commandName: 'nft-portfolio', serverId: serverId } });
+                    await portfolio_nft.update({ portfolio: JSON.stringify(portfolioByABC), current: JSON.stringify(filtered), sort: 'byAbc' }, { where: { authorId: authorId, serverId: serverId, treated: null } });
                     await interaction.update({ embeds: [embed], components: buttons });
 
 
@@ -485,19 +482,23 @@ module.exports = {
                             new ButtonBuilder()
                                 .setCustomId('button_nft_portfolio_exec_list')
                                 .setLabel('List')
-                                .setStyle(3),
+                                .setStyle(3)
+                                .setDisabled(true),
                             new ButtonBuilder()
                                 .setCustomId('button_nft_portfolio_exec_bulkList')
                                 .setLabel('Bulk List')
-                                .setStyle(3),
+                                .setStyle(3)
+                                .setDisabled(true),
                             new ButtonBuilder()
                                 .setCustomId('button_nft_portfolio_exec_acceptBid')
                                 .setLabel('Accept Bid')
-                                .setStyle(3),
+                                .setStyle(3)
+                                .setDisabled(true),
                             new ButtonBuilder()
                                 .setCustomId('button_nft_portfolio_exec_acceptBulkBid')
                                 .setLabel('Accept Bulk Bid')
-                                .setStyle(3),
+                                .setStyle(3)
+                                .setDisabled(true),
                             new ButtonBuilder()
                                 .setCustomId('button_nft_portfolio_exec_transfer')
                                 .setLabel('Transfer')
@@ -543,8 +544,8 @@ module.exports = {
                         );
 
                     // On récupère les data qui ont été store
-                    const storage = await interactionData.findOne({ where: { authorId: authorId, commandName: 'nft-portfolio', serverId: serverId } })
-                    const address = storage.dataValues.walletAddress
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const address = storage.dataValues.address
 
                     // On récupère les infos du portfolio
                     const portfolio = await getPortfolio(address)
@@ -610,17 +611,18 @@ module.exports = {
                     await interaction.update({ embeds: [notMember], components: [buttonD, buttonA, buttonB, buttonC] });
 
                     // On update l'interaction
-                    await interactionData.update({
+                    await portfolio_nft.update({
                         authorId: authorId,
                         authorName: authorName,
                         serverId: serverId,
-                        commandName: "nft-portfolio",
-                        interactionId: interaction.id,
-                        walletAddress: address,
-                        embed1: JSON.stringify(portfolio),
+                        address: address,
+                        portfolio: JSON.stringify(portfolio),
+                        current: JSON.stringify(portfolioFiltered),
                         pageIndex: index.toString(),
                         actualPage: "1",
-                    }, { where: { authorId: authorId, commandName: "nft-portfolio", serverId: serverId } })
+                        sort: 'byValue'
+                    }, { where: { authorId: authorId, serverId: serverId, treated: null } })
+
 
 
                 } else if (action === 'tutorial') {
@@ -646,19 +648,6 @@ module.exports = {
 
                     await interaction.reply({ embeds: [notMember], ephemeral: true });
 
-                    // On update l'interaction
-                    await interactionData.update({
-                        authorId: authorId,
-                        authorName: authorName,
-                        serverId: serverId,
-                        commandName: "nft-portfolio",
-                        interactionId: interaction.id,
-                        walletAddress: address,
-                        embed1: JSON.stringify(portfolio),
-                        pageIndex: index.toString(),
-                        actualPage: "1",
-                    }, { where: { authorId: authorId, commandName: "nft-portfolio", serverId: serverId } })
-
 
                 } else if (action === 'collectionView') {
 
@@ -676,6 +665,423 @@ module.exports = {
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
                     await interaction.reply({ embeds: [setfpEmbedNotForYou], ephemeral: true });
+
+                } else if (action === "tokenFirstPage") {
+
+                    // On récupère les data qui ont été store
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const tokens = JSON.parse(storage.dataValues.tokens)
+                    const address = storage.dataValues.address
+                    const index = storage.dataValues.tokenIndex
+                    const current = storage.dataValues.tokenPage
+
+                    // On filtre le tableau
+                    const filtered = tokens.slice(0, 15)
+
+                    const buttons = [formIndexButtonsTokens(1, index)]
+                    let inventory = "ID                                     Rarity\n\n"
+                    let i = 0
+                    let currentButton = new ActionRowBuilder()
+
+                    // On construit le tableau
+                    for (const token of filtered) {
+
+                        // On vérifie que c'est pas le dernier
+                        const isFirst = i === 0 ? true : false
+
+                        // On commence par construire le token
+                        const id = token.tokenId
+                        const rank = token.rarity
+                        const name = token.name
+
+                        const part1 = reduceText(name, 30) + " #" + id
+                        const part2 = rank ? rank : "-"
+
+                        const spaceSize = 45 - (part1.length + part2.toString().length)
+                        let spaceLenght = ""
+                        for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+
+                        inventory += part1 + spaceLenght + part2 + "\n"
+
+                        // En parallèle on construit les bouttons
+                        if (i % 5 === 0 && !isFirst) {
+
+                            // On ajoute le row à la liste des components
+                            buttons.push(currentButton)
+                            // On ajoute un nouveaux bouttons
+                            currentButton = null
+                            currentButton = new ActionRowBuilder()
+                                .addComponents(
+                                    new ButtonBuilder()
+                                        .setCustomId('button_nft_portfolio_infra_tokenSelection@' + id)
+                                        .setLabel(id)
+                                        .setStyle(1)
+                                )
+                        } else {
+
+                            // On ajoute un nouveaux bouttons
+                            currentButton.addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId('button_nft_portfolio_infra_tokenSelection@' + id)
+                                    .setLabel(id)
+                                    .setStyle(1)
+                            )
+                        }
+
+                        // Si c'est le dernier boutton, on pousse
+                        if (i + 1 === filtered.length) {
+                            buttons.push(currentButton)
+                        }
+
+                        i++
+                    }
+
+                    // On récupère la réponse d'origine 
+                    // On modifie le field contenant la table et le page index
+                    let embed = interaction.message.embeds[0].data
+                    embed.fields.find(obj => obj.name === "Inventory:").value = "```" + inventory + "```"
+                    embed.fields.find(obj => obj.name === "Page:").value = "`[1/" + index + "]`"
+
+                    // Pour finir on modifie l'embed ainsi que les data de l'interaction
+                    await portfolio_nft.update({ tokenPage: "1", currentTokens: JSON.stringify(filtered) }, { where: { authorId: authorId, serverId: serverId, treated: null } });
+                    await interaction.update({ embeds: [embed], components: buttons });
+
+                } else if (action === 'tokenLastPage') {
+
+                    // On récupère les data qui ont été store
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const tokens = JSON.parse(storage.dataValues.tokens)
+                    const address = storage.dataValues.address
+                    const index = storage.dataValues.tokenIndex
+                    const current = storage.dataValues.tokenPage
+
+                    // On définit l'interval à récupérer
+                    const itemsPerPage = 15; // Nombre d'objets par page
+                    const firstObject = (index - 1) * itemsPerPage
+                    const lastObject = firstObject + itemsPerPage
+
+                    // On filtre le token
+                    const filtered = tokens.slice(firstObject, lastObject)
+
+                    // On formatte les bouttons
+                    const buttons = [formIndexButtonsTokens(index, index)]
+                    let inventory = "ID                                     Rarity\n\n"
+                    let i = 0
+                    let currentButton = new ActionRowBuilder()
+
+                    // On construit le tableau
+                    for (const token of filtered) {
+
+                        // On vérifie que c'est pas le dernier
+                        const isFirst = i === 0 ? true : false
+
+                        // On commence par construire le token
+                        const id = token.tokenId
+                        const rank = token.rarity
+                        const name = token.name
+
+                        const part1 = reduceText(name, 30) + " #" + id
+                        const part2 = rank ? rank : "-"
+
+                        const spaceSize = 45 - (part1.length + part2.toString().length)
+                        let spaceLenght = ""
+                        for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+
+                        inventory += part1 + spaceLenght + part2 + "\n"
+
+                        // En parallèle on construit les bouttons
+                        if (i % 5 === 0 && !isFirst) {
+
+                            // On ajoute le row à la liste des components
+                            buttons.push(currentButton)
+                            // On ajoute un nouveaux bouttons
+                            currentButton = null
+                            currentButton = new ActionRowBuilder()
+                                .addComponents(
+                                    new ButtonBuilder()
+                                        .setCustomId('button_nft_portfolio_infra_tokenSelection@' + id)
+                                        .setLabel(id)
+                                        .setStyle(1)
+                                )
+                        } else {
+
+                            // On ajoute un nouveaux bouttons
+                            currentButton.addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId('button_nft_portfolio_infra_tokenSelection@' + id)
+                                    .setLabel(id)
+                                    .setStyle(1)
+                            )
+                        }
+
+                        // Si c'est le dernier boutton, on pousse
+                        if (i + 1 === filtered.length) {
+                            buttons.push(currentButton)
+                        }
+
+                        i++
+                    }
+
+                    // On récupère la réponse d'origine 
+                    // On modifie le field contenant la table et le page index
+                    let embed = interaction.message.embeds[0].data
+                    embed.fields.find(obj => obj.name === "Inventory:").value = "```" + inventory + "```"
+                    embed.fields.find(obj => obj.name === "Page:").value = "`[" + index + "/" + index + "]`"
+
+                    // Pour finir on modifie l'embed ainsi que les data de l'interaction
+                    await portfolio_nft.update({ tokenPage: "1", currentTokens: JSON.stringify(filtered) }, { where: { authorId: authorId, serverId: serverId, treated: null } });
+                    await interaction.update({ embeds: [embed], components: buttons });
+
+                } else if (action === 'tokenPreviousPage') {
+
+                    // On récupère les data qui ont été store
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const tokens = JSON.parse(storage.dataValues.tokens)
+                    const address = storage.dataValues.address
+                    const index = storage.dataValues.tokenIndex
+                    const current = storage.dataValues.tokenPage
+
+                    // On définit l'interval à récupérer
+                    const itemsPerPage = 15; // Nombre d'objets par page
+                    const newPage = parseInt(current) - 1
+                    const firstObject = (newPage - 1) * itemsPerPage
+                    const lastObject = firstObject + itemsPerPage
+
+                    // On filtre le token
+                    const filtered = tokens.slice(firstObject, lastObject)
+
+                    // On formatte les bouttons
+                    const buttons = [formIndexButtonsTokens(newPage, index)]
+                    let inventory = "ID                                     Rarity\n\n"
+                    let i = 0
+                    let currentButton = new ActionRowBuilder()
+
+                    // On construit le tableau
+                    for (const token of filtered) {
+
+                        // On vérifie que c'est pas le dernier
+                        const isFirst = i === 0 ? true : false
+
+                        // On commence par construire le token
+                        const id = token.tokenId
+                        const rank = token.rarity
+                        const name = token.name
+
+                        const part1 = reduceText(name, 30) + " #" + id
+                        const part2 = rank ? rank : "-"
+
+                        const spaceSize = 45 - (part1.length + part2.toString().length)
+                        let spaceLenght = ""
+                        for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+
+                        inventory += part1 + spaceLenght + part2 + "\n"
+
+                        // En parallèle on construit les bouttons
+                        if (i % 5 === 0 && !isFirst) {
+
+                            // On ajoute le row à la liste des components
+                            buttons.push(currentButton)
+                            // On ajoute un nouveaux bouttons
+                            currentButton = null
+                            currentButton = new ActionRowBuilder()
+                                .addComponents(
+                                    new ButtonBuilder()
+                                        .setCustomId('button_nft_portfolio_infra_tokenSelection@' + id)
+                                        .setLabel(id)
+                                        .setStyle(1)
+                                )
+                        } else {
+
+                            // On ajoute un nouveaux bouttons
+                            currentButton.addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId('button_nft_portfolio_infra_tokenSelection@' + id)
+                                    .setLabel(id)
+                                    .setStyle(1)
+                            )
+                        }
+
+                        // Si c'est le dernier boutton, on pousse
+                        if (i + 1 === filtered.length) {
+                            buttons.push(currentButton)
+                        }
+
+                        i++
+                    }
+
+                    // On récupère la réponse d'origine 
+                    // On modifie le field contenant la table et le page index
+                    let embed = interaction.message.embeds[0].data
+                    embed.fields.find(obj => obj.name === "Inventory:").value = "```" + inventory + "```"
+                    embed.fields.find(obj => obj.name === "Page:").value = "`[" + newPage + "/" + index + "]`"
+
+                    // Pour finir on modifie l'embed ainsi que les data de l'interaction
+                    await portfolio_nft.update({ tokenPage: newPage.toString(), currentTokens: JSON.stringify(filtered) }, { where: { authorId: authorId, serverId: serverId, treated: null } });
+                    await interaction.update({ embeds: [embed], components: buttons });
+
+                } else if (action === 'tokenNextPage') {
+
+                    // On récupère les data qui ont été store
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const tokens = JSON.parse(storage.dataValues.tokens)
+                    const address = storage.dataValues.address
+                    const index = storage.dataValues.tokenIndex
+                    const current = storage.dataValues.tokenPage
+
+                    // On définit l'interval à récupérer
+                    const itemsPerPage = 15; // Nombre d'objets par page
+                    const newPage = parseInt(current) + 1
+                    const firstObject = (newPage - 1) * itemsPerPage
+                    const lastObject = firstObject + itemsPerPage
+
+                    // On filtre le token
+                    const filtered = tokens.slice(firstObject, lastObject)
+
+                    // On formatte les bouttons
+                    const buttons = [formIndexButtonsTokens(newPage, index)]
+                    let inventory = "ID                                     Rarity\n\n"
+                    let i = 0
+                    let currentButton = new ActionRowBuilder()
+
+                    // On construit le tableau
+                    for (const token of filtered) {
+
+                        // On vérifie que c'est pas le dernier
+                        const isFirst = i === 0 ? true : false
+
+                        // On commence par construire le token
+                        const id = token.tokenId
+                        const rank = token.rarity
+                        const name = token.name
+
+                        const part1 = reduceText(name, 30) + " #" + id
+                        const part2 = rank ? rank : "-"
+
+                        const spaceSize = 45 - (part1.length + part2.toString().length)
+                        let spaceLenght = ""
+                        for (let i = 0; i < spaceSize; i++) { spaceLenght += " " }
+
+                        inventory += part1 + spaceLenght + part2 + "\n"
+
+                        // En parallèle on construit les bouttons
+                        if (i % 5 === 0 && !isFirst) {
+
+                            // On ajoute le row à la liste des components
+                            buttons.push(currentButton)
+                            // On ajoute un nouveaux bouttons
+                            currentButton = null
+                            currentButton = new ActionRowBuilder()
+                                .addComponents(
+                                    new ButtonBuilder()
+                                        .setCustomId('button_nft_portfolio_infra_tokenSelection@' + id)
+                                        .setLabel(id)
+                                        .setStyle(1)
+                                )
+                        } else {
+
+                            // On ajoute un nouveaux bouttons
+                            currentButton.addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId('button_nft_portfolio_infra_tokenSelection@' + id)
+                                    .setLabel(id)
+                                    .setStyle(1)
+                            )
+                        }
+
+                        // Si c'est le dernier boutton, on pousse
+                        if (i + 1 === filtered.length) {
+                            buttons.push(currentButton)
+                        }
+
+                        i++
+                    }
+
+                    // On récupère la réponse d'origine 
+                    // On modifie le field contenant la table et le page index
+                    let embed = interaction.message.embeds[0].data
+                    embed.fields.find(obj => obj.name === "Inventory:").value = "```" + inventory + "```"
+                    embed.fields.find(obj => obj.name === "Page:").value = "`[" + newPage + "/" + index + "]`"
+
+                    // Pour finir on modifie l'embed ainsi que les data de l'interaction
+                    await portfolio_nft.update({ tokenPage: newPage.toString(), currentTokens: JSON.stringify(filtered) }, { where: { authorId: authorId, serverId: serverId, treated: null } });
+                    await interaction.update({ embeds: [embed], components: buttons });
+
+                } else if (action === 'tokenSelection') {
+
+                    // On commence par récupérer le token
+                    const matchB = customId.match(/@(\d+)?/);
+                    const token = matchB[1] || null
+
+                    // On récupère les infos de la DB, et on les modifie
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const transaction = JSON.parse(storage.dataValues.transaction)
+
+                    // on enregistre le token
+                    transaction.tokenId = token
+
+                    // On update l'entrée dans la database
+                    await portfolio_nft.update({
+                        transaction: JSON.stringify(transaction)
+                    }, { where: { authorId: authorId, serverId: serverId, treated: null } })
+
+
+
+                    const modal = new ModalBuilder()
+                        .setCustomId('modal_portfolio_nft_infra_transfer')
+                        .setTitle('Transfer an NFT');
+
+                    // Add components to modal
+
+                    // Create the text input components
+                    const fieldA = new TextInputBuilder()
+                        .setCustomId('modal_portfolio_nft_infra_transferR1')
+                        .setLabel("Receiver address:")
+                        .setPlaceholder("0x...")
+                        .setStyle(TextInputStyle.Short)
+                        .setMinLength(42)
+                        .setMaxLength(42)
+                        .setRequired(true)
+
+
+                    // An action row only holds one text input,
+                    // so you need one action row per text input.
+                    const rowA = new ActionRowBuilder().addComponents(fieldA);
+
+                    // Add inputs to the modal
+                    modal.addComponents(rowA)
+
+                    // Show the modal to the user
+                    await interaction.showModal(modal);
+
+
+                } else if (action === 'return') {
+
+                    // On commence par récupérer le token
+                    const matchB = customId.match(/@(.+)?/);
+                    const id = matchB[1] || null
+
+                    if (id === 'tokenSelector') {
+
+                        // On récupère les infos de la DB, et on les modifie
+                        const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                        const current = JSON.parse(storage.dataValues.current)
+                        const action = storage.dataValues.action
+
+                        // On construit la drop down list
+                        const dropdown = createDropdownList(current, action)
+
+                        // On construit l'embed
+                        const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Transfer an NFT")
+                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                            .setDescription("To begin, select the collection you want to list from the drop-down list below.\n\nThe drop-down list only contains collections that are currently displayed on the main dashboard.")
+                            .setTimestamp()
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                        await interaction.update({ embeds: [setfpEmbedNotForYou], components: [dropdown], ephemeral: true });
+
+                    }
+
 
                 }
 
@@ -821,19 +1227,23 @@ function formIndexButtons(currentPage, totalPages, buttonA) {
             new ButtonBuilder()
                 .setCustomId('button_nft_portfolio_exec_list')
                 .setLabel('List')
-                .setStyle(3),
+                .setStyle(3)
+                .setDisabled(true),
             new ButtonBuilder()
                 .setCustomId('button_nft_portfolio_exec_bulkList')
                 .setLabel('Bulk List')
-                .setStyle(3),
+                .setStyle(3)
+                .setDisabled(true),
             new ButtonBuilder()
                 .setCustomId('button_nft_portfolio_exec_acceptBid')
                 .setLabel('Accept Bid')
-                .setStyle(3),
+                .setStyle(3)
+                .setDisabled(true),
             new ButtonBuilder()
                 .setCustomId('button_nft_portfolio_exec_acceptBulkBid')
                 .setLabel('Accept Bulk Bid')
-                .setStyle(3),
+                .setStyle(3)
+                .setDisabled(true),
             new ButtonBuilder()
                 .setCustomId('button_nft_portfolio_exec_transfer')
                 .setLabel('Transfer')
@@ -902,19 +1312,23 @@ function forSortButtons(sort, buttonD) {
             new ButtonBuilder()
                 .setCustomId('button_nft_portfolio_exec_list')
                 .setLabel('List')
-                .setStyle(3),
+                .setStyle(3)
+                .setDisabled(true),
             new ButtonBuilder()
                 .setCustomId('button_nft_portfolio_exec_bulkList')
                 .setLabel('Bulk List')
-                .setStyle(3),
+                .setStyle(3)
+                .setDisabled(true),
             new ButtonBuilder()
                 .setCustomId('button_nft_portfolio_exec_acceptBid')
                 .setLabel('Accept Bid')
-                .setStyle(3),
+                .setStyle(3)
+                .setDisabled(true),
             new ButtonBuilder()
                 .setCustomId('button_nft_portfolio_exec_acceptBulkBid')
                 .setLabel('Accept Bulk Bid')
-                .setStyle(3),
+                .setStyle(3)
+                .setDisabled(true),
             new ButtonBuilder()
                 .setCustomId('button_nft_portfolio_exec_transfer')
                 .setLabel('Transfer')
@@ -940,4 +1354,68 @@ function forSortButtons(sort, buttonD) {
     // Retourne un tableau de toutes les rangées de boutons
     return [buttonD, buttonA, buttonB, buttonC];
 
+}
+
+function formIndexButtonsTokens(currentPage, totalPages) {
+    // Déterminez quel bouton doit être désactivé
+    const isFirstPage = parseInt(currentPage) === 1;
+    const isLastPage = parseInt(currentPage) === parseInt(totalPages)
+
+    // Boutons
+    const buttonD = new ActionRowBuilder()
+        .addComponents(
+            new ButtonBuilder()
+                .setCustomId('button_nft_portfolio_infra_tokenFirstPage')
+                .setLabel('First page')
+                .setStyle(2)
+                .setDisabled(isFirstPage),
+            new ButtonBuilder()
+                .setCustomId('button_nft_portfolio_infra_tokenPreviousPage')
+                .setLabel('Previous page')
+                .setStyle(2)
+                .setDisabled(isFirstPage),
+            new ButtonBuilder()
+                .setCustomId('button_nft_portfolio_infra_tokenNextPage')
+                .setLabel('Next page')
+                .setStyle(2)
+                .setDisabled(isLastPage),
+            new ButtonBuilder()
+                .setCustomId('button_nft_portfolio_infra_tokenLastPage')
+                .setLabel('Last page')
+                .setStyle(2)
+                .setDisabled(isLastPage),
+        );
+
+
+    // Retourne un tableau de toutes les rangées de boutons
+    return buttonD;
+}
+
+
+function createDropdownList(collectionArray, action) {
+
+    function formatWallet(input) {
+        return input.length > 35 ? `${input.substring(0, 5)}…${input.substring(input.length - 4)}` : input;
+    }
+
+    const selectMenuBuilder = new StringSelectMenuBuilder()
+        .setCustomId('selector_portfolio_nft_exec_' + action)  // Changez cela en l'ID que vous préférez
+        .setPlaceholder('Select a collection to list');
+
+    collectionArray.forEach(coll => {
+        const option = new StringSelectMenuOptionBuilder()
+            .setValue(coll.contract)  // Utilisez le contract comme valeur
+            .setLabel(coll.name)  // Utilisez le nom comme libellé
+            .setDescription(`CA: ${formatWallet(coll.contract)} | Floor: ${coll.floor} | Held: ${coll.owned}`)
+        // .setEmoji('📜')  // Facultatif: ajoutez une emoji
+        //.setDefault(collection.owned === '1')  // Facultatif: sélectionnez par défaut les collections possédées
+        // .build();
+
+        selectMenuBuilder.addOptions(option);
+    });
+
+    const actionRow = new ActionRowBuilder()
+        .addComponents(selectMenuBuilder);
+
+    return actionRow;
 }

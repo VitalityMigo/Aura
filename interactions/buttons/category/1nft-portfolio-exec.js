@@ -10,16 +10,19 @@
  */
 
 
-const { ButtonInteraction } = require('discord.js');
+const { ButtonInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('discord.js');
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder } = require("discord.js");
-const { accessSql, profileData, adminsql, reportsql, sequelize, interactionData } = require('../../../events/database');
+const { accessSql, profileData, adminsql, reportsql, portfolio_nft, interactionData } = require('../../../events/database');
 const moment = require('moment');
 
 
 // On importe les fonctions importantes
-const { getPortfolio } = require("../../../functions/1nft-utils")
-const reduceText = require("../../../functions/reducetext")
+const addTimeount = require("../../../functions/addtimeout")
+const decrypt = require('../../../functions/decrypt')
 
+// On importe les fonctions utils NFT trading
+const { signTransaction } = require("../../../functions/1nft-utils")
+const chainId = 1
 
 module.exports = {
     id: 'button_nft_portfolio_exec_',
@@ -33,6 +36,7 @@ module.exports = {
         let serverId = interaction.member.guild.id
         let botId = interaction.applicationId
 
+
         try {
 
             console.log("Initialization: executed ✅")
@@ -45,82 +49,373 @@ module.exports = {
 
                 const action = match[1];
 
+                // On defer la reply si c'est pas cancel
+                if (action !== 'cancel' && action !== 'confirm') {
+                    await interaction.deferReply({ ephemeral: true })
+                }
+
 
                 if (action === "list") {
 
-                    await interaction.deferReply({ ephemeral: true })
 
+                    // On récupère les data qui ont été store
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const current = JSON.parse(storage.dataValues.current)
+
+
+                    // On construit la drop down list
+                    const dropdown = createDropdownList(current, action)
+
+                    // On construit l'embed
                     const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("NFT Trading")
+                        .setTitle("List an NFT")
                         .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .setDescription("This feature isn't available yet. Stay tuned, you will be able to use it soon.")
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                        .setDescription("To begin, select the collection you want to list from the drop-down list below.\n\nThe drop-down list only contains collections that are currently displayed on the main dashboard.")
                         .setTimestamp()
                         .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                    await interaction.editReply({ embeds: [setfpEmbedNotForYou]});
+                    await interaction.editReply({ embeds: [setfpEmbedNotForYou], components: [dropdown], ephemeral: true });
 
-                  
-                } if (action === "bulkList") {
+
+                } else if (action === "bulkList") {
+
+                    // On récupère les data qui ont été store
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const current = JSON.parse(storage.dataValues.current)
+
+
+                    // On construit la drop down list
+                    const dropdown = createDropdownList(current, action)
+
+                    // On construit l'embed
+                    const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Bulk List NFTs")
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .setDescription("To begin, select the collection you want to list from the drop-down list below.\n\nThe drop-down list only contains collections that are currently displayed on the main dashboard.")
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                    await interaction.editReply({ embeds: [setfpEmbedNotForYou], components: [dropdown], ephemeral: true });
+
+
+                } else if (action === "acceptBid") {
+
+                    // On récupère les data qui ont été store
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const current = JSON.parse(storage.dataValues.current)
+
+
+                    // On construit la drop down list
+                    const dropdown = createDropdownList(current, action)
+
+                    // On construit l'embed
+                    const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Accept Bid")
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .setDescription("To begin, select the collection you want to list from the drop-down list below.\n\nThe drop-down list only contains collections that are currently displayed on the main dashboard.")
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                    await interaction.editReply({ embeds: [setfpEmbedNotForYou], components: [dropdown], ephemeral: true });
+
+
+                } else if (action === "acceptBulkBid") {
+
+                    // On récupère les data qui ont été store
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const current = JSON.parse(storage.dataValues.current)
+
+
+                    // On construit la drop down list
+                    const dropdown = createDropdownList(current, action)
+
+                    // On construit l'embed
+                    const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Accept Bulk Bids")
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .setDescription("To begin, select the collection you want to list from the drop-down list below.\n\nThe drop-down list only contains collections that are currently displayed on the main dashboard.")
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                    await interaction.editReply({ embeds: [setfpEmbedNotForYou], components: [dropdown], ephemeral: true });
+
+
+                } else if (action === "transfer") {
+
+                    // On récupère les data qui ont été store
+                    const storage = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const current = JSON.parse(storage.dataValues.current)
+
+                    // On construit la drop down list
+                    const dropdown = createDropdownList(current, action)
+
+                    // On construit l'embed
+                    const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Transfer an NFT")
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .setDescription("To begin, select the collection you want to list from the drop-down list below.\n\nThe drop-down list only contains collections that are currently displayed on the main dashboard.")
+                        .setTimestamp()
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                    await interaction.editReply({ embeds: [setfpEmbedNotForYou], components: [dropdown], ephemeral: true });
+
+
+
+                } else if (action === "cancel") {
+
+
+                    const gasTrackerEmbed = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Deleting Task")
+                        .setDescription(">>> Displaying the simulated transaction data")
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .setTimestamp()
+                        .addFields(
+                            { name: " ", value: " ", inline: false },
+                            { name: "Deleting Task <a:AuraLoading:1134068847616458792>", value: " ", inline: false },
+
+                        )
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+
+                    await interaction.update({ embeds: [gasTrackerEmbed], components: [], ephemeral: true });
+
+
+
+                    await portfolio_nft.update({ settings: null }, { where: { authorId: authorId, serverId: serverId, treated: null } });
+
+                    await addTimeount(0.5)
+
+
+                    const gasTrackerEmbed2 = new EmbedBuilder().setColor("#060A8F")
+                        .setTitle("Task Cancelled")
+                        .setDescription(">>> Displaying the simulated transaction data")
+                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                        .setTimestamp()
+                        .addFields(
+                            { name: " ", value: " ", inline: false },
+                            { name: "Task Cancelled ✅", value: "Your task has been successfully cancelled , you can recreate a new one from the various coin panels", inline: false },
+
+                        )
+                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+
+
+                    await interaction.editReply({ embeds: [gasTrackerEmbed2], components: [], ephemeral: true });
+
+
+                } else if (action === "confirm") {
+
+                    // On récupère les data qui ont été store
+                    const session = await portfolio_nft.findOne({ where: { authorId: authorId, serverId: serverId, treated: null } })
+                    const transaction = JSON.parse(session.dataValues.transaction)
+                    const settings = JSON.parse(session.dataValues.settings)
+                    const value = session.dataValues.value
+                    const action = session.dataValues.action
+
+
+                    // On vérifie quelle action est executé
+                    // et on redirige le code en fonction
+                    if (action === 'transfer') {
+
+                        await interaction.deferUpdate()
+
+                        // On envoi la première update
+                        const embed1 = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Transaction Pending <a:AuraLoading:1134068847616458792>")
+                            .setDescription(">>> Displaying the transaction execution")
+                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                            .setTimestamp()
+                            .addFields(
+                                { name: " ", value: " ", inline: false },
+                                { name: "Action", value: "`📤 Transfer`", inline: false },
+                                { name: "Target", value: "`" + transaction.name + "`", inline: true },
+                                { name: "Token ID", value: "`" + transaction.tokenId + "`", inline: true },
+                                { name: " ", value: " ", inline: false },
+                                { name: "Transaction hash", value: "<a:AuraLoading:1134068847616458792>", inline: false },
+
+                            )
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                        await interaction.editReply({ embeds: [embed1], ephemeral: true });
+
+
+                        // On récupère la clé privé
+                        const privateKey = decrypt(settings.privateKey)
+
+                        // On récupère les datas de la transaction
+                        const contract = transaction.contract
+                        const data = transaction.data
+                        const gasLimit = Math.ceil(transaction.gasUsed * 1.1)
+                        const gasPrice = Math.ceil(transaction.gasPrice * 1.1)
+
+
+                        // On envoi la première update
+                        const embed2 = new EmbedBuilder().setColor("#060A8F")
+                            .setTitle("Transaction Pending <a:AuraLoading:1134068847616458792>")
+                            .setDescription(">>> Displaying the transaction execution")
+                            .setAuthor({ name: authorName, iconURL: userAvatar })
+                            .setTimestamp()
+                            .addFields(
+                                { name: " ", value: " ", inline: false },
+                                { name: "Action", value: "`📤 Transfer`", inline: false },
+                                { name: "Target", value: "`" + transaction.name + "`", inline: true },
+                                { name: "Token ID", value: "`" + transaction.tokenId + "`", inline: true },
+                                { name: " ", value: "**Transfering** `1` **token for** `" + transaction.expected + "Ξ`", inline: false },
+                                { name: "Transaction hash", value: "<a:AuraLoading:1134068847616458792>", inline: false },
+
+                            )
+                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                        await interaction.editReply({ embeds: [embed2], ephemeral: true });
+
+
+                        // On construit les params de la transaction
+                        // grâce aux infos récupéré de l'embed
+                        const txnInfos = {
+                            gasLimit: gasLimit,
+                            gasPrice: gasPrice,
+                            to: contract,
+                            value: 0,
+                            data: data,
+                            chainId: chainId,
+
+                        };
+
+                        const receipt = await signTransaction(txnInfos, privateKey)
+
+                        // Faire la logique qui permet d'interpréter et de renvoyer le résultat de la transaction.
+                        // Peut-être qu'il faut déjà envoyé un embed de loading avant dans le code, à vérifier
+                        // en regardant ce qu'on a fait dans les fichier de trading de coin.
+
                     
-                    await interaction.deferReply({ ephemeral: true })
 
-                    const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("NFT Trading")
-                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .setDescription("This feature isn't available yet. Stay tuned, you will be able to use it soon.")
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                        if (receipt && receipt.status == true) {
 
-                    await interaction.editReply({ embeds: [setfpEmbedNotForYou]});
+                            // Transaction signé et exécuter avec succès
+                            // Renvoi les informations avec hash de la txn réussi
 
-                  
-                } if (action === "acceptBid") {
-                    
-                    await interaction.deferReply({ ephemeral: true })
+                            const gasConfirm = new EmbedBuilder().setColor("#060A8F")
+                                .setTitle("Transaction Confirmed ✅")
+                                .setDescription(">>> Displaying the transaction execution")
+                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                .setTimestamp()
+                                .addFields(
+                                    { name: " ", value: " ", inline: false },
+                                    { name: "Action", value: "`📤 Transfer`", inline: false },
+                                    { name: "Target", value: "`" + transaction.name + "`", inline: true },
+                                    { name: "Token ID", value: "`" + transaction.tokenId + "`", inline: true },
+                                    { name: " ", value: " ", inline: false },
+                                    { name: " ", value: "**Transfered** `1` **token for** `" + parseFloat(receipt.gas_fees).toFixed(5) + "Ξ`", inline: false },
+                                    { name: " ", value: " ", inline: false },
+                                    { name: "Transaction hash:", value: "```" + receipt.hash + "```∟ Transaction details [here](https://etherscan.io/tx/" + receipt.hash + ")", inline: false },
 
-                    const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("NFT Trading")
-                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .setDescription("This feature isn't available yet. Stay tuned, you will be able to use it soon.")
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                )
+                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                    await interaction.editReply({ embeds: [setfpEmbedNotForYou]});
+                            await interaction.editReply({ embeds: [gasConfirm], ephemeral: true });
 
-                  
-                } if (action === "acceptBulkBid") {
-                    
-                    await interaction.deferReply({ ephemeral: true })
 
-                    const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("NFT Trading")
-                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .setDescription("This feature isn't available yet. Stay tuned, you will be able to use it soon.")
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-                    await interaction.editReply({ embeds: [setfpEmbedNotForYou]});
 
-                  
-                } if (action === "transfer") {
-                    
-                    await interaction.deferReply({ ephemeral: true })
+                        } else {
 
-                    const setfpEmbedNotForYou = new EmbedBuilder().setColor("#060A8F")
-                        .setTitle("NFT Trading")
-                        .setAuthor({ name: authorName, iconURL: userAvatar })
-                        .setDescription("This feature isn't available yet. Stay tuned, you will be able to use it soon.")
-                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                        .setTimestamp()
-                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                            // Erreur dans la transaction
+                            // Erreur détaillé plus bas entre failed txn et failed execution
 
-                    await interaction.editReply({ embeds: [setfpEmbedNotForYou]});
+                            if (!receipt) {
 
-                }
+                                const gasConfirm = new EmbedBuilder().setColor("#060A8F")
+                                    .setTitle("Transaction Failed ❌")
+                                    .setDescription(">>> Displaying the transaction execution")
+                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    .setTimestamp()
+                                    .addFields(
+                                        { name: " ", value: " ", inline: false },
+                                        { name: "Action", value: "`📤 Transfer`", inline: false },
+                                        { name: "Target", value: "`" + transaction.name + "`", inline: true },
+                                        { name: "Token ID", value: "`" + transaction.tokenId + "`", inline: true },
+                                        { name: " ", value: " ", inline: false },
+                                        { name: " ", value: "**Failed to transfer** `1` **token for** `" + transaction.expected + "Ξ`", inline: false },
+                                        { name: " ", value: " ", inline: false },
+                                        { name: "Transaction error:", value: "```The transaction failed.\n\nThe wallet signature didn't went through       ```", inline: false },
+
+                                    )
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                await interaction.editReply({ embeds: [gasConfirm], ephemeral: true });
+
+
+                            } else if (receipt.status == false) {
+
+                                // Transaction signé et exécuter mais pas passé
+                                // Renvoi les informations avec hash de la txn fail
+
+                                const gasConfirm = new EmbedBuilder().setColor("#060A8F")
+                                    .setTitle("Transaction Failed ❌")
+                                    .setDescription(">>> Displaying the transaction execution")
+                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    .setTimestamp()
+                                    .addFields(
+                                        { name: " ", value: " ", inline: false },
+                                        { name: "Action", value: "`📤 Transfer`", inline: false },
+                                        { name: "Target", value: "`" + transaction.name + "`", inline: true },
+                                        { name: "Token ID", value: "`" + transaction.tokenId + "`", inline: true },
+                                        { name: " ", value: " ", inline: false },
+                                        { name: " ", value: "**Failed to transfer** `1` **token for** `" + transaction.expected + "Ξ`", inline: false },
+                                        { name: " ", value: " ", inline: false },
+                                        { name: "Transaction hash:", value: "```" + receipt.hash + "```∟ Transaction details [here](https://etherscan.io/tx/" + receipt.hash + ")", inline: false },
+
+                                    )
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                await interaction.editReply({ embeds: [gasConfirm], ephemeral: true });
+
+
+                            } else {
+
+                                // Erreur catch lors de la signature ou de l'execution
+                                // Renvoi une erreur avec message comme pour simulation
+
+                                const gasConfirm = new EmbedBuilder().setColor("#060A8F")
+                                    .setTitle("Transaction Failed ❌")
+                                    .setDescription(">>> Displaying the transaction execution")
+                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                    .setTimestamp()
+                                    .addFields(
+                                        { name: " ", value: " ", inline: false },
+                                        { name: "Action", value: "`📤 Transfer`", inline: false },
+                                        { name: "Target", value: "`" + transaction.name + "`", inline: true },
+                                        { name: "Token ID", value: "`" + transaction.tokenId + "`", inline: true },
+                                        { name: " ", value: " ", inline: false },
+                                        { name: " ", value: "**Failed to transfer** `1` **token for** `" + transaction.expected + "Ξ`", inline: false },
+                                        { name: " ", value: " ", inline: false },
+                                        { name: "Transaction error:", value: "```The transaction failed.\n\n" + receipt.message + "       ```", inline: false },
+
+                                    )
+                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                await interaction.editReply({ embeds: [gasConfirm], ephemeral: true });
+
+                            }
+                        }
+
+
+                    } else {
+                        // On rajoute ici tous les autres, à la place du else
+                        // pour crée un arbre complet
+
+                        console.log("Not available yet, only transfer...")
+
+                    }
+
+
+
+                } 
 
             } else {
 
@@ -227,160 +522,30 @@ module.exports = {
 };
 
 
+function createDropdownList(collectionArray, action) {
 
-function formIndexButtons(currentPage, totalPages, buttonA) {
-    // Déterminez quel bouton doit être désactivé
-    const isFirstPage = parseInt(currentPage) === 1;
-    const isLastPage = parseInt(currentPage) === parseInt(totalPages)
+    function formatWallet(input) {
+        return input.length > 35 ? `${input.substring(0, 5)}…${input.substring(input.length - 4)}` : input;
+    }
 
-    // Boutons
-    const buttonD = new ActionRowBuilder()
-        .addComponents(
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_infra_firstPage')
-                .setLabel('First page')
-                .setStyle(2)
-                .setDisabled(isFirstPage),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_infra_previousPage')
-                .setLabel('Previous page')
-                .setStyle(2)
-                .setDisabled(isFirstPage),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_infra_nextPage')
-                .setLabel('Next page')
-                .setStyle(2)
-                .setDisabled(isLastPage),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_infra_lastPage')
-                .setLabel('Last page')
-                .setStyle(2)
-                .setDisabled(isLastPage),
-        );
+    const selectMenuBuilder = new StringSelectMenuBuilder()
+        .setCustomId('selector_portfolio_nft_exec_' + action)  // Changez cela en l'ID que vous préférez
+        .setPlaceholder('Select a collection to list');
 
+    collectionArray.forEach(coll => {
+        const option = new StringSelectMenuOptionBuilder()
+            .setValue(coll.contract)  // Utilisez le contract comme valeur
+            .setLabel(coll.name)  // Utilisez le nom comme libellé
+            .setDescription(`CA: ${formatWallet(coll.contract)} | Floor: ${coll.floor} | Held: ${coll.owned}`)
+        // .setEmoji('📜')  // Facultatif: ajoutez une emoji
+        //.setDefault(collection.owned === '1')  // Facultatif: sélectionnez par défaut les collections possédées
+        // .build();
 
-    const buttonB = new ActionRowBuilder()
-        .addComponents(
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_exec_list')
-                .setLabel('List')
-                .setStyle(3),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_exec_bulkList')
-                .setLabel('Bulk List')
-                .setStyle(3),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_exec_acceptBid')
-                .setLabel('Accept Bid')
-                .setStyle(3),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_exec_acceptBulkBid')
-                .setLabel('Accept Bulk Bid')
-                .setStyle(3),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_exec_transfer')
-                .setLabel('Transfer')
-                .setStyle(3),
-        );
+        selectMenuBuilder.addOptions(option);
+    });
 
-    const buttonC = new ActionRowBuilder()
-        .addComponents(
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_infra_refresh')
-                .setLabel('🔁 Refresh')
-                .setStyle(1),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_infra_tutorial')
-                .setLabel('📑 Tutorial')
-                .setStyle(1),
-            new ButtonBuilder()
-                .setCustomId('button_nft_tradepanel_setup')
-                .setLabel('💻 Setup')
-                .setStyle(1),
-        );
+    const actionRow = new ActionRowBuilder()
+        .addComponents(selectMenuBuilder);
 
-    // Retourne un tableau de toutes les rangées de boutons
-    return [buttonD, buttonA, buttonB, buttonC];
-}
-
-function forSortButtons(sort, buttonD) {
-
-    let byABC = 2
-    let byFloor = 2
-    let byValue = 2
-
-    if (sort === 'sortbyabc') { byABC = 1 }
-    else if (sort === 'sortbyfloor') { byFloor = 1 }
-    else if (sort === 'sortbyvalue') { byValue = 1 }
-
-
-    // Bouttons
-    const buttonA = new ActionRowBuilder()
-        .addComponents(
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_infra_collectionView')
-                .setLabel('Global View')
-                .setStyle(1),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_infra_tokenView')
-                .setLabel('Token View')
-                .setStyle(2),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_infra_sortbyvalue')
-                .setLabel('Sort by value')
-                .setStyle(byValue),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_infra_sortbyfloor')
-                .setLabel('Sort by floor')
-                .setStyle(byFloor),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_infra_sortbyabc')
-                .setLabel('Sort by abc')
-                .setStyle(byABC),
-        );
-
-
-    const buttonB = new ActionRowBuilder()
-        .addComponents(
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_exec_list')
-                .setLabel('List')
-                .setStyle(3),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_exec_bulkList')
-                .setLabel('Bulk List')
-                .setStyle(3),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_exec_acceptBid')
-                .setLabel('Accept Bid')
-                .setStyle(3),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_exec_acceptBulkBid')
-                .setLabel('Accept Bulk Bid')
-                .setStyle(3),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_exec_transfer')
-                .setLabel('Transfer')
-                .setStyle(3),
-        );
-
-    const buttonC = new ActionRowBuilder()
-        .addComponents(
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_infra_refresh')
-                .setLabel('🔁 Refresh')
-                .setStyle(1),
-            new ButtonBuilder()
-                .setCustomId('button_nft_portfolio_infra_tutorial')
-                .setLabel('📑 Tutorial')
-                .setStyle(1),
-            new ButtonBuilder()
-                .setCustomId('button_nft_tradepanel_setup')
-                .setLabel('💻 Setup')
-                .setStyle(1),
-        );
-
-    // Retourne un tableau de toutes les rangées de boutons
-    return [buttonD, buttonA, buttonB, buttonC];
-
+    return actionRow;
 }

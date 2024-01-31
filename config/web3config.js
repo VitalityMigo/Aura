@@ -17,6 +17,7 @@ const nftgoApiKey = process.env.nftgoApiKey
 const quicknodebaseApiKey = process.env.quicknodebaseApiKey
 const openseaApiKey = process.env.openseaApiKey
 const bestinslotApiKey = process.env.bestinslotApiKey
+const chainbaseApiKey = process.env.chainbaseApiKey
 
 
 // On appel web3.js
@@ -89,6 +90,11 @@ const nftgoHead = {
   "Host": "data-api.nftgo.io"
 }
 
+const chainbaseHead = {
+  "Accept": "application/json",
+  "x-api-key": chainbaseApiKey,
+}
+
 const openseaHead = {
   'X-Api-Key': openseaApiKey
 };
@@ -132,6 +138,7 @@ module.exports = {
   nftGoB,
   nftgoHead,
   openseaHead,
+  chainbaseHead,
   bestinslot,
   sol,
 };

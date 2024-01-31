@@ -1440,6 +1440,78 @@ const tracker_nft = sequelize.define('tracker_nft', {
 
 });
 
+
+//Alert up
+const portfolio_nft = sequelize.define('portfolio_nft', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    serverId: {
+        type: Sequelize.STRING,
+    },
+    address: {
+        type: Sequelize.STRING,
+    },
+    portfolio: {
+        type: Sequelize.STRING,
+    },
+    current: {
+        type: Sequelize.STRING,
+    },
+    tokens: {
+        type: Sequelize.STRING,
+    },
+    currentTokens: {
+        type: Sequelize.STRING,
+    },
+    action: {
+        type: Sequelize.STRING,
+    },
+    value: {
+        type: Sequelize.REAL,
+    },
+    settings: {
+        type: Sequelize.STRING,
+    },
+    transaction: {
+        type: Sequelize.STRING,
+    },
+    simulation: {
+        type: Sequelize.STRING,
+    },
+    txn: {
+        type: Sequelize.STRING,
+    },
+    treated: {
+        type: Sequelize.STRING,
+    },
+    actualPage: {
+        type: Sequelize.STRING,
+    },
+    pageIndex: {
+        type: Sequelize.STRING,
+    },
+    tokenPage: {
+        type: Sequelize.STRING,
+    },
+    tokenIndex: {
+        type: Sequelize.STRING,
+    },
+    sort: {
+        type: Sequelize.STRING,
+    },
+});
+
 //Synching the tables
 
 accessSql.sync();
@@ -1473,6 +1545,7 @@ manager_coin.sync()
 tracker_coin.sync()
 infra_nft.sync()
 tracker_nft.sync()
+portfolio_nft.sync()
 
 //Export the tables informations
 module.exports = {
@@ -1508,6 +1581,7 @@ module.exports = {
     tracker_coin,
     infra_nft,
     tracker_nft,
+    portfolio_nft,
     Op,
 }
 

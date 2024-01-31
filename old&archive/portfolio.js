@@ -6,13 +6,13 @@
 
 
 const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, SlashCommandBuilder } = require("discord.js");
-const { profileData, accessSql, interactionData, wallets, apimonitorsql, adminsql, reportsql, usersql, sequelize } = require('../../../events/database');
+const { profileData, accessSql, interactionData, wallets, apimonitorsql, adminsql, reportsql, usersql, sequelize } = require('../events/database');
 const moment = require('moment');
-const reduceText = require("../../../functions/reducetext")
+const reduceText = require("../functions/reducetext")
 const axios = require('axios')
 
 // Param d'infrastructure
-const { authPrivacy, communityInfos } = require("../../../functions/infra-utils")
+const { authPrivacy, communityInfos } = require("../functions/infra-utils")
 
 
 //Récupérer les clefs API
@@ -20,11 +20,11 @@ const dotenv = require("dotenv")
 dotenv.config()
 const etherscanApiKey = process.env.etherscanApiKey
 
-const { getEthPrice } = require("../../../config/web3data")
+const { getEthPrice } = require("../config/web3data")
 
 
 // On récupère les nodes et API
-const { web3CloudflarePublic, magiceden, nftGoB, reservoirE } = require("../../../config/web3config")
+const { web3CloudflarePublic, magiceden, nftGoB, reservoirE } = require("../config/web3config")
 
 
 function isValidEthereumAddress(address) {
@@ -1081,7 +1081,7 @@ module.exports = {
 
                 console.log("//////////\n\nDetails de l'erreur :\n\n" + error.stack + "\n\n//////////")
 
-                const reduceText = require("../../../functions/reducetext")
+                const reduceText = require("../functions/reducetext")
                 const roleTag = "1121510423687090186"
 
 

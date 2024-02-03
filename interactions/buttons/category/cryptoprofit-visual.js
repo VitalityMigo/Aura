@@ -789,8 +789,8 @@ module.exports = {
 
           // Profit potentiel
           // ON commence par formatter le texte
-          let profitTx = parseFloat(potentialProfit).toFixed(3) + " sol"
-          if (potentialProfit > 0) { profitTx = "+" + parseFloat(potentialProfit).toFixed(3) + " sol" }
+          let profitTx = parseFloat(potentialProfit).toFixed(3) + " eth"
+          if (potentialProfit > 0) { profitTx = "+" + parseFloat(potentialProfit).toFixed(3) + " eth" }
           // Puis on met la font et la couleur
           ctx.font = "107px roboto";
           ctx.fillStyle = "#04D9FF";

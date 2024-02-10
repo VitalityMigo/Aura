@@ -224,7 +224,7 @@ module.exports = {
                                                         { name: "Potential P&L:", value: "`" + prettier.potentialPNL + "`", inline: true },
                                                         { name: "Potential ROI:", value: "`" + prettier.potentialMLTP + " (" + prettier.potentialROI + ")`", inline: true },
                                                         { name: " ", value: " ", inline: true },
-                                                        { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + contract + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + contract + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + contract + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + contract + ") ∙ " + '[Shuriken](https://app.shuriken.trade)', inline: false },
+                                                        { name: "Links", value: '[Solscan](https://solscan.io/token/' + contract + ") ∙ " + '[DexScreener](https://dexscreener.com/solana/' + contract + ") ∙ " + '[Birdeye](https://birdeye.so/token/' + contract + ") ∙ " + '[Shuriken](https://app.shuriken.trade)', inline: false },
                                                     )
                                                     .setTimestamp()
                                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })

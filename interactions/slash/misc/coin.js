@@ -346,7 +346,7 @@ module.exports = {
 
 
 
-                                        } else if (isBRC20BitcoinWallet(selectedWallet)) {
+                                        } else if (isBRC20BitcoinWallet(wallet)) {
 
 
                                             const notMember = new EmbedBuilder().setColor("#060A8F")

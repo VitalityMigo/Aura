@@ -40,7 +40,7 @@
 		"@discordjs/rest": "^1.0.0",
 		"@moralisweb3/common-evm-utils": "^2.22.0",
 		"@opensea/stream-js": "^0.0.23",
-		"@reservoir0x/reservoir-sdk": "^1.12.9",
+		"@reservoir0x/reservoir-sdk": "^1.12.11",
 		"@sequelize/core": "^7.0.0-alpha.10",
 		"@solana/web3.js": "^1.89.0",
 		"alchemy-sdk": "^2.6.1",
@@ -69,7 +69,7 @@
 		"dotenv": "^16.0.3",
 		"download": "^8.0.0",
 		"download-csv": "^1.1.1",
-		"ethers": "^6.1.0",
+		"ethers": "^6.11.0",
 		"express": "^4.18.2",
 		"fast-csv": "^4.3.6",
 		"gifencoder": "^2.0.1",
@@ -103,6 +103,8 @@
 		"twitter": "^1.7.1",
 		"twitter-api-sdk": "^1.2.1",
 		"twitter-api-v2": "^1.14.2",
+		"viem": "^1.19.15",
+		"view": "^1.1.1",
 		"web3": "^1.9.0",
 		"web3-eth-contract": "^4.0.3"
 	}

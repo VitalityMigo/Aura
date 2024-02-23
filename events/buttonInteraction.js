@@ -204,6 +204,22 @@ module.exports = {
 
 			command = client.buttonCommands.get("button_nft_portfolio_exec_");
 			
+		} else if (customId.startsWith("button_nft_confirm_exec")) {
+
+			command = client.buttonCommands.get("button_nft_confirm_exec");
+			
+		} else if (customId.startsWith("button_nft_helper_exec_")) {
+
+			command = client.buttonCommands.get("button_nft_helper_exec_");
+			
+		} else if (customId.startsWith("button_nft_panel_order_param_exec_")) {
+
+			command = client.buttonCommands.get("button_nft_panel_order_param_exec_");
+			
+		} else if (customId.startsWith("modal_nft_panel_order_param_exec_")) {
+
+			command = client.buttonCommands.get("modal_nft_panel_order_param_exec_");
+			
 		} 
 		
 		

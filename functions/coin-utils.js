@@ -11,7 +11,7 @@ const infuraApiKey = process.env.infuraApiKey
 const etherscanApiKey = process.env.etherscanApiKey
 
 //Récupérer les clefs API
-const { web3Infura, mevblocker } = require("../config/web3config")
+const { web3Infura, mevblocker, chainbaseHead } = require("../config/web3config")
 const chainId = 1
 
 const wETH = "0xbcF9C3e618702Ab4a0D2055687C37A2846019C56"
@@ -31,7 +31,6 @@ const oracle = {
     slippage: 0,
     amount: 1
 }
-
 
 
 async function createFactory(type, tokenOut, sender, slippage) {
@@ -106,9 +105,6 @@ async function createFactory(type, tokenOut, sender, slippage) {
     }
 
 }
-
-
-
 
 async function generateTrade(type, factory, amountIn) {
 
@@ -237,8 +233,6 @@ async function generateTrade(type, factory, amountIn) {
 
 };
 
-
-
 async function encodeSwapExactETHForTokens(param) {
 
     // Function for Uniswap V2 Router 2 only
@@ -276,7 +270,6 @@ async function encodeMulticallV3(param) {
     return data
 
 }
-
 
 async function simulateTransaction(param) {
 
@@ -444,7 +437,6 @@ async function gasOracle(gas_preset, gas_used, max_gwei) {
     }
 }
 
-
 async function gasPreset(gas_preset, max_gwei) {
 
     const gasMargin = 1.1
@@ -489,7 +481,6 @@ async function gasPreset(gas_preset, max_gwei) {
     }
 }
 
-
 function quoteToWei(min_quote, decimals) {
 
     try {
@@ -529,9 +520,6 @@ function setSlippage(slippage, amount) {
 
 }
 
-
-
-
 async function priceImpactV2(contract, value, direction) {
 
     if (direction == "in") {
@@ -562,7 +550,6 @@ async function priceImpactV2(contract, value, direction) {
         return null
     }
 }
-
 
 async function approveMaxToken(contract, router, private_key) {
 
@@ -627,7 +614,6 @@ async function approveMaxToken(contract, router, private_key) {
     }
 
 }
-
 
 async function balanceOfToken(factory, sender) {
 
@@ -727,7 +713,6 @@ async function getGasPrice() {
 
 }
 
-
 function encodeTransfer(receiver, value, decimals) {
 
     try {
@@ -785,7 +770,6 @@ function encodeRevoke(spender) {
     return data
 
 }
-
 
 async function getToken(tokenArray) {
 
@@ -938,7 +922,6 @@ async function getMetrics(contract) {
     }
 }
 
-
 async function getSupply(contract, decimals) {
 
     try {
@@ -979,6 +962,49 @@ async function getDeployment(contract) {
     }
 }
 
+async function getAddressTokens(address) {
+
+    try {
+
+        const tokensCALL = await axios.get(`https://api.chainbase.online/v1/account/tokens?chain_id=1&address=${address}&page=1&limit=100`, { headers: chainbaseHead })
+
+        if (tokensCALL.code === 0) {
+            // Le code 0 est un code de succès
+
+            const tokens = tokensCALL.data.data.sort((a, b) => (b.current_usd_price * (b.balance / 10 ** b.decimals)) - (a.current_usd_price * (a.balance / 10 ** a.decimals))).map(item => ({
+                token: {
+                    name: item.name,
+                    symbol: item.symbol,
+                    contract: item.contract_address,
+                    decimals: item.decimals,
+                    supply: item.total_supply,
+                    price: item.current_usd_price,
+                },
+                ownership: {
+                    balance: item.balance / 10 ** item.decimals,
+                    value: item.current_usd_price * (item.balance / 10 ** item.decimals),
+
+                }
+            }))
+
+            return tokens
+
+        } else {
+            return null
+        }
+
+    } catch (error) {
+        return null
+    }
+
+}
+
+async function getCostBasis(address, token) {
+
+
+
+
+}
 
 module.exports = {
     createFactory,
@@ -1004,5 +1030,6 @@ module.exports = {
     getSupply,
     getPriceUsd,
     getMetrics,
-    getDeployment
+    getDeployment,
+    getAddressTokens
 }

@@ -56,6 +56,12 @@ module.exports = {
 			command = client.modalCommands.get("modal_nft_infra_tracker_");
 		} else if (customId.startsWith("modal_portfolio_nft_infra_")) {
 			command = client.modalCommands.get("modal_portfolio_nft_infra_");
+		} else if (customId.startsWith("modal_nft_listing_exec_")) {
+			command = client.modalCommands.get("modal_nft_listing_exec_");
+		} else if (customId.startsWith("modal_nft_panel_order_param_exec_")) {
+			command = client.modalCommands.get("modal_nft_panel_order_param_exec_");
+		} else if (customId.startsWith("modal_nft_exec@")) {
+			command = client.modalCommands.get("modal_nft_exec@");
 		} 
 		
 		

@@ -1,0 +1,33 @@
+[
+    {
+        "name": "Blur",
+        "id": "blur.io",
+        "contract": "0xb2ecfe4e4d61f8790bbb9de2d1259b9e2410cea5",
+        "orderbook": "blur",
+        "orderkind": "blur",
+        "currency": "0x0000000000000000000000000000000000000000",
+        "pool": "0x0000000000a39bb272e79075ade125fd351887ac",
+        "poolDecimals": 18,
+        "poolSymbol": "Blur ETH",
+        "delegate": "0x2f18F339620a63e43f0839Eeb18D7de1e1Be4DfB",
+        "display": "<:blur2:1207348730710462495> Blur",
+        "logo": "<:blur2:1207348730710462495>",
+        "default": true
+
+    },
+    {
+        "name": "Opensea",
+        "id": "opensea.io",
+        "contract": "0x00000000000000adc04c56bf30ac9d3c0aaf14dc",
+        "orderbook": "opensea",
+        "orderkind": "seaport-v1.5",
+        "currency": "0x0000000000000000000000000000000000000000",
+        "pool": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "poolDecimals": 18,
+        "poolSymbol": "wETH",
+        "delegate": "0x1E0049783F008A0085193E00003D00cd54003c71",
+        "display": "<:os:1185534781040111708> Opensea",
+        "logo": "<:os:1185534781040111708>",
+        "default": false
+    }
+]

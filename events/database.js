@@ -1398,6 +1398,58 @@ const infra_nft = sequelize.define('infra_nft', {
 
 });
 
+// Exec record FT
+const exe_nft = sequelize.define('exe_nft', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+        unique: true,
+    },
+    authorName: {
+        type: Sequelize.STRING,
+    },
+    authorId: {
+        type: Sequelize.STRING,
+    },
+    serverId: {
+        type: Sequelize.STRING,
+    },
+    action: {
+        type: Sequelize.STRING,
+    },
+    contract: {
+        type: Sequelize.STRING,
+    },
+    name: {
+        type: Sequelize.STRING,
+    },
+    trade: {
+        type: Sequelize.STRING,
+    },
+    settings: {
+        type: Sequelize.STRING,
+    },
+    helper: {
+        type: Sequelize.STRING,
+    },
+    value: {
+        type: Sequelize.STRING,
+    },
+    simulation: {
+        type: Sequelize.STRING,
+    },
+    txn: {
+        type: Sequelize.STRING,
+    },
+    treated: {
+        type: Sequelize.STRING,
+    },
+    identifier: {
+        type: Sequelize.STRING,
+    },
+});
 
 
 //Alert up
@@ -1546,6 +1598,7 @@ tracker_coin.sync()
 infra_nft.sync()
 tracker_nft.sync()
 portfolio_nft.sync()
+exe_nft.sync()
 
 //Export the tables informations
 module.exports = {
@@ -1582,6 +1635,7 @@ module.exports = {
     infra_nft,
     tracker_nft,
     portfolio_nft,
+    exe_nft,
     Op,
 }
 

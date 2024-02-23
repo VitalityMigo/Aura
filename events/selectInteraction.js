@@ -26,8 +26,12 @@ module.exports = {
 		let command = ""
 
 		if (customId.startsWith("selector_portfolio_nft_exec_")) {
-			console.log("here")
+
 			command = client.selectCommands.get("selector_portfolio_nft_exec_");
+			
+		}  else if (customId.startsWith("selector_panel_exe_tokenselector")) {
+
+			command = client.selectCommands.get("selector_panel_exe_tokenselector");
 		} 
 		
 		else  {
@@ -35,7 +39,7 @@ module.exports = {
 		}
 		// If the interaction is not a command in cache, return error message.
 		// You can modify the error message at ./messages/defaultSelectError.js file!
-
+		
 		if (!command) {
 			await require("../messages/defaultSelectError").execute(interaction);
 			return;

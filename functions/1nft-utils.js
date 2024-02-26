@@ -835,6 +835,7 @@ async function singleListingEncode(order, settings) {
                 // On récupère les différents steps, sachant que Blur contient en plus un auth
                 // mais que ce auth est bypass si on a le Blur auth à l'avance en entrée.
                 const steps = call.steps
+                console.log(steps)
                 const auth = steps[0]
                 const approval = steps[1]
                 const listing = steps[2]

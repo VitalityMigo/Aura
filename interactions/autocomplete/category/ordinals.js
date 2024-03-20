@@ -109,7 +109,7 @@ module.exports = {
                     let authorId = interaction.user.id;
     
                     // Retrieve the wallets for the authorID
-                    const walletsFilter = await wallets.findAll({ where: { authorId: authorId, walletCategory: "eth" } });
+                    const walletsFilter = await wallets.findAll({ where: { authorId: authorId, walletCategory: "btc" } });
     
                     walletsFilter.forEach(elem => {
     

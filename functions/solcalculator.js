@@ -40,16 +40,19 @@ async function solCoinProfit(contract, wallet, time) {
             potentialROI: 0,
         }
 
+        // On lance les calls de base
+        const metricsCALL = getMetrics(contract)
+        const supplyCALL = getSupply(contract)
+        const solPriceCALL = getSolPrice()
+
+
         // On récupère la sub-addresse
         // C'est l'addresse qui correspond à la paire main wallet & token
         const address = await getTokenAccountAddress(contract, wallet)
 
 
-        // On lance les calls de base
-        const metricsCALL = getMetrics(contract)
+        // On lance les calls pour récupérer le nombre de token held
         const heldCALL = getTokenBalance(address.raw)
-        const supplyCALL = getSupply(contract)
-        const solPriceCALL = getSolPrice()
 
         // On récupère l'historique de transaction de la sub addresse
         // Cette historique renverra toutes les txn sur le token
@@ -230,18 +233,18 @@ async function solCoinProfit(contract, wallet, time) {
             buyAmount: formatCoinValueSign(data.buyAmount, 2),
             sellAmount: formatCoinValueSign(data.sellAmount, 2),
             heldAmount: formatCoinValueSign(data.heldAmount, 2),
-            buyValue: parseFloat(data.buyValue).toFixed(3) + " SOL (" + new Intl.NumberFormat('en-US').format(parseFloat(data.buyValue * solPrice).toFixed(0)) + "$)",
-            sellValue: parseFloat(data.sellValue).toFixed(3) + " SOL (" + new Intl.NumberFormat('en-US').format(parseFloat(data.sellValue * solPrice).toFixed(0)) + "$)",
-            heldValue: parseFloat(data.heldValue).toFixed(3) + " SOL (" + new Intl.NumberFormat('en-US').format(parseFloat(data.heldValue * solPrice).toFixed(0)) + "$)",
-            buyGas: parseFloat(data.buyGas).toFixed(3) + " SOL (" + new Intl.NumberFormat('en-US').format(parseFloat(data.buyGas * solPrice).toFixed(0)) + "$)",
-            sellGas: parseFloat(data.sellGas).toFixed(3) + " SOL (" + new Intl.NumberFormat('en-US').format(parseFloat(data.sellGas * solPrice).toFixed(0)) + "$)",
-            totalGas: parseFloat(data.totalGas).toFixed(3) + " SOL (" + new Intl.NumberFormat('en-US').format(parseFloat(data.totalGas * solPrice).toFixed(0)) + "$)",
-            avgGas: parseFloat(data.avgGas).toFixed(3) + " SOL (" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgGas * solPrice).toFixed(0)) + "$)",
-            avgMCBuy: formatCoinValueSign(data.avgMCBuy, 2) + "$",
-            avgMCSell: formatCoinValueSign(data.avgMCSell, 2) + "$",
-            currentMC: formatCoinValueSign(data.currentMC, 2) + "$",
-            realizedPNL: parseFloat(data.realizedPNL).toFixed(3) + " SOL (" + new Intl.NumberFormat('en-US').format(parseFloat(data.realizedPNL * solPrice).toFixed(0)) + "$)",
-            potentialPNL: parseFloat(data.potentialPNL).toFixed(3) + " SOL (" + new Intl.NumberFormat('en-US').format(parseFloat(data.potentialPNL * solPrice).toFixed(0)) + "$)",
+            buyValue: parseFloat(data.buyValue).toFixed(3) + " SOL ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.buyValue * solPrice).toFixed(0)) + ")",
+            sellValue: parseFloat(data.sellValue).toFixed(3) + " SOL ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.sellValue * solPrice).toFixed(0)) + ")",
+            heldValue: parseFloat(data.heldValue).toFixed(3) + " SOL ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.heldValue * solPrice).toFixed(0)) + ")",
+            buyGas: parseFloat(data.buyGas).toFixed(3) + " SOL ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.buyGas * solPrice).toFixed(0)) + ")",
+            sellGas: parseFloat(data.sellGas).toFixed(3) + " SOL ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.sellGas * solPrice).toFixed(0)) + ")",
+            totalGas: parseFloat(data.totalGas).toFixed(3) + " SOL ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.totalGas * solPrice).toFixed(0)) + ")",
+            avgGas: parseFloat(data.avgGas).toFixed(3) + " SOL ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgGas * solPrice).toFixed(0)) + ")",
+            avgMCBuy: "$" + formatCoinValueSign(data.avgMCBuy, 2),
+            avgMCSell: "$" + formatCoinValueSign(data.avgMCSell, 2),
+            currentMC: "$" + formatCoinValueSign(data.currentMC, 2),
+            realizedPNL: parseFloat(data.realizedPNL).toFixed(3) + " SOL ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.realizedPNL * solPrice).toFixed(0)) + ")",
+            potentialPNL: parseFloat(data.potentialPNL).toFixed(3) + " SOL ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.potentialPNL * solPrice).toFixed(0)) + ")",
             realizedMLTP: "x" + parseFloat(data.realizedMLTP).toFixed(2),
             potentialMLTP: "x" + parseFloat(data.potentialMLTP).toFixed(2),
             realizedROI: parseFloat(data.realizedROI).toFixed(2) + "%",

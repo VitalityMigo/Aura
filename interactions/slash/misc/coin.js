@@ -19,7 +19,7 @@ const { web3CloudflarePublic } = require("../../../config/web3config")
 
 // Fonctions d'execution et de formattage
 const { getToken, getMetrics } = require('../../../functions/coin-utils')
-const { coinProfitSingle } = require('../../../functions/pnlcaclulator')
+const { coinProfitSingle, coinProfitMultipleWallet } = require('../../../functions/pnlcaclulator')
 
 // Chart utils
 const { fetchLogsBatch, groupByPeriod, convertSecondsToTime, timeScale, decodeUniswapSwapEvent, formatTimestamps, priceScale, priceIndice } = require("../../../functions/chart-utils")
@@ -235,10 +235,7 @@ module.exports = {
 
                                 if (isValidEthereumAddress(contract)) {
 
-
                                     if (wallet.toLowerCase() !== 'all') {
-
-
 
                                         if (isValidEthereumAddress(wallet)) {
 
@@ -360,38 +357,136 @@ module.exports = {
                                             await interaction.editReply({ embeds: [notMember] });
 
 
-
-
-                                        } else {
-
-                                            const notMember = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle(`Coin Profit`)
-                                                .setDescription("Aura can't analyze your wallet's data because the wallet you provided isn't valid. Please use try again using the appropriate form.")
-                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                                .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                .setTimestamp()
-                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
-
-                                            await interaction.editReply({ embeds: [notMember] });
-
-
-
-                                        }
+                                        }  
 
 
 
                                     } else if (wallet.toLowerCase() === 'all') {
 
-                                        const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
-                                            .setTitle(`Not available`)
-                                            .setDescription("We are currently optimising this feature. You can still use coin profit on a **single** wallet with `/coin profit`.")
-                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                                            .setTimestamp()
-                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                        {
+                                            // Il y'a plusieurs wallets séléctionné, par conséquent on utilise
+                                            // la fonction multiple wallet.
 
-                                        await interaction.editReply({ embeds: [setwalletErrorEmbed] });
+                                            // On récupère les wallets de l'utilisateur, puis on les map pour pouvoir les mettre dans
+                                            // un array qu'on met en lower cases.
+                                            const storage = await wallets.findAll({ where: { authorId: authorId, walletCategory: "eth" } })
+                                            const walletList = storage.map(i => i.dataValues.walletAddress.toLowerCase())
+                                            const count = walletList.length
 
+                                            // On vérifie que l'utilisateur a des wallets, sinon on renvoi une
+                                            // erreur qui dit qu'il n'y a plus de wallets.
+                                            if (count > 0) {
+
+                                                // On calcul les profits grâce à notre fonction
+                                                const data = await coinProfitMultipleWallet(contract, walletList, time)
+
+                                                if (data) {
+
+                                                    // On sépare les data entre le raw et le prettier
+                                                    // Les raw sont les data non traité
+                                                    // Les prettier sont pour l'embed
+                                                    const raw = data.raw
+                                                    const prettier = data.prettier
+                                                    const token = data.token
+
+
+                                                    const cryptoProfitOneWallet = new EmbedBuilder().setColor("#060A8F")
+                                                        .setTitle(reduceText(token.name, 35) + " (" + token.symbol + ")")
+                                                        .setDescription(">>> Displaying your P&L on `$" + token.symbol + "`.")
+                                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                        .setImage("https://cdn.discordapp.com/attachments/1100572519896977490/1185619758008254474/e.png?ex=65904572&is=657dd072&hm=7a51469cad88b48198c5f230d13450d50c7e2717c5acdf97a82a6eb1fb5adad4&")
+                                                        .addFields(
+                                                            { name: "Contract:", value: "`" + token.contract + "`", inline: false },
+                                                            { name: "Swap In:", value: "`" + prettier.swapIn + "`", inline: true },
+                                                            { name: "Swap Out:", value: "`" + prettier.swapIn + "`", inline: true },
+                                                            { name: "Airdrop & Transfer:", value: "`" + prettier.transfer + "`", inline: true },
+                                                            { name: "Token Bought:", value: "`" + prettier.buyAmount + "`", inline: true },
+                                                            { name: "Token Sold:", value: "`" + prettier.sellAmount + "`", inline: true },
+                                                            { name: "Token Held:", value: "`" + prettier.heldAmount + "`", inline: true },
+                                                            { name: "Buy Value:", value: "`" + prettier.buyValue + "`", inline: true },
+                                                            { name: "Sold Value:", value: "`" + prettier.sellValue + "`", inline: true },
+                                                            { name: "Held Value:", value: "`" + prettier.heldValue + "`", inline: true },
+                                                            { name: "AVG MC Buy:", value: "`" + prettier.avgMCBuy + "`", inline: true },
+                                                            { name: "AVG MC Sell:", value: "`" + prettier.avgMCSell + "`", inline: true },
+                                                            { name: "Current MC:", value: "`" + prettier.currentMC + "`", inline: true },
+                                                            { name: "Gas Cost:", value: "`" + prettier.totalGas + "`", inline: true },
+                                                            { name: "Avg Gas Cost:", value: "`" + prettier.avgGas + "`", inline: true },
+                                                            { name: " ", value: " ", inline: true },
+                                                            { name: "Realised P&L:", value: "`" + prettier.realizedPNL + "`", inline: true },
+                                                            { name: "Realised ROI:", value: "`" + prettier.realizedMLTP + " (" + prettier.realizedROI + ")`", inline: true },
+                                                            { name: " ", value: " ", inline: true },
+                                                            { name: "Potential P&L:", value: "`" + prettier.potentialPNL + "`", inline: true },
+                                                            { name: "Potential ROI:", value: "`" + prettier.potentialMLTP + " (" + prettier.potentialROI + ")`", inline: true },
+                                                            { name: " ", value: " ", inline: true },
+                                                            { name: "Links", value: '[Etherscan](https://etherscan.io/address/' + contract + ") ∙ " + '[DexScreener](https://dexscreener.com/ethereum/' + contract + ") ∙ " + '[DexSpy](https://dexspy.io/eth/token/' + contract + ") ∙ " + '[DexAnalyzer](https://www.dexanalyzer.io/token/' + contract + ") ∙ " + '[Shuriken](https://app.shuriken.trade)', inline: false },
+                                                        )
+                                                        .setTimestamp()
+                                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                                    await interaction.editReply({ embeds: [cryptoProfitOneWallet], components: [buttonsRow] });
+
+
+                                                    //On stock les data d'interaction pour le visuel
+                                                    await interactionData.destroy({ where: { authorId: authorId, commandName: "cryptoprofit", serverId: serverId } })
+
+                                                    await interactionData.create({
+
+                                                        authorId: authorId,
+                                                        authorName: authorName,
+                                                        serverId: serverId,
+                                                        walletAddress: wallet,
+                                                        commandName: "cryptoprofit",
+                                                        interactionId: interaction.id,
+                                                        selecedTimestamp: token.timestamp.toString(),
+                                                        selectedCollection: contract,
+                                                        floorPrice: token.priceETH.toString(),
+                                                        collectionName: token.name + " (" + token.symbol + ")",
+                                                        collectionSlug: token.symbol,
+                                                        mintCount: raw.transfer.toString(),
+                                                        buyCount: raw.buyAmount.toString(),
+                                                        soldCount: raw.sellAmount.toString(),
+                                                        remaining: raw.heldAmount.toString(),
+                                                        avgBuy: parseFloat(raw.avgMCBuy).toFixed(3),
+                                                        avgSold: parseFloat(raw.avgMCSell).toFixed(3),
+                                                        realisedProfit: parseFloat(raw.realizedPNL).toFixed(3),
+                                                        potentialProfit: parseFloat(raw.potentialPNL).toFixed(3),
+                                                        roi: raw.potentialROI.toString(),
+                                                        totalTradeCount: JSON.stringify({
+                                                            buy: (raw.buyValue + raw.buyGas).toString(),
+                                                            sell: (raw.sellValue - raw.sellGas).toString(),
+                                                        }),
+                                                        userAvatar: userAvatar,
+
+                                                    })
+
+                                                } else {
+
+                                                    const notMember = new EmbedBuilder().setColor("#060A8F")
+                                                        .setTitle(`Coin Profit`)
+                                                        .setDescription("Aura can't analyze your wallet's profit data. Please try again or contact our team if the error persists.")
+                                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                        .setTimestamp()
+                                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                    await interaction.editReply({ embeds: [notMember] });
+
+                                                }
+
+                                            } else {
+
+                                                const notMember = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle(`NFT Profit`)
+                                                    .setDescription("Aura can't analyze your wallet's data because you don't have any wallet registered. Please use try again after adding wallets to your profile.")
+                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                await interaction.editReply({ embeds: [notMember] });
+
+                                            }
+                                        }
 
                                     }
 

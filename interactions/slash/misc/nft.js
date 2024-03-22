@@ -22,7 +22,7 @@ const { reservoirA, web3CloudflarePublic, reservoirI } = require("../../../confi
 const { getEthPrice } = require('../../../config/web3data')
 const decrypt = require("../../../functions/decrypt")
 const isHttps = require('../../../functions/isHttps')
-const { nftProfitSingle, nftProfitGlobal } = require("../../../functions/pnlcaclulator")
+const { nftProfitSingle, nftProfitGlobal, nftProfitMulitWallet } = require("../../../functions/pnlcaclulator")
 const { getPortfolio } = require("../../../functions/1nft-utils")
 const reduceText = require("../../../functions/reducetext")
 
@@ -293,8 +293,8 @@ module.exports = {
                                             collectionSupply = collectionData.collections[0].tokenCount
                                             collectionTotalListings = collectionData.collections[0].onSaleCount
                                             collectionListingRatio = parseFloat((collectionTotalListings * 100) / collectionSupply).toFixed(3)
-                                            collectionTopBid =  collectionData.collections[0].topBid.price ? collectionData.collections[0].topBid.price.amount.decimal : 0
-                                            collectionFloor =  collectionData.collections[0].floorAsk.price ? collectionData.collections[0].floorAsk.price.amount.decimal : 0
+                                            collectionTopBid = collectionData.collections[0].topBid.price ? collectionData.collections[0].topBid.price.amount.decimal : 0
+                                            collectionFloor = collectionData.collections[0].floorAsk.price ? collectionData.collections[0].floorAsk.price.amount.decimal : 0
                                             collectionOwners = collectionData.collections[0].ownerCount
                                             collectionUniqueOwners = parseFloat((collectionOwners * 100) / collectionSupply).toFixed(2) + "%"
                                             totalVolume = collectionData.collections[0].volume.allTime
@@ -861,27 +861,166 @@ module.exports = {
 
                                         }
 
-
-
-
-
-
-
-
                                     } else if (wallet === "all") {
                                         // Tous les wallets séléctionnés
 
+                                        // On vérifie que c'est pas all et all, on ne prend en compte que les requêtes
+                                        // qui prennent All wallet et une collection.
+                                        if (contract !== 'all') {
+                                            // C'est un all wallet et un seul contrat, on accepte et on commence la génération des profits
+                                            // depuis la fonction NFT
 
-                                        const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
-                                            .setTitle(`Not available`)
-                                            .setDescription("We are currently optimising this feature. You can still use NFT profit on a **single** wallet with `/nft profit`.")
-                                            .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
-                                            .setAuthor({ name: authorName, iconURL: userAvatar })
-                                            .setTimestamp()
-                                            .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+                                            // On récupère les wallets de l'utilisateur, puis on les map pour pouvoir les mettre dans
+                                            // un array qu'on met en lower cases.
+                                            const storage = await wallets.findAll({ where: { authorId: authorId, walletCategory: "eth" } })
+                                            const walletList = storage.map(i => i.dataValues.walletAddress.toLowerCase())
+                                            const count = walletList.length
 
-                                        await interaction.editReply({ embeds: [setwalletErrorEmbed] });
+                                            // On vérifie que l'utilisateur a des wallets, sinon on renvoi une
+                                            // erreur qui dit qu'il n'y a plus de wallets.
+                                            if (count > 0) {
 
+                                                const data = await nftProfitMulitWallet(contract, walletList, time)
+
+                                                if (data) {
+
+                                                    // On sépare les data entre le raw et le prettier
+                                                    // Les raw sont les data non traité
+                                                    // Les prettier sont pour l'embed
+                                                    const raw = data.raw
+                                                    const prettier = data.prettier
+                                                    const collection = data.collection
+
+                                                    // On vérifie que la bannière est valide
+                                                    // Sinon on remplace par la bannière d'Aura
+                                                    if (!isHttps(collection.banner)) {
+                                                        collection.banner = 'https://cdn.discordapp.com/attachments/1100572519896977490/1185619758008254474/e.png?ex=65904572&is=657dd072&hm=7a51469cad88b48198c5f230d13450d50c7e2717c5acdf97a82a6eb1fb5adad4&'
+                                                    }
+
+                                                    //Embed getRCprofitPrecisedAll
+                                                    const answer = new EmbedBuilder().setColor("#060A8F")
+                                                        .setTitle(collection.name)
+                                                        .setDescription(">>> Displaying the P&L made by `" + count + "` wallets")
+                                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                        .setImage(collection.banner)
+                                                        .addFields(
+                                                            { name: "Mint Value:", value: "`" + prettier.mintValue + "`", inline: true },
+                                                            { name: "Mint Gas:", value: "`" + prettier.mintGas + "`", inline: true },
+                                                            { name: "Mint Total:", value: "`" + prettier.mintTotal + "`", inline: true },
+
+                                                            { name: "Buy Value:", value: "`" + prettier.buyValue + "`", inline: true },
+                                                            { name: "Buy Gas:", value: "`" + prettier.buyGas + "`", inline: true },
+                                                            { name: "Buy Total:", value: "`" + prettier.buyTotal + "`", inline: true },
+
+                                                            { name: "Sales Value:", value: "`" + prettier.sellValue + "`", inline: true },
+                                                            { name: "Sales Gas:", value: "`" + prettier.sellGas + "`", inline: true },
+                                                            { name: "Sales Total:", value: "`" + prettier.sellTotal + "`", inline: true },
+
+                                                            { name: "Tokens Minted:", value: "`" + prettier.mint + "`", inline: true },
+                                                            { name: "Tokens Bought:", value: "`" + prettier.buy + "`", inline: true },
+                                                            { name: "Airdrop & Transfer:", value: "`" + prettier.airdrop + "`", inline: true },
+
+                                                            { name: "Tokens Sold:", value: "`" + prettier.sell + "`", inline: true },
+                                                            { name: "Tokens Held:", value: "`" + prettier.held + "`", inline: true },
+                                                            { name: "Transactions:", value: "`" + prettier.txs + "`", inline: true },
+
+                                                            { name: "Avg Mint Value:", value: "`" + prettier.avgMint + "`", inline: true },
+                                                            { name: "Avg Buy Value:", value: "`" + prettier.avgBuy + "`", inline: true },
+                                                            { name: "Avg Spent Value:", value: "`" + prettier.avgTotal + "`", inline: true },
+
+                                                            { name: "Avg Sold Value:", value: "`" + prettier.avgSold + "`", inline: true },
+                                                            { name: "Avg Held Value:", value: "`" + prettier.avgHeld + "`", inline: true },
+                                                            { name: "Avg Gas Value:", value: "`" + prettier.avgGas + "`", inline: true },
+
+                                                            { name: "Current P&L:", value: "`" + prettier.realisedPNL + "`", inline: true },
+                                                            { name: "Potential P&L:", value: "`" + prettier.potentialPNL + "`", inline: true },
+                                                            { name: "ROI:", value: "`" + prettier.potentialROI + "`", inline: true },
+
+                                                            { name: "Links", value: '[opensea](https://opensea.io/collection/' + collection.slug + ") ∙ " + '[blur](https://blur.io/collection/' + contract + ") ∙ " + '[magically](https://magically.gg/collection/' + contract + ") ∙ " + '[nerds](https://app.nftnerds.ai/collection/' + contract + ") ∙ " + '[etherscan](https://etherscan.io/address/' + contract + ')', inline: false },
+                                                        )
+                                                        .setTimestamp()
+                                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                    await interaction.editReply({ embeds: [answer], components: [visualBTN] });
+
+
+                                                    // On enregistre les informations dans la base SQL
+                                                    // L'interaction sera récupéré pour générer le visuel de profit
+                                                    await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
+
+                                                    await interactionData.create({
+
+                                                        authorId: authorId,
+                                                        authorName: authorName,
+                                                        serverId: serverId,
+                                                        commandName: "profit",
+                                                        interactionId: interaction.id,
+                                                        walletCategory: "eth",
+                                                        selectedCollection: collection.contract,
+                                                        floorPrice: collection.floor.toString(),
+                                                        collectionName: collection.name,
+                                                        mintCount: raw.mint.toString(),
+                                                        buyCount: raw.buy.toString(),
+                                                        soldCount: raw.sell.toString(),
+                                                        remaining: raw.held.toString(),
+                                                        avgBuy: parseFloat(raw.avgTotal).toFixed(3),
+                                                        avgSold: parseFloat(raw.avgSold).toFixed(3),
+                                                        realisedProfit: parseFloat(raw.realisedPNL).toFixed(3),
+                                                        potentialProfit: parseFloat(raw.potentialPNL).toFixed(3),
+                                                        roi: raw.potentialROI.toString(),
+                                                        totalTradeCount: JSON.stringify({
+                                                            buy: (raw.buyTotal + raw.mintTotal).toString(),
+                                                            sell: raw.sellTotal.toString(),
+                                                        }),
+                                                        userAvatar: userAvatar,
+                                                    })
+
+                                                } else {
+                                                    // Si il y'a une erreur lors de l'analyse des data
+
+                                                    const notMember = new EmbedBuilder().setColor("#060A8F")
+                                                        .setTitle(`NFT Profit`)
+                                                        .setDescription("Aura can't analyze your wallet's profit data. Please try again or contact our team if the error persists.")
+                                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                        .setTimestamp()
+                                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                    await interaction.editReply({ embeds: [notMember] });
+
+
+
+                                                }
+
+                                            } else {
+
+                                                const notMember = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle(`NFT Profit`)
+                                                    .setDescription("Aura can't analyze your wallet's data because you don't have any wallet registered. Please use try again after adding wallets to your profile.")
+                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                await interaction.editReply({ embeds: [notMember] });
+
+                                            }
+
+                                        } else {
+                                            // Le all wallet et le all collection ont été séléctionné, on ne le
+                                            // supporte pas donc on renvoi une erreur.
+
+                                            const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle(`Not available`)
+                                                .setDescription("We are currently optimising this feature. You can still use NFT profit on a **single** collection and multiple wallets with `/nft profit`.")
+                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
+
+                                            await interaction.editReply({ embeds: [setwalletErrorEmbed] });
+
+                                        }
 
                                     } else {
                                         // Problème dans la séléction du wallet

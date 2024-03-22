@@ -362,8 +362,6 @@ module.exports = {
 
 
                                     } else if (wallet.toLowerCase() === 'all') {
-
-                                        {
                                             // Il y'a plusieurs wallets séléctionné, par conséquent on utilise
                                             // la fonction multiple wallet.
 
@@ -477,7 +475,7 @@ module.exports = {
 
                                                 const notMember = new EmbedBuilder().setColor("#060A8F")
                                                     .setTitle(`NFT Profit`)
-                                                    .setDescription("Aura can't analyze your wallet's data because you don't have any wallet registered. Please use try again after adding wallets to your profile.")
+                                                    .setDescription("Aura can't analyze your wallet's data because you don't have any Ethereum wallet registered. Please use try again after adding wallets to your profile.")
                                                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                                     .setAuthor({ name: authorName, iconURL: userAvatar })
                                                     .setTimestamp()
@@ -486,8 +484,7 @@ module.exports = {
                                                 await interaction.editReply({ embeds: [notMember] });
 
                                             }
-                                        }
-
+                                        
                                     }
 
 

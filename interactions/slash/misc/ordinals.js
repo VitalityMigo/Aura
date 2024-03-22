@@ -18,7 +18,7 @@ const excluded = ['profit']
 
 const { magiceden } = require("../../../config/web3config")
 
-const { ordiProfit } = require("../../../functions/ordicalculator")
+const { ordiProfit, ordiProfitMultiple } = require("../../../functions/ordicalculator")
 const isHttps = require('../../../functions/isHttps')
 const capFirstLetter = require("../../../functions/capfirstletter")
 
@@ -337,7 +337,9 @@ module.exports = {
 
                                 if (isValidInput(slug)) {
 
-                                    if (isBRC20BitcoinWallet(wallet)) {
+                                    // Si le wallet est un wallet unique de type BRC20 on continu
+                                    // sinon on descend dans le if.
+                                    if (wallet !== 'all' && isBRC20BitcoinWallet(wallet)) {
 
                                         const data = await ordiProfit(slug, wallet, time)
 
@@ -424,6 +426,141 @@ module.exports = {
                                             }),
                                             userAvatar: userAvatar,
                                         })
+
+                                    } else if (wallet.toLowerCase() === 'all') {
+
+                                        // Il y'a plusieurs wallets séléctionné, par conséquent on utilise
+                                        // la fonction multiple wallet.
+
+                                        // On récupère les wallets de l'utilisateur, puis on les map pour pouvoir les mettre dans
+                                        // un array qu'on met en lower cases.
+                                        const storage = await wallets.findAll({ where: { authorId: authorId, walletCategory: "btc" } })
+                                        const walletList = storage.map(i => i.dataValues.walletAddress)
+                                        const count = walletList.length
+
+                                        // On vérifie que l'utilisateur a des wallets, sinon on renvoi une
+                                        // erreur qui dit qu'il n'y a plus de wallets.
+                                        if (count > 0) {
+
+
+                                            // On calcul les profits grâce à notre fonction
+                                            const data = await ordiProfitMultiple(slug, walletList, time)
+
+                                            if (data) {
+
+
+                                                // On sépare les data entre le raw et le prettier
+                                                // Les raw sont les data non traité
+                                                // Les prettier sont pour l'embed
+                                                const raw = data.raw
+                                                const prettier = data.prettier
+                                                const collection = data.collection
+
+                                                //Embed getRCprofitPrecisedAll
+                                                const answer = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle(collection.name)
+                                                    .setDescription(">>> Displaying the P&L made by `" + count + "` wallets")
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setThumbnail(collection.icon)
+                                                    .addFields(
+                                                        { name: "Mint Value:", value: "`" + prettier.mintValue + "`", inline: true },
+                                                        { name: "Mint Gas:", value: "`" + prettier.mintGas + "`", inline: true },
+                                                        { name: "Mint Total:", value: "`" + prettier.mintTotal + "`", inline: true },
+
+                                                        { name: "Buy Value:", value: "`" + prettier.buyValue + "`", inline: true },
+                                                        { name: "Buy Gas:", value: "`" + prettier.buyGas + "`", inline: true },
+                                                        { name: "Buy Total:", value: "`" + prettier.buyTotal + "`", inline: true },
+
+                                                        { name: "Sales Value:", value: "`" + prettier.sellValue + "`", inline: true },
+                                                        { name: "Sales Gas:", value: "`" + prettier.sellGas + "`", inline: true },
+                                                        { name: "Sales Total:", value: "`" + prettier.sellTotal + "`", inline: true },
+
+                                                        { name: "Tokens Minted:", value: "`" + prettier.mint + "`", inline: true },
+                                                        { name: "Tokens Bought:", value: "`" + prettier.buy + "`", inline: true },
+                                                        { name: "Airdrop & Transfer:", value: "`" + prettier.airdrop + "`", inline: true },
+
+                                                        { name: "Tokens Sold:", value: "`" + prettier.sell + "`", inline: true },
+                                                        { name: "Tokens Held:", value: "`" + prettier.held + "`", inline: true },
+                                                        { name: "Transactions:", value: "`" + prettier.txs + "`", inline: true },
+
+                                                        { name: "Avg Mint Value:", value: "`" + prettier.avgMint + "`", inline: true },
+                                                        { name: "Avg Buy Value:", value: "`" + prettier.avgBuy + "`", inline: true },
+                                                        { name: "Avg Spent Value:", value: "`" + prettier.avgTotal + "`", inline: true },
+
+                                                        { name: "Avg Sold Value:", value: "`" + prettier.avgSold + "`", inline: true },
+                                                        { name: "Avg Held Value:", value: "`" + prettier.avgHeld + "`", inline: true },
+                                                        { name: "Avg Gas Value:", value: "`" + prettier.avgGas + "`", inline: true },
+
+                                                        { name: "Current P&L:", value: "`" + prettier.realisedPNL + "`", inline: true },
+                                                        { name: "Potential P&L:", value: "`" + prettier.potentialPNL + "`", inline: true },
+                                                        { name: "ROI:", value: "`" + prettier.potentialROI + "`", inline: true },
+
+                                                        { name: "Links", value: '[magiceden](https://magiceden.io/ordinals/marketplace/' + slug + ") ∙ " + '[ordi.market](https://ordinals.market/collection/' + slug + ") ∙ " + '[okx](https://www.okx.com/fr/web3/marketplace/nft/collection/btc/' + slug + ") ∙ " + '[ordi.wallet](https://ordinalswallet.com/collection/' + slug + ") ∙ " + '[memepool](https://mempool.space/fr/address/' + wallet + ')', inline: false },
+                                                    )
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                await interaction.editReply({ embeds: [answer], components: [visualBTN] });
+
+                                                // On enregistre les informations dans la base SQL
+                                                // L'interaction sera récupéré pour générer le visuel de profit
+                                                await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
+
+                                                await interactionData.create({
+
+                                                    authorId: authorId,
+                                                    authorName: authorName,
+                                                    serverId: serverId,
+                                                    commandName: "profit",
+                                                    interactionId: interaction.id,
+                                                    walletCategory: "btc",
+                                                    selectedCollection: collection.contract,
+                                                    floorPrice: collection.floor.toString(),
+                                                    collectionName: collection.name,
+                                                    mintCount: raw.mint.toString(),
+                                                    buyCount: raw.buy.toString(),
+                                                    soldCount: raw.sell.toString(),
+                                                    remaining: raw.held.toString(),
+                                                    avgBuy: parseFloat(raw.avgTotal).toFixed(3),
+                                                    avgSold: parseFloat(raw.avgSold).toFixed(3),
+                                                    realisedProfit: parseFloat(raw.realisedPNL).toFixed(3),
+                                                    potentialProfit: parseFloat(raw.potentialPNL).toFixed(3),
+                                                    roi: raw.potentialROI.toString(),
+                                                    totalTradeCount: JSON.stringify({
+                                                        buy: (raw.buyTotal + raw.mintTotal).toString(),
+                                                        sell: raw.sellTotal.toString(),
+                                                    }),
+                                                    userAvatar: userAvatar,
+                                                })
+
+
+                                            } else {
+
+                                                const notMember = new EmbedBuilder().setColor("#060A8F")
+                                                    .setTitle(`Ordinals Profit`)
+                                                    .setDescription("Aura can't analyze your wallet's profit data. Please try again or contact our team if the error persists.")
+                                                    .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                    .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                    .setTimestamp()
+                                                    .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                                await interaction.editReply({ embeds: [notMember] });
+
+                                            }
+
+                                        } else {
+
+                                            const notMember = new EmbedBuilder().setColor("#060A8F")
+                                                .setTitle(`NFT Profit`)
+                                                .setDescription("Aura can't analyze your wallet's data because you don't have any Ethereum wallet registered. Please use try again after adding wallets to your profile.")
+                                                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                                .setAuthor({ name: authorName, iconURL: userAvatar })
+                                                .setTimestamp()
+                                                .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                            await interaction.editReply({ embeds: [notMember] });
+
+                                        }
 
                                     } else {
 

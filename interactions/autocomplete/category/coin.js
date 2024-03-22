@@ -151,13 +151,10 @@ module.exports = {
 
                 if (focusedOption === "wallet") {
 
-
-
-
                     let authorId = interaction.user.id;
 
                     // Retrieve the wallets for the authorID
-                    const walletsFilter = await wallets.findAll({ where: { authorId: authorId } });
+                    const walletsFilter = await wallets.findAll({ where: { authorId: authorId, walletCategory: "eth" } });
 
                     const choices = [{ name: "All", value: "All" }]
                     walletsFilter.forEach(elem => {

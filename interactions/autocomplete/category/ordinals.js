@@ -46,17 +46,19 @@ module.exports = {
                 const focused = interaction.options.getFocused(true);
                 const focusedOption = focused.name
                 const focusedValue = focused.value
-                const choices = []
 
 
                 if (focusedOption === "collection") {
+
+                    const choices = []
+
 
                     if (focusedValue == "") {
 
                         const mainCollCALL = await axios.get('https://api-mainnet.magiceden.dev/collection_stats/search/bitcoin?window=7d&sort=sales&direction=desc&offset=0&limit=500', { headers: magiceden });
                         const mainCollRES = mainCollCALL.data;
-    
-    
+
+
                         mainCollRES.forEach(element => {
                             if (element) {
                                 const projectName = element.name
@@ -64,20 +66,20 @@ module.exports = {
                                 choices.push({ name: projectName, value: pjAddress });
                             }
                         })
-    
+
                         interaction.respond(
                             choices.slice(0, 25).map((choice) => ({ name: choice.name, value: choice.value }))
                         ).catch((err) => {
                             console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
                         });
-    
-    
+
+
                     } else {
-    
+
                         const mainCollCALL = await axios.get('https://api-mainnet.magiceden.dev/collection_stats/search/bitcoin?window=7d&sort=sales&direction=desc&offset=0&limit=500', { headers: magiceden });
                         const mainCollRES = mainCollCALL.data;
-    
-    
+
+
                         mainCollRES.forEach(element => {
                             if (element) {
                                 const projectName = element.name
@@ -85,54 +87,55 @@ module.exports = {
                                 choices.push({ name: projectName, value: pjAddress });
                             }
                         })
-    
+
                         // Fonction de comparaison pour trier les objets en fonction de la ressemblance de leur champ "name" avec focusedValue
                         const compareNames = (a, b) => {
                             const similarityA = calculateSimilarity(a.name, focusedValue);
                             const similarityB = calculateSimilarity(b.name, focusedValue);
                             return similarityB - similarityA; // Triez par ordre décroissant de similarité
                         };
-    
+
                         const result = choices.sort(compareNames).slice(0, 25)
-    
-    
+
+
                         interaction.respond(
                             result.map((choice) => ({ name: choice.name, value: choice.value }))
                         ).catch((err) => {
                             console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
                         });
-    
+
                     }
 
                 } else if (focusedOption === "wallet") {
 
+                    const choices = [{name: "All", value: "All"}]
+
+
                     let authorId = interaction.user.id;
-    
+
                     // Retrieve the wallets for the authorID
                     const walletsFilter = await wallets.findAll({ where: { authorId: authorId, walletCategory: "btc" } });
-    
+
                     walletsFilter.forEach(elem => {
-    
-                        if (isValidEthereumAddress(elem.walletAddress)) {
-    
-                            choices.push({ name: elem.walletName + " (" + elem.walletAddress.substring(0, 5) + "..." + elem.walletAddress.substring(elem.walletAddress.length - 4, elem.walletAddress.length) + ")", value: elem.walletAddress })
-                        }
+
+                        choices.push({ name: elem.walletName + " (" + elem.walletAddress.substring(0, 5) + "..." + elem.walletAddress.substring(elem.walletAddress.length - 4, elem.walletAddress.length) + ")", value: elem.walletAddress })
+
                     })
-    
-    
+
+
                     // Filter the wallet names based on the focused value
                     const filtered = choices.filter((blaze) => blaze.name.startsWith(focusedValue));
-    
+
                     // Respond with the filtered wallet names as autocomplete choices
                     await interaction.respond(
-    
+
                         filtered.map((choice) => ({ name: choice.name, value: choice.value }))
-    
-    
+
+
                     ).catch((err) => {
                         console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
                     });
-    
+
                     return;
 
                 }

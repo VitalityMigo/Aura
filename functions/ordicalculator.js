@@ -83,7 +83,7 @@ async function ordiProfit(slug, wallet, time) {
 
             // On vérifie les liens de création de NFT, l'une des deux méthodes Ordinals.
             // On fait le call pour commencer.
-            const createCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=${token.tokenInscription}`, { headers: magiceden });
+            const createCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=${token}`, { headers: magiceden });
             const createANW = createCALL.data.activities;
             const createRES = createANW.filter(activity => activity.newOwner.toLowerCase() == wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
 
@@ -102,9 +102,12 @@ async function ordiProfit(slug, wallet, time) {
 
                 // On vérifie les mints de NFT, l'une des deux méthodes Ordinals.
                 // On fait le call pour commencer.
-                const mintCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=${token.tokenInscription}`, { headers: magiceden });
+                const mintCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=${token}`, { headers: magiceden });
                 const mintANW = mintCALL.data.activities;
                 const mintRES = mintANW.filter(activity => activity.newOwner.toLowerCase() == wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
+                console.log(token.tokenInscription)
+                console.log(token.tokenId)
+                console.log(mintANW)
 
                 if (mintRES.length > 0) {
                     // C'est bien un mint, donc on ajoute les informations aux mints.
@@ -169,7 +172,7 @@ async function ordiProfit(slug, wallet, time) {
 
             // On vérifie les liens de création de NFT, l'une des deux méthodes Ordinals.
             // On fait le call pour commencer.
-            const createCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=${token.tokenInscription}`, { headers: magiceden });
+            const createCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=${token.tokenId}`, { headers: magiceden });
             const createANW = createCALL.data.activities;
             const createRES = createANW.filter(activity => activity.newOwner.toLowerCase() == wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
 
@@ -188,7 +191,7 @@ async function ordiProfit(slug, wallet, time) {
 
                 // On vérifie les mints de NFT, l'une des deux méthodes Ordinals.
                 // On fait le call pour commencer.
-                const mintCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=${token.tokenInscription}`, { headers: magiceden });
+                const mintCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=${token.tokenId}`, { headers: magiceden });
                 const mintANW = mintCALL.data.activities;
                 const mintRES = mintANW.filter(activity => activity.newOwner.toLowerCase() == wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
 
@@ -395,7 +398,7 @@ async function ordiProfitMultiple(slug, wallets, time) {
 
                 // On vérifie les liens de création de NFT, l'une des deux méthodes Ordinals.
                 // On fait le call pour commencer.
-                const createCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=${token.tokenInscription}`, { headers: magiceden });
+                const createCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=${token}`, { headers: magiceden });
                 const createANW = createCALL.data.activities;
                 const createRES = createANW.filter(activity => activity.newOwner.toLowerCase() == wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
 
@@ -414,7 +417,7 @@ async function ordiProfitMultiple(slug, wallets, time) {
 
                     // On vérifie les mints de NFT, l'une des deux méthodes Ordinals.
                     // On fait le call pour commencer.
-                    const mintCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=${token.tokenInscription}`, { headers: magiceden });
+                    const mintCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=${token}`, { headers: magiceden });
                     const mintANW = mintCALL.data.activities;
                     const mintRES = mintANW.filter(activity => activity.newOwner.toLowerCase() == wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
 
@@ -480,7 +483,7 @@ async function ordiProfitMultiple(slug, wallets, time) {
 
                 // On vérifie les liens de création de NFT, l'une des deux méthodes Ordinals.
                 // On fait le call pour commencer.
-                const createCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=${token.tokenInscription}`, { headers: magiceden });
+                const createCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=${token.tokenId}`, { headers: magiceden });
                 const createANW = createCALL.data.activities;
                 const createRES = createANW.filter(activity => activity.newOwner.toLowerCase() == wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
 
@@ -499,7 +502,7 @@ async function ordiProfitMultiple(slug, wallets, time) {
 
                     // On vérifie les mints de NFT, l'une des deux méthodes Ordinals.
                     // On fait le call pour commencer.
-                    const mintCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=${token.tokenInscription}`, { headers: magiceden });
+                    const mintCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=${token.tokenId}`, { headers: magiceden });
                     const mintANW = mintCALL.data.activities;
                     const mintRES = mintANW.filter(activity => activity.newOwner.toLowerCase() == wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
 

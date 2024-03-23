@@ -74,7 +74,7 @@ wssBase.eth.subscribe('newBlockHeaders', async (error, header) => {
 
                     FTSnipeUserExec(transaction)
 
-                    newFriendtechUser(transaction)
+                   // newFriendtechUser(transaction)
 
 
                 }

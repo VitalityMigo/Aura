@@ -89,12 +89,23 @@ async function ordiProfit(slug, wallet, time) {
 
             if (createRES.length > 0) {
                 // C'est bien une création donc on récupère la transaction
-                // comme ça.
+                // comme ça. On vérifie quad même que c'est un airdrop.
                 const txn = await axios.get(`https://mempool.space/api/tx/${createRES[0].txId}`)
-                data.mintValue += createRES[0].txValue / 10 ** decimals
-                data.mintGas += txn.data.fee / 10 ** decimals
-                data.mint++
-                data.trade++
+
+                // On vérifie que c'est pas un airdrop en regardant le nombre de personne qui ont reçu des tokens dans
+                // cette transaction. Si c'est plus que 1, alors on considère que c'est un airdrop. Possible de regarder combien
+                // notre user a payé en particulier.
+                const receivers = txn.data.vout.length
+                if (receivers === 1) {
+                    // Ici il y'a un receiver, on considère que c'est un mint.
+                    data.mintValue += createRES[0].txValue / 10 ** decimals
+                    data.mintGas += txn.data.fee / 10 ** decimals
+                    data.mint++
+                    data.trade++
+                } else {
+                    // A l'inverse, ici il y'a plusieurs receiver, on considère que c'est un airdrop.
+                    data.transfer++
+                }
 
             } else {
                 // Ce n'est ni une création de NFT, ni un buy classique. Donc cela peut être un mint ou un transfer
@@ -105,14 +116,13 @@ async function ordiProfit(slug, wallet, time) {
                 const mintCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=${token}`, { headers: magiceden });
                 const mintANW = mintCALL.data.activities;
                 const mintRES = mintANW.filter(activity => activity.newOwner.toLowerCase() == wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
-                console.log(token.tokenInscription)
-                console.log(token.tokenId)
-                console.log(mintANW)
 
                 if (mintRES.length > 0) {
                     // C'est bien un mint, donc on ajoute les informations aux mints.
                     // On met tout ça dans l'objet data.
                     const txn = await axios.get(`https://mempool.space/api/tx/${mintRES[0].txId}`)
+                    console.log("Mint")
+                    console.log(txn.data)
                     data.mintValue += mintRES[0].listedPrice / 10 ** decimals
                     data.mintGas += txn.data.fee / 10 ** decimals
                     data.mint++
@@ -141,8 +151,8 @@ async function ordiProfit(slug, wallet, time) {
 
         // On calcule le prix de vente du token et on ajoute cela à la DB, ensuite on calculera
         // le prix d'achat du token et ça nous donnera le PnL sur le token.
-        const txn = await axios.get(`https://mempool.space/api/tx/${token.txId}`)
-        data.sellGas += txn.data.fee / 10 ** decimals
+        // const txn = await axios.get(`https://mempool.space/api/tx/${token.txId}`) // Pareil qu'en dessous
+        // data.sellGas += txn.data.fee / 10 ** decimals // Ici on enlève car les gas sont payés par le user
         data.sellValue += token.listedPrice / 10 ** decimals
         data.sell++
         data.trade++
@@ -178,12 +188,24 @@ async function ordiProfit(slug, wallet, time) {
 
             if (createRES.length > 0) {
                 // C'est bien une création donc on récupère la transaction
-                // comme ça.
+                // comme ça. On vérifie quad même que c'est un airdrop.
                 const txn = await axios.get(`https://mempool.space/api/tx/${createRES[0].txId}`)
-                data.mintValue += createRES[0].txValue / 10 ** decimals
-                data.mintGas += txn.data.fee / 10 ** decimals
-                data.mint++
-                data.trade++
+
+                // On vérifie que c'est pas un airdrop en regardant le nombre de personne qui ont reçu des tokens dans
+                // cette transaction. Si c'est plus que 1, alors on considère que c'est un airdrop. Possible de regarder combien
+                // notre user a payé en particulier.
+                const receivers = txn.data.vout.length
+
+                if (receivers === 1) {
+                    // Ici il y'a un receiver, on considère que c'est un mint.
+                    data.mintValue += createRES[0].txValue / 10 ** decimals
+                    data.mintGas += txn.data.fee / 10 ** decimals
+                    data.mint++
+                    data.trade++
+                } else {
+                    // A l'inverse, ici il y'a plusieurs receiver, on considère que c'est un airdrop.
+                    data.transfer++
+                }
 
             } else {
                 // Ce n'est ni une création de NFT, ni un buy classique. Donc cela peut être un mint ou un transfer
@@ -404,12 +426,23 @@ async function ordiProfitMultiple(slug, wallets, time) {
 
                 if (createRES.length > 0) {
                     // C'est bien une création donc on récupère la transaction
-                    // comme ça.
+                    // comme ça. On vérifie quad même que c'est un airdrop.
                     const txn = await axios.get(`https://mempool.space/api/tx/${createRES[0].txId}`)
-                    data.mintValue += createRES[0].txValue / 10 ** decimals
-                    data.mintGas += txn.data.fee / 10 ** decimals
-                    data.mint++
-                    data.trade++
+
+                    // On vérifie que c'est pas un airdrop en regardant le nombre de personne qui ont reçu des tokens dans
+                    // cette transaction. Si c'est plus que 1, alors on considère que c'est un airdrop. Possible de regarder combien
+                    // notre user a payé en particulier.
+                    const receivers = txn.data.vout.length
+                    if (receivers === 1) {
+                        // Ici il y'a un receiver, on considère que c'est un mint.
+                        data.mintValue += createRES[0].txValue / 10 ** decimals
+                        data.mintGas += txn.data.fee / 10 ** decimals
+                        data.mint++
+                        data.trade++
+                    } else {
+                        // A l'inverse, ici il y'a plusieurs receiver, on considère que c'est un airdrop.
+                        data.transfer++
+                    }
 
                 } else {
                     // Ce n'est ni une création de NFT, ni un buy classique. Donc cela peut être un mint ou un transfer
@@ -452,8 +485,8 @@ async function ordiProfitMultiple(slug, wallets, time) {
 
             // On calcule le prix de vente du token et on ajoute cela à la DB, ensuite on calculera
             // le prix d'achat du token et ça nous donnera le PnL sur le token.
-            const txn = await axios.get(`https://mempool.space/api/tx/${token.txId}`)
-            data.sellGas += txn.data.fee / 10 ** decimals
+            // const txn = await axios.get(`https://mempool.space/api/tx/${token.txId}`) // Pareil qu'en dessous
+            // data.sellGas += txn.data.fee / 10 ** decimals // Ici on enlève car les gas sont payés par le user
             data.sellValue += token.listedPrice / 10 ** decimals
             data.sell++
             data.trade++
@@ -489,12 +522,23 @@ async function ordiProfitMultiple(slug, wallets, time) {
 
                 if (createRES.length > 0) {
                     // C'est bien une création donc on récupère la transaction
-                    // comme ça.
+                    // comme ça. On vérifie quad même que c'est un airdrop.
                     const txn = await axios.get(`https://mempool.space/api/tx/${createRES[0].txId}`)
-                    data.mintValue += createRES[0].txValue / 10 ** decimals
-                    data.mintGas += txn.data.fee / 10 ** decimals
-                    data.mint++
-                    data.trade++
+
+                    // On vérifie que c'est pas un airdrop en regardant le nombre de personne qui ont reçu des tokens dans
+                    // cette transaction. Si c'est plus que 1, alors on considère que c'est un airdrop. Possible de regarder combien
+                    // notre user a payé en particulier.
+                    const receivers = txn.data.vout.length
+                    if (receivers === 1) {
+                        // Ici il y'a un receiver, on considère que c'est un mint.
+                        data.mintValue += createRES[0].txValue / 10 ** decimals
+                        data.mintGas += txn.data.fee / 10 ** decimals
+                        data.mint++
+                        data.trade++
+                    } else {
+                        // A l'inverse, ici il y'a plusieurs receiver, on considère que c'est un airdrop.
+                        data.transfer++
+                    }
 
                 } else {
                     // Ce n'est ni une création de NFT, ni un buy classique. Donc cela peut être un mint ou un transfer

@@ -27,7 +27,4 @@ function formatCoinValueSign(number, decimal) {
 }
 
 
-
-
-
 module.exports = formatCoinValueSign;

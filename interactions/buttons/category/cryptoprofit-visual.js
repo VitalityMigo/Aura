@@ -29,7 +29,7 @@ registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
 registerFont("./visual/eglfamily/font/roboto.ttf", { family: "roboto" })
 registerFont("./visual/eglfamily/font/robotovr.ttf", { family: "rbt" })
-
+registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UtmFutura" })
 
 
 module.exports = {
@@ -96,7 +96,9 @@ module.exports = {
         let potentialRoiFormatted = "0.00"
         let totalBuy = JSON.parse(lastInteractionRcprofit.dataValues.totalTradeCount).buy
         let totalSell = JSON.parse(lastInteractionRcprofit.dataValues.totalTradeCount).sell
-
+        let symbol = lastInteractionRcprofit.dataValues.embed1
+        let avgBuyPrice = JSON.parse(lastInteractionRcprofit.dataValues.embed2).avgBuy
+        console.log(avgBuyPrice)
 
 
 
@@ -125,9 +127,7 @@ module.exports = {
         }
 
 
-
-
-
+        
         if (serverId === "949291624389816331") {
           // Rolls Chasers
 
@@ -883,131 +883,52 @@ module.exports = {
           const templateOneCollection = await loadImage("./visual/alphabirds/permanent/cryptoprofittemplate1.png");
 
 
-          const canvasFormatted = createCanvas(1000, 1000);
+          const canvasFormatted = createCanvas(1920, 1080);
           const ctx = canvasFormatted.getContext('2d');
 
           ctx.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
 
 
-
-
-          ctx.font = "bold 58px SFTransrobotic";
-          ctx.textBaseline = "alphabetic";
-          const MAX_WIDTH = 766;
-          let fontSize = 58;
-
-
+          const symbolTXT = '$' + symbol
+          ctx.font = " 76px UtmFutura";
           ctx.fillStyle = "#ffffff";
-          let collectionNameTextSize = ctx.measureText(collectionName).width;
-
-          while (collectionNameTextSize > MAX_WIDTH) {
-            fontSize -= 0.5;
-            ctx.font = `bold ${fontSize}px Futura`;
-            collectionNameTextSize = ctx.measureText(collectionName).width;
-          }
-
-          ctx.font = `bold ${fontSize}px SFTransrobotic`;
-          ctx.textBaseline = "middle";
-          ctx.fillText(collectionName, 40, 542);
-          ctx.textBaseline = "alphabetic";
+          ctx.fillText(symbolTXT, 217, 423);
 
 
-
-
-
-
-
-
-          //Mint COUNT
-          ctx.font = "bold 28px Futura";
+          const profitTXT = parseFloat(potentialProfit).toFixed(3)
+          ctx.font = " 88px UtmFutura";
           ctx.fillStyle = "#ffffff";
-          ctx.fillText(formatNumberVisual(buyCount), 343, 726);
+          ctx.fillText(profitTXT, 309, 754);
 
-          //BUY COUNT
-          ctx.font = "bold 28px Futura";
+          const roiTXT = parseFloat(potentialRoi).toFixed(1) + "%"
+          ctx.font = " 50px UtmFutura";
+          ctx.fillStyle = "#828282";
+          ctx.fillText(roiTXT, 354, 555);
+
+          const avgBuyTXT = parseFloat(avgBuyPrice).toFixed(3)
+          ctx.font = " 50px UtmFutura";
+          ctx.fillStyle = "#828282";
+          ctx.fillText(avgBuyTXT, 512, 611);
+
+          const buyTXT = "$" + formatDollars(totalBuy * ethUsdPrice)
+          ctx.font = " 50px UtmFutura";
+          ctx.fillStyle = "#828282";
+          ctx.fillText(buyTXT, 658, 817);
+
+          const profitUsdTXT = "$" + formatDollars(potentialProfit * ethUsdPrice)
+          ctx.font = " 50px UtmFutura";
+          ctx.fillStyle = "#828282";
+          ctx.fillText(profitUsdTXT, 621, 496);
+
+          const name = "@" + authorName.toUpperCase()
+          ctx.font = " 33px UtmFutura";
           ctx.fillStyle = "#ffffff";
-          ctx.fillText(airdropCount.toString(), 343, 774);
-
-          //AVG SPENT VALUE
-          ctx.font = "bold 28px Futura";
-          ctx.fillStyle = "#ffffff";
-          ctx.fillText((formatNumberVisual(avgBuy)) + "Ξ", 343, 823);
-
-          //AVG SALE VALUE
-          ctx.font = "bold 28px Futura";
-          ctx.fillStyle = "#ffffff";
-          ctx.fillText((formatNumberVisual(avgSold), 2) + "Ξ", 343, 872);
-
-
-          //SOLD COUNT
-          ctx.font = "bold 28px Futura";
-          ctx.fillStyle = "#ffffff";
-          ctx.fillText(formatNumberVisual(soldCount), 840, 726);
-
-          //REMAINING COUNT
-          ctx.font = "bold 28px Futura";
-          ctx.fillStyle = "#ffffff";
-          ctx.fillText(formatNumberVisual(remaining), 840, 774);
-
-
-          //TOTAL HELD VALUE
-          ctx.font = "bold 28px Futura";
-          ctx.fillStyle = "#ffffff";
-          ctx.fillText((parseFloat(remaining * floorPrice).toFixed(3)).toString() + "Ξ", 840, 823);
-
-          //REALIZED PROFIT
-          ctx.font = "bold 28px Futura";
-          ctx.fillStyle = "#ffffff";
-          ctx.fillText(parseFloat(realisedProfit).toFixed(3) + "Ξ", 840, 872);
-
-          //REALIZED ROI
-          ctx.font = "bold 35px SFTransrobotic";
-          if (potentialProfit >= 0) { ctx.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctx.fillStyle = "#e60015"; }
-          ctx.fillText(potentialRoiFormatted.toString() + "%", 840, 540);
-
-          //POTENTIAL PROFIT (USD)
-          ctx.font = "bold 80px SFTransrobotic";
-          if (potentialProfit >= 0) { ctx.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctx.fillStyle = "#e60015"; }
-          ctx.fillText("$" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))), 45, 653);
-
-          //POTENTIAL PROFIT (ETH)
-          ctx.font = "bold 80px SFTransrobotic";
-          if (potentialProfit >= 0) { ctx.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctx.fillStyle = "#e60015"; }
-          ctx.fillText(parseFloat(potentialProfit).toFixed(3) + "Ξ", 547, 653);
-
-
-
-
-
-
-          //NOM USER
-          ctx.font = "bold 34px SFTransrobotic";
-          ctx.fillStyle = "#ffffff";
-          const userNameSize = ctx.measureText(authorName.toString()).width;
-          ctx.fillText(authorName.toString(), (975 - userNameSize), 973);
-
-
-          // Dessin du cercle de découpe
-          const imagesize = 48;
-          const imagex = 965 - userNameSize - imagesize;
-          const imagey = 940;
-          const profileImage = await loadImage(userLogo);
-          ctx.beginPath();
-          ctx.arc(imagex + imagesize / 2, imagey + imagesize / 2, imagesize / 2, 0, Math.PI * 2, true);
-          ctx.closePath();
-          ctx.clip();
-          ctx.drawImage(profileImage, imagex, imagey, imagesize, imagesize);
-
-
-
-          const randomString = generateRandomString(10);
+          ctx.fillText(name, 87, 1042);
 
           // Dessiner l'image de profil sur le canvas
           const buffer2 = canvasFormatted.toBuffer('image/png');
 
           await interaction.editReply({ files: [buffer2] })
-
-
 
         } else {
 
@@ -1280,7 +1201,15 @@ module.exports = {
 
 
 
-
-
-
-
+function formatDollars(number) {
+  if (number >= 1000000000) {
+    return parseFloat(number / 1000000000).toFixed(0) + 'B';
+  }
+  if (number >= 1000000) {
+    return parseFloat(number / 1000000).toFixed(0) + 'M';
+  }
+  if (number >= 1000) {
+    return parseFloat(number / 1000).toFixed(0) + 'K';
+  }
+  return parseFloat(number).toFixed(0);
+}

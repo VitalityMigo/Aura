@@ -38,6 +38,8 @@ async function coinProfitSingle(cont, wall, time) {
             avgGas: 0,
             avgMCBuy: 0,
             avgMCSell: 0,
+            avgBuy: 0,
+            avgSell: 0,
             currentMC: 0,
             realizedPNL: 0,
             potentialPNL: 0,
@@ -305,8 +307,8 @@ async function coinProfitSingle(cont, wall, time) {
         if (data.heldAmount > 0) { data.heldValue = (data.heldAmount * priceETH) }
 
         // On calcul les valeurs d'average
-        if (data.buyValue) { data.avgMCBuy = (data.buyValue / data.buyAmount) * supply * ethPrice }
-        if (data.sellValue) { data.avgMCSell = (data.sellValue / data.sellAmount) * supply * ethPrice }
+        if (data.buyValue) { data.avgMCBuy = (data.buyValue / data.buyAmount) * supply * ethPrice; data.avgBuy = (data.buyValue / data.buyAmount) * ethPrice }
+        if (data.sellValue) { data.avgMCSell = (data.sellValue / data.sellAmount) * supply * ethPrice; data.avgSell = (data.sellValue / data.sellAmount) * ethPrice }
         data.currentMC = supply * priceUSD
 
         // On calcul les valeurs de gas
@@ -395,6 +397,8 @@ async function coinProfitMultipleWallet(cont, wall, time) {
             avgGas: 0,
             avgMCBuy: 0,
             avgMCSell: 0,
+            avgBuy: 0,
+            avgSell: 0,
             currentMC: 0,
             realizedPNL: 0,
             potentialPNL: 0,
@@ -670,8 +674,8 @@ async function coinProfitMultipleWallet(cont, wall, time) {
         if (data.heldAmount > 0) { data.heldValue = (data.heldAmount * priceETH) }
 
         // On calcul les valeurs d'average
-        if (data.buyValue) { data.avgMCBuy = (data.buyValue / data.buyAmount) * supply * ethPrice }
-        if (data.sellValue) { data.avgMCSell = (data.sellValue / data.sellAmount) * supply * ethPrice }
+        if (data.buyValue) { data.avgMCBuy = (data.buyValue / data.buyAmount) * supply * ethPrice; data.avgBuy = (data.buyValue / data.buyAmount) * ethPrice }
+        if (data.sellValue) { data.avgMCSell = (data.sellValue / data.sellAmount) * supply * ethPrice; data.avgSell = (data.sellValue / data.sellAmount) * ethPrice }
         data.currentMC = supply * priceUSD
 
         // On calcul les valeurs de gas

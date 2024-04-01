@@ -1000,28 +1000,79 @@ module.exports = {
           const avgSoldText = ctxFormatted.measureText((parseFloat(avgSold).toFixed(3)).toString() + sign).width
           ctxFormatted.fillText((parseFloat(avgSold).toFixed(3)).toString() + sign, 812 - avgSoldText / 2, 585);
 
+          if (chain.toLowerCase() == "eth") {
 
-          //REALIZED PROFIT
-          ctxFormatted.font = "700 35px 'Fira Code'";
-          if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-          const realisedProfitText = ctxFormatted.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + sign).width
-          ctxFormatted.fillText(realisedProfit.toString() + sign, 190 - realisedProfitText / 2, 749);
+            //REALIZED PROFIT
+            ctxFormatted.font = "700 35px 'Fira Code'";
+            if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+            const realisedProfitText = ctxFormatted.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + sign).width
+            ctxFormatted.fillText(realisedProfit.toString() + sign, 190 - realisedProfitText / 2, 749);
 
-          //Potential PROFIT
-          ctxFormatted.font = "700 35px 'Fira Code'";
-          if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-          const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + sign).width
-          ctxFormatted.fillText(potentialProfit.toString() + sign, 500 - potentialProfitText / 2, 749);
+            //Potential PROFIT
+            ctxFormatted.font = "700 35px 'Fira Code'";
+            if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+            const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + sign).width
+            ctxFormatted.fillText(potentialProfit.toString() + sign, 500 - potentialProfitText / 2, 749);
 
-          //Potential ROI
-          ctxFormatted.font = "700 35px 'Fira Code'";
-          if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-          if (potentialRoiFormatted.toLowerCase() !== "infinity") {
-            const potentialRoiText = ctxFormatted.measureText(potentialRoiFormatted.toString() + "%").width
-            ctxFormatted.fillText(potentialRoiFormatted.toString() + "%", 812 - potentialRoiText / 2, 749);
+            //Potential ROI
+            ctxFormatted.font = "700 35px 'Fira Code'";
+            if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+            if (potentialRoiFormatted.toLowerCase() !== "infinity") {
+              const potentialRoiText = ctxFormatted.measureText(potentialRoiFormatted.toString() + "%").width
+              ctxFormatted.fillText(potentialRoiFormatted.toString() + "%", 812 - potentialRoiText / 2, 749);
+            } else {
+              const potentialRoiText = ctxFormatted.measureText(potentialRoiFormatted.toString()).width
+              ctxFormatted.fillText(potentialRoiFormatted.toString(), 812 - potentialRoiText / 2, 749);
+            }
+
           } else {
-            const potentialRoiText = ctxFormatted.measureText(potentialRoiFormatted.toString()).width
-            ctxFormatted.fillText(potentialRoiFormatted.toString(), 812 - potentialRoiText / 2, 749);
+            // C'est BTC.
+
+            //REALIZED PROFIT
+            ctxFormatted.font = "700 35px 'Fira Code'";
+            if (realisedProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+            const realisedProfitText = ctxFormatted.measureText((parseFloat(realisedProfit).toFixed(3)).toString() + sign).width
+            ctxFormatted.fillText(realisedProfit.toString() + sign, 190 - realisedProfitText / 2, 730);
+            // On ajoute le prix en USD.
+            const realisedUSD = "($" + parseFloat(realisedProfit * nativePrice).toFixed(0) + ")"
+            ctxFormatted.font = "700 22px 'Fira Code'";
+            const realisedUSDText = ctxFormatted.measureText(realisedUSD.toString()).width
+            ctxFormatted.fillText(realisedUSD, 190 - realisedUSDText / 2, 763);
+
+            //Potential PROFIT
+            ctxFormatted.font = "700 35px 'Fira Code'";
+            if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+            const potentialProfitText = ctxFormatted.measureText((parseFloat(potentialProfit).toFixed(3)).toString() + sign).width
+            ctxFormatted.fillText(potentialProfit.toString() + sign, 500 - potentialProfitText / 2, 730);
+            // On ajoute le prix en USD.
+            const potentialUSD = "($" + parseFloat(potentialProfit * nativePrice).toFixed(0) + ")"
+            ctxFormatted.font = "700 22px 'Fira Code'";
+            const potentialUSDText = ctxFormatted.measureText(potentialUSD.toString()).width
+            ctxFormatted.fillText(potentialUSD, 500 - potentialUSDText / 2, 763);
+
+            //Potential ROI
+            ctxFormatted.font = "700 35px 'Fira Code'";
+            if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
+            if (potentialRoiFormatted.toLowerCase() !== "infinity") {
+              const potentialRoiText = ctxFormatted.measureText(potentialRoiFormatted.toString() + "%").width
+              ctxFormatted.fillText(potentialRoiFormatted.toString() + "%", 812 - potentialRoiText / 2, 730);
+              // On ajoute le prix en USD.
+              const multiplier = "(x" + parseFloat(1 + parseFloat(potentialRoiFormatted) / 100).toFixed(1) + ")"
+              ctxFormatted.font = "700 22px 'Fira Code'";
+              const potentialUSDText = ctxFormatted.measureText(multiplier.toString()).width
+              ctxFormatted.fillText(multiplier, 812 - potentialUSDText / 2, 763);
+
+            } else {
+
+              const potentialRoiText = ctxFormatted.measureText(potentialRoiFormatted.toString()).width
+              ctxFormatted.fillText(potentialRoiFormatted.toString(), 812 - potentialRoiText / 2, 730);
+              // On ajoute le mulitplicateur.
+              const multiplier = "(x ∞)"
+              ctxFormatted.font = "700 22px 'Fira Code'";
+              const potentialUSDText = ctxFormatted.measureText(multiplier.toString()).width
+              ctxFormatted.fillText(multiplier, 812 - potentialUSDText / 2, 763);
+            }
+
           }
 
           ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

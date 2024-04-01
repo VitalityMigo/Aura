@@ -319,14 +319,6 @@ module.exports = {
 
                             } else if (subcommand === 'profit') {
 
-                                // On ajoute le boutton
-                                const visualBTN = new ActionRowBuilder()
-                                    .addComponents(
-                                        new ButtonBuilder()
-                                            .setCustomId('profitvisual-button')
-                                            .setLabel('visual')
-                                            .setStyle(2)
-                                    );
 
                                 /// API de Magic Eden renvoi "trop de request", à vérifier \\\
                                 const slug = interaction.options.getString("collection");
@@ -349,6 +341,25 @@ module.exports = {
                                         const raw = data.raw
                                         const prettier = data.prettier
                                         const collection = data.collection
+
+                                        // On rajoute un warning car parfois, on ne trouve pas le mint value correctement.
+                                        // On compense avec un boutton permettant de modifier cette value.
+                                        const warning = "*Some inscription creation transactions may not be detected by the bot. You can adjust the total mint value with the button below in case of an error.*"
+
+                                        // Maintenat, on rajoute un composant aux bouttons s'il y'a plus qu'un mint.
+                                        // Cela permet de limiter la triche.
+                                        // On ajoute le boutton
+                                        const visualBTN = new ActionRowBuilder()
+                                            .addComponents(
+                                                new ButtonBuilder()
+                                                    .setCustomId('profitvisual-button')
+                                                    .setLabel('visual')
+                                                    .setStyle(2),
+                                                new ButtonBuilder().setCustomId('ordiprofit-edit-mintvalue-button')
+                                                    .setLabel('📝 Edit Mint Value')
+                                                    .setStyle(2)
+                                                    .setDisabled(raw.mint ? false : true)
+                                            );
 
                                         //Embed getRCprofitPrecisedAll
                                         const answer = new EmbedBuilder().setColor("#060A8F")
@@ -389,7 +400,7 @@ module.exports = {
                                                 { name: "Potential P&L:", value: "`" + prettier.potentialPNL + "`", inline: true },
                                                 { name: "ROI:", value: "`" + prettier.potentialROI + "`", inline: true },
 
-                                                { name: "Links", value: '[magiceden](https://magiceden.io/ordinals/marketplace/' + slug + ") ∙ " + '[ordi.market](https://ordinals.market/collection/' + slug + ") ∙ " + '[okx](https://www.okx.com/fr/web3/marketplace/nft/collection/btc/' + slug + ") ∙ " + '[ordi.wallet](https://ordinalswallet.com/collection/' + slug + ") ∙ " + '[memepool](https://mempool.space/fr/address/' + wallet + ')', inline: false },
+                                                { name: "Links", value: '[magiceden](https://magiceden.io/ordinals/marketplace/' + slug + ") ∙ " + '[ordi.market](https://ordinals.market/collection/' + slug + ") ∙ " + '[okx](https://www.okx.com/fr/web3/marketplace/nft/collection/btc/' + slug + ") ∙ " + '[ordi.wallet](https://ordinalswallet.com/collection/' + slug + ") ∙ " + '[memepool](https://mempool.space/fr/address/' + wallet + ')\n\n' + warning, inline: false },
                                             )
                                             .setTimestamp()
                                             .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
@@ -425,7 +436,8 @@ module.exports = {
                                                 sell: raw.sellTotal.toString(),
                                             }),
                                             userAvatar: userAvatar,
-                                            embed1: collection.btcPrice.toString()
+                                            embed1: collection.btcPrice.toString(),
+                                            embed3: JSON.stringify(data)
                                         })
 
                                     } else if (wallet.toLowerCase() === 'all') {
@@ -456,6 +468,25 @@ module.exports = {
                                                 const raw = data.raw
                                                 const prettier = data.prettier
                                                 const collection = data.collection
+
+                                                // On rajoute un warning car parfois, on ne trouve pas le mint value correctement.
+                                                // On compense avec un boutton permettant de modifier cette value.
+                                                const warning = "*Some inscription creation transactions may not be detected by the bot. You can adjust the total mint value with the button below in case of an error.*"
+
+                                                // Maintenat, on rajoute un composant aux bouttons s'il y'a plus qu'un mint.
+                                                // Cela permet de limiter la triche.
+                                                // On ajoute le boutton
+                                                const visualBTN = new ActionRowBuilder()
+                                                    .addComponents(
+                                                        new ButtonBuilder()
+                                                            .setCustomId('profitvisual-button')
+                                                            .setLabel('visual')
+                                                            .setStyle(2),
+                                                        new ButtonBuilder().setCustomId('ordiprofit-edit-mintvalue-button')
+                                                            .setLabel('📝 Edit Mint Value')
+                                                            .setStyle(2)
+                                                            .setDisabled(raw.mint ? false : true)
+                                                    );
 
                                                 //Embed getRCprofitPrecisedAll
                                                 const answer = new EmbedBuilder().setColor("#060A8F")
@@ -496,7 +527,7 @@ module.exports = {
                                                         { name: "Potential P&L:", value: "`" + prettier.potentialPNL + "`", inline: true },
                                                         { name: "ROI:", value: "`" + prettier.potentialROI + "`", inline: true },
 
-                                                        { name: "Links", value: '[magiceden](https://magiceden.io/ordinals/marketplace/' + slug + ") ∙ " + '[ordi.market](https://ordinals.market/collection/' + slug + ") ∙ " + '[okx](https://www.okx.com/fr/web3/marketplace/nft/collection/btc/' + slug + ") ∙ " + '[ordi.wallet](https://ordinalswallet.com/collection/' + slug + ") ∙ " + '[memepool](https://mempool.space/fr/address/' + wallet + ')', inline: false },
+                                                        { name: "Links", value: '[magiceden](https://magiceden.io/ordinals/marketplace/' + slug + ") ∙ " + '[ordi.market](https://ordinals.market/collection/' + slug + ") ∙ " + '[okx](https://www.okx.com/fr/web3/marketplace/nft/collection/btc/' + slug + ") ∙ " + '[ordi.wallet](https://ordinalswallet.com/collection/' + slug + ") ∙ " + '[memepool](https://mempool.space/fr/address/' + wallet + ')\n\n' + warning, inline: false },
                                                     )
                                                     .setTimestamp()
                                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
@@ -532,6 +563,8 @@ module.exports = {
                                                         sell: raw.sellTotal.toString(),
                                                     }),
                                                     userAvatar: userAvatar,
+                                                    embed1: collection.btcPrice.toString(),
+                                                    embed3: JSON.stringify(data)
                                                 })
 
 

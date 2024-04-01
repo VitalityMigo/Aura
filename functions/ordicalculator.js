@@ -260,7 +260,7 @@ async function ordiProfit(slug, wallet, time) {
     data.total = data.buy + data.mint
     data.held = heldIDs.length
     data.heldValue = floor * data.held
-    data.avgHeld = data.heldValue / data.held
+    if (data.held) { data.avgHeld = data.heldValue / data.held }
 
     // On continu avec les average
     if (data.buyTotal) { data.avgBuy = data.buyTotal / data.buy }
@@ -594,7 +594,7 @@ async function ordiProfitMultiple(slug, wallets, time) {
     // Puis les valeurs en plus
     data.total = data.buy + data.mint
     data.heldValue = floor * data.held
-    data.avgHeld = data.heldValue / data.held
+    if (data.held) { data.avgHeld = data.heldValue / data.held }
 
     // On continu avec les average
     if (data.buyTotal) { data.avgBuy = data.buyTotal / data.buy }
@@ -660,6 +660,7 @@ async function ordiProfitMultiple(slug, wallets, time) {
             twitter: twitter,
             discord: discord,
             website: website,
+            btcPrice: btcPrice,
         },
         raw: data,
         prettier: prettier

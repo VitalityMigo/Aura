@@ -425,6 +425,7 @@ module.exports = {
                                                 sell: raw.sellTotal.toString(),
                                             }),
                                             userAvatar: userAvatar,
+                                            embed1: collection.btcPrice.toString()
                                         })
 
                                     } else if (wallet.toLowerCase() === 'all') {

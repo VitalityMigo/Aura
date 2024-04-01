@@ -98,7 +98,6 @@ module.exports = {
         let totalSell = JSON.parse(lastInteractionRcprofit.dataValues.totalTradeCount).sell
         let symbol = lastInteractionRcprofit.dataValues.embed1
         let avgBuyPrice = JSON.parse(lastInteractionRcprofit.dataValues.embed2).avgBuy
-        console.log(avgBuyPrice)
 
 
 

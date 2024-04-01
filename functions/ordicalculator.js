@@ -326,6 +326,7 @@ async function ordiProfit(slug, wallet, time) {
             twitter: twitter,
             discord: discord,
             website: website,
+            btcPrice: btcPrice,
         },
         raw: data,
         prettier: prettier

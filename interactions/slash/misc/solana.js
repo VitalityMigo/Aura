@@ -264,7 +264,11 @@ module.exports = {
                                                         sell: (raw.sellValue - raw.sellGas).toString(),
                                                     }),
                                                     userAvatar: userAvatar,
-                                                    embed1: token.sol.toString()
+                                                    embed1: token.sol.toString(),
+                                                    embed2: JSON.stringify({
+                                                        avgBuy: raw.avgBuy,
+                                                        avgSell: raw.avgSell,
+                                                    }),
                                                 })
 
                                             } else {

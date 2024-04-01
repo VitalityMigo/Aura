@@ -125,7 +125,8 @@ module.exports = {
 
 
         let sign = "Ξ"
-        if (chain.toLowerCase() == "btc") { sign = "B" }
+        let nativePrice = ethUsdPrice
+        if (chain.toLowerCase() == "btc") { sign = "B"; nativePrice = parseFloat(lastInteractionRcprofit.dataValues.embed1) }
 
         //₿
 
@@ -892,8 +893,8 @@ module.exports = {
         } else if (serverId == "965053346794840174") {
           // Alpha Birds
 
-          const templateOneCollection = await loadImage("./visual/alphabirds/permanent/profittemplate1.png");
-
+          let templateOneCollection = await loadImage("./visual/alphabirds/permanent/profittemplate1.png");
+          if (chain.toLowerCase() == "btc") { templateOneCollection = await loadImage("./visual/alphabirds/permanent/ordiprofitemplate1.png"); }
 
           const canvasFormatted = createCanvas(1920, 1080);
           const ctx = canvasFormatted.getContext('2d');
@@ -906,8 +907,7 @@ module.exports = {
           let fontSize = 70;
           ctx.font = `${fontSize}px UtmFutura`;
           let size = ctx.measureText(collectionName).width;
-          console.log(collectionName)
-          console.log(size)
+
           while (size > MAX_WIDTH) {
             fontSize -= 1;
             ctx.font = `700 ${fontSize}px 'Fira Code'`;
@@ -933,12 +933,12 @@ module.exports = {
           ctx.fillStyle = "#828282";
           ctx.fillText(avgBuyTXT, 512, 611);
 
-          const buyTXT = "$" + formatDollars(totalBuy * ethUsdPrice)
+          const buyTXT = "$" + formatDollars(totalBuy * nativePrice)
           ctx.font = " 50px UtmFutura";
           ctx.fillStyle = "#828282";
           ctx.fillText(buyTXT, 658, 817);
 
-          const profitUsdTXT = "$" + formatDollars(potentialProfit * ethUsdPrice)
+          const profitUsdTXT = "$" + formatDollars(potentialProfit * nativePrice)
           ctx.font = " 50px UtmFutura";
           ctx.fillStyle = "#828282";
           ctx.fillText(profitUsdTXT, 621, 496);
@@ -956,16 +956,12 @@ module.exports = {
         } else {
 
 
-
           const templateOneCollection = await loadImage("./visual/aura/permanent/profittemplate1.png");
-
-
 
           const canvasFormatted = createCanvas(1000, 1000);
           const ctxFormatted = canvasFormatted.getContext('2d');
 
           ctxFormatted.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
-
 
 
           //MINT COUNT

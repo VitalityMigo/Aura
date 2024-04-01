@@ -31,6 +31,8 @@ async function solCoinProfit(contract, wallet, time) {
             avgGas: 0,
             avgMCBuy: 0,
             avgMCSell: 0,
+            avgBuy: 0,
+            avgSell: 0,
             currentMC: 0,
             realizedPNL: 0,
             potentialPNL: 0,
@@ -202,8 +204,8 @@ async function solCoinProfit(contract, wallet, time) {
         if (data.heldAmount > 0) { data.heldValue = (data.heldAmount * priceSOL) }
 
         // On calcul les valeurs d'average
-        if (data.buyValue) { data.avgMCBuy = (data.buyValue / data.buyAmount) * supply * solPrice }
-        if (data.sellValue) { data.avgMCSell = (data.sellValue / data.sellAmount) * supply * solPrice }
+        if (data.buyValue) { data.avgMCBuy = (data.buyValue / data.buyAmount) * supply * solPrice; data.avgBuy = (data.buyValue / data.buyAmount) * solPrice }
+        if (data.sellValue) { data.avgMCSell = (data.sellValue / data.sellAmount) * supply * solPrice; data.avgSell = (data.sellValue / data.sellAmount) * solPrice }
         data.currentMC = supply * priceUSD
 
         // On finit les valeus du tableau

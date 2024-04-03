@@ -59,14 +59,14 @@ module.exports = {
 
                 const passwordAdminDashboard = new ModalBuilder()
                     .setCustomId('ordiprofit-edit-mintvalue-modal')
-                    .setTitle('Edit Mint Value');
+                    .setTitle('Edit Total Mint Value');
 
                 // Add components to modal
 
                 // Create the text input components
                 const mintValue = new TextInputBuilder()
                     .setCustomId('ordiprofit-edit-mintvalue-modalR1')
-                    .setLabel("New Mint Value (including fees)")
+                    .setLabel("New Total Mint Value (including fees)")
                     .setPlaceholder("The value in BTC (i.g 0.003 for 0.003 BTC)")
                     .setStyle(TextInputStyle.Short)
                     .setMaxLength(100)

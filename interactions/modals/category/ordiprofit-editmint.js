@@ -83,14 +83,14 @@ module.exports = {
                 }
 
                 // On formatte les data avant de les renvoyer
-                prettier.mintValue = parseFloat(raw.mintValue).toFixed(3) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.mintValue * btcPrice).toFixed(0)) + ")"
-                prettier.mintGas = parseFloat(raw.mintGas).toFixed(3) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.mintGas * btcPrice).toFixed(0)) + ")"
-                prettier.mintTotal = parseFloat(raw.mintTotal).toFixed(3) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.mintTotal * btcPrice).toFixed(0)) + ")"
-                prettier.avgMint = parseFloat(raw.avgMint).toFixed(3) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.avgMint * btcPrice).toFixed(0)) + ")"
-                prettier.avgTotal = parseFloat(raw.avgTotal).toFixed(3) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.avgTotal * btcPrice).toFixed(0)) + ")"
-                prettier.avgGas = parseFloat(raw.avgGas).toFixed(3) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.avgGas * btcPrice).toFixed(0)) + ")"
-                prettier.realisedPNL = parseFloat(raw.realisedPNL).toFixed(3) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.realisedPNL * btcPrice).toFixed(0)) + ")"
-                prettier.potentialPNL = parseFloat(raw.potentialPNL).toFixed(3) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.potentialPNL * btcPrice).toFixed(0)) + ")"
+                prettier.mintValue = parseFloat(raw.mintValue).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.mintValue * btcPrice).toFixed(0)) + ")"
+                prettier.mintGas = parseFloat(raw.mintGas).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.mintGas * btcPrice).toFixed(0)) + ")"
+                prettier.mintTotal = parseFloat(raw.mintTotal).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.mintTotal * btcPrice).toFixed(0)) + ")"
+                prettier.avgMint = parseFloat(raw.avgMint).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.avgMint * btcPrice).toFixed(0)) + ")"
+                prettier.avgTotal = parseFloat(raw.avgTotal).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.avgTotal * btcPrice).toFixed(0)) + ")"
+                prettier.avgGas = parseFloat(raw.avgGas).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.avgGas * btcPrice).toFixed(0)) + ")"
+                prettier.realisedPNL = parseFloat(raw.realisedPNL).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.realisedPNL * btcPrice).toFixed(0)) + ")"
+                prettier.potentialPNL = parseFloat(raw.potentialPNL).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(raw.potentialPNL * btcPrice).toFixed(0)) + ")"
                 prettier.potentialROI = prettierROI
 
 
@@ -113,9 +113,9 @@ module.exports = {
 
 
                 await interactionData.update({
-                    avgBuy: parseFloat(raw.avgTotal).toFixed(3),
-                    realisedProfit: parseFloat(raw.realisedPNL).toFixed(3),
-                    potentialProfit: parseFloat(raw.potentialPNL).toFixed(3),
+                    avgBuy: parseFloat(raw.avgTotal).toFixed(4),
+                    realisedProfit: parseFloat(raw.realisedPNL).toFixed(4),
+                    potentialProfit: parseFloat(raw.potentialPNL).toFixed(4),
                     roi: raw.potentialROI.toString(),
                     embed3: JSON.stringify(data),
                 }, { where: { authorId: authorId, commandName: "profit", serverId: serverId } })

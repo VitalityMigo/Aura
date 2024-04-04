@@ -26,6 +26,7 @@ registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTrans
 registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
 registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UtmFutura" })
+registerFont("./visual/taproot/font/luckiest.ttf", { family: "Luckiest" })
 
 
 
@@ -953,6 +954,77 @@ module.exports = {
 
           await interaction.editReply({ files: [buffer2] })
 
+        } else if (serverId == "1090331629827924020") {
+          // Taproot Alpha
+
+          let templateOneCollection
+          if (chain.toLowerCase() == "btc") { templateOneCollection = await loadImage("./visual/taproot/permanent/ordiprofittemplate1.png"); }
+
+          const canvasFormatted = createCanvas(1000, 1000);
+          const ctx = canvasFormatted.getContext('2d');
+
+          ctx.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
+
+
+          // Nom de la collection
+          const MAX_WIDTH = 491
+          let fontSize = 63;
+          ctx.font = `${fontSize}px Luckiest`;
+          let size = ctx.measureText(collectionName).width;
+
+          while (size > MAX_WIDTH) {
+            fontSize -= 1;
+            ctx.font = `700 ${fontSize}px Luckiest`;
+            size = ctx.measureText(collectionName).width;
+          }
+          ctx.fillStyle = "#407E3F";
+          ctx.font = `${fontSize}px Luckiest`;
+          ctx.fillText(collectionName, 92, 392);
+
+
+          const buyCountTXT = parseInt(buyCount) + parseInt(mintCount)
+          ctx.font = " 33px Luckiest";
+          ctx.fillStyle = "#000000";
+          ctx.fillText(buyCountTXT, 350, 468);
+
+          const avgBuyTXT = parseFloat(avgBuy).toFixed(4)
+          ctx.font = " 33px Luckiest";
+          ctx.fillStyle = "#000000";
+          ctx.fillText(avgBuyTXT, 350, 532);
+
+          const roiTXT = parseFloat(potentialRoi).toFixed(1) + "%"
+          ctx.font = " 33px Luckiest";
+          ctx.fillStyle = "#000000";
+          ctx.fillText(roiTXT, 350, 596);
+
+          const profitTXT = parseFloat(potentialProfit).toFixed(4)
+          ctx.font = " 70px Luckiest";
+          ctx.fillStyle = "#000000";
+          ctx.fillText(profitTXT, 180, 738);
+
+
+          // const buyTXT = "$" + formatDollars(totalBuy * nativePrice)
+          // ctx.font = " 50px UtmFutura";
+          // ctx.fillStyle = "#828282";
+          // ctx.fillText(buyTXT, 658, 817);
+
+          const profitUsdTXT = "($" + formatDollars(potentialProfit * nativePrice) + ")"
+          const nativeProfitSize = ctx.measureText(profitTXT).width;
+          ctx.font = " 37px Luckiest";
+          ctx.fillStyle = "#000000";
+          const usdProfitSize = ctx.measureText(profitUsdTXT).width;
+          ctx.fillText(profitUsdTXT, 180 + (nativeProfitSize / 2) - (usdProfitSize / 2), 787);
+
+          const name = "@" + authorName.toUpperCase()
+          ctx.font = " 27px Luckiest";
+          ctx.fillStyle = "#000000";
+          ctx.fillText(name, 45, 980);
+
+          // Dessiner l'image de profil sur le canvas
+          const buffer2 = canvasFormatted.toBuffer('image/png');
+
+          await interaction.editReply({ files: [buffer2] })
+
         } else {
 
 
@@ -1166,7 +1238,7 @@ module.exports = {
           .setTimestamp()
           .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
-        await interaction.reply({ embeds: [setfpEmbedNotForYou], ephemeral: true });
+        await interaction.editReply({ embeds: [setfpEmbedNotForYou], ephemeral: true });
 
 
 
@@ -1271,13 +1343,13 @@ module.exports = {
 
 function formatDollars(number) {
   if (number >= 1000000000) {
-    return parseFloat(number / 1000000000).toFixed(0) + 'B';
+    return parseFloat(number / 1000000000).toFixed(3) + 'B';
   }
   if (number >= 1000000) {
-    return parseFloat(number / 1000000).toFixed(0) + 'M';
+    return parseFloat(number / 1000000).toFixed(2) + 'M';
   }
   if (number >= 1000) {
-    return parseFloat(number / 1000).toFixed(0) + 'K';
+    return parseFloat(number / 1000).toFixed(1) + 'K';
   }
   return parseFloat(number).toFixed(0);
 }

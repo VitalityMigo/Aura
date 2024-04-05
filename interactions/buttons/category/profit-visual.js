@@ -25,7 +25,6 @@ const { registerFont, createCanvas, loadImage } = require('canvas');
 registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
-registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UtmFutura" })
 registerFont("./visual/taproot/font/luckiest.ttf", { family: "Luckiest" })
 
 
@@ -130,7 +129,7 @@ module.exports = {
         if (chain.toLowerCase() == "btc") { sign = "B"; nativePrice = parseFloat(lastInteractionRcprofit.dataValues.embed1) }
 
         //₿
-
+        serverId = '965053346794840174'
         if (serverId === "949291624389816331") {
 
 
@@ -893,6 +892,8 @@ module.exports = {
 
         } else if (serverId == "965053346794840174") {
           // Alpha Birds
+
+          registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UtmFutura" })
 
           let templateOneCollection = await loadImage("./visual/alphabirds/permanent/profittemplate1.png");
           if (chain.toLowerCase() == "btc") { templateOneCollection = await loadImage("./visual/alphabirds/permanent/ordiprofitemplate1.png"); }

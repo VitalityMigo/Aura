@@ -893,7 +893,7 @@ module.exports = {
         } else if (serverId == "965053346794840174") {
           // Alpha Birds
 
-          registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UtmFutura" })
+         registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "utmfutura" })
 
           let templateOneCollection = await loadImage("./visual/alphabirds/permanent/profittemplate1.png");
           if (chain.toLowerCase() == "btc") { templateOneCollection = await loadImage("./visual/alphabirds/permanent/ordiprofitemplate1.png"); }
@@ -907,7 +907,7 @@ module.exports = {
           // Nom de la collection
           const MAX_WIDTH = 670
           let fontSize = 70;
-          ctx.font = `${fontSize}px UtmFutura`;
+          ctx.font = `${fontSize}px utmfutura`;
           let size = ctx.measureText(collectionName).width;
 
           while (size > MAX_WIDTH) {
@@ -916,37 +916,37 @@ module.exports = {
             size = ctx.measureText(collectionName).width;
           }
           ctx.fillStyle = "#ffffff";
-          ctx.font = `${fontSize}px UtmFutura`;
+          ctx.font = `${fontSize}px utmfutura`;
           ctx.fillText(collectionName, 217, 423);
 
 
           const profitTXT = parseFloat(potentialProfit).toFixed(3)
-          ctx.font = " 88px UtmFutura";
+          ctx.font = " 88px utmfutura";
           ctx.fillStyle = "#ffffff";
           ctx.fillText(profitTXT, 310, 754);
 
           const roiTXT = parseFloat(potentialRoi).toFixed(1) + "%"
-          ctx.font = " 50px UtmFutura";
+          ctx.font = " 50px utmfutura";
           ctx.fillStyle = "#828282";
           ctx.fillText(roiTXT, 354, 555);
 
           const avgBuyTXT = parseFloat(avgBuy).toFixed(3)
-          ctx.font = " 50px UtmFutura";
+          ctx.font = " 50px utmfutura";
           ctx.fillStyle = "#828282";
           ctx.fillText(avgBuyTXT, 512, 611);
 
           const buyTXT = "$" + formatDollars(totalBuy * nativePrice)
-          ctx.font = " 50px UtmFutura";
+          ctx.font = " 50px utmfutura";
           ctx.fillStyle = "#828282";
           ctx.fillText(buyTXT, 658, 817);
 
           const profitUsdTXT = "$" + formatDollars(potentialProfit * nativePrice)
-          ctx.font = " 50px UtmFutura";
+          ctx.font = " 50px utmfutura";
           ctx.fillStyle = "#828282";
           ctx.fillText(profitUsdTXT, 621, 496);
 
           const name = "@" + authorName.toUpperCase()
-          ctx.font = " 33px UtmFutura";
+          ctx.font = "33px utmfutura";
           ctx.fillStyle = "#ffffff";
           ctx.fillText(name, 87, 1042);
 

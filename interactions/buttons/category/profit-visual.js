@@ -916,7 +916,7 @@ module.exports = {
             size = ctx.measureText(collectionName).width;
           }
           ctx.fillStyle = "#ffffff";
-          ctx.font = `${fontSize}px SFTransrobotic`;
+          ctx.font = `${fontSize}px EmbassyGothic`;
           ctx.fillText(collectionName, 217, 423);
 
 

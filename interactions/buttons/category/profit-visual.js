@@ -26,7 +26,7 @@ registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTrans
 registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
 registerFont("./visual/taproot/font/luckiest.ttf", { family: "Luckiest" })
-registerFont("/usr/share/fonts/utmfutura.ttf", { family: "UTM Futura Extra", weight: 'extra-bold' })
+registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UTM Futura Extra", weight: 'extra-bold' })
 
 
 

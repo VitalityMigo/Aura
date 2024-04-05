@@ -26,6 +26,7 @@ registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTrans
 registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
 registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
 registerFont("./visual/taproot/font/luckiest.ttf", { family: "Luckiest" })
+registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "utmfutura" })
 
 
 
@@ -129,7 +130,7 @@ module.exports = {
         if (chain.toLowerCase() == "btc") { sign = "B"; nativePrice = parseFloat(lastInteractionRcprofit.dataValues.embed1) }
 
         //₿
-        serverId = '965053346794840174'
+
         if (serverId === "949291624389816331") {
 
 
@@ -893,7 +894,6 @@ module.exports = {
         } else if (serverId == "965053346794840174") {
           // Alpha Birds
 
-         registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "utmfutura" })
 
           let templateOneCollection = await loadImage("./visual/alphabirds/permanent/profittemplate1.png");
           if (chain.toLowerCase() == "btc") { templateOneCollection = await loadImage("./visual/alphabirds/permanent/ordiprofitemplate1.png"); }
@@ -912,11 +912,11 @@ module.exports = {
 
           while (size > MAX_WIDTH) {
             fontSize -= 1;
-            ctx.font = `700 ${fontSize}px 'Fira Code'`;
+            ctx.font = `${fontSize}px utmfutura`;
             size = ctx.measureText(collectionName).width;
           }
           ctx.fillStyle = "#ffffff";
-          ctx.font = `${fontSize}px EmbassyGothic`;
+          ctx.font = `${fontSize}px utmfutura`;
           ctx.fillText(collectionName, 217, 423);
 
 

@@ -907,7 +907,7 @@ module.exports = {
           // Nom de la collection
           const MAX_WIDTH = 670
           let fontSize = 70;
-          ctx.font = `${fontSize}px utmfutura`;
+          ctx.font = `${fontSize}px 'utmfutura'`;
           let size = ctx.measureText(collectionName).width;
 
           while (size > MAX_WIDTH) {

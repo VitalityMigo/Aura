@@ -47,7 +47,7 @@ module.exports = {
 
             const passwordManagement = new EmbedBuilder().setColor("#060A8F")
                 .setTitle("You're all set !")
-                .setDescription("You're ready to use Aura !\n\nDon't forget that you can find the full documentation for the bot by clicking [here](https://rolls-chasers.gitbook.io/aura), or get quick info on commands with /guide.\n\nIf you have any questions, don't hesitate to open a ticket or ask our team.\n\n`[4/4]`")
+                .setDescription("You're ready to use Aura !\n\nDon't forget that you can find the full documentation for the bot by clicking [here](https://aura-3.gitbook.io/aura), or get quick info on commands with /guide.\n\nIf you have any questions, don't hesitate to open a ticket or ask our team.\n\n`[4/4]`")
                 .setAuthor({ name: authorName, iconURL: userAvatar })
                 .setTimestamp()
                 .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })

@@ -195,7 +195,7 @@ module.exports = {
 
                 const completeLoading = new EmbedBuilder().setColor("#060A8F")
                     .setTitle("Get Access")
-                    .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum. This page will be updated when it's done, don't close it.\n\nIn the meantime, you can consult our documentation [here](https://rolls-chasers.gitbook.io/aura), or start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
+                    .setDescription("Please hold on, we're verifying your wallet. This operation can take up to 2 minutes maximum. This page will be updated when it's done, don't close it.\n\nIn the meantime, you can consult our documentation [here](https://aura-3.gitbook.io/aura), or start discovering the bot by reading the quick overview of its commands here : <#1108757530076774512>.")
                     .addFields(
                         { name: " ", value: " ", inline: false },
                         { name: "Loading Completed <a:AuraCheck:1134071763588878398>", value: "```❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚❚[100%]```", inline: false },

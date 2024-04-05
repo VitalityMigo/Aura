@@ -25,11 +25,11 @@ const { getEthPrice } = require("../../../config/web3data")
 
 // On enregistre les fonts
 registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
-registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
+registerFont("./visual/aura/font/opt.ttf", { family: "O PTIImprovNewWideNine,O" })
 registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
 registerFont("./visual/eglfamily/font/roboto.ttf", { family: "roboto" })
 registerFont("./visual/eglfamily/font/robotovr.ttf", { family: "rbt" })
-registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UtmFutura" })
+registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UTM Futura Extra", weight: 'extra-bold' })
 
 
 module.exports = {
@@ -889,38 +889,38 @@ module.exports = {
 
 
           const symbolTXT = '$' + symbol
-          ctx.font = " 76px UtmFutura";
+          ctx.font = " 76px 'UTM Futura Extra'";
           ctx.fillStyle = "#ffffff";
           ctx.fillText(symbolTXT, 217, 423);
 
 
           const profitTXT = parseFloat(potentialProfit).toFixed(3)
-          ctx.font = " 88px UtmFutura";
+          ctx.font = " 88px 'UTM Futura Extra'";
           ctx.fillStyle = "#ffffff";
           ctx.fillText(profitTXT, 309, 754);
 
           const roiTXT = parseFloat(potentialRoi).toFixed(1) + "%"
-          ctx.font = " 50px UtmFutura";
+          ctx.font = " 50px 'UTM Futura Extra'";
           ctx.fillStyle = "#828282";
           ctx.fillText(roiTXT, 354, 555);
 
           const avgBuyTXT = parseFloat(avgBuyPrice).toFixed(3)
-          ctx.font = " 50px UtmFutura";
+          ctx.font = " 50px 'UTM Futura Extra'";
           ctx.fillStyle = "#828282";
           ctx.fillText(avgBuyTXT, 512, 611);
 
           const buyTXT = "$" + formatDollars(totalBuy * ethUsdPrice)
-          ctx.font = " 50px UtmFutura";
+          ctx.font = " 50px 'UTM Futura Extra'";
           ctx.fillStyle = "#828282";
           ctx.fillText(buyTXT, 658, 817);
 
           const profitUsdTXT = "$" + formatDollars(potentialProfit * ethUsdPrice)
-          ctx.font = " 50px UtmFutura";
+          ctx.font = " 50px 'UTM Futura Extra'";
           ctx.fillStyle = "#828282";
           ctx.fillText(profitUsdTXT, 621, 496);
 
           const name = "@" + authorName.toUpperCase()
-          ctx.font = " 33px UtmFutura";
+          ctx.font = " 33px 'UTM Futura Extra'";
           ctx.fillStyle = "#ffffff";
           ctx.fillText(name, 87, 1042);
 
@@ -1043,7 +1043,7 @@ module.exports = {
 
           while (userNameSize > MAX_WIDTH2) {
             fontSize2 -= 1;
-            ctx.font = `${fontSize2}px opt`;
+            ctx.font = `${fontSize2}px 'O PTIImprovNewWideNine,O'`;
             userNameSize = ctx.measureText(authorName.toUpperCase()).width;
           }
 
@@ -1057,7 +1057,7 @@ module.exports = {
 
           let pfpAndNameSize = ctx.measureText(imagesize + 8 + authorName.toUpperCase()).width;
 
-          ctx.font = `${fontSize2}px opt`;
+          ctx.font = `${fontSize2}px 'O PTIImprovNewWideNine,O'`;
           ctx.textBaseline = "middle";
           ctx.fillText(authorName.toUpperCase(), startImageAndName + imagesize + 12 - (pfpAndNameSize / 2), 969);
 

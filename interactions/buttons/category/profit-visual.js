@@ -905,7 +905,7 @@ module.exports = {
           // Nom de la collection
           const MAX_WIDTH = 670
           let fontSize = 70;
-          ctx.font = `${fontSize}px ''UTM Futura Extra' Extra'`;
+          ctx.font = `${fontSize}px 'UTM Futura Extra'`;
           let size = ctx.measureText(collectionName).width;
 
           while (size > MAX_WIDTH) {
@@ -919,27 +919,27 @@ module.exports = {
 
 
           const profitTXT = parseFloat(potentialProfit).toFixed(3)
-          ctx.font = " 88px 'UTM Futura Extra'";
+          ctx.font = "88px 'UTM Futura Extra'";
           ctx.fillStyle = "#ffffff";
           ctx.fillText(profitTXT, 310, 754);
 
           const roiTXT = parseFloat(potentialRoi).toFixed(1) + "%"
-          ctx.font = " 50px 'UTM Futura Extra'";
+          ctx.font = "50px 'UTM Futura Extra'";
           ctx.fillStyle = "#828282";
           ctx.fillText(roiTXT, 354, 555);
 
           const avgBuyTXT = parseFloat(avgBuy).toFixed(3)
-          ctx.font = " 50px 'UTM Futura Extra'";
+          ctx.font = "50px 'UTM Futura Extra'";
           ctx.fillStyle = "#828282";
           ctx.fillText(avgBuyTXT, 512, 611);
 
           const buyTXT = "$" + formatDollars(totalBuy * nativePrice)
-          ctx.font = " 50px 'UTM Futura Extra'";
+          ctx.font = "50px 'UTM Futura Extra'";
           ctx.fillStyle = "#828282";
           ctx.fillText(buyTXT, 658, 817);
 
           const profitUsdTXT = "$" + formatDollars(potentialProfit * nativePrice)
-          ctx.font = " 50px 'UTM Futura Extra'";
+          ctx.font = "50px 'UTM Futura Extra'";
           ctx.fillStyle = "#828282";
           ctx.fillText(profitUsdTXT, 621, 496);
 

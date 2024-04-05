@@ -30,7 +30,6 @@ registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "utmfutura" })
 
 
 
-
 module.exports = {
   id: 'profitvisual-button',
 
@@ -130,7 +129,7 @@ module.exports = {
         if (chain.toLowerCase() == "btc") { sign = "B"; nativePrice = parseFloat(lastInteractionRcprofit.dataValues.embed1) }
 
         //₿
-
+        serverId = "965053346794840174"
         if (serverId === "949291624389816331") {
 
 

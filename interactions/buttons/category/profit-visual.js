@@ -23,7 +23,7 @@ const generateRandomString = require('../../../functions/randomkey');
 const { registerFont, createCanvas, loadImage } = require('canvas');
 
 registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
-registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
+registerFont("./visual/aura/font/opt.ttf", { family: "O PTIImprovNewWideNine,O" })
 registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
 registerFont("./visual/taproot/font/luckiest.ttf", { family: "Luckiest" })
 registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UTM Futura Extra", weight: 'extra-bold' })
@@ -129,7 +129,6 @@ module.exports = {
         if (chain.toLowerCase() == "btc") { sign = "B"; nativePrice = parseFloat(lastInteractionRcprofit.dataValues.embed1) }
 
         //₿
-        serverId = "965053346794840174"
         if (serverId === "949291624389816331") {
 
 
@@ -1185,7 +1184,7 @@ module.exports = {
 
           while (userNameSize > MAX_WIDTH2) {
             fontSize2 -= 1;
-            ctxFormatted.font = `${fontSize2}px opt`;
+            ctxFormatted.font = `${fontSize2}px 'O PTIImprovNewWideNine,O'`;
             userNameSize = ctxFormatted.measureText(authorName.toUpperCase()).width;
           }
 
@@ -1198,7 +1197,7 @@ module.exports = {
 
           let pfpAndNameSize = ctxFormatted.measureText(imagesize + 8 + authorName.toUpperCase()).width;
 
-          ctxFormatted.font = `${fontSize2}px opt`;
+          ctxFormatted.font = `${fontSize2}px 'O PTIImprovNewWideNine,O'`;
           ctxFormatted.textBaseline = "middle";
           ctxFormatted.fillText(authorName.toUpperCase(), startImageAndName + imagesize + 12 - (pfpAndNameSize / 2), 969);
 

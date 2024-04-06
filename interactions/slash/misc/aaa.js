@@ -54,7 +54,7 @@ module.exports = {
                 ctx.fillStyle = "#ffffff";
               
                 //ctx.font = `88px 'O PTIImprovNewWideNine,O'`;
-                ctx.font = `88px 'UTM Futura Extra'`;
+                ctx.font = "88px 'UTM Futura Extra'";
                 ctx.fillText(profitTXT, 300, 350);
 
                 ctx.font = `88px 'O PTIImprovNewWideNine,O'`;

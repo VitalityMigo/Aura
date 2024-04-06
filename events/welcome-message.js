@@ -43,7 +43,7 @@ client.on('guildMemberAdd', async (member) => {
                 { name: " ", value: " ", inline: false },
                 { name: " ", value: "Happy trading !", inline: false },
                 { name: " ", value: " ", inline: false },
-                { name: 'Links', value: "[Gitbook](https://aura-3.gitbook.io/aura) ∙ [Twitter](https://twitter.com/AuraAnalytics) ∙ [Discord](https://discord.gg/nMKzzfR6gx) ∙ [Website](https://cdn.discordapp.com/attachments/1108757872315219968/1122318373078958130/image.png)", inline: false },
+                { name: 'Links', value: "[Gitbook](https://aura-3.gitbook.io/aura) ∙ [Twitter](https://twitter.com/AuraAnalytics) ∙ [Discord](https://discord.gg/nMKzzfR6gx) ∙ [Website](https://www.aurafinance.pro)", inline: false },
 
 
             )

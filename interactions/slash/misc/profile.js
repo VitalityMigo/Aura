@@ -17,18 +17,18 @@ const { authPrivacy, communityInfos } = require("../../../functions/infra-utils"
 
 const buttonRowProfileDashboard = new ActionRowBuilder()
     .addComponents(
-        new ButtonBuilder()
-            .setCustomId('userProfile-button')
-            .setLabel('public profile')
-            .setStyle(2),
+        // new ButtonBuilder()
+        //     .setCustomId('userProfile-button')
+        //     .setLabel('public profile')
+        //     .setStyle(2),
         new ButtonBuilder()
             .setCustomId('userPrivacy-button')
             .setLabel('privacy')
             .setStyle(2),
-        new ButtonBuilder()
-            .setCustomId('userVisual-button')
-            .setLabel('visual')
-            .setStyle(2),
+        // new ButtonBuilder()
+        //     .setCustomId('userVisual-button')
+        //     .setLabel('visual')
+        //     .setStyle(2),
         new ButtonBuilder()
             .setCustomId('userBranding-button')
             .setLabel('branding')
@@ -76,7 +76,7 @@ module.exports = {
                 // Les vérifications
                 if (community.statut) {
 
-                    if (community.tier === 's-tier' || community.tier === 'a-tier') {
+                    if (community.tier === 's-tier' || community.tier === 'a-tier' || community.tier === 'b-tier') {
 
                         if (member.roles.cache.has(community.member)) {
 

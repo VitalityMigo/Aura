@@ -1,3 +1,4 @@
+
 // Fichier d'initialisation des font utilisé pour la génération d'image
 // telles que /profit ou /portfolio.
 const { registerFont } = require('canvas');
@@ -9,3 +10,5 @@ registerFont("./visual/eglfamily/font/robotovr.ttf", { family: "rbt" })
 registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UTM Futura Extra", weight: 'extra-bold' })
 registerFont("./visual/aura/font/opt.ttf", { family: "O PTIImprovNewWideNine,O" })
 registerFont("./visual/taproot/font/luckiest.ttf", { family: "Luckiest" })
+
+

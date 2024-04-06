@@ -60,6 +60,9 @@ module.exports = {
                 main();
             });
 
+            // Config font
+            const fontConfig = require("../config/fontconfig")
+
 
 
             ////// ALERTS //////

@@ -890,7 +890,7 @@ module.exports = {
         } else if (serverId == "965053346794840174") {
           // Alpha Birds
 
-          registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UTM Futura Extra"})
+          registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UTM Futura Extra", weight: 'extra-bold' })
 
 
           let templateOneCollection = await loadImage("./visual/alphabirds/permanent/profittemplate1.png");

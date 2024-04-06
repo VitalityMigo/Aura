@@ -25,11 +25,9 @@ const { getEthPrice } = require("../../../config/web3data")
 
 // On enregistre les fonts
 registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
-registerFont("./visual/aura/font/opt.ttf", { family: "O PTIImprovNewWideNine,O" })
 registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
 registerFont("./visual/eglfamily/font/roboto.ttf", { family: "roboto" })
 registerFont("./visual/eglfamily/font/robotovr.ttf", { family: "rbt" })
-registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UTM Futura Extra", weight: 'extra-bold' })
 
 
 
@@ -94,8 +92,8 @@ module.exports = {
         let totalSell = JSON.parse(lastInteractionRcprofit.dataValues.totalTradeCount).sell
         const solPrice = parseFloat(lastInteractionRcprofit.dataValues.embed1)
         let avgBuyPrice = JSON.parse(lastInteractionRcprofit.dataValues.embed2).avgBuy
-console.log(solPrice)
 
+        
 
 
         if (potentialRoi !== 0 && avgBuy !== 0 && floorPrice !== 'N/A' && potentialRoi !== "NaN") {
@@ -884,6 +882,8 @@ console.log(solPrice)
         } else if (serverId == "965053346794840174") {
           // Alpha Birds
 
+          registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UTM Futura Extra", weight: 'extra-bold' })
+
           const templateOneCollection = await loadImage("./visual/alphabirds/permanent/solprofittemplate1.png");
 
 
@@ -936,6 +936,7 @@ console.log(solPrice)
 
         } else {
 
+          registerFont("./visual/aura/font/opt.ttf", { family: "O PTIImprovNewWideNine,O" })
 
 
 

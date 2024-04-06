@@ -20,7 +20,7 @@ const moment = require('moment');
 
 const generateRandomString = require('../../../functions/randomkey');
 const formatNumberVisual = require("../../../functions/reducenumbervisual")
-const { registerFont, createCanvas, loadImage } = require('canvas');
+const { createCanvas, loadImage } = require('canvas');
 const { getEthPrice } = require("../../../config/web3data")
 
 
@@ -122,8 +122,6 @@ module.exports = {
 
         if (serverId === "949291624389816331") {
           // Rolls Chasers
-
-          registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
 
@@ -635,8 +633,6 @@ module.exports = {
         } else if (serverId == "944918328135286804") {
           // Embassy
 
-          registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
-
 
           const templateOneCollection = await loadImage("./visual/embassy/permanent/cryptoprofittemplate1.png");
 
@@ -761,11 +757,6 @@ module.exports = {
         } else if (serverId == "1177408233799954443") {
           // EGL Family
 
-          //On enregistre les fonts
-          registerFont("./visual/eglfamily/font/roboto.ttf", { family: "roboto" })
-          registerFont("./visual/eglfamily/font/robotovr.ttf", { family: "rbt" })
-
-
           const templateOneCollection = await loadImage("./visual/eglfamily/permanent/cryptoprofittemplate1.png");
 
 
@@ -878,8 +869,6 @@ module.exports = {
         } else if (serverId == "965053346794840174") {
           // Alpha Birds
 
-          registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UTM Futura Extra", weight: 'extra-bold' })
-
 
           const templateOneCollection = await loadImage("./visual/alphabirds/permanent/cryptoprofittemplate1.png");
 
@@ -932,8 +921,6 @@ module.exports = {
           await interaction.editReply({ files: [buffer2] })
 
         } else {
-
-          registerFont("./visual/aura/font/opt.ttf", { family: "O PTIImprovNewWideNine,O" })
 
           const templateOneCollection = await loadImage("./visual/aura/permanent/cryptoprofittemplate1.png");
 

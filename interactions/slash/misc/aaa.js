@@ -10,7 +10,7 @@ const { accessSql, profileData, adminsql, reportsql, usersql, sequelize } = requ
 const moment = require('moment');
 
 // Param d'infrastructure
-const { registerFont, createCanvas, loadImage } = require('canvas');
+const {createCanvas, loadImage } = require('canvas');
 
 
 

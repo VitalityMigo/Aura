@@ -13,11 +13,7 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { profileData, accessSql, adminsql, reportsql, sequelize } = require('../../../events/database');
 const moment = require('moment');
 
-const { registerFont, createCanvas, loadImage } = require('canvas');
-
-registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
-registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
-registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
+const { createCanvas, loadImage } = require('canvas');
 
 
 

@@ -15,7 +15,7 @@ const { ButtonInteraction } = require('discord.js');
 const { EmbedBuilder } = require("discord.js");
 const { accessSql, profileData, adminsql, reportsql, sequelize } = require('../../../events/database');
 
-const { registerFont, createCanvas, loadImage } = require('canvas');
+const { createCanvas, loadImage } = require('canvas');
 const moment = require('moment');
 
 

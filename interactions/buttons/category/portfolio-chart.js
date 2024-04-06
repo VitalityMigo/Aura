@@ -27,14 +27,8 @@ const { web3CloudflarePublic } = require("../../../config/web3config")
 const axios = require('axios')
 const fs = require('fs');
 const Chart = require('chart.js');
-const { createCanvas, loadImage, registerFont } = require('canvas');
+const { createCanvas, loadImage } = require('canvas');
 const generateRandomString = require('../../../functions/randomkey');
-
-
-registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
-registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
-registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
-
 
 
 module.exports = {

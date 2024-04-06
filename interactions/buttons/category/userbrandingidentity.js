@@ -12,14 +12,11 @@
 
 
 
-const { registerFont, createCanvas, loadImage } = require('canvas');
+const { createCanvas, loadImage } = require('canvas');
 const { ButtonInteraction } = require('discord.js');
 const { EmbedBuilder } = require("discord.js");
 const { accessSql, profileData, adminsql, reportsql, sequelize } = require('../../../events/database');
 
-registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
-registerFont("./visual/aura/font/opt.ttf", { family: "opt" })
-registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
 
 
 const moment = require('moment');

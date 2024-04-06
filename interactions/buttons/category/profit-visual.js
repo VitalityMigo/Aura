@@ -20,19 +20,7 @@ const moment = require('moment');
 const axios = require('axios')
 
 const generateRandomString = require('../../../functions/randomkey');
-const { registerFont, createCanvas, loadImage } = require('canvas');
-
-// registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
-// registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
-// registerFont("./visual/taproot/font/luckiest.ttf", { family: "Luckiest" })
-
-
-registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
-registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
-registerFont("./visual/eglfamily/font/roboto.ttf", { family: "roboto" })
-registerFont("./visual/eglfamily/font/robotovr.ttf", { family: "rbt" })
-registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UTM Futura Extra", weight: 'extra-bold' })
-registerFont("./visual/aura/font/opt.ttf", { family: "O PTIImprovNewWideNine,O" })
+const { createCanvas, loadImage } = require('canvas');
 
 
 module.exports = {
@@ -897,8 +885,6 @@ module.exports = {
         } else if (serverId == "965053346794840174") {
           // Alpha Birds
 
-          registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UTM Futura Extra", weight: 'extra-bold' })
-
 
           let templateOneCollection = await loadImage("./visual/alphabirds/permanent/profittemplate1.png");
           if (chain.toLowerCase() == "btc") { templateOneCollection = await loadImage("./visual/alphabirds/permanent/ordiprofitemplate1.png"); }
@@ -1033,7 +1019,6 @@ module.exports = {
 
         } else {
 
-          registerFont("./visual/aura/font/opt.ttf", { family: "O PTIImprovNewWideNine,O" })
 
 
           const templateOneCollection = await loadImage("./visual/aura/permanent/profittemplate1.png");

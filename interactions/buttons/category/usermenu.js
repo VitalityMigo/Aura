@@ -19,18 +19,18 @@ const moment = require('moment');
 
 const buttonRowProfileDashboard = new ActionRowBuilder()
     .addComponents(
-        new ButtonBuilder()
-            .setCustomId('userProfile-button')
-            .setLabel('public profile')
-            .setStyle(2),
+        // new ButtonBuilder()
+        //     .setCustomId('userProfile-button')
+        //     .setLabel('public profile')
+        //     .setStyle(2),
         new ButtonBuilder()
             .setCustomId('userPrivacy-button')
             .setLabel('privacy')
             .setStyle(2),
-        new ButtonBuilder()
-            .setCustomId('userVisual-button')
-            .setLabel('visual')
-            .setStyle(2),
+        // new ButtonBuilder()
+        //     .setCustomId('userVisual-button')
+        //     .setLabel('visual')
+        //     .setStyle(2),
         new ButtonBuilder()
             .setCustomId('userBranding-button')
             .setLabel('branding')

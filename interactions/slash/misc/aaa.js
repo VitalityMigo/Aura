@@ -64,6 +64,7 @@ module.exports = {
 
             } catch (error) {
 
+                console.log(error.stack)
                 console.log("erreur")
 
 

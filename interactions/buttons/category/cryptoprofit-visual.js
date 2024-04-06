@@ -23,11 +23,6 @@ const formatNumberVisual = require("../../../functions/reducenumbervisual")
 const { registerFont, createCanvas, loadImage } = require('canvas');
 const { getEthPrice } = require("../../../config/web3data")
 
-//On enregistre les fonts
-registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
-registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
-registerFont("./visual/eglfamily/font/roboto.ttf", { family: "roboto" })
-registerFont("./visual/eglfamily/font/robotovr.ttf", { family: "rbt" })
 
 
 module.exports = {
@@ -124,10 +119,11 @@ module.exports = {
         }
 
 
-        
+
         if (serverId === "949291624389816331") {
           // Rolls Chasers
 
+          registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
 
 
 
@@ -639,6 +635,7 @@ module.exports = {
         } else if (serverId == "944918328135286804") {
           // Embassy
 
+          registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
 
 
           const templateOneCollection = await loadImage("./visual/embassy/permanent/cryptoprofittemplate1.png");
@@ -763,6 +760,10 @@ module.exports = {
 
         } else if (serverId == "1177408233799954443") {
           // EGL Family
+
+          //On enregistre les fonts
+          registerFont("./visual/eglfamily/font/roboto.ttf", { family: "roboto" })
+          registerFont("./visual/eglfamily/font/robotovr.ttf", { family: "rbt" })
 
 
           const templateOneCollection = await loadImage("./visual/eglfamily/permanent/cryptoprofittemplate1.png");

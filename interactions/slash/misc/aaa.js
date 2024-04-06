@@ -11,6 +11,7 @@ const moment = require('moment');
 
 // Param d'infrastructure
 const { registerFont, createCanvas, loadImage } = require('canvas');
+registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UTM Futura Extra", weight: 'Extra Bold' })
 registerFont("./visual/aura/font/opt.ttf", { family: "O PTIImprovNewWideNine,O" })
 
 
@@ -50,9 +51,14 @@ module.exports = {
                 ctx.drawImage(i, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
 
                 const profitTXT = "SALUT JEREM"
-                ctx.font = "88px 'O PTIImprovNewWideNine,O'";
                 ctx.fillStyle = "#ffffff";
+              
+                //ctx.font = `88px 'O PTIImprovNewWideNine,O'`;
+                ctx.font = `700 88px 'UTM Futura Extra'`;
                 ctx.fillText(profitTXT, 300, 350);
+
+                ctx.font = `88px 'O PTIImprovNewWideNine,O'`;
+                ctx.fillText(profitTXT, 300, 650);
 
                 // Dessiner l'image de profil sur le canvas
                 const buffer2 = canvasFormatted.toBuffer('image/png');

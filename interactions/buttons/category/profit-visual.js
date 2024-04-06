@@ -22,9 +22,9 @@ const axios = require('axios')
 const generateRandomString = require('../../../functions/randomkey');
 const { registerFont, createCanvas, loadImage } = require('canvas');
 
-registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
-registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
-registerFont("./visual/taproot/font/luckiest.ttf", { family: "Luckiest" })
+// registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
+// registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
+// registerFont("./visual/taproot/font/luckiest.ttf", { family: "Luckiest" })
 
 
 

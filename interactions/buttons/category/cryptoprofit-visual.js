@@ -24,10 +24,10 @@ const { registerFont, createCanvas, loadImage } = require('canvas');
 const { getEthPrice } = require("../../../config/web3data")
 
 // On enregistre les fonts
-registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
-registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
-registerFont("./visual/eglfamily/font/roboto.ttf", { family: "roboto" })
-registerFont("./visual/eglfamily/font/robotovr.ttf", { family: "rbt" })
+// registerFont("./visual/rollschasers/font/sftransrobotic.ttf", { family: "SFTransrobotic" })
+// registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
+// registerFont("./visual/eglfamily/font/roboto.ttf", { family: "roboto" })
+// registerFont("./visual/eglfamily/font/robotovr.ttf", { family: "rbt" })
 
 
 module.exports = {

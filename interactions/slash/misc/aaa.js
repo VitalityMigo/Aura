@@ -11,7 +11,7 @@ const moment = require('moment');
 
 // Param d'infrastructure
 const { registerFont, createCanvas, loadImage } = require('canvas');
-registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UTM Futura Extra", weight: 'Extra Bold' })
+registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UTM Futura Extra", weight: 'extra-bold' })
 registerFont("./visual/aura/font/opt.ttf", { family: "O PTIImprovNewWideNine,O" })
 
 
@@ -54,7 +54,7 @@ module.exports = {
                 ctx.fillStyle = "#ffffff";
               
                 //ctx.font = `88px 'O PTIImprovNewWideNine,O'`;
-                ctx.font = `700 88px 'UTM Futura Extra'`;
+                ctx.font = `88px 'UTM Futura Extra'`;
                 ctx.fillText(profitTXT, 300, 350);
 
                 ctx.font = `88px 'O PTIImprovNewWideNine,O'`;

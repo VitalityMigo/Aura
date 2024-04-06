@@ -50,7 +50,7 @@ module.exports = {
                 ctx.drawImage(i, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
 
                 const profitTXT = "SALUT JEREM"
-                ctx.font = "88px 'UTM Futura Extra'";
+                ctx.font = "88px UTM Futura Extra";
                 ctx.fillStyle = "#ffffff";
                 ctx.fillText(profitTXT, 300, 350);
 

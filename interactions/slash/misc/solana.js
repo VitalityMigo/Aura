@@ -274,7 +274,7 @@ module.exports = {
                                             } else {
 
                                                 const notMember = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle(`Coin Profit`)
+                                                    .setTitle(`Solana Coin Profit`)
                                                     .setDescription("Aura can't analyze your wallet's profit data. Please try again or contact our team if the error persists.")
                                                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                                     .setAuthor({ name: authorName, iconURL: userAvatar })
@@ -292,7 +292,7 @@ module.exports = {
                                         } else {
 
                                             const notMember = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle(`Coin Profit`)
+                                                .setTitle(`Solana Coin Profit`)
                                                 .setDescription("Aura can't analyze your wallet's data because the wallet you provided isn't valid. Please use try again using the appropriate form.")
                                                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                                 .setAuthor({ name: authorName, iconURL: userAvatar })

@@ -26,6 +26,9 @@ const { registerFont, createCanvas, loadImage } = require('canvas');
 // registerFont("./visual/embassy/font/akira.ttf", { family: "EmbassyGothic" })
 // registerFont("./visual/taproot/font/luckiest.ttf", { family: "Luckiest" })
 
+registerFont("./visual/alphabirds/font/utmfutura.ttf", { family: "UTM Futura Extra", weight: 'extra-bold' })
+registerFont("./visual/aura/font/opt.ttf", { family: "O PTIImprovNewWideNine,O" })
+
 
 
 module.exports = {

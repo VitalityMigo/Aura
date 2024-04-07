@@ -634,6 +634,8 @@ async function coinProfitMultipleWallet(cont, wall, time) {
                     })
 
                 }
+
+                await addTimeout(0.75)
             }
 
             // On ajoute les data de holding actuel du wallet à l'objet data,

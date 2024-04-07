@@ -1130,6 +1130,10 @@ module.exports = {
                                                 potentialProfit: parseFloat(raw.potentialPNL).toFixed(3),
                                                 roi: raw.potentialROI.toString(),
                                                 userAvatar: userAvatar,
+                                                totalTradeCount: JSON.stringify({
+                                                    buy: raw.buyValue,
+                                                    sell: raw.sellValue,
+                                                })
                                             })
 
                                         } else {

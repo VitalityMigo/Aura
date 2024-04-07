@@ -91,7 +91,6 @@ module.exports = {
         let totalSell = JSON.parse(lastInteractionRcprofit.dataValues.totalTradeCount).sell
 
 
-
         if (potentialRoi !== 0 && avgBuy !== 0 && floorPrice !== 'N/A' && potentialRoi !== "NaN") {
 
           potentialRoiFormatted = parseFloat(potentialRoi).toFixed(2)
@@ -122,6 +121,7 @@ module.exports = {
         if (chain.toLowerCase() == "btc") { sign = "B"; nativePrice = parseFloat(lastInteractionRcprofit.dataValues.embed1) }
 
         //₿
+
         if (serverId === "949291624389816331") {
 
 
@@ -916,10 +916,12 @@ module.exports = {
           ctx.fillStyle = "#ffffff";
           ctx.fillText(profitTXT, 310, 754);
 
-          const roiTXT = parseFloat(potentialRoi).toFixed(1) + "%"
+          let roiTXT = parseFloat(potentialRoi).toFixed(1) + "%"
+          let roiY = 555
           ctx.font = "50px 'UTM Futura Extra'";
+          if (potentialRoi.toLowerCase() === "infinity") { roiTXT = "∞"; ctx.font = "80px 'UTM Futura Extra'"; roiY = 565 }
           ctx.fillStyle = "#828282";
-          ctx.fillText(roiTXT, 354, 555);
+          ctx.fillText(roiTXT, 354, roiY);
 
           const avgBuyTXT = parseFloat(avgBuy).toFixed(3)
           ctx.font = "50px 'UTM Futura Extra'";

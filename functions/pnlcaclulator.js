@@ -11,6 +11,7 @@ const { getToken, getBalance, getSupply, getMetrics } = require("./coin-utils")
 const getApprovals = require("./getApprovals")
 const formatCoinValueSign = require("./formatNumberEmbed")
 const { getEthPrice } = require('../config/web3data.js')
+const addTimeout = require("../functions/addtimeout.js")
 
 const quoteTab = require("../contracts/uniswap/quote.json")
 const quotes = quoteTab.map(item => item.contract.toLowerCase())
@@ -1583,6 +1584,8 @@ async function nftProfitMulitWallet(cont, wall, time) {
                     })
                 }
             }
+
+            await addTimeout(1)
         }
 
         // // On récupère le tableau des approvals

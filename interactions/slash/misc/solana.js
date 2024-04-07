@@ -184,8 +184,6 @@ module.exports = {
                                             // On calcul les profits grâce à notre fonction
                                             const data = await solCoinProfit(contract, wallet, time)
 
-                                            console.log(data)
-
                                             if (data) {
 
                                                 // On sépare les data entre le raw et le prettier

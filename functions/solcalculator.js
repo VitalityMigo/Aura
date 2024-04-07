@@ -52,155 +52,162 @@ async function solCoinProfit(contract, wallet, time) {
         // C'est l'addresse qui correspond à la paire main wallet & token
         const address = await getTokenAccountAddress(contract, wallet)
 
+        if (address !== null) {
 
-        // On lance les calls pour récupérer le nombre de token held
-        const heldCALL = getTokenBalance(address.raw)
+            // On lance les calls pour récupérer le nombre de token held
+            const heldCALL = getTokenBalance(address.raw)
 
-        // On récupère l'historique de transaction de la sub addresse
-        // Cette historique renverra toutes les txn sur le token
-        // On tri par txn finalized
-        const txRaw = (await getTransactionHistory(address.raw))
-        const tx = txRaw.filter(item => item.confirmationStatus == "finalized").map(item => item.signature).reverse()
+            // On récupère l'historique de transaction de la sub addresse
+            // Cette historique renverra toutes les txn sur le token
+            // On tri par txn finalized
+            const txRaw = (await getTransactionHistory(address.raw))
+            const tx = txRaw.filter(item => item.confirmationStatus == "finalized").map(item => item.signature).reverse()
 
-        // On récupère l'ensemble des transactions parse
-        // C'est cette liste qu'on va analyser
-        const transactions = await sol.getParsedTransactions(tx, {
-            "maxSupportedTransactionVersion": 0
-        });
+            // On récupère l'ensemble des transactions parse
+            // C'est cette liste qu'on va analyser
+            const transactions = await sol.getParsedTransactions(tx, {
+                "maxSupportedTransactionVersion": 0
+            });
 
-        // On commence la boucle qui va incrémenter les objets
-        // C'est cette boucle qui analyse les swaps
-        // Tx prend cela en compte
-        for (const tx of transactions) {
+            // On commence la boucle qui va incrémenter les objets
+            // C'est cette boucle qui analyse les swaps
+            // Tx prend cela en compte
+            for (const tx of transactions) {
 
-            // On récupère l'index du wallet dans la liste des accounts de la transaction
-            // On lui donne la transaction, et le main wallet
-            const index = findWalletIndexInAccounts(tx, wallet)
+                // On récupère l'index du wallet dans la liste des accounts de la transaction
+                // On lui donne la transaction, et le main wallet
+                const index = findWalletIndexInAccounts(tx, wallet)
 
-            // On commence par récupèrer la balance de SOL avant et après la transaction
-            // On fait ensuite la soustraction pour connaitre le prix payé
-            // Cela prend en compte les fees puisque on regarde la balance 
-            const solPre = tx.meta.preBalances[index]
-            const solPost = tx.meta.postBalances[index]
-            const solAMNT = (solPost - solPre) / 10 ** decimals
+                // On commence par récupèrer la balance de SOL avant et après la transaction
+                // On fait ensuite la soustraction pour connaitre le prix payé
+                // Cela prend en compte les fees puisque on regarde la balance 
+                const solPre = tx.meta.preBalances[index]
+                const solPost = tx.meta.postBalances[index]
+                const solAMNT = (solPost - solPre) / 10 ** decimals
 
-            // Ensuite, on observe la balance du token avant et après
-            // On vérifie aussi s'il y'a des tokens, ça peut être une failed txn ou autre.
-            // Il peut aussi y avoir 0 tokens, donc on ne regarde pas que l'erreur
-            let tokenPost = 0
-            let tokenPre = 0
-            const preBalanceTable = tx.meta.preTokenBalances.find(item => item.mint == contract && item.owner == wallet)
-            const postBalanceTable = tx.meta.postTokenBalances.find(item => item.mint == contract && item.owner == wallet)
+                // Ensuite, on observe la balance du token avant et après
+                // On vérifie aussi s'il y'a des tokens, ça peut être une failed txn ou autre.
+                // Il peut aussi y avoir 0 tokens, donc on ne regarde pas que l'erreur
+                let tokenPost = 0
+                let tokenPre = 0
+                const preBalanceTable = tx.meta.preTokenBalances.find(item => item.mint == contract && item.owner == wallet)
+                const postBalanceTable = tx.meta.postTokenBalances.find(item => item.mint == contract && item.owner == wallet)
 
-            // On vérifie qu'il y'avait des tokens avant
-            // Si oui, on ajoute les valeurs correspondante
-            if (preBalanceTable) {
-                tokenPre = preBalanceTable.uiTokenAmount.uiAmount
-            }
-            // On vérifie qu'il y'a des tokens après
-            // Si oui, on ajoute les valeurs correspondante
-            if (postBalanceTable) {
-                tokenPost = postBalanceTable.uiTokenAmount.uiAmount
-            }
-            // On ajote les deux valeurs pour voir la différence
-            // Ca nous donne le nombre de tokens envoyés ou reçu
-            const tknTrade = tokenPost - tokenPre
+                // On vérifie qu'il y'avait des tokens avant
+                // Si oui, on ajoute les valeurs correspondante
+                if (preBalanceTable) {
+                    tokenPre = preBalanceTable.uiTokenAmount.uiAmount
+                }
+                // On vérifie qu'il y'a des tokens après
+                // Si oui, on ajoute les valeurs correspondante
+                if (postBalanceTable) {
+                    tokenPost = postBalanceTable.uiTokenAmount.uiAmount
+                }
+                // On ajote les deux valeurs pour voir la différence
+                // Ca nous donne le nombre de tokens envoyés ou reçu
+                const tknTrade = tokenPost - tokenPre
 
-            // On récupère les fees
-            const fees = tx.meta.fee / 10 ** decimals
-            const onlyFees = isOnlyFees(fees, Math.abs(solAMNT))
-            const error = tx.meta.err
+                // On récupère les fees
+                const fees = tx.meta.fee / 10 ** decimals
+                const onlyFees = isOnlyFees(fees, Math.abs(solAMNT))
+                const error = tx.meta.err
 
-            // On vérifie si la transaction a réussi
-            // Si oui, on fait le process classique
-            // Si non, on compte que les gas
-            if (!error) {
+                // On vérifie si la transaction a réussi
+                // Si oui, on fait le process classique
+                // Si non, on compte que les gas
+                if (!error) {
 
-                // On définit si c'est un achat ou une vente
-                if (solAMNT < 0) {
-                    // Du SOL est envoyé
+                    // On définit si c'est un achat ou une vente
+                    if (solAMNT < 0) {
+                        // Du SOL est envoyé
 
-                    if (tknTrade > 0) {
-                        // Il y'a une perte de SOL, des tokens qui rentre
-                        // Donc, c'est un airdrop, un transfer in, ou un claim
+                        if (tknTrade > 0) {
+                            // Il y'a une perte de SOL, des tokens qui rentre
+                            // Donc, c'est un airdrop, un transfer in, ou un claim
 
-                        if (!onlyFees) {
-                            // Le SOL dépensé n'est pas égal au fees
-                            // C'est donc un swap in, on prend tout en compte
+                            if (!onlyFees) {
+                                // Le SOL dépensé n'est pas égal au fees
+                                // C'est donc un swap in, on prend tout en compte
 
-                            data.swapIn++
-                            data.buyAmount += tknTrade
-                            data.buyValue += Math.abs(solAMNT) // Relative de - à +
-                            data.buyGas += fees
-                        } else {
-                            // Le SOL dépensé est égal au fees et des tokens rentrent
-                            // C'est donc un claim, on prend tout en compte
+                                data.swapIn++
+                                data.buyAmount += tknTrade
+                                data.buyValue += Math.abs(solAMNT) // Relative de - à +
+                                data.buyGas += fees
+                            } else {
+                                // Le SOL dépensé est égal au fees et des tokens rentrent
+                                // C'est donc un claim, on prend tout en compte
 
-                            data.transfer++
-                            data.buyGas += fees
-                            data.buyAmount += tknTrade
+                                data.transfer++
+                                data.buyGas += fees
+                                data.buyAmount += tknTrade
+                            }
+
+
+                        } else if (tknTrade < 0 && onlyFees) {
+                            // Il y'a une perte de token avec la transaction : soit venten, soit transfer
+                            // La valeur SOL dépensé est égal au fees, donc c'est un transfert
+                            // Pour les transfert on compte juste ceux entrant, mais on compte les gas
+
+                            data.sellGas += fees
+                            data.sellAmount += Math.abs(tknTrade)
                         }
 
+                    } else if (solAMNT > 0) {
+                        // Sell
 
-                    } else if (tknTrade < 0 && onlyFees) {
-                        // Il y'a une perte de token avec la transaction : soit venten, soit transfer
-                        // La valeur SOL dépensé est égal au fees, donc c'est un transfert
-                        // Pour les transfert on compte juste ceux entrant, mais on compte les gas
+                        if (tknTrade < 0) {
+                            // C'est un swap out
 
-                        data.sellGas += fees
-                        data.sellAmount += Math.abs(tknTrade)
+                            data.swapOut++
+                            data.sellAmount += Math.abs(tknTrade)
+                            data.sellValue += solAMNT
+                            data.sellGas += fees
+
+                        } else {
+                            // Transfert ou approval
+
+                            data.sellGas += fees
+                            data.transfer++
+
+                        }
+
+                    } else if (solAMNT == 0) {
+                        // Il y'a pas de changement dans le nombre de SOL
+                        // C'est surement un airdrop
+
+                        if (tknTrade > 0) {
+                            // On vérifie si il y'a des tokens recu, si oui c'est un airdrop
+
+                            data.transfer++
+                        }
                     }
 
-                } else if (solAMNT > 0) {
-                    // Sell
-
-                    if (tknTrade < 0) {
-                        // C'est un swap out
-
-                        data.swapOut++
-                        data.sellAmount += Math.abs(tknTrade)
-                        data.sellValue += solAMNT
-                        data.sellGas += fees
-
-                    } else {
-                        // Transfert ou approval
-
-                        data.sellGas += fees
-                        data.transfer++
-
-                    }
-
-                } else if (solAMNT == 0) {
-                    // Il y'a pas de changement dans le nombre de SOL
-                    // C'est surement un airdrop
-
-                    if (tknTrade > 0) {
-                        // On vérifie si il y'a des tokens recu, si oui c'est un airdrop
-
-                        data.transfer++
-                    }
+                } else {
+                    // Failed transaction
+                    // On prend en compte juste les gas
+                    data.buyGas += fees
+                    data.failed++
                 }
 
-            } else {
-                // Failed transaction
-                // On prend en compte juste les gas
-                data.buyGas += fees
-                data.failed++
             }
 
+            // On rajoute la data held amount ici car si on le fait
+            // plus tard on va pas pouvoir récupérer la constante et ça entrera
+            // dans le champs des cas où il y'a pas de wallet.
+            const [held] = await Promise.all([heldCALL]);
+            data.heldAmount = held
         }
 
         // On récupère les valeurs CALL au début
         // On récupère les infos du token
         // On calcul quelques valeurs en plus
-        const [metrics, held, supply, solPrice] = await Promise.all([metricsCALL, heldCALL, supplyCALL, solPriceCALL]);
+        const [metrics, supply, solPrice] = await Promise.all([metricsCALL, supplyCALL, solPriceCALL]);
         const priceUSD = metrics.priceUSD
         const priceSOL = metrics.priceSOL
 
         // On ajoute les valeurs du holding actuel
         // REGLER LE FORMAT EN BN (actuellement exposant math)
         // Voir pour déduire held amount par Buy - Sell (seulement si tous les buy/sell sont comptés dans les transfert)
-        data.heldAmount = held
         if (data.heldAmount > 0) { data.heldValue = (data.heldAmount * priceSOL) }
 
         // On calcul les valeurs d'average
@@ -264,7 +271,7 @@ async function solCoinProfit(contract, wallet, time) {
             },
             raw: data,
             prettier: prettierData,
-            tx: tx
+           // tx: tx
         }
 
         return result

@@ -1807,20 +1807,20 @@ module.exports = {
 
 
 
-                //On enregistre le call
-                await reportsql.create({
-                    botId: botId,
-                    authorId: "Bot",
-                    serverName: serverName,
-                    authorRole: userHighestRole,
-                    serverId: serverId,
-                    date: formattedDate,
-                    reportType: "Bug",
-                    reportCommand: reportCommand,
-                    reportDescription: "```" + error.stack + "```",
-                    reportPriority: "5",
-                    reportState: "Not treated",
-                })
+                // //On enregistre le call
+                // await reportsql.create({
+                //     botId: botId,
+                //     authorId: "Bot",
+                //     serverName: serverName,
+                //     authorRole: userHighestRole,
+                //     serverId: serverId,
+                //     date: formattedDate,
+                //     reportType: "Bug",
+                //     reportCommand: reportCommand,
+                //     reportDescription: "```" + error.stack + "```",
+                //     reportPriority: "5",
+                //     reportState: "Not treated",
+                // })
 
 
 
@@ -1838,7 +1838,7 @@ module.exports = {
                     .setTimestamp()
                     .addFields(
                         { name: " ", value: " ", inline: false },
-                        { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
+                        { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` by `" + authorId + "`. You can use the administrator dashboard to consult it.", inline: false },
                         { name: " ", value: " ", inline: false },
                         { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
                     )
@@ -1859,7 +1859,7 @@ module.exports = {
                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' })
 
 
-                await interaction.editReply({ embeds: [errorAnswerUser], ephemeral: true });
+                await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
 
             }
 

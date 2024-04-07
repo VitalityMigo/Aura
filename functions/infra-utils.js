@@ -8,7 +8,7 @@ async function authPrivacyMulti(authorId, subcommand, privateOnly) {
         const profile = await profileData.findOne({ where: { authorId: authorId } })
 
         const isPrivate = privateOnly.includes(subcommand)
-        const defaultPrv = false
+        const defaultPrv = true
 
         if (profile) {
             // Le user a un profile
@@ -32,7 +32,7 @@ async function authPrivacyMulti(authorId, subcommand, privateOnly) {
                 return true
 
             } else {
-
+console.log("here")
                 return defaultPrv
 
             }
@@ -52,7 +52,7 @@ async function authPrivacy(authorId) {
         //Récupère régagle de privé/ou pas de l'utilisateur
         const profile = await profileData.findOne({ where: { authorId: authorId } })
 
-        const defaultPrv = false
+        const defaultPrv = true
 
         if (profile) {
             // Le user a un profile

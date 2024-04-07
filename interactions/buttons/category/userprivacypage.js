@@ -82,8 +82,8 @@ module.exports = {
 
                 if (privacyBigDataAuthor.dataValues.privacyMode !== "private" && privacyBigDataAuthor.dataValues.privacyMode !== "public") {
 
-                    await profileData.update({ privacyMode: "public", }, { where: { authorId: authorId } })
-                    privacyMode = "public"
+                    await profileData.update({ privacyMode: "private", }, { where: { authorId: authorId } })
+                    privacyMode = "private"
 
 
                 } else if (privacyBigDataAuthor.dataValues.privacyMode === "private" || privacyBigDataAuthor.dataValues.privacyMode === "public") {
@@ -105,13 +105,13 @@ module.exports = {
                     authorJobs: "N/A",
                     authorNature: "N/A",
                     authorJoined: "N/A",
-                    privacyMode: "public",
+                    privacyMode: "private",
                     visualSelect: "1",
 
                 })
 
 
-                privacyMode = "public"
+                privacyMode = "private"
 
             }
 

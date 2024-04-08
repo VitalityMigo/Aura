@@ -35,19 +35,12 @@ module.exports = {
     let userAvatar = `https://cdn.discordapp.com/avatars/${authorId}/${interaction.user.avatar}.png?size=4096`;
     let serverId = interaction.member.guild.id
 
+    await interaction.deferReply({ ephemeral: true })
 
 
     try {
 
-      const authorProfile = await profileData.findOne({ where: { authorId: authorId } })
-
-      if (authorProfile === null) { await interaction.deferReply(); } else {
-        const authorPrivacyMode = authorProfile.dataValues.privacyMode
-
-        if (authorPrivacyMode.toLowerCase() === "private") { await interaction.deferReply({ ephemeral: true }); }
-        if (authorPrivacyMode.toLowerCase() === "public") { await interaction.deferReply(); }
-      }
-
+      sss
       //Checkpoint
       console.log("// Step 1 : Initialization - Executed ✅")
 
@@ -1272,23 +1265,6 @@ module.exports = {
 
 
 
-      //On enregistre le call
-      await reportsql.create({
-        botId: botId,
-        authorId: "Bot",
-        serverName: serverName,
-        authorRole: userHighestRole,
-        serverId: serverId,
-        date: formattedDate,
-        reportType: "Bug",
-        reportCommand: reportCommand,
-        reportDescription: "```" + error.stack + "```",
-        reportPriority: "5",
-        reportState: "Not treated",
-      })
-
-
-
 
       const reduceText = require("../../../functions/reducetext")
       const roleTag = "1121510423687090186"
@@ -1302,7 +1278,7 @@ module.exports = {
         .setTimestamp()
         .addFields(
           { name: " ", value: " ", inline: false },
-          { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
+          { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` by `" + authorId + "`. You can use the administrator dashboard to consult it.", inline: false },
           { name: " ", value: " ", inline: false },
           { name: "Error:", value: "```" + reduceText(error.stack, 1024) + "```", inline: false },
         )

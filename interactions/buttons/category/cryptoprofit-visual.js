@@ -896,12 +896,12 @@ module.exports = {
           const buyTXT = "$" + formatDollars(totalBuy * ethUsdPrice)
           ctx.font = " 50px 'UTM Futura Extra'";
           ctx.fillStyle = "#828282";
-          ctx.fillText(buyTXT, 658, 817);
+          ctx.fillText(buyTXT, 658, 496);
 
           const profitUsdTXT = "$" + formatDollars(potentialProfit * ethUsdPrice)
           ctx.font = " 50px 'UTM Futura Extra'";
           ctx.fillStyle = "#828282";
-          ctx.fillText(profitUsdTXT, 621, 496);
+          ctx.fillText(profitUsdTXT, 621, 817);
 
           const name = "@" + authorName.toUpperCase()
           ctx.font = " 33px 'UTM Futura Extra'";

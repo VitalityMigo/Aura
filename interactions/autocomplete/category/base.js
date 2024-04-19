@@ -1,0 +1,324 @@
+/**
+ * @file Sample autocomplete interaction
+ * @author JAYZHVJ
+ * @since 1.0.0
+ * @version 1.0.0
+ */
+
+/**
+ * @type {import("../../../typings").AutocompleteInteraction}
+ */
+
+const { apimonitorsql, accessSql, adminsql, reportsql, wallets, sequelize } = require('../../../events/database');
+const { baseReservoirHead } = require("../../../config/web3config")
+
+const axios = require('axios')
+
+const moment = require('moment');
+const calculateSimilarity = require('../../../functions/similarity')
+function isValidEthereumAddress(address) {
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+}
+function isValidInput(input) {
+    return /^(\w+|-)+$/.test(input);
+}
+
+
+
+module.exports = {
+    name: "base",
+
+    async execute(interaction) {
+
+
+        let serverId = interaction.member.guild.id
+
+        try {
+
+
+            const actualSubcommand = interaction.options._subcommand.toLowerCase()
+
+
+            if (actualSubcommand == "profit") {
+
+
+                const focused = interaction.options.getFocused(true);
+                const focusedOption = focused.name
+                const focusedValue = focused.value
+
+                const result = []
+                const collectionTable = []
+
+
+                if (focusedOption === "wallet") {
+
+                    const choices = [{ name: "All", value: "All" }]
+
+                    let authorId = interaction.user.id;
+
+                    // Retrieve the wallets for the authorID
+                    const walletsFilter = await wallets.findAll({ where: { authorId: authorId, walletCategory: "eth" } });
+
+                    walletsFilter.forEach(elem => {
+
+                        if (isValidEthereumAddress(elem.walletAddress)) {
+
+                            choices.push({ name: elem.walletName + " (" + elem.walletAddress.substring(0, 5) + "..." + elem.walletAddress.substring(elem.walletAddress.length - 4, elem.walletAddress.length) + ")", value: elem.walletAddress })
+                        }
+                    })
+
+
+                    // Filter the wallet names based on the focused value
+                    const filtered = choices.filter((blaze) => blaze.name.startsWith(focusedValue));
+
+                    // Respond with the filtered wallet names as autocomplete choices
+                    await interaction.respond(
+
+                        filtered.map((choice) => ({ name: choice.name, value: choice.value }))
+
+
+                    ).catch((err) => {
+                        console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                    });
+
+                    return;
+
+                } else if (focusedOption == "collection") {
+
+                    const choices = []
+
+
+                    if (focusedValue == "") {
+
+
+                        axios.get("https://api-base.reservoir.tools/collections/trending/v1?period=24h&limit=20&sortBy=sales", { headers: baseReservoirHead })
+                            .then(({ data }) => {
+                                data.collections.forEach(element => {
+                                    if (element) {
+                                        const projectName = element.name
+                                        const pjAddress = element.id
+                                        choices.push({ name: projectName, value: pjAddress });
+                                    }
+                                });
+
+
+                                interaction.respond(
+                                    choices.map((choice) => ({ name: choice.name, value: choice.value }))
+                                ).catch((err) => {
+                                    console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                                });
+
+
+                                //On stock le call API
+                                const timeStamp = Date.now();
+                                apimonitorsql.create({ serverId: serverId.toString(), commandName: "/rcprofit-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
+
+
+                                return;
+
+                            }).catch(err => console.error(err));
+
+
+                    } else {
+
+                        let index = 0
+
+                        axios.get(`https://api-base.reservoir.tools/search/collections/v2?name=${focusedValue}&limit=50`, { headers: baseReservoirHead })
+                            .then(async ({ data }) => {
+                                data.collections.forEach(element => {
+
+                                    index++
+
+                                    if (element && index <= 20) {
+
+
+                                        let obj = {}
+
+
+                                        obj.name = element.name
+                                        obj.id = element.collectionId
+                                        obj.volume = element.allTimeVolume
+
+
+
+                                        if (isValidEthereumAddress(element.collectionId)) {
+
+                                            const existingCollection = collectionTable.find(c => c.name === element.name);
+                                            if (existingCollection) {
+
+
+                                                if (obj.volume > existingCollection.volume) {
+                                                    existingCollection.name = obj.name;
+                                                    existingCollection.id = obj.id;
+                                                    existingCollection.volume = obj.volume;
+                                                }
+                                            } else {
+                                                collectionTable.push(obj);
+                                            }
+
+                                        }
+                                    }
+                                });
+
+
+                                result.forEach(element => {
+                                    //console.log(element.name)
+                                    if (element) {
+
+                                        if (((element.name).toLowerCase()).includes(focusedValue.toLowerCase())) {
+                                            let obj = {}
+
+                                            obj.name = element.name + ' [BTC]'
+                                            obj.id = element.symbol
+                                            collectionTable.push(obj)
+                                        }
+                                    }
+                                });
+
+
+                                // Fonction de comparaison pour trier les objets en fonction de la ressemblance de leur champ "name" avec focusedValue
+                                const compareNames = (a, b) => {
+                                    const similarityA = calculateSimilarity(a.name, focusedValue);
+                                    const similarityB = calculateSimilarity(b.name, focusedValue);
+                                    return similarityB - similarityA; // Triez par ordre décroissant de similarité
+                                };
+
+
+
+
+
+                                // Limiter les résultats aux 20 premiers objets
+                                const sortedCollections = collectionTable.sort(compareNames);
+
+                                const sliceArray = sortedCollections.slice(0, 20);
+
+                                sliceArray.forEach(element => {
+                                    //console.log(element.name)
+                                    if (element) {
+                                        //console.log("element :" + element.name + element.id)
+
+                                        let projectName = element.name
+                                        const pjAddress = element.id
+
+                                        let hasName = false
+                                        for (let i = 0; i < choices.length; i++) {
+                                            if (choices[i].name === projectName) {
+                                                hasName = true;
+                                                break;
+                                            }
+                                        }
+
+                                        // if (hasName) { projectName = element.name + " (BTC)" }
+
+                                        if (isValidInput(pjAddress)) {
+
+                                            choices.push({ name: projectName, value: pjAddress });
+                                        }
+                                    }
+                                })
+
+
+                                interaction.respond(
+                                    choices.map((choice) => ({ name: choice.name, value: choice.value }))
+                                ).catch((err) => {
+                                    console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                                });
+
+
+
+                                //On stock le call API
+                                // const timeStamp = Date.now();
+                                // apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit-autocomplete", apiCallName: "getSearchCollectionsV1", apiProvider: "reservoir", timestamp: timeStamp.toString() })
+                                return;
+
+
+
+                            }).catch(err => console.error(err));
+
+                    }
+                }
+
+
+
+            }
+
+        } catch (error) {
+
+
+            //On envoi une notif
+            let botId = interaction.applicationId
+            const botAdmins = await adminsql.findOne({ where: { botId: botId } })
+            const mainServerId = botAdmins.dataValues.mainServerId
+            const logChannelId = botAdmins.dataValues.logChannelId
+            const guild = interaction.client.guilds.cache.get(mainServerId);
+            const channel = guild.channels.cache.get(logChannelId);
+
+
+            const adminAccessInfos = await accessSql.findOne({ where: { serverId: serverId } })
+            let adminRoleId = adminAccessInfos.dataValues.adminRoleId
+            let serverName = adminAccessInfos.dataValues.serverName
+            const userRoleList = interaction.member._roles
+            let userHighestRole = "Member"
+            if (userRoleList.includes(adminRoleId)) { userHighestRole = "Team" }
+            let reportCommand = "/getdata-autocomplete"
+
+            const timeStamp = Date.now();
+            const date = new Date(timeStamp);
+            const dateLisible = date.toLocaleString();
+            const date1 = moment(dateLisible, 'M/D/YYYY, h:mm:ss A');
+            const formattedDate = date1.format('Do [of] MMMM YYYY');
+
+
+
+            //On enregistre le call
+            await reportsql.create({
+                botId: botId,
+                authorId: "Bot",
+                serverName: serverName,
+                authorRole: userHighestRole,
+                serverId: serverId,
+                date: formattedDate,
+                reportType: "Bug",
+                reportCommand: reportCommand,
+                reportDescription: "```" + error.stack + "```",
+                reportPriority: "5",
+                reportState: "Not treated",
+            })
+
+
+
+            const updateEmbed = new EmbedBuilder().setColor("#060A8F")
+                .setTitle("New Report")
+                .setDescription(">>> A new report has just been sent.")
+                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                .setAuthor({ name: "Aura", iconURL: "https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png" })
+                .setTimestamp()
+                .addFields(
+                    { name: " ", value: " ", inline: false },
+                    { name: "Content:", value: "A new `bug` has been submitted for the `" + reportCommand + "` command by `the bot report division` in `" + serverName + "`. You can use the administrator dashboard to consult it.", inline: false },
+
+                )
+                .setFooter({ text: 'Aura', iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png' })
+
+
+            await channel.send({ embeds: [updateEmbed] });
+
+
+
+            const errorAnswerUser = new EmbedBuilder().setColor("#060A8F")
+                .setTitle("An error occured")
+                .setDescription("An error has occurred while executing this command. These errors can occur for a variety of reasons, such as :\n∙ Unexpected traffic\n∙ API maintenance\n∙ Occasional bug\n\nPlease note that a report has already been sent to our team, who will fix the problem as soon as possible. You can still use `/report` to give more details about the error and help our team.")
+                .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                .setTimestamp()
+                .setFooter({ text: 'Aura', iconURL: 'https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png' })
+
+
+            await interaction.reply({ embeds: [errorAnswerUser], ephemeral: true });
+
+
+        }
+
+
+
+    }
+};

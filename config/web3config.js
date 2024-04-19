@@ -73,6 +73,12 @@ const reservoirHead = {
   "host": "api.reservoir.tools"
 }
 
+const baseReservoirHead = {
+  "X-Api-Key": reservoirApiKey,
+  "accept": "*/*",
+  "host": "api-base.reservoir.tools"
+}
+
 const blockspan = require('api')('@blockspan/v1.0#9zxl2sledru983');
 blockspan.auth(blockspanApiKey);
 
@@ -133,6 +139,7 @@ module.exports = {
   reservoirH,
   reservoirI,
   reservoirHead,
+  baseReservoirHead,
   blockspan,
   magiceden,
   alchemyB,

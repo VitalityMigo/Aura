@@ -6,7 +6,6 @@
  */
 
 // Declare constants which will be used throughout the bot.
-const x = require("./events")
 const fs = require("fs");
 const {
 	Client,

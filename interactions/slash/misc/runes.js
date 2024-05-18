@@ -176,7 +176,7 @@ console.log(data)
                                             .setAuthor({ name: authorName, iconURL: userAvatar })
                                             .setImage("https://cdn.discordapp.com/attachments/1100572519896977490/1185619758008254474/e.png?ex=65904572&is=657dd072&hm=7a51469cad88b48198c5f230d13450d50c7e2717c5acdf97a82a6eb1fb5adad4&")
                                             .addFields(
-                                                { name: "Contract:", value: "`XXXX`", inline: false },
+                                                { name: "Address:", value: "`" + wallet + "`", inline: false },
                                                
                                                 { name: "Swap In:", value: "`" + prettier.swapIn + "`", inline: true },
                                                 { name: "Swap Out:", value: "`" + prettier.swapIn + "`", inline: true },

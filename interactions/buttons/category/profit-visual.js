@@ -40,7 +40,7 @@ module.exports = {
 
     try {
 
-      
+
       //Checkpoint
       console.log("// Step 1 : Initialization - Executed ✅")
 
@@ -57,7 +57,7 @@ module.exports = {
 
         //On stock le call API
         const timeStamp = Date.now();
-        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit-visual", apiCallName: "ethUsdPrice", apiProvider: "etherscan", timestamp: timeStamp.toString() })
+        await apimonitorsql.create({ serverId: serverId.toString(), commandName: "/profit-visual", apiCallName: "nativePrice", apiProvider: "etherscan", timestamp: timeStamp.toString() })
 
 
 
@@ -108,12 +108,12 @@ module.exports = {
           visualSelect = privacyBigDataAuthor.dataValues.visualSelect
         }
 
-
         let sign = "Ξ"
         let nativePrice = ethUsdPrice
         if (chain.toLowerCase() == "btc") { sign = "B"; nativePrice = parseFloat(lastInteractionRcprofit.dataValues.embed1) }
 
         //₿
+
 
         if (serverId === "949291624389816331") {
 
@@ -186,12 +186,12 @@ module.exports = {
             // POTENTIAL PROFIT
             ctxFormatted.font = "bold 68px Futura";
             ctxFormatted.fillStyle = "#ffffff";
-            const text = potentialProfit.toString() + sign // (" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
+            const text = potentialProfit.toString() + sign // (" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * nativePrice).toFixed(0))) + "$)";
             ctxFormatted.font = "bold 35px Futura";
-            const text2 = "(" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
+            const text2 = "(" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * nativePrice).toFixed(0))) + "$)";
             const textPart1 = potentialProfit.toString() + sign
-            const textPart2 = + "(" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
-            const text3 = potentialProfit.toString() + sign // (" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))) + "$)";
+            const textPart2 = + "(" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * nativePrice).toFixed(0))) + "$)";
+            const text3 = potentialProfit.toString() + sign // (" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * nativePrice).toFixed(0))) + "$)";
 
 
             const bigTextSize2 = ctxFormatted.measureText(text2).width;
@@ -348,12 +348,7 @@ module.exports = {
           } else if (visualSelect === "3") {
 
 
-
-
-
-
-
-            const templateOneCollection = await loadImage("./visual/aura/permanent/profittemplate3.png");
+            let templateOneCollection = await loadImage("./visual/rollschasers/permanent/profittemplate3.png");
 
             const canvasFormatted = createCanvas(1000, 1000);
             const ctxFormatted = canvasFormatted.getContext('2d');
@@ -440,7 +435,7 @@ module.exports = {
             //POTENTIAL PROFIT (USD)
             ctxFormatted.font = "bold 80px SFTransrobotic";
             if (potentialProfit >= 0) { ctxFormatted.fillStyle = "#00db00"; } else if (potentialProfit < 0) { ctxFormatted.fillStyle = "#e60015"; }
-            ctxFormatted.fillText("$" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * ethUsdPrice).toFixed(0))), 45, 653);
+            ctxFormatted.fillText("$" + Intl.NumberFormat('en-US').format((parseFloat(potentialProfit * nativePrice).toFixed(0))), 45, 653);
 
             //POTENTIAL PROFIT (ETH)
             ctxFormatted.font = "bold 80px SFTransrobotic";
@@ -808,7 +803,7 @@ module.exports = {
           ctx.textAlign = 'right';
           ctx.font = "38px rbt";
           ctx.fillStyle = "#04D9FF";
-          const usdTx = parseFloat(potentialProfit * ethUsdPrice).toFixed(2) + " USD"
+          const usdTx = parseFloat(potentialProfit * nativePrice).toFixed(2) + " USD"
           ctx.fillText(usdTx, 725, 390);
 
           // ROI

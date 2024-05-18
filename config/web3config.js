@@ -12,6 +12,7 @@ const infuraApiKey = process.env.infuraApiKey
 const reservoirApiKey = process.env.reservoirApiKey
 const blockspanApiKey = process.env.blockspanApiKey
 const magicedenApiKey = process.env.magicedenApiKey
+const unisatApiKey = process.env.unisatApiKey
 const alchemyApiKey = process.env.alchemyApiKey
 const nftgoApiKey = process.env.nftgoApiKey
 const quicknodebaseApiKey = process.env.quicknodebaseApiKey
@@ -84,6 +85,8 @@ blockspan.auth(blockspanApiKey);
 
 const magiceden = { 'Authorization': `Bearer ${magicedenApiKey}`};
 
+const unisat = { 'Authorization': `Bearer ${unisatApiKey}`};
+
 const alchemyB = require('api')('@alchemy-docs/v1.0#24zcsa23lfbpdnv5');
 
 const nftgo = require('api')('@nftgo/v1.0#28807z4klgnauhl3');
@@ -142,6 +145,7 @@ module.exports = {
   baseReservoirHead,
   blockspan,
   magiceden,
+  unisat,
   alchemyB,
   nftgo,
   nftGoB,

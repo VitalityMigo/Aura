@@ -7,13 +7,15 @@ const colors = require('colors')
 
 // On initialise les valeurs qu'on va utiliser souvent
 let ethPrice
+let btcPrice
 
 async function main() {
 
     // Mise à jour du prix de l'ETH
     ethPrice = await callETH();
-    console.log(colors.blue("⛩ New ETH price:", ethPrice));
-
+    btcPrice = await callBTC()
+    console.log(colors.blue("⛩ New ETH price:", ethPrice + " | New BTC price:", btcPrice));
+    
     // D'autre valeurs peuvent être rajouter
 }
 
@@ -26,10 +28,21 @@ async function callETH() {
     return ethUsdPrice
 }
 
+async function callBTC() {
+
+    const call = await axios.get("https://blockchain.info/q/24hrprice")
+    const result = call.data
+    return result
+}
+
 
 // Fonction pour récupérer la valeur actuelle de ethPrice
 function getEthPrice() {
     return ethPrice;
+}
+
+function getBtcPrice() {
+    return btcPrice;
 }
 
 
@@ -43,4 +56,5 @@ main();
 module.exports = {
     main,
     getEthPrice,
+    getBtcPrice
 };

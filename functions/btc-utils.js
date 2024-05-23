@@ -74,7 +74,6 @@ async function getRuneActivityByWallet(slug, wallet, time) {
     //?offset=100
     // On commence par faire le call de base
     const call = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/runes/wallet/activities/${wallet}`, { headers: magiceden })
-    console.log(call)
     // Puis on coupe à partir du dernier objet qui est dans notre range de timestamp
     // Si c'est undefined on le garde dans le doute. Dans le cas ou lastIndex est -1 ça
     // veut dire que tout le tableau rentre dans le champs de recherche. Sinon, on coupe car
@@ -106,12 +105,12 @@ async function getRuneActivityByWallet(slug, wallet, time) {
         const call = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/runes/wallet/activities/${wallet}?offset=${offset}`, { headers: magiceden })
         const index = call.data.findIndex(obj => obj.txBlockTime && (obj.txBlockTime / 1000) < time) // Cela l'index représente tous les objet dans le timestamp
         const filtered = index === -1 ? call.data.filter(i => i.rune === slug) : call.data.slice(0, index).filter(i => i.rune === slug)
-        console.log(filtered)
+
         // On formatte l'objet
         result = result.concat(filtered.map((i) => ({
             name: i.rune,
             action: i.kind,
-            side: i.owner === wallet ? "in" : "out",
+            side: i.newOwner === wallet ? "in" : "out",
             amount: parseFloat(i.formattedAmount),
             price: i.kind === 'buying_broadcasted' ? satsToBtc(i.listedPrice) : null,
             to: i.newOwner,
@@ -144,6 +143,16 @@ function isHiddenRunesBuying(counterpart) {
     return isBuyTxs
 }
 
+function isHiddenRuneTransfer(counterpart) {
+
+    const isSentTxs = counterpart.filter(i => i.action === "sent").length === 1
+    const isReceivedTxs = counterpart.filter(i => i.action === "received").length === 1
+
+    return isSentTxs & isReceivedTxs
+}
+
+
+
 function satsToBtc(num) {
     return num / 10 ** 8
 }
@@ -160,6 +169,8 @@ function isBRC20BitcoinWallet(wallet) {
     return regex.test(wallet);
 }
 
+
+
 module.exports = {
     getBtcPrice,
     getRuneMetrics,
@@ -169,6 +180,7 @@ module.exports = {
     satsToBtc,
     isHiddenRunesBuying,
     isHiddenRunesSplit,
+    isHiddenRuneTransfer,
     isBRC20BitcoinWallet,
     searchRunesByName,
     getRuneTopCollection

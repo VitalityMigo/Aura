@@ -6,7 +6,7 @@ const unisate = { 'Authorization': 'Bearer 58ee790459d886e2a178ef40b51a4b981ae6f
 const axios = require("axios")
 const decimals = 8
 
-const { getRuneMetrics, getRuneActivityByWallet, getTransaction, getRuneBalance, satsToBtc, isHiddenRunesBuying, isHiddenRunesSplit } = require("./btc-utils")
+const { getRuneMetrics, getRuneActivityByWallet, isBRC20BitcoinWallet, isHiddenRuneTransfer, getTransaction, getRuneBalance, satsToBtc, isHiddenRunesBuying, isHiddenRunesSplit } = require("./btc-utils")
 const { getBtcPrice } = require('../config/web3data.js')
 const addTimeout = require("./addtimeout")
 const formatCoinValueSign = require("./formatNumberEmbed")
@@ -15,340 +15,6 @@ const formatCoinValueSign = require("./formatNumberEmbed")
 
 /// BRC20
 
-async function brcProfit(slug, wallet, time) {
-
-    // On définit les data de base
-    // On incrémentera ce tableau au fur et à mesure
-    // et elle se transformeront en raw data.
-    const data = {
-        mint: 0,
-        buy: 0,
-        total: 0,
-        sell: 0,
-        held: 0,
-        transfer: 0,
-        trade: 0,
-        mintValue: 0,
-        mintGas: 0,
-        mintTotal: 0,
-        buyValue: 0,
-        buyGas: 0,
-        buyTotal: 0,
-        totalValue: 0,
-        sellValue: 0,
-        sellGas: 0,
-        sellTotal: 0,
-        heldValue: 0,
-        totalGas: 0,
-        avgMint: 0,
-        avgBuy: 0,
-        avgTotal: 0,
-        avgSold: 0,
-        avgGas: 0,
-        avgHeld: 0,
-        realisedPNL: 0,
-        potentialPNL: 0,
-        potentialROI: 0,
-    }
-
-    // On définit l'interval de temps formatter
-    // par rapport au temps défini dans les arguments (string)
-    const timestamp = getTimestamp(time)
-
-
-    const token = await axios.get(`
-    https://api-mainnet.magiceden.dev/v2/ord/brc20/tokens/ordi`, { headers: magiceden });
-    jjj
-    // On récupère le prix du BTC, les stats de la collection et les infos (liens etc...)
-    // On les récupèrera plus tard.
-    const btcPricePRM = getBtcPrice()
-    const collPRM = axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/collections/${slug}`, { headers: magiceden });
-    const statPRM = axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/stat?collectionSymbol=${slug}`, { headers: magiceden });
-
-    // On récupère les tokens hold par l'utilisateur
-    const ownRES = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/tokens?collectionSymbol=${slug}&ownerAddress=${wallet}&showAll=true&sortBy=priceAsc`, { headers: magiceden });
-    const ownANW = ownRES.data.tokens;
-    const heldIDs = ownANW.map(i => i.id)
-
-
-    // On commence par calculer tous les achats des tokens qui sont
-    // hold par le wallet. 
-    for (const token of heldIDs) {
-
-        // On regarde les buy classiques, c'est à dire les buy qui sont fait sur 
-        // la marketplace, indiqué par 'Buying Broadcast'.
-        const tknHistoryCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=${token}`, { headers: magiceden });
-        const tknHistoryANW = await tknHistoryCALL.data.activities;
-        const tknHistoryRES = tknHistoryANW.filter(activity => activity.oldOwner.toLowerCase() !== wallet.toLowerCase() && activity.newOwner.toLowerCase() == wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
-
-        // On trouve la txn, ce qui veut dire qu'il y'a un achat direct
-        // fait sur la marketplace.
-        if (tknHistoryRES.length > 0) {
-            // On récupère les infos de la transactions
-            // puis on les ajoute à l'objet data.
-            const txn = await axios.get(`https://mempool.space/api/tx/${tknHistoryRES[0].txId}`)
-            data.buyValue += tknHistoryRES[0].listedPrice / 10 ** decimals
-            data.buyGas += txn.data.fee / 10 ** decimals
-            data.buy++
-            data.trade++
-
-        } else {
-            // Il n'y a pas de transaction, donc il faut rechercher dans les mints et dans les create ou autres.
-            // On va rechercher dans les différentes options une par une.
-
-            // On vérifie les liens de création de NFT, l'une des deux méthodes Ordinals.
-            // On fait le call pour commencer.
-            const createCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=${token}`, { headers: magiceden });
-            const createANW = createCALL.data.activities;
-            const createRES = createANW.filter(activity => activity.newOwner.toLowerCase() == wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
-
-            if (createRES.length > 0) {
-                // C'est bien une création donc on récupère la transaction
-                // comme ça. On vérifie quad même que c'est un airdrop.
-                const txn = await axios.get(`https://mempool.space/api/tx/${createRES[0].txId}`)
-
-                // On vérifie que c'est pas un airdrop en regardant le nombre de personne qui ont reçu des tokens dans
-                // cette transaction. Si c'est plus que 1, alors on considère que c'est un airdrop. Possible de regarder combien
-                // notre user a payé en particulier.
-                const receivers = [...new Set(txn.data.vout.map(item => item.scriptpubkey_address.toLowerCase()))].length;
-
-                if (receivers === 1) {
-                    // Ici il y'a un receiver, on considère que c'est un mint.
-                    data.mintValue += createRES[0].txValue / 10 ** decimals
-                    data.mintGas += txn.data.fee / 10 ** decimals
-                    data.mint++
-                    data.trade++
-                } else {
-                    // A l'inverse, ici il y'a plusieurs receiver, on considère que c'est un airdrop.
-                    data.transfer++
-                }
-
-            } else {
-                // Ce n'est ni une création de NFT, ni un buy classique. Donc cela peut être un mint ou un transfer
-                // et on va la récuperer en vérifiant d'abord si c'est un mint. 
-
-                // On vérifie les mints de NFT, l'une des deux méthodes Ordinals.
-                // On fait le call pour commencer.
-                const mintCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=${token}`, { headers: magiceden });
-                const mintANW = mintCALL.data.activities;
-                const mintRES = mintANW.filter(activity => activity.newOwner.toLowerCase() == wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
-
-                if (mintRES.length > 0) {
-                    // C'est bien un mint, donc on ajoute les informations aux mints.
-                    // On met tout ça dans l'objet data.
-                    const txn = await axios.get(`https://mempool.space/api/tx/${mintRES[0].txId}`)
-
-                    data.mintValue += mintRES[0].listedPrice / 10 ** decimals
-                    data.mintGas += txn.data.fee / 10 ** decimals
-                    data.mint++
-                    data.trade++
-
-                } else {
-                    // C'est un transfert ou un airdrop donc on ne peut pas les différencier, mais
-                    // on peut tout de même les ajouter à la liste des transferts
-                    data.transfer++
-                    data.trade++
-                }
-            }
-
-        }
-    }
-
-
-    // On passe à la seconde étape qui consiste à récupèrer l'activité du wallet.
-    // Cela nous permettra d'incrémenter les valeurs du tableau facilement en récupérant le lien de la txn, puis le prix d'achat, et le prix de sell.
-    const activityCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&ownerAddress=${wallet}&collectionSymbol=${slug}`, { headers: magiceden });
-    const activityANW = activityCALL.data.activities;
-    const activityRES = activityANW.filter(activity => activity.oldOwner.toLowerCase() == wallet.toLowerCase() && activity.newOwner.toLowerCase() !== wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
-
-    //On calcul le prix et méthode d'achat des token sold
-    for (const token of activityRES) {
-
-        // On calcule le prix de vente du token et on ajoute cela à la DB, ensuite on calculera
-        // le prix d'achat du token et ça nous donnera le PnL sur le token.
-        // const txn = await axios.get(`https://mempool.space/api/tx/${token.txId}`) // Pareil qu'en dessous
-        // data.sellGas += txn.data.fee / 10 ** decimals // Ici on enlève car les gas sont payés par le user
-        data.sellValue += token.listedPrice / 10 ** decimals
-        data.sell++
-        data.trade++
-
-
-        //Maintenant, on calcul son prix d'achat en retrouvant la transaction qui l'a acheté grâce
-        // à l'API Magic Eden, en surveillant les "Buying Broadcats"
-        //Buy classic
-        const buyCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=buying_broadcasted&tokenId=${token.tokenId}`, { headers: magiceden });
-        const buyANW = await buyCALL.data.activities;
-        const buyRES = buyANW.filter(activity => activity.oldOwner.toLowerCase() !== wallet.toLowerCase() && activity.newOwner.toLowerCase() == wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
-
-        // On trouve la txn, ce qui veut dire qu'il y'a un achat direct
-        // fait sur la marketplace.
-        if (buyRES.length > 0) {
-            // On récupère les infos de la transactions
-            // puis on les ajoute à l'objet data.
-            const txn = await axios.get("https://mempool.space/api/tx/" + buyRES[0].txId)
-            data.buyValue += buyRES[0].listedPrice / 10 ** decimals
-            data.buyGas += txn.data.fee / 10 ** decimals
-            data.buy++
-            data.trade++
-
-        } else {
-            // Il n'y a pas de transaction, donc il faut rechercher dans les mints et dans les create ou autres.
-            // On va rechercher dans les différentes options une par une.
-
-            // On vérifie les liens de création de NFT, l'une des deux méthodes Ordinals.
-            // On fait le call pour commencer.
-            const createCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=create&tokenId=${token.tokenId}`, { headers: magiceden });
-            const createANW = createCALL.data.activities;
-            const createRES = createANW.filter(activity => activity.newOwner.toLowerCase() == wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
-
-            if (createRES.length > 0) {
-                // C'est bien une création donc on récupère la transaction
-                // comme ça. On vérifie quad même que c'est un airdrop.
-                const txn = await axios.get(`https://mempool.space/api/tx/${createRES[0].txId}`)
-
-                // On vérifie que c'est pas un airdrop en regardant le nombre de personne qui ont reçu des tokens dans
-                // cette transaction. Si c'est plus que 1, alors on considère que c'est un airdrop. Possible de regarder combien
-                // notre user a payé en particulier.
-                const receivers = [...new Set(txn.data.vout.map(item => item.scriptpubkey_address.toLowerCase()))].length;
-
-                if (receivers === 1) {
-                    // Ici il y'a un receiver, on considère que c'est un mint.
-                    data.mintValue += createRES[0].txValue / 10 ** decimals
-                    data.mintGas += txn.data.fee / 10 ** decimals
-                    data.mint++
-                    data.trade++
-                } else {
-                    // A l'inverse, ici il y'a plusieurs receiver, on considère que c'est un airdrop.
-                    data.transfer++
-                }
-
-            } else {
-                // Ce n'est ni une création de NFT, ni un buy classique. Donc cela peut être un mint ou un transfer
-                // et on va la récuperer en vérifiant d'abord si c'est un mint. 
-
-                // On vérifie les mints de NFT, l'une des deux méthodes Ordinals.
-                // On fait le call pour commencer.
-                const mintCALL = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/activities?kind=mint_broadcasted&tokenId=${token.tokenId}`, { headers: magiceden });
-                const mintANW = mintCALL.data.activities;
-                const mintRES = mintANW.filter(activity => activity.newOwner.toLowerCase() == wallet.toLowerCase() && ((Date.parse(activity.createdAt)) / 1000) >= timestamp);
-
-                if (mintRES.length > 0) {
-                    // C'est bien un mint, donc on ajoute les informations aux mints.
-                    // On met tout ça dans l'objet data.
-                    const txn = await axios.get(`https://mempool.space/api/tx/${mintRES[0].txId}`)
-                    data.mintValue += mintRES[0].listedPrice / 10 ** decimals
-                    data.mintGas += txn.data.fee / 10 ** decimals
-                    data.mint++
-                    data.trade++
-
-                } else {
-                    // C'est un transfert ou un airdrop donc on ne peut pas les différencier, mais
-                    // on peut tout de même les ajouter à la liste des transferts
-                    data.transfer++
-                    data.trade++
-                }
-            }
-        }
-    }
-
-
-    // On récupère les datas de la collection, peut être enlever si on trouve un autre moyen de le faire
-    // notamment en utilisant collection stats qui n'est utilisé que pour le floor price actuellement.
-    const [btcPrice, collRES, statRES] = await Promise.all([btcPricePRM, collPRM, statPRM]);
-    const name = collRES.data.name
-    const icon = collRES.data.imageURI
-    const twitter = collRES.data.twitterLink
-    const discord = collRES.data.discordLink
-    const website = collRES.data.websiteLink
-    // Ici on récupère le floor, troisième valeur
-    const floor = statRES.data.floorPrice / 10 ** decimals
-
-
-    // On commence par additioner les valeurs de base pour les calculs
-    data.mintTotal = data.mintValue + data.mintGas
-    data.buyTotal = data.buyValue + data.buyGas
-    data.sellTotal = data.sellValue - data.sellGas
-    data.totalGas = data.buyGas + data.sellGas + data.mintGas
-    data.totalValue = data.buyTotal + data.mintTotal
-
-    // Puis les valeurs en plus
-    data.total = data.buy + data.mint
-    data.held = heldIDs.length
-    data.heldValue = floor * data.held
-    if (data.held) { data.avgHeld = data.heldValue / data.held }
-
-    // On continu avec les average
-    if (data.buyTotal) { data.avgBuy = data.buyTotal / data.buy }
-    if (data.mintTotal) { data.avgMint = data.mintTotal / data.mint }
-    if (data.totalValue) { data.avgTotal = (data.totalValue) / data.total }
-    if (data.sellValue) { data.avgSold = data.sellTotal / data.sell }
-    if (floor && data.held) { data.avgHeld = floor; data.heldValue = floor * data.held }
-    if (data.totalGas && data.trade) { data.avgGas = data.totalGas / data.trade }
-
-    // Enfin, on calcul les valeurs de PNL 
-    // On calcul les valeurs de profit
-    data.realisedPNL = data.sellTotal - data.totalValue
-    data.potentialPNL = (data.sellTotal + data.heldValue) - data.totalValue
-
-    // On calcul le ROI
-    if ((data.sellTotal + data.heldValue) - (data.totalValue)) {
-        data.potentialROI = (((data.sellTotal + data.heldValue) - (data.totalValue)) / (data.totalValue)) * 100
-    }
-
-
-    // On formatte le ROI
-    // Le ROI doit être formatter ici car il peut être infinity
-    let prettierROI = parseFloat(data.potentialROI).toFixed(2) + "%"
-    if (data.potentialROI == Infinity) {
-        prettierROI = "∞ %"
-    }
-
-
-    // Toutes les values ont été calculés, on fait du formattage
-    const prettier = {
-        mintValue: parseFloat(data.mintValue).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.mintValue * btcPrice).toFixed(0)) + ")",
-        mintGas: parseFloat(data.mintGas).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.mintGas * btcPrice).toFixed(0)) + ")",
-        mintTotal: parseFloat(data.mintTotal).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.mintTotal * btcPrice).toFixed(0)) + ")",
-        buyValue: parseFloat(data.buyValue).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.buyValue * btcPrice).toFixed(0)) + ")",
-        buyGas: parseFloat(data.buyGas).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.buyGas * btcPrice).toFixed(0)) + ")",
-        buyTotal: parseFloat(data.buyTotal).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.buyTotal * btcPrice).toFixed(0)) + ")",
-        sellValue: parseFloat(data.sellValue).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.sellValue * btcPrice).toFixed(0)) + ")",
-        sellGas: parseFloat(data.sellGas).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.sellGas * btcPrice).toFixed(0)) + ")",
-        sellTotal: parseFloat(data.sellTotal).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.sellTotal * btcPrice).toFixed(0)) + ")",
-        mint: new Intl.NumberFormat('en-US').format(parseFloat(data.mint).toFixed(0)),
-        buy: new Intl.NumberFormat('en-US').format(parseFloat(data.buy).toFixed(0)),
-        sell: new Intl.NumberFormat('en-US').format(parseFloat(data.sell).toFixed(0)),
-        airdrop: new Intl.NumberFormat('en-US').format(parseFloat(data.transfer).toFixed(0)),
-        held: new Intl.NumberFormat('en-US').format(parseFloat(data.held).toFixed(0)),
-        txs: new Intl.NumberFormat('en-US').format(parseFloat(data.trade).toFixed(0)),
-        avgMint: parseFloat(data.avgMint).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgMint * btcPrice).toFixed(0)) + ")",
-        avgBuy: parseFloat(data.avgBuy).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgBuy * btcPrice).toFixed(0)) + ")",
-        avgTotal: parseFloat(data.avgTotal).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgTotal * btcPrice).toFixed(0)) + ")",
-        avgSold: parseFloat(data.avgSold).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgSold * btcPrice).toFixed(0)) + ")",
-        avgHeld: parseFloat(data.avgHeld).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgHeld * btcPrice).toFixed(0)) + ")",
-        avgGas: parseFloat(data.avgGas).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.avgGas * btcPrice).toFixed(0)) + ")",
-        realisedPNL: parseFloat(data.realisedPNL).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.realisedPNL * btcPrice).toFixed(0)) + ")",
-        potentialPNL: parseFloat(data.potentialPNL).toFixed(4) + "₿ ($" + new Intl.NumberFormat('en-US').format(parseFloat(data.potentialPNL * btcPrice).toFixed(0)) + ")",
-        potentialROI: prettierROI,
-    }
-
-    const result = {
-        collection: {
-            name: name,
-            slug: slug,
-            icon: icon,
-            floor: floor,
-            twitter: twitter,
-            discord: discord,
-            website: website,
-            btcPrice: btcPrice,
-        },
-        raw: data,
-        prettier: prettier
-    }
-
-    return result
-}
 
 
 
@@ -391,7 +57,7 @@ async function runesProfitSingle(cont, wall, time) {
         }
 
         // On formatte tout en lower case
-        const slug = cont
+        const slug = cont.toUpperCase()
         const wallet = wall.toLowerCase()
         const timestamp = getTimestamp(time)
 
@@ -399,15 +65,6 @@ async function runesProfitSingle(cont, wall, time) {
         const btcPrice = getBtcPrice()
         const tokenPRM = getRuneMetrics(slug, btcPrice)
         const heldPRM = getRuneBalance(slug, wallet)
-
-        // On récupère les metrics du token et le nombre de token held. On peut opti en récupérant le nombre 
-        // de token held plus tard et même peut être les metrics du token
-        ////\\\\
-        // const [token, held2] = await Promise.all([
-        //     getRuneMetrics(slug, btcPrice),
-        //     getRuneBalance(slug, wallet)
-        // ]);
-        ////\\\\
 
         // On récupère l'activité du wallet en fonction du timestamp, du wallet et de la slug
         const activity = await getRuneActivityByWallet(slug, wallet, timestamp)
@@ -421,8 +78,7 @@ async function runesProfitSingle(cont, wall, time) {
             // On vérifie que la tx a pas déjà été traité.
             // Si c'est le cas on la prend pas en compte.
             if (!txArray.includes(item.txId)) {
-                // && item.txId === "667aae821390b9a9ec6f823346a0f1d240ab7fb68d63a1ffadb21e3f3976c6f1"
-                // On fait une arborécence en identifiant le type de transaction
+
                 // On commence par regarder si c'est une vente. Si c'est le cas, la transaction
                 // précédente sera toujours un send ou un received.
                 if (item.action == 'buying_broadcasted') {
@@ -472,6 +128,7 @@ async function runesProfitSingle(cont, wall, time) {
                     const counterpart = activity.filter(i => i.txId === item.txId)
                     const isSplit = isHiddenRunesSplit(counterpart)
                     const isHiddenBuy = isHiddenRunesBuying(counterpart)
+                    const isHiddenTransfer = isHiddenRuneTransfer(counterpart)
 
                     if (!isHiddenBuy) {
                         // Est ce que c'est un achat, si oui on le compte pas car
@@ -484,26 +141,50 @@ async function runesProfitSingle(cont, wall, time) {
                             data.sellGas += satsToBtc(txn.fee)
                             data.split++
 
+                        } else if (isHiddenTransfer) {
+                            // On recherche si c'est un transfer caché. Les transfert cachés sont des transfert qui sont 
+                            // fait en envoyant un paquet, puis en recevant la différence des tokens qui n'ont pas été envoyés.
+                            // Ici on regarde les received donc les tokens qu'on envoi (la received arrive en premier dans la boucle).
+                            //const sent = counterpart.find(i => i.action === "sent").amount
+                            //const received = counterpart.find(i => i.action === "received").amount
+                            const txn = await getTransaction(item.txId)
+                            data.transfer++
+                            data.sellGas += satsToBtc(txn.fee)
+
                         } else {
                             // C'est un airdrop ou un transfer car il n'y a pas de split associé
                             // mais ça peut ausis être un mint donc on vérifie.
                             const txn = await getTransaction(item.txId)
-                            //   const inflow = txn.vin // On utilise le flux pour déterminer si c'est un mint ou un airdrop
+                            const inflow = txn.vin // On utilise le flux pour déterminer si c'est un mint ou un airdrop
                             const outflow = txn.vout // On utilise le flux pour déterminer si c'est un mint ou un airdrop
 
                             // On surveille les flow out et in et on regroupe les receiver et 
                             // senders en deux liste de wallet uniques
                             //   const valueIn = satsToBtc(inflow.filter(i => i.scriptpubkey_address === wallet).reduce((total, transaction) => total + transaction.value, 0));
-                            //   const senders = [...new Set(inflow.filter(i => i.scriptpubkey_address).map(i => i.scriptpubkey_address))].length
+                            const senders = [...new Set(inflow.filter(i => i.scriptpubkey_address).map(i => i.scriptpubkey_address))].length
                             //   const valueOut = satsToBtc(outflow.filter(i => i.scriptpubkey_address === wallet).reduce((total, transaction) => total + transaction.value, 0));
-                            const receivers = [...new Set(outflow.filter(i => i.scriptpubkey_address).map(i => i.scriptpubkey_address))].length
+                            const receivers = [...new Set(outflow.filter(i => i.scriptpubkey_address && isBRC20BitcoinWallet(i.scriptpubkey_address)).map(i => i.scriptpubkey_address))].length
 
+                            if (receivers < 3) {
 
-                            if (receivers === 1) {
-                                data.mint++
-                                //data.buyValue += value
-                                data.buyAmount = item.amount
-                                data.buyGas += satsToBtc(txn.fee)
+                                if (senders === 1) {
+                                    // Il y a qu'un seul senders, c'est donc un mint. Ca peut être un wallet BCP1 si c'est
+                                    //avec Unisat ou un wallet 3Q si c'est Xverse.
+                                    data.mint++
+                                    data.buyAmount = item.amount
+                                    data.buyGas += satsToBtc(txn.fee)
+                                } else {
+                                    // Il y'a plus qu'un wallet, donc surement un payeur et un envoi. On considère que c'est un achat
+                                    // Pour ces raisons on ajoute les datas qui vont avec. Il faut aussi qu'on définisse la valeu.
+                                    // On calcul la valeur qui sort du premier wallet qui n'est pas un wallet taproot ou du premier qui est notre wallet
+
+                                    const value = inflow.find(i => !isBRC20BitcoinWallet(i.prevout.scriptpubkey_address) || i.prevout.scriptpubkey_address === wallet).prevout.value
+
+                                    data.swapIn++
+                                    data.buyAmount += item.amount
+                                    data.buyValue += satsToBtc(value)
+                                    data.buyGas += satsToBtc(txn.fee)
+                                }
                             } else {
                                 data.airdrop++
                             }
@@ -524,6 +205,7 @@ async function runesProfitSingle(cont, wall, time) {
                     const counterpart = activity.filter(i => i.txId === item.txId)
                     const isSplit = isHiddenRunesSplit(counterpart)
                     const isHiddenBuy = isHiddenRunesBuying(counterpart)
+                    //const isHiddenTransfer = isHiddenRuneTransfer(counterpart)
 
                     if (!isHiddenBuy) {
                         // Est ce que c'est un achat, si oui on le compte pas car
@@ -537,6 +219,19 @@ async function runesProfitSingle(cont, wall, time) {
                             data.split++
 
                         } else {
+
+                            // // C'est un airdrop ou un transfer car il n'y a pas de split associé
+                            // // mais ça peut ausis être un mint donc on vérifie.
+                            //    const txn = await getTransaction(item.txId)
+                            //   const inflow = txn.vin // On utilise le flux pour déterminer si c'est un mint ou un airdrop
+                            //   const senders = [...new Set(inflow.filter(i => i.scriptpubkey_address).map(i => i.scriptpubkey_address))].length
+
+
+
+                            ////// ICI IL FAUT FAIRE LE HIDDEN SELL ^^^^^^^
+
+
+
                             // C'est un transfer car il n'y a pas de split associé
                             // mais ça peut ausis être un mint donc on vérifie.
                             data.transfer++
@@ -553,8 +248,12 @@ async function runesProfitSingle(cont, wall, time) {
 
         // On récupère les valeurs CALL au début
         // On calcul quelques valeurs en plus
-        const [token, held] = await Promise.all([tokenPRM, heldPRM]);
+        let [token, held] = await Promise.all([tokenPRM, heldPRM]);
 
+        token = {
+            price: 1,
+            supply: 1
+        }
         // On ajoute les valeurs du holding actuel
         // REGLER LE FORMAT EN BN (actuellement exposant math)
         // Voir pour déduire held amount par Buy - Sell (seulement si tous les buy/sell sont comptés dans les transfert)

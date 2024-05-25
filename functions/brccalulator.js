@@ -161,7 +161,7 @@ async function runesProfitSingle(cont, wall, time) {
                             // On surveille les flow out et in et on regroupe les receiver et 
                             // senders en deux liste de wallet uniques
                             //   const valueIn = satsToBtc(inflow.filter(i => i.scriptpubkey_address === wallet).reduce((total, transaction) => total + transaction.value, 0));
-                            const senders = [...new Set(inflow.filter(i => i.scriptpubkey_address).map(i => i.scriptpubkey_address))].length
+                            const senders = [...new Set(inflow.filter(i => i.prevout.scriptpubkey_address).map(i => i.prevout.scriptpubkey_address))].length
                             //   const valueOut = satsToBtc(outflow.filter(i => i.scriptpubkey_address === wallet).reduce((total, transaction) => total + transaction.value, 0));
                             const receivers = [...new Set(outflow.filter(i => i.scriptpubkey_address && isBRC20BitcoinWallet(i.scriptpubkey_address)).map(i => i.scriptpubkey_address))].length
 

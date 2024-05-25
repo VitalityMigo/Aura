@@ -179,7 +179,7 @@ console.log(data)
                                                 { name: "Address:", value: "`" + wallet + "`", inline: false },
                                                
                                                 { name: "Swap In:", value: "`" + prettier.swapIn + "`", inline: true },
-                                                { name: "Swap Out:", value: "`" + prettier.swapIn + "`", inline: true },
+                                                { name: "Swap Out:", value: "`" + prettier.swapOut + "`", inline: true },
                                                 { name: "Airdrop & Mint:", value: "`" + prettier.airdrop + "`", inline: true },
                                                
                                                 { name: "Token Bought:", value: "`" + prettier.buyAmount + "`", inline: true },

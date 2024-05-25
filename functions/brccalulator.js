@@ -165,7 +165,7 @@ async function runesProfitSingle(cont, wall, time) {
                             //   const valueOut = satsToBtc(outflow.filter(i => i.scriptpubkey_address === wallet).reduce((total, transaction) => total + transaction.value, 0));
                             const receivers = [...new Set(outflow.filter(i => i.scriptpubkey_address && isBRC20BitcoinWallet(i.scriptpubkey_address)).map(i => i.scriptpubkey_address))].length
 
-                            if (receivers < 3) {
+                            if (receivers < 5) {
 
                                 if (senders === 1) {
                                     // Il y a qu'un seul senders, c'est donc un mint. Ca peut être un wallet BCP1 si c'est

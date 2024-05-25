@@ -248,12 +248,8 @@ async function runesProfitSingle(cont, wall, time) {
 
         // On récupère les valeurs CALL au début
         // On calcul quelques valeurs en plus
-        let [token, held] = await Promise.all([tokenPRM, heldPRM]);
+        const [token, held] = await Promise.all([tokenPRM, heldPRM]);
 
-        token = {
-            price: 1,
-            supply: 1
-        }
         // On ajoute les valeurs du holding actuel
         // REGLER LE FORMAT EN BN (actuellement exposant math)
         // Voir pour déduire held amount par Buy - Sell (seulement si tous les buy/sell sont comptés dans les transfert)

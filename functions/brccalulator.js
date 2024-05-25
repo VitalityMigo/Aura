@@ -69,7 +69,7 @@ async function runesProfitSingle(cont, wall, time) {
         // On récupère l'activité du wallet en fonction du timestamp, du wallet et de la slug
         const activity = await getRuneActivityByWallet(slug, wallet, timestamp)
         //  const activity = activity1.filter(i => i.txId === "667aae821390b9a9ec6f823346a0f1d240ab7fb68d63a1ffadb21e3f3976c6f1")
-        // console.log(activity)// tempo
+       // console.log(activity)// tempo
 
         const txArray = []
         // On initialise la boucle dans laquelle on va construire l'arborécence
@@ -226,10 +226,10 @@ async function runesProfitSingle(cont, wall, time) {
                             //   const inflow = txn.vin // On utilise le flux pour déterminer si c'est un mint ou un airdrop
                             //   const senders = [...new Set(inflow.filter(i => i.scriptpubkey_address).map(i => i.scriptpubkey_address))].length
 
-
+                            console.log("transfer")
 
                             ////// ICI IL FAUT FAIRE LE HIDDEN SELL ^^^^^^^
-
+                            ////// IL VA PEUT ETRE AUSSI FALLOIR RAJOUTER LES HIDDEN TRANSFER
 
 
                             // C'est un transfer car il n'y a pas de split associé

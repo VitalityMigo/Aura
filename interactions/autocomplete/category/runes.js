@@ -120,6 +120,52 @@ module.exports = {
 
                 }
 
+            } else if (actualSubcommand.toLowerCase() == "data") {
+
+                const focused = interaction.options.getFocused(true);
+                const focusedValue = focused.value
+
+                    const choices = []
+
+
+                    if (focusedValue == "") {
+
+                        const trending = await getRuneTopCollection()
+
+                        trending.forEach(element => {
+                            if (element) {
+                                const projectName = element.spacedRune
+                                const pjAddress = element.rune
+                                choices.push({ name: projectName, value: pjAddress });
+                            }
+                        })
+
+                        interaction.respond(
+                            choices.slice(0, 25).map((choice) => ({ name: choice.name, value: choice.value }))
+                        ).catch((err) => {
+                            console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                        });
+
+
+                    } else {
+
+                        const search = await searchRunesByName(focusedValue)
+
+                        search.forEach(element => {
+                            if (element) {
+                                const projectName = element.spacedRune
+                                const pjAddress = element.rune
+                                choices.push({ name: projectName, value: pjAddress });
+                            }
+                        })
+
+                        interaction.respond(
+                            choices.map((choice) => ({ name: choice.name, value: choice.value }))
+                        ).catch((err) => {
+                            console.error('Erreur lors de la réponse à l\'interaction Discord:', err);
+                        });
+
+                    }
             }
 
 

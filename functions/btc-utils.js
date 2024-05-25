@@ -25,8 +25,8 @@ async function getRuneMetrics(slug, btcPrice) {
             symbol: result.symbol,
             decimals: result.divisibility,
             supply: parseInt(result.totalSupply / (10 ** result.divisibility)),
-            price: satsToBtc(parseFloat(result.floorUnitPrice.formatted)),
-            marketcap: result.marketCap * btcPrice,
+            price: result.floorUnitPrice ? satsToBtc(parseFloat(result.floorUnitPrice.formatted)) : 0,
+            marketcap: result.marketCap ? result.marketCap * btcPrice : 0,
             holders: result.holderCount,
             volume: result.volume,
             logo: result.imageURI,
@@ -36,6 +36,18 @@ async function getRuneMetrics(slug, btcPrice) {
         console.log(error.stack)
         return null
     }
+}
+
+async function getExtensiveRuneMetrics(slug) {
+    try {
+        const call = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/runes/market/${slug}/info`, { headers: magiceden });
+        const result = call.data
+        return result
+    } catch (error) {
+        console.log(error.stack)
+        return null
+    }
+
 }
 
 async function getRuneTopCollection() {
@@ -174,6 +186,7 @@ function isBRC20BitcoinWallet(wallet) {
 module.exports = {
     getBtcPrice,
     getRuneMetrics,
+    getExtensiveRuneMetrics,
     getRuneActivityByWallet,
     getTransaction,
     getRuneBalance,

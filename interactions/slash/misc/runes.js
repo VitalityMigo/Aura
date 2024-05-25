@@ -16,8 +16,10 @@ const excluded = ['profit']
 // On importe les fonctions importantes
 const isHttps = require('../../../functions/isHttps')
 const { runesProfitSingle } = require("../../../functions/brccalulator")
-const { isBRC20BitcoinWallet } = require("../../../functions/btc-utils")
+const { isBRC20BitcoinWallet, getExtensiveRuneMetrics, satsToBtc } = require("../../../functions/btc-utils")
+const { getBtcPrice } = require("../../../config/web3data")
 const reduceText = require("../../../functions/reducetext")
+const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
 
 // Fonction de formattage complémentaire
 function formatWallet2(input) {
@@ -88,6 +90,18 @@ module.exports = {
                         )
                 ),
 
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("data")
+                .setDescription("Display Runes data")
+                .addStringOption(option =>
+                    option
+                        .setName("token")
+                        .setDescription("The token to analyse")
+                        .setRequired(true)
+                        .setAutocomplete(true)
+                )
         ),
 
     async execute(interaction) {
@@ -157,7 +171,6 @@ module.exports = {
 
 
                                     const data = await runesProfitSingle(slug, wallet, time)
-console.log(data)
 
                                     if (data) {
 
@@ -177,35 +190,35 @@ console.log(data)
                                             .setImage("https://cdn.discordapp.com/attachments/1100572519896977490/1185619758008254474/e.png?ex=65904572&is=657dd072&hm=7a51469cad88b48198c5f230d13450d50c7e2717c5acdf97a82a6eb1fb5adad4&")
                                             .addFields(
                                                 { name: "Address:", value: "`" + wallet + "`", inline: false },
-                                               
+
                                                 { name: "Swap In:", value: "`" + prettier.swapIn + "`", inline: true },
                                                 { name: "Swap Out:", value: "`" + prettier.swapOut + "`", inline: true },
                                                 { name: "Airdrop & Mint:", value: "`" + prettier.airdrop + "`", inline: true },
-                                               
+
                                                 { name: "Token Bought:", value: "`" + prettier.buyAmount + "`", inline: true },
                                                 { name: "Token Sold:", value: "`" + prettier.sellAmount + "`", inline: true },
                                                 { name: "Token Held:", value: "`" + prettier.heldAmount + "`", inline: true },
-                                               
+
                                                 { name: "Buy Value:", value: "`" + prettier.buyValue + "`", inline: true },
                                                 { name: "Sold Value:", value: "`" + prettier.sellValue + "`", inline: true },
                                                 { name: "Held Value:", value: "`" + prettier.heldValue + "`", inline: true },
-                                               
+
                                                 { name: "AVG MC Buy:", value: "`" + prettier.avgMCBuy + "`", inline: true },
                                                 { name: "AVG MC Sell:", value: "`" + prettier.avgMCSell + "`", inline: true },
                                                 { name: "Current MC:", value: "`" + prettier.currentMC + "`", inline: true },
-                                               
+
                                                 { name: "Gas Cost:", value: "`" + prettier.totalGas + "`", inline: true },
                                                 { name: "Avg Gas Cost:", value: "`" + prettier.avgGas + "`", inline: true },
                                                 { name: " ", value: " ", inline: true },
-                                               
+
                                                 { name: "Realised P&L:", value: "`" + prettier.realizedPNL + "`", inline: true },
                                                 { name: "Realised ROI:", value: "`" + prettier.realizedMLTP + " (" + prettier.realizedROI + ")`", inline: true },
                                                 { name: " ", value: " ", inline: true },
-                                               
+
                                                 { name: "Potential P&L:", value: "`" + prettier.potentialPNL + "`", inline: true },
                                                 { name: "Potential ROI:", value: "`" + prettier.potentialMLTP + " (" + prettier.potentialROI + ")`", inline: true },
                                                 { name: " ", value: " ", inline: true },
-                                               
+
                                                 { name: "Links", value: '[Magic Eden](https://magiceden.io/runes/' + slug + ") ∙ " + '[Genii](https://geniidata.com/ordinals/runes/' + slug + ") ∙ " + '[Ordiscan](https://ordiscan.com/rune/' + slug + ") ∙ " + '[UniSat](https://unisat.io/runes/market?tick=' + token.name + ") ∙ " + '[Mempool](https://mempool.space/address/' + wallet + ')', inline: false },
                                             )
                                             .setTimestamp()
@@ -447,6 +460,78 @@ console.log(data)
 
 
 
+
+                            } else if (subcommand === 'data') {
+
+                                const slug = interaction.options.getString("token").toUpperCase()
+
+                                // On récupère les infos du token et le prix du BTC
+                                const btcPrice = getBtcPrice()
+                                const token = await getExtensiveRuneMetrics(slug, btcPrice)
+
+                                if (token) {
+
+                                    const price = token.floorUnitPrice ? parseFloat(token.floorUnitPrice.formatted).toFixed(3) + " sats" : "0.00 sats"
+                                    const usdPrice = token.floorUnitPrice ? "$" + parseFloat(satsToBtc(token.floorUnitPrice.formatted)).toFixed(5) * btcPrice : "$0"
+
+                                    const marketCap =  token.marketCap ? parseFloat(token.marketCap).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format((token.marketCap * btcPrice).toFixed(0)) + ")" : "0.00₿ ($0)"
+                                    const mcHolders =  token.marketCap ? parseFloat(token.marketCap / token.holderCount).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format(((token.marketCap / token.holderCount) * btcPrice).toFixed(0)) + ")" : "0.00₿ ($0)"
+
+                                    const pending = token.pendingTxnCount > 0 ? '<a:AuraLoading:1134068847616458792>': ''
+
+                                    //Embed getRCprofitPrecisedAll
+                                    const answer = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle(token.name)
+                                        .setDescription(">>> Displaying the runes data.")
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setThumbnail(token.imageURI)
+                                        .addFields(
+                                            { name: " ", value: " ", inline: false },
+
+                                            { name: "Price:", value: "`" + price  + "`", inline: true },
+                                            { name: "USD Price:", value: "`" + usdPrice + "`", inline: true },
+                                            { name: " ", value: " ", inline: true },
+
+                                            { name: "Total Volume:", value: "`" + parseFloat(token.volume.all / 10**8).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format(((token.volume.all / 10**8) * btcPrice).toFixed(0)) + ")`", inline: true },
+                                            { name: "Supply:", value: "`" + formatCoinValueSign(token.formattedTotalSupply) + "`", inline: true },
+                                            { name: "Holders:", value: "`" + token.holderCount + "`", inline: true },
+                                            
+                                            { name: "1D Volume:", value: "`" + parseFloat(token.volume['1d'] / 10**8).toFixed(2) + "₿ ($" +  Intl.NumberFormat('en-US').format(((token.volume['1d'] / 10**8) * btcPrice).toFixed(0)) + ")`", inline: true },
+                                            { name: "7D Volume:", value: "`" + parseFloat(token.volume['7d'] / 10**8).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format(((token.volume['7d'] / 10**8) * btcPrice).toFixed(0)) + ")`", inline: true },
+                                            { name: "30D Volume:", value: "`" + parseFloat(token.volume['30d'] / 10**8).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format(((token.volume['30d'] / 10**8) * btcPrice).toFixed(0)) + ")`", inline: true },
+
+                                            { name: "Market Cap:", value: "`" + marketCap + "`", inline: true },
+                                            { name: "FDV:", value: "`" + marketCap + "`", inline: true },
+                                            { name: "MC/Holders:", value: "`" + mcHolders + "`", inline: true },
+
+                                            { name: "Min. Order:", value: "`" + token.minOrderSize + "`", inline: true },
+                                            { name: "Max. Order:", value: "`" + formatCoinValueSign(token.maxOrderSize.toString()) + "`", inline: true },
+                                            { name: " ", value: " ", inline: true },
+
+                                            { name: " ", value: "→ Currently `" + token.pendingTxnCount + "` pending transaction(s) " + pending, inline: true },
+                                           
+
+                                            { name: "Links", value: '[Magic Eden](https://magiceden.io/runes/' + slug + ") ∙ " + '[Genii](https://geniidata.com/ordinals/runes/' + slug + ") ∙ " + '[Ordiscan](https://ordiscan.com/rune/' + slug + ") ∙ " + '[UniSat](https://unisat.io/runes/market?tick=' + token.name + ") ∙ " + '[Mempool](https://mempool.space/address/' + slug + ')', inline: false },
+                                        )
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                    await interaction.editReply({ embeds: [answer], components: [] });
+
+                                } else {
+
+                                    const notMember = new EmbedBuilder().setColor("#060A8F")
+                                        .setTitle(`Runes Data`)
+                                        .setDescription("Aura can't analyze the Runes data. Please try again or contact our team if the error persists.")
+                                        .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
+                                        .setAuthor({ name: authorName, iconURL: userAvatar })
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
+
+                                    await interaction.editReply({ embeds: [notMember] });
+
+
+                                }
 
                             }
 

@@ -122,7 +122,7 @@ async function getRuneActivityByWallet(slug, wallet, time) {
         result = result.concat(filtered.map((i) => ({
             name: i.rune,
             action: i.kind,
-            side: i.newOwner === wallet ? "in" : "out",
+            isBuy: i.newOwner === wallet ? true : false,
             amount: parseFloat(i.formattedAmount),
             price: i.kind === 'buying_broadcasted' ? satsToBtc(i.listedPrice) : null,
             to: i.newOwner,

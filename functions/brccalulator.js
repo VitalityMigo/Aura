@@ -69,7 +69,7 @@ async function runesProfitSingle(cont, wall, time) {
         // On récupère l'activité du wallet en fonction du timestamp, du wallet et de la slug
         const activity = await getRuneActivityByWallet(slug, wallet, timestamp)
         //  const activity = activity1.filter(i => i.txId === "667aae821390b9a9ec6f823346a0f1d240ab7fb68d63a1ffadb21e3f3976c6f1")
-       // console.log(activity)// tempo
+        // console.log(activity)// tempo
 
         const txArray = []
         // On initialise la boucle dans laquelle on va construire l'arborécence
@@ -177,13 +177,21 @@ async function runesProfitSingle(cont, wall, time) {
                                     // Il y'a plus qu'un wallet, donc surement un payeur et un envoi. On considère que c'est un achat
                                     // Pour ces raisons on ajoute les datas qui vont avec. Il faut aussi qu'on définisse la valeu.
                                     // On calcul la valeur qui sort du premier wallet qui n'est pas un wallet taproot ou du premier qui est notre wallet
+                                    const filteredIn = inflow.find(i => !isBRC20BitcoinWallet(i.prevout.scriptpubkey_address) || i.prevout.scriptpubkey_address === wallet)
+                                    const filteredOut = outflow.find(i => i.scriptpubkey_address === filteredIn.prevout.scriptpubkey_address)
 
-                                    const value = inflow.find(i => !isBRC20BitcoinWallet(i.prevout.scriptpubkey_address) || i.prevout.scriptpubkey_address === wallet).prevout.value
+                                    // On refait un deuxième test pour voir si c'est un transfert
+                                    // en regardant si y'a bien des buyer à l'origine
+                                    if (filteredIn) {
+                                        const value = filteredIn.prevout.value - filteredOut.value
+                                        data.swapIn++
+                                        data.buyAmount += item.amount
+                                        data.buyValue += satsToBtc(value)
+                                        data.buyGas += satsToBtc(txn.fee)
+                                    } else {
+                                        data.transfer++
+                                    }
 
-                                    data.swapIn++
-                                    data.buyAmount += item.amount
-                                    data.buyValue += satsToBtc(value)
-                                    data.buyGas += satsToBtc(txn.fee)
                                 }
                             } else {
                                 data.airdrop++
@@ -205,7 +213,7 @@ async function runesProfitSingle(cont, wall, time) {
                     const counterpart = activity.filter(i => i.txId === item.txId)
                     const isSplit = isHiddenRunesSplit(counterpart)
                     const isHiddenBuy = isHiddenRunesBuying(counterpart)
-                    //const isHiddenTransfer = isHiddenRuneTransfer(counterpart)
+                    const isHiddenTransfer = isHiddenRuneTransfer(counterpart)
 
                     if (!isHiddenBuy) {
                         // Est ce que c'est un achat, si oui on le compte pas car
@@ -218,24 +226,41 @@ async function runesProfitSingle(cont, wall, time) {
                             data.sellGas += satsToBtc(txn.fee)
                             data.split++
 
+                        } else if (isHiddenTransfer) {
+                            // On recherche si c'est un transfer caché. Les transfert cachés sont des transfert qui sont 
+                            // fait en envoyant un paquet, puis en recevant la différence des tokens qui n'ont pas été envoyés.
+                            // Ici on regarde les received donc les tokens qu'on envoi (la received arrive en premier dans la boucle).
+                            //const sent = counterpart.find(i => i.action === "sent").amount
+                            //const received = counterpart.find(i => i.action === "received").amount
+                            const txn = await getTransaction(item.txId)
+                            data.transfer++
+                            data.sellGas += satsToBtc(txn.fee)
+
                         } else {
 
                             // // C'est un airdrop ou un transfer car il n'y a pas de split associé
                             // // mais ça peut ausis être un mint donc on vérifie.
-                            //    const txn = await getTransaction(item.txId)
-                            //   const inflow = txn.vin // On utilise le flux pour déterminer si c'est un mint ou un airdrop
-                            //   const senders = [...new Set(inflow.filter(i => i.scriptpubkey_address).map(i => i.scriptpubkey_address))].length
+                            const txn = await getTransaction(item.txId)
+                            const inflow = txn.vin
+                            const outflow = txn.vout // On utilise le flux pour déterminer si c'est un mint ou un airdrop
+                            const receivers = [...new Set(outflow.filter(i => i.scriptpubkey_address === wallet).map(i => i.scriptpubkey_address))]
 
-                            console.log("transfer")
+                            // On commence la dernière arborécance
+                            if (!receivers.includes(wallet)) {
+                                // Si le receiver est pas dans les wallet, ça veut dire
+                                // que c'est un achat caché donc on le compte comme tel.
+                                // On calcul la valeur reçu par le user. Elle n'est pas précise !!!!
+                                const value = inflow.find(i => !isBRC20BitcoinWallet(i.prevout.scriptpubkey_address) && i.prevout.scriptpubkey_address != wallet).prevout.value
 
-                            ////// ICI IL FAUT FAIRE LE HIDDEN SELL ^^^^^^^
-                            ////// IL VA PEUT ETRE AUSSI FALLOIR RAJOUTER LES HIDDEN TRANSFER
-
-
-                            // C'est un transfer car il n'y a pas de split associé
-                            // mais ça peut ausis être un mint donc on vérifie.
-                            data.transfer++
-                            // On peut rajouter les gas fees ici mais ça demande un call en plus
+                                data.swapOut++
+                                data.sellAmount += item.amount
+                                data.sellValue += satsToBtc(value)
+                            } else {
+                                // C'est un transfer car il n'y a pas de split associé
+                                // mais ça peut ausis être un mint donc on vérifie.
+                                data.transfer++
+                                data.sellGas += satsToBtc(txn.fee)
+                            }
                         }
                         // On ajoute la tx à la liste des transactions
                         txArray.push(item.txId)
@@ -321,6 +346,7 @@ async function runesProfitSingle(cont, wall, time) {
             raw: data,
             prettier: prettierData
         }
+
         return result
 
     } catch (error) {

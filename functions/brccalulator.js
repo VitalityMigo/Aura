@@ -178,12 +178,13 @@ async function runesProfitSingle(cont, wall, time) {
                                     // Pour ces raisons on ajoute les datas qui vont avec. Il faut aussi qu'on définisse la valeu.
                                     // On calcul la valeur qui sort du premier wallet qui n'est pas un wallet taproot ou du premier qui est notre wallet
                                     const filteredIn = inflow.find(i => !isBRC20BitcoinWallet(i.prevout.scriptpubkey_address) || i.prevout.scriptpubkey_address === wallet)
-                                    const filteredOut = outflow.find(i => i.scriptpubkey_address === filteredIn.prevout.scriptpubkey_address)
 
                                     // On refait un deuxième test pour voir si c'est un transfert
                                     // en regardant si y'a bien des buyer à l'origine
                                     if (filteredIn) {
+                                        const filteredOut = outflow.find(i => i.scriptpubkey_address === filteredIn.prevout.scriptpubkey_address)
                                         const value = filteredIn.prevout.value - filteredOut.value
+
                                         data.swapIn++
                                         data.buyAmount += item.amount
                                         data.buyValue += satsToBtc(value)

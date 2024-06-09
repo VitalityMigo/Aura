@@ -84,12 +84,18 @@ async function runesProfitSingle(cont, wall, time) {
                 if (item.action == 'buying_broadcasted') {
                     // C'est une vente sur le marché secondaire, on identifie si c'est un 
                     // buy ou un sell en utilisant les data déjà faite et ajoutée.
+                    // On utilise un reduce car parfois il y a plusieurs buying séparé en objet mais qui sont la 
+                    // même transaction au final, on additonne donc l'amount et la value.
+                    const buyingArray = activity.filter(i => i.txId === item.txId && i.action === 'buying_broadcasted')
+
+                    const amount = buyingArray.reduce((sum, item) => sum + item.amount, 0);
+                    const price = buyingArray.reduce((sum, item) => sum + item.price, 0);
 
                     if (item.isBuy === true) {
                         // C'est un achat, on fait le code en fonction en ajoutant le nombre de token 
                         // acheté, le prix d'achat, les gas fees
-                        data.buyAmount += item.amount
-                        data.buyValue += item.price
+                        data.buyAmount += amount
+                        data.buyValue += price
                         data.swapIn++
 
                         // On ajoute les data de gas
@@ -99,8 +105,8 @@ async function runesProfitSingle(cont, wall, time) {
                     } else if (item.isBuy === false) {
                         // C'est une vente, on fait le code en fonction en ajoutant le nombre de token 
                         // vendue, le prix de vente reçu, et pas de gas fees
-                        data.sellAmount += item.amount
-                        data.sellValue += item.price
+                        data.sellAmount += amount
+                        data.sellValue += price
                         data.swapOut++
                     }
                     // On ajoute la tx à la liste des transactions
@@ -177,13 +183,19 @@ async function runesProfitSingle(cont, wall, time) {
                                     // Il y'a plus qu'un wallet, donc surement un payeur et un envoi. On considère que c'est un achat
                                     // Pour ces raisons on ajoute les datas qui vont avec. Il faut aussi qu'on définisse la valeu.
                                     // On calcul la valeur qui sort du premier wallet qui n'est pas un wallet taproot ou du premier qui est notre wallet
-                                    const filteredIn = inflow.find(i => !isBRC20BitcoinWallet(i.prevout.scriptpubkey_address) || i.prevout.scriptpubkey_address === wallet)
+                                    const filteredIn = inflow.filter(i => !isBRC20BitcoinWallet(i.prevout.scriptpubkey_address) || i.prevout.scriptpubkey_address === wallet)
 
                                     // On refait un deuxième test pour voir si c'est un transfert
                                     // en regardant si y'a bien des buyer à l'origine
-                                    if (filteredIn) {
-                                        const filteredOut = outflow.find(i => i.scriptpubkey_address === filteredIn.prevout.scriptpubkey_address)
-                                        const value = filteredIn.prevout.value - filteredOut.value
+                                    if (filteredIn.length > 0) {
+                                        const filteredOut = outflow.filter(i => i.scriptpubkey_address === filteredIn[0].prevout.scriptpubkey_address)
+                                        
+                                        console.log(filteredIn)
+                                        // Pour calculer la valeur, on récupère toutes les instances de chaque
+                                        const valueIn = filteredIn.reduce((sum, item) => sum + item.prevout.value, 0);
+                                        const valueOut = filteredOut.reduce((sum, item) => sum + item.value, 0);
+                                        const value = valueIn - valueOut
+                                        //const value = filteredIn.prevout.value - filteredOut.value
 
                                         data.swapIn++
                                         data.buyAmount += item.amount

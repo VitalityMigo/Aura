@@ -6,7 +6,7 @@ const unisate = { 'Authorization': 'Bearer 58ee790459d886e2a178ef40b51a4b981ae6f
 const axios = require("axios")
 const decimals = 8
 
-const { getRuneMetrics, getRuneActivityByWallet, isBRC20BitcoinWallet, isHiddenRuneTransfer, getTransaction, getRuneBalance, satsToBtc, isHiddenRunesBuying, isHiddenRunesSplit } = require("./btc-utils")
+const { getRuneMetrics, getRuneActivityByWallet, isBRC20BitcoinWallet, isHiddenRuneTransfer, getTransaction, getRuneBalance, satsToBtc, isHiddenRunesBuying, isHiddenRunesSplit, isRunesUtxo } = require("./btc-utils")
 const { getBtcPrice } = require('../config/web3data.js')
 const addTimeout = require("./addtimeout")
 const formatCoinValueSign = require("./formatNumberEmbed")
@@ -189,7 +189,7 @@ async function runesProfitSingle(cont, wall, time) {
                                     // en regardant si y'a bien des buyer à l'origine
                                     if (filteredIn.length > 0) {
                                         const filteredOut = outflow.filter(i => i.scriptpubkey_address === filteredIn[0].prevout.scriptpubkey_address)
-                                        
+
                                         console.log(filteredIn)
                                         // Pour calculer la valeur, on récupère toutes les instances de chaque
                                         const valueIn = filteredIn.reduce((sum, item) => sum + item.prevout.value, 0);
@@ -269,10 +269,22 @@ async function runesProfitSingle(cont, wall, time) {
                                 data.sellAmount += item.amount
                                 data.sellValue += satsToBtc(value)
                             } else {
-                                // C'est un transfer car il n'y a pas de split associé
-                                // mais ça peut ausis être un mint donc on vérifie.
-                                data.transfer++
-                                data.sellGas += satsToBtc(txn.fee)
+                                // On vérifie que la subtransaction a bien uniquement des UTXO, sinon c'est que  
+                                // c'est un sell avec wallet Unisat.
+                                const filtered = outflow.filter(i => i.scriptpubkey_address === wallet)
+                                const isUTXOOnly = isRunesUtxo(filtered, btcPrice)
+
+                                if (!isUTXOOnly.status) {
+                                    // C'est un sell caché sur Unisat donc pas de wallet 3Q au début mais que
+                                    // taproot. On le sait car il y'a des fonds (BTC) hors UTXO transféré.
+                                    data.swapOut++
+                                    data.sellAmount += item.amount
+                                    data.sellValue += isUTXOOnly.value
+                                } else {
+                                    // C'est un transfer car il n'y a pas de split associé
+                                    data.transfer++
+                                    data.sellGas += satsToBtc(txn.fee)
+                                }
                             }
                         }
                         // On ajoute la tx à la liste des transactions

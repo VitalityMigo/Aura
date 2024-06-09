@@ -181,6 +181,37 @@ function isBRC20BitcoinWallet(wallet) {
     return regex.test(wallet);
 }
 
+function isRunesUtxo(subtransactions, btcPrice) {
+
+    // UTXO Identifié
+    const knownUTXO = [546, 330]
+    const limit = 1
+
+    for (const item of subtransactions) {
+
+        // Valeur de l'UTXO 
+        const value = satsToBtc(item.value)
+        const valueUsd = value * btcPrice
+
+        // Vérifications d'indentification ou de limite
+        const isKnown = knownUTXO.includes(value)
+        const isUnderLimit = valueUsd <= limit ? true : false
+
+        // On fait la condition
+        if (!isKnown || !isUnderLimit) {
+            // On retourne le status et la valeur
+            return {
+                status: false,
+                value: value
+            }
+        }
+    }
+
+    return {
+        status: true,
+        value: null
+    }
+}
 
 
 module.exports = {
@@ -196,5 +227,6 @@ module.exports = {
     isHiddenRuneTransfer,
     isBRC20BitcoinWallet,
     searchRunesByName,
-    getRuneTopCollection
+    getRuneTopCollection,
+    isRunesUtxo
 }

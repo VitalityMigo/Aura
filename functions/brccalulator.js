@@ -190,7 +190,6 @@ async function runesProfitSingle(cont, wall, time) {
                                     if (filteredIn.length > 0) {
                                         const filteredOut = outflow.filter(i => i.scriptpubkey_address === filteredIn[0].prevout.scriptpubkey_address)
 
-                                        console.log(filteredIn)
                                         // Pour calculer la valeur, on récupère toutes les instances de chaque
                                         const valueIn = filteredIn.reduce((sum, item) => sum + item.prevout.value, 0);
                                         const valueOut = filteredOut.reduce((sum, item) => sum + item.value, 0);
@@ -429,6 +428,8 @@ async function runesProfitMultiple(cont, walls, time) {
 
         // On récupère l'activité du wallet en fonction du timestamp, du wallet et de la slug
         const activity = await getRuneActivityMultipleWallet(slug, wallets, timestamp)
+        //console.log(activity)
+
         //  const activity = activity1.filter(i => i.txId === "667aae821390b9a9ec6f823346a0f1d240ab7fb68d63a1ffadb21e3f3976c6f1")
         // console.log(activity)// tempo
 
@@ -436,9 +437,13 @@ async function runesProfitMultiple(cont, walls, time) {
         // On initialise la boucle dans laquelle on va construire l'arborécence
         for (const item of activity) {
 
+            // On compare l'objet en entier avec couple wallet et transaction
+            // pour vérifier qu'il n'est pas contenu.
+            const isNotIncluded = !txArray.find(i => i.wallet === item.wallet && i.txId === item.txId)
+
             // On vérifie que la tx a pas déjà été traité.
             // Si c'est le cas on la prend pas en compte.
-            if (!txArray.includes(item.txId)) {
+            if (isNotIncluded) {
 
                 // On commence par regarder si c'est une vente. Si c'est le cas, la transaction
                 // précédente sera toujours un send ou un received.
@@ -471,7 +476,7 @@ async function runesProfitMultiple(cont, walls, time) {
                         data.swapOut++
                     }
                     // On ajoute la tx à la liste des transactions
-                    txArray.push(item.txId)
+                    txArray.push({ txId: item.txId, wallet: item.wallet })
 
                 } else if (item.action == 'split_broadcast') {
                     // Cela représente les split, donc on les considère ainsi en ajoutant au compteur
@@ -483,7 +488,7 @@ async function runesProfitMultiple(cont, walls, time) {
                     data.split++
 
                     // On ajoute la tx à la liste des transactions
-                    txArray.push(item.txId)
+                    txArray.push({ txId: item.txId, wallet: item.wallet })
 
                 } else if (item.action === 'received') {
                     // Cela représente une situation dans laquelle le wallet recoit 
@@ -551,7 +556,6 @@ async function runesProfitMultiple(cont, walls, time) {
                                     if (filteredIn.length > 0) {
                                         const filteredOut = outflow.filter(i => i.scriptpubkey_address === filteredIn[0].prevout.scriptpubkey_address)
 
-                                        console.log(filteredIn)
                                         // Pour calculer la valeur, on récupère toutes les instances de chaque
                                         const valueIn = filteredIn.reduce((sum, item) => sum + item.prevout.value, 0);
                                         const valueOut = filteredOut.reduce((sum, item) => sum + item.value, 0);
@@ -574,7 +578,7 @@ async function runesProfitMultiple(cont, walls, time) {
                             // [...new Set(txn.data.vout.map(item => item.scriptpubkey_address.toLowerCase()))].length;
                         }
                         // On ajoute la tx à la liste des transactions
-                        txArray.push(item.txId)
+                        txArray.push({ txId: item.txId, wallet: item.wallet })
                     }
 
                 } else if (item.action === 'sent') {
@@ -649,7 +653,7 @@ async function runesProfitMultiple(cont, walls, time) {
                             }
                         }
                         // On ajoute la tx à la liste des transactions
-                        txArray.push(item.txId)
+                        txArray.push({ txId: item.txId, wallet: item.wallet })
                     }
                 }
                 // On ajoute un léger delay, type 1/3 de seconde
@@ -732,7 +736,7 @@ async function runesProfitMultiple(cont, walls, time) {
             raw: data,
             prettier: prettierData
         }
-        
+
         return result
 
     } catch (error) {

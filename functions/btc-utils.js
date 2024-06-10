@@ -83,10 +83,12 @@ async function getRuneBalance(slug, wallet) {
 async function getRuneCumulativeBalance(slug, wallets) {
     try {
         let result = 0
-      for (const wallet of wallets) {
-       const call = await getRuneBalance(slug, wallet)
-       result += call === null ? 0 : call
-      }
+        for (const wallet of wallets) {
+            const call = await getRuneBalance(slug, wallet)
+            const value = call === null ? 0 : call
+            result += value
+        }
+        return result
     } catch (error) {
         return null
     }

@@ -239,17 +239,17 @@ module.exports = {
                                         //     commandName: "profit",
                                         //     interactionId: interaction.id,
                                         //     walletCategory: "eth",
-                                        //     selectedCollection: collection.contract,
-                                        //     floorPrice: collection.floor.toString(),
-                                        //     collectionName: collection.name,
+                                        //     selectedCollection: token.contract,
+                                        //     floorPrice: token.floor.toString(),
+                                        //     collectionName: token.name,
                                         //     mintCount: raw.mint.toString(),
                                         //     buyCount: raw.buy.toString(),
                                         //     soldCount: raw.sell.toString(),
                                         //     remaining: raw.held.toString(),
                                         //     avgBuy: parseFloat(raw.avgTotal).toFixed(3),
                                         //     avgSold: parseFloat(raw.avgSold).toFixed(3),
-                                        //     realisedProfit: parseFloat(raw.realisedPNL).toFixed(3),
-                                        //     potentialProfit: parseFloat(raw.potentialPNL).toFixed(3),
+                                        //     realisedProfit: parseFloat(raw.realizedPNL).toFixed(3),
+                                        //     potentialProfit: parseFloat(raw.realizedPNL).toFixed(3),
                                         //     roi: raw.potentialROI.toString(),
                                         //     totalTradeCount: JSON.stringify({
                                         //         buy: (raw.buyTotal + raw.mintTotal).toString(),
@@ -257,8 +257,6 @@ module.exports = {
                                         //     }),
                                         //     userAvatar: userAvatar,
                                         // })
-
-
 
 
                                     } else {

@@ -80,6 +80,18 @@ async function getRuneBalance(slug, wallet) {
     }
 }
 
+async function getRuneCumulativeBalance(slug, wallets) {
+    try {
+        let result = 0
+      for (const wallet of wallets) {
+       const call = await getRuneBalance(slug, wallet)
+       result += call === null ? 0 : call
+      }
+    } catch (error) {
+        return null
+    }
+}
+
 async function getRuneActivityByWallet(slug, wallet, time) {
 
 
@@ -135,6 +147,73 @@ async function getRuneActivityByWallet(slug, wallet, time) {
         offset += 100
         isFull = index == -1 && call.data.length === 100 // Le -1 représente le fait que tous soit dans la range et le 100 que l'array est full
     }
+    return result
+}
+
+async function getRuneActivityMultipleWallet(slug, wallets, time) {
+
+    let result = []
+
+    for (const wallet of wallets) {
+
+        //?offset=100
+        // On commence par faire le call de base
+        const call = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/runes/wallet/activities/${wallet}`, { headers: magiceden })
+        // Puis on coupe à partir du dernier objet qui est dans notre range de timestamp
+        // Si c'est undefined on le garde dans le doute. Dans le cas ou lastIndex est -1 ça
+        // veut dire que tout le tableau rentre dans le champs de recherche. Sinon, on coupe car
+        // cela signifie que le tableau est pas completement valide donc on coupe après.
+        const index = call.data.findIndex(obj => obj.txBlockTime && (obj.txBlockTime / 1000) < time) // Cela l'index représente tous les objet dans le timestamp
+        const filtered = index === -1 ? call.data.filter(i => i.rune === slug) : call.data.slice(0, index).filter(i => i.rune === slug)
+
+        // On formatte l'objet
+        result = result.concat(filtered.map((i) => ({
+            name: i.rune,
+            action: i.kind,
+            isBuy: i.newOwner === wallet ? true : false,
+            amount: parseFloat(i.formattedAmount),
+            price: i.kind === 'buying_broadcasted' ? satsToBtc(i.listedPrice) : null,
+            to: i.newOwner,
+            txId: i.mempoolTxId,
+            btcAtTime: i.btcUsdPrice,
+            wallet: wallet
+        })))
+
+        // On définit l'offset de base pour la boucle et aussi l'offset
+        // qu'on incrément dans la boucle
+        let offset = 100
+        let isFull = index == -1 && call.data.length === 100 // Le -1 représente le fait que tous soit dans la range et le 100 que l'array est full
+
+        // On initialise la boucle
+        while (isFull === true) {
+
+            // Pareil qu'en haut
+            const call = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/runes/wallet/activities/${wallet}?offset=${offset}`, { headers: magiceden })
+            const index = call.data.findIndex(obj => obj.txBlockTime && (obj.txBlockTime / 1000) < time) // Cela l'index représente tous les objet dans le timestamp
+            const filtered = index === -1 ? call.data.filter(i => i.rune === slug) : call.data.slice(0, index).filter(i => i.rune === slug)
+
+            // On formatte l'objet
+            result = result.concat(filtered.map((i) => ({
+                name: i.rune,
+                action: i.kind,
+                isBuy: i.newOwner === wallet ? true : false,
+                amount: parseFloat(i.formattedAmount),
+                price: i.kind === 'buying_broadcasted' ? satsToBtc(i.listedPrice) : null,
+                to: i.newOwner,
+                txId: i.mempoolTxId,
+                btcAtTime: i.btcUsdPrice,
+                wallet: wallet
+            })))
+
+            // On définit l'offset de base pour la boucle et aussi l'offset
+            // qu'on incrément dans la boucle
+            offset += 100
+            isFull = index == -1 && call.data.length === 100 // Le -1 représente le fait que tous soit dans la range et le 100 que l'array est full
+        }
+
+        await addTimeout(0.5)
+    }
+
     return result
 }
 
@@ -219,6 +298,8 @@ module.exports = {
     getRuneMetrics,
     getExtensiveRuneMetrics,
     getRuneActivityByWallet,
+    getRuneActivityMultipleWallet,
+    getRuneCumulativeBalance,
     getTransaction,
     getRuneBalance,
     satsToBtc,

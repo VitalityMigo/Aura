@@ -88,7 +88,7 @@ module.exports = {
                 } else if (focusedOption === "wallet") {
 
                     //const choices = [{ name: "All", value: "All" }] // Seulement si ALL disponible
-                    const choices = []
+                    const choices = [{ name: 'All', value: 'All' }]
 
 
                     let authorId = interaction.user.id;

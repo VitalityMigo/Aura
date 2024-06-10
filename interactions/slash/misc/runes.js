@@ -15,7 +15,7 @@ const excluded = ['profit']
 
 // On importe les fonctions importantes
 const isHttps = require('../../../functions/isHttps')
-const { runesProfitSingle } = require("../../../functions/brccalulator")
+const { runesProfitSingle, runesProfitMultiple } = require("../../../functions/brccalulator")
 const { isBRC20BitcoinWallet, getExtensiveRuneMetrics, satsToBtc } = require("../../../functions/btc-utils")
 const { getBtcPrice } = require("../../../config/web3data")
 const reduceText = require("../../../functions/reducetext")
@@ -281,16 +281,15 @@ module.exports = {
                                 } else if (wallet === "all") {
                                     // Tous les wallets séléctionnés
 
-                                    X_Not_Available_X
                                     // On vérifie que c'est pas all et all, on ne prend en compte que les requêtes
                                     // qui prennent All wallet et une collection.
-                                    if (contract !== 'all') {
+                                    if (slug !== 'all') {
                                         // C'est un all wallet et un seul contrat, on accepte et on commence la génération des profits
                                         // depuis la fonction NFT
 
                                         // On récupère les wallets de l'utilisateur, puis on les map pour pouvoir les mettre dans
                                         // un array qu'on met en lower cases.
-                                        const storage = await wallets.findAll({ where: { authorId: authorId, walletCategory: "eth" } })
+                                        const storage = await wallets.findAll({ where: { authorId: authorId, walletCategory: "btc" } })
                                         const walletList = storage.map(i => i.dataValues.walletAddress.toLowerCase())
                                         const count = walletList.length
 
@@ -298,7 +297,7 @@ module.exports = {
                                         // erreur qui dit qu'il n'y a plus de wallets.
                                         if (count > 0) {
 
-                                            const data = await baseNftProfitMulitWallet(contract, walletList, time)
+                                            const data = await runesProfitMultiple(slug, walletList, time)
 
                                             if (data) {
 
@@ -307,97 +306,89 @@ module.exports = {
                                                 // Les prettier sont pour l'embed
                                                 const raw = data.raw
                                                 const prettier = data.prettier
-                                                const collection = data.collection
+                                                const token = data.token
 
-                                                // On vérifie que la bannière est valide
-                                                // Sinon on remplace par la bannière d'Aura
-                                                if (!isHttps(collection.banner)) {
-                                                    collection.banner = 'https://cdn.discordapp.com/attachments/1100572519896977490/1185619758008254474/e.png?ex=65904572&is=657dd072&hm=7a51469cad88b48198c5f230d13450d50c7e2717c5acdf97a82a6eb1fb5adad4&'
-                                                }
 
                                                 //Embed getRCprofitPrecisedAll
                                                 const answer = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle(collection.name)
+                                                    .setTitle(token.name)
                                                     .setDescription(">>> Displaying the P&L made by `" + count + "` wallets")
                                                     .setAuthor({ name: authorName, iconURL: userAvatar })
-                                                    .setImage(collection.banner)
+                                                    .setImage("https://cdn.discordapp.com/attachments/1100572519896977490/1185619758008254474/e.png?ex=65904572&is=657dd072&hm=7a51469cad88b48198c5f230d13450d50c7e2717c5acdf97a82a6eb1fb5adad4&")
                                                     .addFields(
-                                                        { name: "Mint Value:", value: "`" + prettier.mintValue + "`", inline: true },
-                                                        { name: "Mint Gas:", value: "`" + prettier.mintGas + "`", inline: true },
-                                                        { name: "Mint Total:", value: "`" + prettier.mintTotal + "`", inline: true },
+                                                        { name: "Address:", value: "`" + wallet.toUpperCase() + "`", inline: false },
+
+                                                        { name: "Swap In:", value: "`" + prettier.swapIn + "`", inline: true },
+                                                        { name: "Swap Out:", value: "`" + prettier.swapOut + "`", inline: true },
+                                                        { name: "Airdrop & Mint:", value: "`" + prettier.airdrop + "`", inline: true },
+
+                                                        { name: "Token Bought:", value: "`" + prettier.buyAmount + "`", inline: true },
+                                                        { name: "Token Sold:", value: "`" + prettier.sellAmount + "`", inline: true },
+                                                        { name: "Token Held:", value: "`" + prettier.heldAmount + "`", inline: true },
 
                                                         { name: "Buy Value:", value: "`" + prettier.buyValue + "`", inline: true },
-                                                        { name: "Buy Gas:", value: "`" + prettier.buyGas + "`", inline: true },
-                                                        { name: "Buy Total:", value: "`" + prettier.buyTotal + "`", inline: true },
+                                                        { name: "Sold Value:", value: "`" + prettier.sellValue + "`", inline: true },
+                                                        { name: "Held Value:", value: "`" + prettier.heldValue + "`", inline: true },
 
-                                                        { name: "Sales Value:", value: "`" + prettier.sellValue + "`", inline: true },
-                                                        { name: "Sales Gas:", value: "`" + prettier.sellGas + "`", inline: true },
-                                                        { name: "Sales Total:", value: "`" + prettier.sellTotal + "`", inline: true },
+                                                        { name: "AVG MC Buy:", value: "`" + prettier.avgMCBuy + "`", inline: true },
+                                                        { name: "AVG MC Sell:", value: "`" + prettier.avgMCSell + "`", inline: true },
+                                                        { name: "Current MC:", value: "`" + prettier.currentMC + "`", inline: true },
 
-                                                        { name: "Tokens Minted:", value: "`" + prettier.mint + "`", inline: true },
-                                                        { name: "Tokens Bought:", value: "`" + prettier.buy + "`", inline: true },
-                                                        { name: "Airdrop & Transfer:", value: "`" + prettier.airdrop + "`", inline: true },
+                                                        { name: "Gas Cost:", value: "`" + prettier.totalGas + "`", inline: true },
+                                                        { name: "Avg Gas Cost:", value: "`" + prettier.avgGas + "`", inline: true },
+                                                        { name: " ", value: " ", inline: true },
 
-                                                        { name: "Tokens Sold:", value: "`" + prettier.sell + "`", inline: true },
-                                                        { name: "Tokens Held:", value: "`" + prettier.held + "`", inline: true },
-                                                        { name: "Transactions:", value: "`" + prettier.txs + "`", inline: true },
+                                                        { name: "Realised P&L:", value: "`" + prettier.realizedPNL + "`", inline: true },
+                                                        { name: "Realised ROI:", value: "`" + prettier.realizedMLTP + " (" + prettier.realizedROI + ")`", inline: true },
+                                                        { name: " ", value: " ", inline: true },
 
-                                                        { name: "Avg Mint Value:", value: "`" + prettier.avgMint + "`", inline: true },
-                                                        { name: "Avg Buy Value:", value: "`" + prettier.avgBuy + "`", inline: true },
-                                                        { name: "Avg Spent Value:", value: "`" + prettier.avgTotal + "`", inline: true },
-
-                                                        { name: "Avg Sold Value:", value: "`" + prettier.avgSold + "`", inline: true },
-                                                        { name: "Avg Held Value:", value: "`" + prettier.avgHeld + "`", inline: true },
-                                                        { name: "Avg Gas Value:", value: "`" + prettier.avgGas + "`", inline: true },
-
-                                                        { name: "Current P&L:", value: "`" + prettier.realisedPNL + "`", inline: true },
                                                         { name: "Potential P&L:", value: "`" + prettier.potentialPNL + "`", inline: true },
-                                                        { name: "ROI:", value: "`" + prettier.potentialROI + "`", inline: true },
+                                                        { name: "Potential ROI:", value: "`" + prettier.potentialMLTP + " (" + prettier.potentialROI + ")`", inline: true },
+                                                        { name: " ", value: " ", inline: true },
 
-                                                        { name: "Links", value: '[opensea](https://opensea.io/collection/' + collection.slug + ") ∙ " + '[blur](https://blur.io/collection/' + contract + ") ∙ " + '[magically](https://magically.gg/collection/' + contract + ") ∙ " + '[nerds](https://app.nftnerds.ai/collection/' + contract + ") ∙ " + '[basescan](https://basescan.org/address/' + contract + ')', inline: false },
+                                                        { name: "Links", value: '[Magic Eden](https://magiceden.io/runes/' + slug + ") ∙ " + '[Genii](https://geniidata.com/ordinals/runes/' + slug + ") ∙ " + '[Ordiscan](https://ordiscan.com/rune/' + slug + ") ∙ " + '[UniSat](https://unisat.io/runes/market?tick=' + token.name + ") ∙ " + '[Mempool](https://mempool.space/address/' + wallet + ')', inline: false },
                                                     )
                                                     .setTimestamp()
                                                     .setFooter({ text: 'Powered by Rolls Chasers', iconURL: 'https://cdn.discordapp.com/attachments/1108757872315219968/1121978623436521514/rc_logo.png' });
 
                                                 await interaction.editReply({ embeds: [answer], components: [visualBTN] });
 
+                                                // // On enregistre les informations dans la base SQL
+                                                // // L'interaction sera récupéré pour générer le visuel de profit
+                                                // await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
 
-                                                // On enregistre les informations dans la base SQL
-                                                // L'interaction sera récupéré pour générer le visuel de profit
-                                                await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
+                                                // await interactionData.create({
 
-                                                await interactionData.create({
-
-                                                    authorId: authorId,
-                                                    authorName: authorName,
-                                                    serverId: serverId,
-                                                    commandName: "profit",
-                                                    interactionId: interaction.id,
-                                                    walletCategory: "eth",
-                                                    selectedCollection: collection.contract,
-                                                    floorPrice: collection.floor.toString(),
-                                                    collectionName: collection.name,
-                                                    mintCount: raw.mint.toString(),
-                                                    buyCount: raw.buy.toString(),
-                                                    soldCount: raw.sell.toString(),
-                                                    remaining: raw.held.toString(),
-                                                    avgBuy: parseFloat(raw.avgTotal).toFixed(3),
-                                                    avgSold: parseFloat(raw.avgSold).toFixed(3),
-                                                    realisedProfit: parseFloat(raw.realisedPNL).toFixed(3),
-                                                    potentialProfit: parseFloat(raw.potentialPNL).toFixed(3),
-                                                    roi: raw.potentialROI.toString(),
-                                                    totalTradeCount: JSON.stringify({
-                                                        buy: (raw.buyTotal + raw.mintTotal).toString(),
-                                                        sell: raw.sellTotal.toString(),
-                                                    }),
-                                                    userAvatar: userAvatar,
-                                                })
+                                                //     authorId: authorId,
+                                                //     authorName: authorName,
+                                                //     serverId: serverId,
+                                                //     commandName: "profit",
+                                                //     interactionId: interaction.id,
+                                                //     walletCategory: "eth",
+                                                //     selectedCollection: collection.contract,
+                                                //     floorPrice: collection.floor.toString(),
+                                                //     collectionName: collection.name,
+                                                //     mintCount: raw.mint.toString(),
+                                                //     buyCount: raw.buy.toString(),
+                                                //     soldCount: raw.sell.toString(),
+                                                //     remaining: raw.held.toString(),
+                                                //     avgBuy: parseFloat(raw.avgTotal).toFixed(3),
+                                                //     avgSold: parseFloat(raw.avgSold).toFixed(3),
+                                                //     realisedProfit: parseFloat(raw.realisedPNL).toFixed(3),
+                                                //     potentialProfit: parseFloat(raw.potentialPNL).toFixed(3),
+                                                //     roi: raw.potentialROI.toString(),
+                                                //     totalTradeCount: JSON.stringify({
+                                                //         buy: (raw.buyTotal + raw.mintTotal).toString(),
+                                                //         sell: raw.sellTotal.toString(),
+                                                //     }),
+                                                //     userAvatar: userAvatar,
+                                                // })
 
                                             } else {
                                                 // Si il y'a une erreur lors de l'analyse des data
 
                                                 const notMember = new EmbedBuilder().setColor("#060A8F")
-                                                    .setTitle(`Base NFT Profit`)
+                                                    .setTitle(`Runes Profit`)
                                                     .setDescription("Aura can't analyze your wallet's profit data. Please try again or contact our team if the error persists.")
                                                     .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                                     .setAuthor({ name: authorName, iconURL: userAvatar })
@@ -413,8 +404,8 @@ module.exports = {
                                         } else {
 
                                             const notMember = new EmbedBuilder().setColor("#060A8F")
-                                                .setTitle(`Base NFT Profit`)
-                                                .setDescription("Aura can't analyze your wallet's data because you don't have any wallet registered. Please use try again after adding wallets to your profile.")
+                                                .setTitle(`Runes Profit`)
+                                                .setDescription("Aura can't analyze your wallet's data because you don't have any BTC wallet registered. Please use try again after adding wallets to your profile.")
                                                 .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                                 .setAuthor({ name: authorName, iconURL: userAvatar })
                                                 .setTimestamp()
@@ -430,7 +421,7 @@ module.exports = {
 
                                         const setwalletErrorEmbed = new EmbedBuilder().setColor("#060A8F")
                                             .setTitle(`Not available`)
-                                            .setDescription("We are currently optimising this feature. You can still use Base NFT profit on a **single** collection and multiple wallets with `/base profit`.")
+                                            .setDescription("We are currently optimising this feature. You can still use Runes profit on a **single** collection and multiple wallets with `/runes profit`.")
                                             .setThumbnail('https://cdn.discordapp.com/attachments/1108757847208099941/1133190291428479016/image.png')
                                             .setAuthor({ name: authorName, iconURL: userAvatar })
                                             .setTimestamp()
@@ -474,10 +465,10 @@ module.exports = {
                                     const price = token.floorUnitPrice ? parseFloat(token.floorUnitPrice.formatted).toFixed(3) + " sats" : "0.00 sats"
                                     const usdPrice = token.floorUnitPrice ? "$" + parseFloat(satsToBtc(token.floorUnitPrice.formatted)).toFixed(5) * btcPrice : "$0"
 
-                                    const marketCap =  token.marketCap ? parseFloat(token.marketCap).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format((token.marketCap * btcPrice).toFixed(0)) + ")" : "0.00₿ ($0)"
-                                    const mcHolders =  token.marketCap ? parseFloat(token.marketCap / token.holderCount).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format(((token.marketCap / token.holderCount) * btcPrice).toFixed(0)) + ")" : "0.00₿ ($0)"
+                                    const marketCap = token.marketCap ? parseFloat(token.marketCap).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format((token.marketCap * btcPrice).toFixed(0)) + ")" : "0.00₿ ($0)"
+                                    const mcHolders = token.marketCap ? parseFloat(token.marketCap / token.holderCount).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format(((token.marketCap / token.holderCount) * btcPrice).toFixed(0)) + ")" : "0.00₿ ($0)"
 
-                                    const pending = token.pendingTxnCount > 0 ? '<a:AuraLoading:1134068847616458792>': ''
+                                    const pending = token.pendingTxnCount > 0 ? '<a:AuraLoading:1134068847616458792>' : ''
 
                                     //Embed getRCprofitPrecisedAll
                                     const answer = new EmbedBuilder().setColor("#060A8F")
@@ -488,17 +479,17 @@ module.exports = {
                                         .addFields(
                                             { name: " ", value: " ", inline: false },
 
-                                            { name: "Price:", value: "`" + price  + "`", inline: true },
+                                            { name: "Price:", value: "`" + price + "`", inline: true },
                                             { name: "USD Price:", value: "`" + usdPrice + "`", inline: true },
                                             { name: " ", value: " ", inline: true },
 
-                                            { name: "Total Volume:", value: "`" + parseFloat(token.volume.all / 10**8).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format(((token.volume.all / 10**8) * btcPrice).toFixed(0)) + ")`", inline: true },
+                                            { name: "Total Volume:", value: "`" + parseFloat(token.volume.all / 10 ** 8).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format(((token.volume.all / 10 ** 8) * btcPrice).toFixed(0)) + ")`", inline: true },
                                             { name: "Supply:", value: "`" + formatCoinValueSign(token.formattedTotalSupply) + "`", inline: true },
                                             { name: "Holders:", value: "`" + token.holderCount + "`", inline: true },
-                                            
-                                            { name: "1D Volume:", value: "`" + parseFloat(token.volume['1d'] / 10**8).toFixed(2) + "₿ ($" +  Intl.NumberFormat('en-US').format(((token.volume['1d'] / 10**8) * btcPrice).toFixed(0)) + ")`", inline: true },
-                                            { name: "7D Volume:", value: "`" + parseFloat(token.volume['7d'] / 10**8).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format(((token.volume['7d'] / 10**8) * btcPrice).toFixed(0)) + ")`", inline: true },
-                                            { name: "30D Volume:", value: "`" + parseFloat(token.volume['30d'] / 10**8).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format(((token.volume['30d'] / 10**8) * btcPrice).toFixed(0)) + ")`", inline: true },
+
+                                            { name: "1D Volume:", value: "`" + parseFloat(token.volume['1d'] / 10 ** 8).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format(((token.volume['1d'] / 10 ** 8) * btcPrice).toFixed(0)) + ")`", inline: true },
+                                            { name: "7D Volume:", value: "`" + parseFloat(token.volume['7d'] / 10 ** 8).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format(((token.volume['7d'] / 10 ** 8) * btcPrice).toFixed(0)) + ")`", inline: true },
+                                            { name: "30D Volume:", value: "`" + parseFloat(token.volume['30d'] / 10 ** 8).toFixed(2) + "₿ ($" + Intl.NumberFormat('en-US').format(((token.volume['30d'] / 10 ** 8) * btcPrice).toFixed(0)) + ")`", inline: true },
 
                                             { name: "Market Cap:", value: "`" + marketCap + "`", inline: true },
                                             { name: "FDV:", value: "`" + marketCap + "`", inline: true },
@@ -509,7 +500,7 @@ module.exports = {
                                             { name: " ", value: " ", inline: true },
 
                                             { name: " ", value: "→ Currently `" + token.pendingTxnCount + "` pending transaction(s) " + pending, inline: true },
-                                           
+
 
                                             { name: "Links", value: '[Magic Eden](https://magiceden.io/runes/' + slug + ") ∙ " + '[Genii](https://geniidata.com/ordinals/runes/' + slug + ") ∙ " + '[Ordiscan](https://ordiscan.com/rune/' + slug + ") ∙ " + '[UniSat](https://unisat.io/runes/market?tick=' + token.name + ") ∙ " + '[Mempool](https://mempool.space/address/' + slug + ')', inline: false },
                                         )

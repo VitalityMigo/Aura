@@ -1,7 +1,7 @@
 const { magiceden, unisat } = require("../config/web3config")
 const axios = require("axios")
 const addTimeout = require("./addtimeout")
-
+const colors = require('colors')
 
 //const magiceden = { 'Authorization': `Bearer 4c035019-0512-488e-804a-2bc0fa9a44f6` };
 // const magiceden = { 'Authorization': `Bearer 3892fec1-8293-4509-bae5-e438936df4a8` };
@@ -96,44 +96,20 @@ async function getRuneCumulativeBalance(slug, wallets) {
 
 async function getRuneActivityByWallet(slug, wallet, time) {
 
+    try {
 
-    //?offset=100
-    // On commence par faire le call de base
-    const call = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/runes/wallet/activities/${wallet}`, { headers: magiceden })
-    // Puis on coupe à partir du dernier objet qui est dans notre range de timestamp
-    // Si c'est undefined on le garde dans le doute. Dans le cas ou lastIndex est -1 ça
-    // veut dire que tout le tableau rentre dans le champs de recherche. Sinon, on coupe car
-    // cela signifie que le tableau est pas completement valide donc on coupe après.
-    const index = call.data.findIndex(obj => obj.txBlockTime && (obj.txBlockTime / 1000) < time) // Cela l'index représente tous les objet dans le timestamp
-    const filtered = index === -1 ? call.data.filter(i => i.rune === slug) : call.data.slice(0, index).filter(i => i.rune === slug)
-
-    // On formatte l'objet
-    let result = filtered.map((i) => ({
-        name: i.rune,
-        action: i.kind,
-        isBuy: i.newOwner === wallet ? true : false,
-        amount: parseFloat(i.formattedAmount),
-        price: i.kind === 'buying_broadcasted' ? satsToBtc(i.listedPrice) : null,
-        to: i.newOwner,
-        txId: i.mempoolTxId,
-        btcAtTime: i.btcUsdPrice
-    }))
-
-    // On définit l'offset de base pour la boucle et aussi l'offset
-    // qu'on incrément dans la boucle
-    let offset = 100
-    let isFull = index == -1 && call.data.length === 100 // Le -1 représente le fait que tous soit dans la range et le 100 que l'array est full
-
-    // On initialise la boucle
-    while (isFull === true) {
-
-        // Pareil qu'en haut
-        const call = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/runes/wallet/activities/${wallet}?offset=${offset}`, { headers: magiceden })
+        //?offset=100
+        // On commence par faire le call de base
+        const call = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/runes/wallet/activities/${wallet}`, { headers: magiceden })
+        // Puis on coupe à partir du dernier objet qui est dans notre range de timestamp
+        // Si c'est undefined on le garde dans le doute. Dans le cas ou lastIndex est -1 ça
+        // veut dire que tout le tableau rentre dans le champs de recherche. Sinon, on coupe car
+        // cela signifie que le tableau est pas completement valide donc on coupe après.
         const index = call.data.findIndex(obj => obj.txBlockTime && (obj.txBlockTime / 1000) < time) // Cela l'index représente tous les objet dans le timestamp
         const filtered = index === -1 ? call.data.filter(i => i.rune === slug) : call.data.slice(0, index).filter(i => i.rune === slug)
 
         // On formatte l'objet
-        result = result.concat(filtered.map((i) => ({
+        let result = filtered.map((i) => ({
             name: i.rune,
             action: i.kind,
             isBuy: i.newOwner === wallet ? true : false,
@@ -141,15 +117,47 @@ async function getRuneActivityByWallet(slug, wallet, time) {
             price: i.kind === 'buying_broadcasted' ? satsToBtc(i.listedPrice) : null,
             to: i.newOwner,
             txId: i.mempoolTxId,
-            btcAtTime: i.btcUsdPrice
-        })))
+            btcAtTime: i.btcUsdPrice,
+            block: i.txBlockHeight
+        }))
 
         // On définit l'offset de base pour la boucle et aussi l'offset
         // qu'on incrément dans la boucle
-        offset += 100
-        isFull = index == -1 && call.data.length === 100 // Le -1 représente le fait que tous soit dans la range et le 100 que l'array est full
+        let offset = 100
+        let isFull = index == -1 && call.data.length === 100 // Le -1 représente le fait que tous soit dans la range et le 100 que l'array est full
+
+        // On initialise la boucle
+        while (isFull === true) {
+
+            // Pareil qu'en haut
+            const call = await axios.get(`https://api-mainnet.magiceden.dev/v2/ord/btc/runes/wallet/activities/${wallet}?offset=${offset}`, { headers: magiceden })
+            const index = call.data.findIndex(obj => obj.txBlockTime && (obj.txBlockTime / 1000) < time) // Cela l'index représente tous les objet dans le timestamp
+            const filtered = index === -1 ? call.data.filter(i => i.rune === slug) : call.data.slice(0, index).filter(i => i.rune === slug)
+          
+            // On formatte l'objet
+            result = result.concat(filtered.map((i) => ({
+                name: i.rune,
+                action: i.kind,
+                isBuy: i.newOwner === wallet ? true : false,
+                amount: parseFloat(i.formattedAmount),
+                price: i.kind === 'buying_broadcasted' ? satsToBtc(i.listedPrice) : null,
+                to: i.newOwner,
+                txId: i.mempoolTxId,
+                btcAtTime: i.btcUsdPrice,
+                block: i.txBlockHeight
+            })))
+
+            // On définit l'offset de base pour la boucle et aussi l'offset
+            // qu'on incrément dans la boucle
+            offset += 100
+            isFull = index == -1 && call.data.length === 100 // Le -1 représente le fait que tous soit dans la range et le 100 que l'array est full
+        }
+ 
+        return result
+
+    } catch (error) {
+        console.log(error.stack)
     }
-    return result
 }
 
 async function getRuneActivityMultipleWallet(slug, wallets, time) {
@@ -178,6 +186,7 @@ async function getRuneActivityMultipleWallet(slug, wallets, time) {
             to: i.newOwner,
             txId: i.mempoolTxId,
             btcAtTime: i.btcUsdPrice,
+            block: i.txBlockHeight,
             wallet: wallet
         })))
 
@@ -204,6 +213,7 @@ async function getRuneActivityMultipleWallet(slug, wallets, time) {
                 to: i.newOwner,
                 txId: i.mempoolTxId,
                 btcAtTime: i.btcUsdPrice,
+                block: i.txBlockHeight,
                 wallet: wallet
             })))
 
@@ -294,6 +304,133 @@ function isRunesUtxo(subtransactions, btcPrice) {
     }
 }
 
+function isRunesBlaster(transactions) {
+    // Les txs sont triées par amount d'office et même Runes
+
+    try {
+
+        const txId = []
+        const chains = []
+
+        for (const tx of transactions) {
+
+            // console.log("    ")
+            // console.log("    ")
+            // console.log(colors.green(" ------- Début de chaine ------"))
+            // console.log(colors.blue("Transaction"))
+            // console.log(tx)
+
+            if (!tx.treated) {
+
+                // console.log(colors.blue("Pas traité"))
+                // console.log(tx)
+
+                // Y a t il une paire
+                const counterpart = transactions.find(i => i.action === (tx.action === 'received' ? 'sent' : 'received') && i.amount === tx.amount && !i.treated)
+
+                // console.log(colors.yellow("Counterpart"))
+                // console.log(counterpart)
+
+                if (counterpart) {
+                    // Début de la chaine potentielle
+
+                    // On définit la raison, la current chain et le last amount et le satus
+                    const reason = tx.amount
+                    const currentChain = [tx, counterpart]
+                    let lastAmount = tx.amount
+                    let isInChain = true
+
+                    counterpart.treated = true
+                    tx.treated = true
+
+
+                    while (isInChain) {
+
+                        // console.log(colors.cyan("Current Chain"))
+                        // console.log(currentChain)
+
+                        // Devient la txn de référence (la seconde)
+                        const nextTx = transactions.find(i => (i.action === 'sent' || 'received') && (i.amount === lastAmount + reason) && !i.treated)
+
+                        // console.log(colors.magenta("R : ", reason))
+                        // console.log(colors.blue("Next Transaction"))
+                        // console.log(nextTx)
+
+                        if (nextTx) {
+
+                            // On push nextTx
+                            currentChain.push(nextTx)
+
+                            const counterpart = transactions.find(i => i.action === (nextTx.action === 'received' ? 'sent' : 'received') && i.amount === nextTx.amount && !i.treated)
+
+                            // console.log(colors.yellow("Counterpart"))
+                            // console.log(counterpart)
+
+                            if (counterpart) {
+
+                                lastAmount = nextTx.amount
+
+                                counterpart.treated = true
+                                nextTx.treated = true
+
+                                currentChain.push(counterpart)
+
+                            } else {
+                                // Possiblement la fin de la loop
+                                if (nextTx.action === "received") {
+
+                                    for (const chainTx of currentChain) {
+                                        chainTx.treated = true
+                                    }
+                                    chains.push(currentChain)
+
+                                    //console.log(colors.rainbow("Fin de la chaine"))
+
+                                } else {
+                                    //console.log(colors.red("Cas spécial"))
+                                }
+                                // Fin de la chaine
+                                isInChain = false
+                            }
+
+                        } else {
+                            // Fin de la chaine
+                            //console.log(colors.red("Pas de dernière Txn trouvé"))
+                            isInChain = false
+                        }
+
+                    }
+
+                } else {
+                    //console.log(colors.red("Pas de counterpart"))
+                }
+            }
+        }
+        //console.log(transactions)
+        //console.log("  ")
+        //console.log("Résultat:")
+
+
+        const validChains = chains.filter(chain => {
+            return chain.length >= 3 && chain[chain.length - 1].action === 'received' && chain.filter(tx => tx.action === 'sent').length === chain.filter(tx => tx.action === 'received').length - 1;
+        });
+
+        // On récupère les différentes datas
+        const chainCount = validChains.length
+        const mints = validChains.reduce((acc, table) => acc + table.filter(txn => txn.action === "received").length, 0);
+        const totalTokens = validChains.reduce((sum, chain) => sum + chain[chain.length - 1].amount, 0);
+        const txs = [...new Set(validChains.flatMap(subArray => subArray.map(tx => tx.txId)))]
+
+        const result = chainCount > 0 ? { chains: chainCount, mints: mints, amount: totalTokens, count: txs.length, txs: txs } : null
+
+        return result
+
+    } catch (error) {
+        console.log(error.stack)
+        return null
+    }
+}
+
 
 module.exports = {
     getBtcPrice,
@@ -311,5 +448,15 @@ module.exports = {
     isBRC20BitcoinWallet,
     searchRunesByName,
     getRuneTopCollection,
-    isRunesUtxo
+    isRunesUtxo,
+    isRunesBlaster
 }
+
+
+// // 1e objet index et delete
+// const indexA = filtered.findIndex(i => i == counterpart)
+// filtered = filtered.splice(indexA, 1)
+
+// // 2e objet index et delete
+// const indexB = filtered.findIndex(i => i == tx)
+// filtered = filtered.splice(indexB, 1)

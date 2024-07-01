@@ -6,7 +6,7 @@ const unisate = { 'Authorization': 'Bearer 58ee790459d886e2a178ef40b51a4b981ae6f
 const axios = require("axios")
 const decimals = 8
 
-const { getRuneMetrics, getRuneCumulativeBalance, getRuneActivityByWallet, getRuneActivityMultipleWallet, isBRC20BitcoinWallet, isHiddenRuneTransfer, getTransaction, getRuneBalance, satsToBtc, isHiddenRunesBuying, isHiddenRunesSplit, isRunesUtxo } = require("./btc-utils")
+const { getRuneMetrics, getRuneCumulativeBalance, isRunesBlaster, getRuneActivityByWallet, getRuneActivityMultipleWallet, isBRC20BitcoinWallet, isHiddenRuneTransfer, getTransaction, getRuneBalance, satsToBtc, isHiddenRunesBuying, isHiddenRunesSplit, isRunesUtxo } = require("./btc-utils")
 const { getBtcPrice } = require('../config/web3data.js')
 const addTimeout = require("./addtimeout")
 const formatCoinValueSign = require("./formatNumberEmbed")
@@ -14,7 +14,6 @@ const formatCoinValueSign = require("./formatNumberEmbed")
 
 
 /// BRC20
-
 
 
 
@@ -69,7 +68,7 @@ async function runesProfitSingle(cont, wall, time) {
         // On récupère l'activité du wallet en fonction du timestamp, du wallet et de la slug
         const activity = await getRuneActivityByWallet(slug, wallet, timestamp)
         //  const activity = activity1.filter(i => i.txId === "667aae821390b9a9ec6f823346a0f1d240ab7fb68d63a1ffadb21e3f3976c6f1")
-        // console.log(activity)// tempo
+        //console.log(activity.length)// tempo
 
         const txArray = []
         // On initialise la boucle dans laquelle on va construire l'arborécence
@@ -132,6 +131,7 @@ async function runesProfitSingle(cont, wall, time) {
                     // On regarde les autres transactions avec le même id
                     // On peut opti en signifiant si cette txn a déjà été traité comme un split hidden.
                     const counterpart = activity.filter(i => i.txId === item.txId)
+                    const isBlaster = isRunesBlaster(activity.filter(i => i.block === item.block).sort((a, b) => a.amount - b.amount))
                     const isSplit = isHiddenRunesSplit(counterpart)
                     const isHiddenBuy = isHiddenRunesBuying(counterpart)
                     const isHiddenTransfer = isHiddenRuneTransfer(counterpart)
@@ -140,7 +140,20 @@ async function runesProfitSingle(cont, wall, time) {
                         // Est ce que c'est un achat, si oui on le compte pas car
                         // il sera pris en compte ensuite dans le buying broadcasted
 
-                        if (isSplit) {
+                        if (isBlaster) {
+                            // C'est un rune blaster donc un mint
+                            data.mint += isBlaster.mints
+                            data.buyAmount += isBlaster.amount
+
+                            // On rajoute les gas et les txn au tableau des txID
+                            for (const tx of isBlaster.txs) {
+                                // On ajoute tout
+                                const txn = await getTransaction(tx)
+                                data.buyGas += satsToBtc(txn.fee)
+                                txArray.push(tx)
+                            }
+
+                        } else if (isSplit) {
                             // C'est un hidden split, donc on compte juste les gas
                             // On ajoute les data de gas
                             const txn = await getTransaction(item.txId)
@@ -158,6 +171,7 @@ async function runesProfitSingle(cont, wall, time) {
                             data.sellGas += satsToBtc(txn.fee)
 
                         } else {
+
                             // C'est un airdrop ou un transfer car il n'y a pas de split associé
                             // mais ça peut ausis être un mint donc on vérifie.
                             const txn = await getTransaction(item.txId)
@@ -177,7 +191,7 @@ async function runesProfitSingle(cont, wall, time) {
                                     // Il y a qu'un seul senders, c'est donc un mint. Ca peut être un wallet BCP1 si c'est
                                     //avec Unisat ou un wallet 3Q si c'est Xverse.
                                     data.mint++
-                                    data.buyAmount = item.amount
+                                    data.buyAmount += item.amount
                                     data.buyGas += satsToBtc(txn.fee)
                                 } else {
                                     // Il y'a plus qu'un wallet, donc surement un payeur et un envoi. On considère que c'est un achat
@@ -223,6 +237,7 @@ async function runesProfitSingle(cont, wall, time) {
                     // On regarde les autres transactions avec le même id
                     // On peut opti en signifiant si cette txn a déjà été traité comme un split hidden.
                     const counterpart = activity.filter(i => i.txId === item.txId)
+                    const isBlaster = isRunesBlaster(activity.filter(i => i.block === item.block).sort((a, b) => a.amount - b.amount))
                     const isSplit = isHiddenRunesSplit(counterpart)
                     const isHiddenBuy = isHiddenRunesBuying(counterpart)
                     const isHiddenTransfer = isHiddenRuneTransfer(counterpart)
@@ -231,7 +246,20 @@ async function runesProfitSingle(cont, wall, time) {
                         // Est ce que c'est un achat, si oui on le compte pas car
                         // il sera pris en compte ensuite dans le buying broadcasted
 
-                        if (isSplit) {
+                        if (isBlaster) {
+                            // C'est un rune blaster donc un mint
+                            data.mint += isBlaster.mints
+                            data.buyAmount += isBlaster.amount
+
+                            // On rajoute les gas et les txn au tableau des txID
+                            for (const tx of isBlaster.txs) {
+                                // On ajoute tout
+                                const txn = await getTransaction(tx)
+                                data.buyGas += satsToBtc(txn.fee)
+                                txArray.push(tx)
+                            }
+
+                        } else if (isSplit) {
                             // C'est un hidden split, donc on compte juste les gas
                             // On ajoute les data de gas
                             const txn = await getTransaction(item.txId)
@@ -263,6 +291,7 @@ async function runesProfitSingle(cont, wall, time) {
                                 // que c'est un achat caché donc on le compte comme tel.
                                 // On calcul la valeur reçu par le user. Elle n'est pas précise !!!!
                                 const value = inflow.find(i => !isBRC20BitcoinWallet(i.prevout.scriptpubkey_address) && i.prevout.scriptpubkey_address != wallet).prevout.value
+                                // Problème quand y'a pas prevout !!!!
 
                                 data.swapOut++
                                 data.sellAmount += item.amount
@@ -428,10 +457,7 @@ async function runesProfitMultiple(cont, walls, time) {
 
         // On récupère l'activité du wallet en fonction du timestamp, du wallet et de la slug
         const activity = await getRuneActivityMultipleWallet(slug, wallets, timestamp)
-        //console.log(activity)
-
-        //  const activity = activity1.filter(i => i.txId === "667aae821390b9a9ec6f823346a0f1d240ab7fb68d63a1ffadb21e3f3976c6f1")
-        // console.log(activity)// tempo
+        //console.log(activity.length)
 
         const txArray = []
         // On initialise la boucle dans laquelle on va construire l'arborécence
@@ -497,16 +523,30 @@ async function runesProfitMultiple(cont, walls, time) {
 
                     // On regarde les autres transactions avec le même id
                     // On peut opti en signifiant si cette txn a déjà été traité comme un split hidden.
-                    const counterpart = activity.filter(i => i.txId === item.txId)
+                    const counterpart = activity.filter(i => i.txId === item.txId && i.wallet == item.wallet)
+                    const isBlaster = isRunesBlaster(activity.filter(i => i.block === item.block && i.wallet === item.wallet).sort((a, b) => a.amount - b.amount))
                     const isSplit = isHiddenRunesSplit(counterpart)
                     const isHiddenBuy = isHiddenRunesBuying(counterpart)
                     const isHiddenTransfer = isHiddenRuneTransfer(counterpart)
-
+                    
                     if (!isHiddenBuy) {
                         // Est ce que c'est un achat, si oui on le compte pas car
                         // il sera pris en compte ensuite dans le buying broadcasted
 
-                        if (isSplit) {
+                        if (isBlaster) {
+                            // C'est un rune blaster donc un mint
+                            data.mint += isBlaster.mints
+                            data.buyAmount += isBlaster.amount
+
+                            // On rajoute les gas et les txn au tableau des txID
+                            for (const tx of isBlaster.txs) {
+                                // On ajoute tout
+                                const txn = await getTransaction(tx)
+                                data.buyGas += satsToBtc(txn.fee)
+                                txArray.push({ txId: tx, wallet: item.wallet })
+                            }
+
+                        } else if (isSplit) {
                             // C'est un hidden split, donc on compte juste les gas
                             // On ajoute les data de gas
                             const txn = await getTransaction(item.txId)
@@ -543,7 +583,7 @@ async function runesProfitMultiple(cont, walls, time) {
                                     // Il y a qu'un seul senders, c'est donc un mint. Ca peut être un wallet BCP1 si c'est
                                     //avec Unisat ou un wallet 3Q si c'est Xverse.
                                     data.mint++
-                                    data.buyAmount = item.amount
+                                    data.buyAmount += item.amount
                                     data.buyGas += satsToBtc(txn.fee)
                                 } else {
                                     // Il y'a plus qu'un wallet, donc surement un payeur et un envoi. On considère que c'est un achat
@@ -588,16 +628,30 @@ async function runesProfitMultiple(cont, walls, time) {
 
                     // On regarde les autres transactions avec le même id
                     // On peut opti en signifiant si cette txn a déjà été traité comme un split hidden.
-                    const counterpart = activity.filter(i => i.txId === item.txId)
+                    const counterpart = activity.filter(i => i.txId === item.txId && i.wallet == item.wallet)
+                    const isBlaster = isRunesBlaster(activity.filter(i => i.block === item.block && i.wallet === item.wallet).sort((a, b) => a.amount - b.amount))
                     const isSplit = isHiddenRunesSplit(counterpart)
                     const isHiddenBuy = isHiddenRunesBuying(counterpart)
                     const isHiddenTransfer = isHiddenRuneTransfer(counterpart)
-
+                   
                     if (!isHiddenBuy) {
                         // Est ce que c'est un achat, si oui on le compte pas car
                         // il sera pris en compte ensuite dans le buying broadcasted
 
-                        if (isSplit) {
+                        if (isBlaster) {
+                            // C'est un rune blaster donc un mint
+                            data.mint += isBlaster.mints
+                            data.buyAmount += isBlaster.amount
+
+                            // On rajoute les gas et les txn au tableau des txID
+                            for (const tx of isBlaster.txs) {
+                                // On ajoute tout
+                                const txn = await getTransaction(tx)
+                                data.buyGas += satsToBtc(txn.fee)
+                                txArray.push({ txId: tx, wallet: item.wallet })
+                            }
+
+                        } else if (isSplit) {
                             // C'est un hidden split, donc on compte juste les gas
                             // On ajoute les data de gas
                             const txn = await getTransaction(item.txId)

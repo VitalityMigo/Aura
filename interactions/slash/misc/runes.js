@@ -19,7 +19,7 @@ const { runesProfitSingle, runesProfitMultiple } = require("../../../functions/b
 const { isBRC20BitcoinWallet, getExtensiveRuneMetrics, satsToBtc } = require("../../../functions/btc-utils")
 const { getBtcPrice } = require("../../../config/web3data")
 const reduceText = require("../../../functions/reducetext")
-const formatCoinValueSign = require("../../../functions/formatNumberEmbed")
+const formatCoinValueSign = require("../../../functions/formatNumberEmbed");
 
 // Fonction de formattage complémentaire
 function formatWallet2(input) {
@@ -148,10 +148,10 @@ module.exports = {
                                 const visualBTN = new ActionRowBuilder()
                                     .addComponents(
                                         new ButtonBuilder()
-                                            .setCustomId('profitvisual-button')
+                                            .setCustomId('runesprofitvisual-button')
                                             .setLabel('visual')
                                             .setStyle(2)
-                                            .setDisabled(true)
+                                           // .setDisabled(true)
                                     );
 
 
@@ -229,35 +229,17 @@ module.exports = {
 
                                         // On enregistre les informations dans la base SQL
                                         // L'interaction sera récupéré pour générer le visuel de profit
-                                        // await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
+                                        await interactionData.destroy({ where: { authorId: authorId, commandName: "runes-profit", serverId: serverId } })
 
-                                        // await interactionData.create({
-
-                                        //     authorId: authorId,
-                                        //     authorName: authorName,
-                                        //     serverId: serverId,
-                                        //     commandName: "profit",
-                                        //     interactionId: interaction.id,
-                                        //     walletCategory: "eth",
-                                        //     selectedCollection: token.contract,
-                                        //     floorPrice: token.floor.toString(),
-                                        //     collectionName: token.name,
-                                        //     mintCount: raw.mint.toString(),
-                                        //     buyCount: raw.buy.toString(),
-                                        //     soldCount: raw.sell.toString(),
-                                        //     remaining: raw.held.toString(),
-                                        //     avgBuy: parseFloat(raw.avgTotal).toFixed(3),
-                                        //     avgSold: parseFloat(raw.avgSold).toFixed(3),
-                                        //     realisedProfit: parseFloat(raw.realizedPNL).toFixed(3),
-                                        //     potentialProfit: parseFloat(raw.realizedPNL).toFixed(3),
-                                        //     roi: raw.potentialROI.toString(),
-                                        //     totalTradeCount: JSON.stringify({
-                                        //         buy: (raw.buyTotal + raw.mintTotal).toString(),
-                                        //         sell: raw.sellTotal.toString(),
-                                        //     }),
-                                        //     userAvatar: userAvatar,
-                                        // })
-
+                                        await interactionData.create({
+                                            authorId: authorId,
+                                            authorName: authorName,
+                                            serverId: serverId,
+                                            commandName: "runes-profit",
+                                            interactionId: interaction.id,
+                                            embed1: JSON.stringify(data),
+                                            userAvatar: userAvatar,
+                                        })
 
                                     } else {
                                         // Si il y'a une erreur lors de l'analyse des data
@@ -351,36 +333,20 @@ module.exports = {
 
                                                 await interaction.editReply({ embeds: [answer], components: [visualBTN] });
 
-                                                // // On enregistre les informations dans la base SQL
-                                                // // L'interaction sera récupéré pour générer le visuel de profit
-                                                // await interactionData.destroy({ where: { authorId: authorId, commandName: "profit", serverId: serverId } })
+                                                // On enregistre les informations dans la base SQL
+                                                // L'interaction sera récupéré pour générer le visuel de profit
+                                                await interactionData.destroy({ where: { authorId: authorId, commandName: "runes-profit", serverId: serverId } })
 
-                                                // await interactionData.create({
+                                                await interactionData.create({
 
-                                                //     authorId: authorId,
-                                                //     authorName: authorName,
-                                                //     serverId: serverId,
-                                                //     commandName: "profit",
-                                                //     interactionId: interaction.id,
-                                                //     walletCategory: "eth",
-                                                //     selectedCollection: collection.contract,
-                                                //     floorPrice: collection.floor.toString(),
-                                                //     collectionName: collection.name,
-                                                //     mintCount: raw.mint.toString(),
-                                                //     buyCount: raw.buy.toString(),
-                                                //     soldCount: raw.sell.toString(),
-                                                //     remaining: raw.held.toString(),
-                                                //     avgBuy: parseFloat(raw.avgTotal).toFixed(3),
-                                                //     avgSold: parseFloat(raw.avgSold).toFixed(3),
-                                                //     realisedProfit: parseFloat(raw.realisedPNL).toFixed(3),
-                                                //     potentialProfit: parseFloat(raw.potentialPNL).toFixed(3),
-                                                //     roi: raw.potentialROI.toString(),
-                                                //     totalTradeCount: JSON.stringify({
-                                                //         buy: (raw.buyTotal + raw.mintTotal).toString(),
-                                                //         sell: raw.sellTotal.toString(),
-                                                //     }),
-                                                //     userAvatar: userAvatar,
-                                                // })
+                                                    authorId: authorId,
+                                                    authorName: authorName,
+                                                    serverId: serverId,
+                                                    commandName: "runes-profit",
+                                                    interactionId: interaction.id,
+                                                    embed1: JSON.stringify(data),
+                                                    userAvatar: userAvatar,
+                                                })
 
                                             } else {
                                                 // Si il y'a une erreur lors de l'analyse des data

@@ -19,7 +19,6 @@ const { accessSql, profileData, interactionData, apimonitorsql, adminsql, report
 const moment = require('moment');
 
 const generateRandomString = require('../../../functions/randomkey');
-const formatNumberVisual = require("../../../functions/reducenumbervisual")
 const { createCanvas, loadImage } = require('canvas');
 const { getEthPrice, getBtcPrice } = require("../../../config/web3data")
 
@@ -74,6 +73,7 @@ module.exports = {
         if (privacyBigDataAuthor !== null) {
           visualSelect = privacyBigDataAuthor.dataValues.visualSelect
         }
+
 
 
 
@@ -879,26 +879,26 @@ module.exports = {
 
         } else {
 
-          const templateOneCollection = await loadImage("./visual/aura/permanent/cryptoprofittemplate1.png");
+          const templateOneCollection = await loadImage("./visual/aura/permanent/profittemplate1.png");
 
           const canvasFormatted = createCanvas(1000, 1000);
           const ctx = canvasFormatted.getContext('2d');
 
           ctx.drawImage(templateOneCollection, 0, 0, canvasFormatted.width, canvasFormatted.height); // Ajouter l'image de fond au canvas
-          
+
           //MINT COUNT
           ctx.font = "700 35px 'Fira Code'";
           ctx.fillStyle = "#E5EAFF";
-          const buyAmount = formatNumberVisual(data.buyAmount).toString()
-          const buyAmountSize = ctx.measureText(buyAmount).width
-          ctx.fillText(formatNumberVisual(buyAmount), 190 - buyAmountSize / 2, 420);
+          const airdrop = data.mint.toString()
+          const airdropSize = ctx.measureText(airdrop).width
+          ctx.fillText(airdrop, 190 - airdropSize / 2, 420);
 
           //BUY COUNT
           ctx.font = "700 35px 'Fira Code'";
           ctx.fillStyle = "#E5EAFF";
-          const airdrop = data.airdrop.toString()
-          const airdropSize = ctx.measureText(airdrop).width
-          ctx.fillText(airdrop, 498 - airdropSize / 2, 420);
+          const buyAmount = formatNumberVisual(data.buyAmount).toString()
+          const buyAmountSize = ctx.measureText(buyAmount).width
+          ctx.fillText(buyAmount, 498 - buyAmountSize / 2, 420);
 
           //AVG BUY
           ctx.font = "700 35px 'Fira Code'";
@@ -934,21 +934,39 @@ module.exports = {
           if (data.realizedPNL >= 0) { ctx.fillStyle = "#00db00"; } else if (data.potentialPNL < 0) { ctx.fillStyle = "#e60015"; }
           const realized = parseFloat(data.realizedPNL).toFixed(4).toString() + "B"
           const realizedText = ctx.measureText(realized).width
-          ctx.fillText(realized, 190 - realizedText / 2, 749);
+          ctx.fillText(realized, 190 - realizedText / 2, 730);
+          // On ajoute le prix en USD.
+          ctx.font = "700 22px 'Fira Code'";
+          const realisedUSD = "($" + parseFloat(data.realizedPNL * btcPrice).toFixed(0) + ")"
+          const realisedUSDText = ctx.measureText(realisedUSD).width
+          ctx.fillText(realisedUSD, 190 - realisedUSDText / 2, 763);
 
           //Potential PROFIT
           ctx.font = "700 35px 'Fira Code'";
           if (data.potentialPNL >= 0) { ctx.fillStyle = "#00db00"; } else if (data.potentialPNL < 0) { ctx.fillStyle = "#e60015"; }
           const potential = parseFloat(data.potentialPNL).toFixed(4).toString() + "B"
           const potentialText = ctx.measureText(potential).width
-          ctx.fillText(potential, 500 - potentialText / 2, 749);
+          ctx.fillText(potential, 500 - potentialText / 2, 730);
+          // On ajoute le prix en USD.
+          ctx.font = "700 22px 'Fira Code'";
+          const potentialUSD = "($" + parseFloat(data.potentialPNL * btcPrice).toFixed(0) + ")"
+          const potentialUSDText = ctx.measureText(potentialUSD).width
+          ctx.fillText(potentialUSD, 500 - potentialUSDText / 2, 763);
 
-          //Potential MLTP
+          //Potential ROI
           ctx.font = "700 35px 'Fira Code'";
           if (data.potentialPNL >= 0) { ctx.fillStyle = "#00db00"; } else if (data.potentialPNL < 0) { ctx.fillStyle = "#e60015"; }
-          const multiplier = data.potentialROI.toString().toLowerCase() !== "infinity" ? "x" + parseFloat(data.potentialMLTP).toFixed(2).toString() : "(x ∞)"
+          const roi = data.potentialROI.toString().toLowerCase() !== "infinity" ? parseFloat(data.potentialROI).toFixed(2).toString() + "%" : "Infinity"
+          const roiText = ctx.measureText(roi).width
+          ctx.fillText(roi, 812 - roiText / 2, 730);
+          // On ajoute le prix en USD.
+          ctx.font = "700 22px 'Fira Code'";
+          const multiplier = data.potentialROI.toString().toLowerCase() !== "infinity" ? "(x" + parseFloat(data.potentialMLTP).toFixed(1).toString() + ")" : "(x ∞)"
           const multiplierText = ctx.measureText(multiplier).width
-          ctx.fillText(multiplier, 812 - multiplierText / 2, 749);
+          ctx.fillText(multiplier, 812 - multiplierText / 2, 763);
+          ctx.font = "700 35px 'Fira Code'";
+
+
 
 
           ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1140,4 +1158,41 @@ function formatDollars(number) {
     return parseFloat(number / 1000).toFixed(0) + 'K';
   }
   return parseFloat(number).toFixed(0);
+}
+
+
+function formatNumberVisual(number) {
+  const racks = 1000
+  const million = 1000000;
+  const billion = 1000000000;
+  const trillion = 1000000000000;
+
+  let formattedNumber;
+  let suffix;
+
+  if (Math.abs(number) >= trillion) {
+    number = number / trillion
+    formattedNumber = parseFloat(number).toFixed(1);
+    suffix = "T";
+  } else if (Math.abs(number) >= billion) {
+    number = number / billion
+    formattedNumber = parseFloat(number).toFixed(1);
+    suffix = "B";
+  } else if (Math.abs(number) >= million) {
+    number = number / million
+    formattedNumber = parseFloat(number).toFixed(1);
+    suffix = "M";
+  } else if (Math.abs(number) >= racks) {
+    number = number / racks
+    formattedNumber = parseFloat(number).toFixed(1);
+    suffix = "K";
+  } else {
+    if (Number.isInteger(number) || parseFloat(number) === parseInt(number)) {
+      formattedNumber = parseFloat(number).toFixed(0);
+    } else {
+      formattedNumber = parseFloat(number).toFixed(1);
+    }
+    suffix = "";
+  }
+  return formattedNumber.replace('.0', '') + suffix;
 }

@@ -61,7 +61,7 @@ wssBase.eth.subscribe('newBlockHeaders', async (error, header) => {
                         type: "📥 Transfer",
                     }
 
-                    FTSnipeDepositExec(obj)
+                    //  FTSnipeDepositExec(obj)
                     newFTDeposit(obj)
 
                 }
@@ -72,9 +72,9 @@ wssBase.eth.subscribe('newBlockHeaders', async (error, header) => {
 
 
 
-                    FTSnipeUserExec(transaction)
+                    // FTSnipeUserExec(transaction)
 
-                   // newFriendtechUser(transaction)
+                    // newFriendtechUser(transaction)
 
 
                 }
@@ -83,11 +83,11 @@ wssBase.eth.subscribe('newBlockHeaders', async (error, header) => {
                 if ((input.startsWith(buySignature) || input.startsWith(sellSignature)) && contract.toLowerCase() == shareContractAddress.toLowerCase()) {
 
 
-                    orderExecFT(transaction)
-                    
+                    // orderExecFT(transaction)
+
                     trackerHandler(transaction)
 
-                    farmerExecFT(transaction)
+                    // farmerExecFT(transaction)
 
                 }
 
